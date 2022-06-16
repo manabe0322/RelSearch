@@ -6,3 +6,4 @@
 
 #' @useDynLib relsearch, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
+NULL
