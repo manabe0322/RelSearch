@@ -2,3 +2,8 @@
 
 export(relsearch)
 importFrom(readr,parse_number)
+importFrom(tcltk2,tk2column)
+importFrom(tcltk2,tk2insert.multi)
+importFrom(tcltk2,tk2mclistbox)
+importFrom(tcltk2,tk2notebook)
+importFrom(tcltk2,tk2notetab.select)
