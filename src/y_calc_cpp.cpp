@@ -1,6 +1,7 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
+//' @export
 // [[Rcpp::export]]
 IntegerMatrix matchY2(CharacterVector qHap, CharacterVector rHap) {
   int nL = qHap.length();
