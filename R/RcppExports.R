@@ -3,6 +3,6 @@
 
 #' @export
 matchY2 <- function(qHap, rHap) {
-    .Call('_relsearch_matchY2', PACKAGE = 'relsearch', qHap, rHap)
+    .Call(`_relsearch_matchY2`, qHap, rHap)
 }
 

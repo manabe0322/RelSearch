@@ -10,7 +10,7 @@ IntegerMatrix matchY2(CharacterVector qHap, CharacterVector rHap) {
     String qAl(qHap[i]);
     String rAl(rHap[i]);
     bool matchQR = qAl == rAl;
-    if(matchQR == true){
+    if(matchQR == false){
       judgeMat(0, i) = 1;
     }
   }
