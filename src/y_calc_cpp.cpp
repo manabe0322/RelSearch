@@ -10,7 +10,7 @@ IntegerMatrix matchY2(CharacterVector qHap, CharacterVector rHap) {
     char rAl = rHap[i];
     bool matchQR = qAl == rAl;
     if(matchQR == true){
-      judgeMat(0, i) = int 1
+      judgeMat(0, i) = 1;
     }
   }
   return(judgeMat);
