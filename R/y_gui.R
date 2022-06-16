@@ -149,7 +149,7 @@ tabYResult <- function(envProj, envGUI){
       tkgrid(tklabel(frameD1, text = "Query"),
              tklabel(frameD1, text = "Reference"),
              tklabel(frameD1, text = "Maximum number of inconsistent loci"),
-             tklabel(frameD1, text = "Maximum number of loci explained by drop-outs"),
+             tklabel(frameD1, text = "Maximum number of ignored loci"),
              padx = 10, pady = 5)
 
       candQ <- c("All", qYName)
@@ -198,11 +198,11 @@ tabYResult <- function(envProj, envGUI){
         scr1 <- get("scr1", pos = envYResult)
         tkdestroy(scr1)
         scr1 <- tkscrollbar(frameResult1, repeatinterval = 5, command = function(...) tkyview(resultMlb, ...))
-        resultMlb <- tk2mclistbox(frameResult1, width = 100, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+        resultMlb <- tk2mclistbox(frameResult1, width = 90, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
         tk2column(resultMlb, "add", label = "Query", width = 15)
         tk2column(resultMlb, "add", label = "Reference", width = 15)
         tk2column(resultMlb, "add", label = "Number of inconsistent loci", width = 30)
-        tk2column(resultMlb, "add", label = "Number of loci explained by drop-outs", width = 40)
+        tk2column(resultMlb, "add", label = "Number of ignored loci", width = 30)
         tkgrid(resultMlb, scr1)
         displayData <- displayDefault[posExtract, , drop = FALSE]
         displayData <- displayData[order(as.numeric(displayData[, 4])), , drop = FALSE]
@@ -235,7 +235,7 @@ tabYResult <- function(envProj, envGUI){
                                   paste0("Query haplotype (", selectQName, ")"),
                                   paste0("Reference haplotype (", selectRName, ")"),
                                   "Number of inconsistent loci",
-                                  "Number of loci explained by drop-outs",
+                                  "Number of ignored loci",
                                   "Mutational step")
         detailData[1:nL, 2] <- qYData[posShowQ, ]
         detailData[1:nL, 3] <- rYData[posShowR, ]
@@ -256,12 +256,12 @@ tabYResult <- function(envProj, envGUI){
 
         frameDetail2 <- tkframe(tfDetail)
         scr2 <- tkscrollbar(frameDetail2, repeatinterval = 5, command = function(...) tkyview(detailMlb, ...))
-        detailMlb <- tk2mclistbox(frameDetail2, width = 170, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr2, ...))
+        detailMlb <- tk2mclistbox(frameDetail2, width = 160, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr2, ...))
         tk2column(detailMlb, "add", label = "locus", width = 20)
         tk2column(detailMlb, "add", label = paste0("Query haplotype (", selectQName, ")"), width = 30)
         tk2column(detailMlb, "add", label = paste0("Reference haplotype (", selectRName, ")"), width = 30)
         tk2column(detailMlb, "add", label = "Number of inconsistent loci", width = 30)
-        tk2column(detailMlb, "add", label = "Number of loci explained by drop-outs", width = 40)
+        tk2column(detailMlb, "add", label = "Number of ignored loci", width = 30)
         tk2column(detailMlb, "add", label = "Mutational step", width = 20)
         tkgrid(detailMlb, scr2)
         tk2insert.multi(detailMlb, "end", detailData)
@@ -297,7 +297,7 @@ tabYResult <- function(envProj, envGUI){
 
     nD <- nQ * nR
     displayDefault <- matrix(0, nD, 4)
-    colnames(displayDefault) <- c("Query", "Reference", "Number of inconsistent loci", "Number of loci explained by drop-outs")
+    colnames(displayDefault) <- c("Query", "Reference", "Number of inconsistent loci", "Number of ignored loci")
     displayQ <- rep(qYName, nR)
     displayDefault[, 1] <- displayQ
     displayR <- as.vector(sapply(rYName, rep, nQ))
@@ -320,11 +320,11 @@ tabYResult <- function(envProj, envGUI){
 
     frameResult1 <- tkframe(frameTab4)
     scr1 <- tkscrollbar(frameResult1, repeatinterval = 5, command = function(...) tkyview(resultMlb, ...))
-    resultMlb <- tk2mclistbox(frameResult1, width = 100, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+    resultMlb <- tk2mclistbox(frameResult1, width = 90, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
     tk2column(resultMlb, "add", label = "Query", width = 15)
     tk2column(resultMlb, "add", label = "Reference", width = 15)
     tk2column(resultMlb, "add", label = "Number of inconsistent loci", width = 30)
-    tk2column(resultMlb, "add", label = "Number of loci explained by drop-outs", width = 40)
+    tk2column(resultMlb, "add", label = "Number of ignored loci", width = 30)
     tkgrid(resultMlb, scr1)
     tk2insert.multi(resultMlb, "end", displayData)
     assign("resultMlb", resultMlb, envir = envYResult)
