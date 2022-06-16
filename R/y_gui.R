@@ -114,7 +114,7 @@ guiScreenY <- function(envProj, envGUI){
         rHap <- rYData[i, ]
         for(j in 1:nQ){
           qHap <- qYData[j, ]
-          judgeMat <- matchY2(qHap, rHap)
+          judgeMat <- matchY(qHap, rHap)
           mismatch_y[j, i, ] <- judgeMat[1, ]
           qDrop_y[j, i, ] <- judgeMat[2, ]
           muStep_y[j, i, ] <- judgeMat[3, ]

@@ -11,24 +11,36 @@ calcMuStep <- function(qAl, rAl){
 }
 
 # Matching query and reference Y haplotypes (testthat)
+#matchY <- function(qHap, rHap){
+#  nL <- length(qHap)
+#  judgeMat <- matrix(0, 3, nL + 1)
+#  for(i in 1:nL){
+#    qAl <- qHap[i]
+#    qAl <- as.numeric(strsplit(qAl, ", ")[[1]])
+#    rAl <- rHap[i]
+#    rAl <- as.numeric(strsplit(rAl, ", ")[[1]])
+#    #mismatch or not
+#    judgeMat[1, i] <- !setequal(qAl, rAl)
+#    #explainable by Q's drop-out or not
+#    judgeMat[2, i] <- (judgeMat[1, i] == 1) && (all(is.element(qAl, rAl)))
+#    #mutation step
+#    if((judgeMat[1, i] == 1) && (judgeMat[2, i] == 0)){
+#      judgeMat[3, i] <- calcMuStep(qAl, rAl)
+#    }
+#  }
+#  judgeMat[1, nL + 1] <- sum(judgeMat[1, ])
+#  judgeMat[2, nL + 1] <- sum(judgeMat[2, ])
+#  return(judgeMat)
+#}
 matchY <- function(qHap, rHap){
   nL <- length(qHap)
   judgeMat <- matrix(0, 3, nL + 1)
   for(i in 1:nL){
     qAl <- qHap[i]
-    qAl <- as.numeric(strsplit(qAl, ", ")[[1]])
     rAl <- rHap[i]
-    rAl <- as.numeric(strsplit(rAl, ", ")[[1]])
     #mismatch or not
     judgeMat[1, i] <- !setequal(qAl, rAl)
-    #explainable by Q's drop-out or not
-    judgeMat[2, i] <- (judgeMat[1, i] == 1) && (all(is.element(qAl, rAl)))
-    #mutation step
-    if((judgeMat[1, i] == 1) && (judgeMat[2, i] == 0)){
-      judgeMat[3, i] <- calcMuStep(qAl, rAl)
-    }
   }
   judgeMat[1, nL + 1] <- sum(judgeMat[1, ])
-  judgeMat[2, nL + 1] <- sum(judgeMat[2, ])
   return(judgeMat)
 }
