@@ -121,12 +121,12 @@ exportData <- function(dataMat, rowNames){
   }
 }
 
-#' KinSN
+#' relsearch
 #'
-#' @description Main window of KinSN
-#' @usage KinSN()
+#' @description Main window of relsearch
+#' @usage relsearch()
 #' @export
-KinSN <- function(){
+relsearch <- function(){
   if(is.element("envProj", ls(envir = parent.env(environment())))){
     envProj <- get("envProj", pos = parent.env(environment()))
   }else{
@@ -137,15 +137,15 @@ KinSN <- function(){
   }
 
   envGUI <- new.env(parent = globalenv())
-  softVer <- packageVersion("KinSN")
-#  pathPack <- "D:/RStudio_GitHub/KinSN/inst"
-  pathPack <- path.package("KinSN", quiet = FALSE)
+  softVer <- packageVersion("relsearch")
+#  pathPack <- "D:/RStudio_GitHub/relsearch/inst"
+  pathPack <- path.package("relsearch", quiet = FALSE)
   assign("softVer", softVer, envir = envGUI)
   assign("pathPack", pathPack, envir = envGUI)
   assign("finStr", FALSE, envir = envGUI)
 
   tf <- tktoplevel()
-  tkwm.title(tf, paste("KinSN ver. ", softVer, sep = ""))
+  tkwm.title(tf, paste("relsearch ver. ", softVer, sep = ""))
 
   topMenu <- tkmenu(tf)
   tkconfigure(tf, menu = topMenu)
@@ -160,7 +160,7 @@ KinSN <- function(){
 
   help_menu <- tkmenu(topMenu, tearoff = FALSE, activebackground = "lightskyblue1")
   tkadd(topMenu, "cascade", label = "Help", menu = help_menu)
-  tkadd(help_menu, "command", label = "Manual", command = function() browseURL(paste0(pathPack, "/manual/KinSN_v", softVer, "_manual.html")))
+  tkadd(help_menu, "command", label = "Manual", command = function() browseURL(paste0(pathPack, "/manual/relsearch_v", softVer, "_manual.html")))
 
   tabs <- tk2notebook(tf, tabs = c("STR analysis", "STR results", "Y analysis", "Y results", "mtDNA analysis", "mtDNA results"))
   tab1 <- tk2notetab(tabs, "STR analysis")
