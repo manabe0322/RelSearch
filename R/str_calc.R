@@ -165,7 +165,7 @@ makeDummyAf <- function(dummyGt, afOneL, afAlOneL){
 # Calculation of likelihoods for pairwise kinship analysis considering drop-out (testthat)
 kinLikeDrop <- function(qgt, rgt, afOneL, afAlOneL, probIBD, mutation  = FALSE, myuOneL = numeric(0), apeOneL = numeric(0), pd){
   #homozygote (no drop-out)
-  like1 <- kinLike2(qgt, rgt, afOneL, afAlOneL, probIBD, mutation, myuOneL, apeOneL)
+  like1 <- kinLike(qgt, rgt, afOneL, afAlOneL, probIBD, mutation, myuOneL, apeOneL)
 
   #heterozygote (drop-out)
   dummyGt <- makeDummyGt(qgt, rgt)
@@ -173,7 +173,7 @@ kinLikeDrop <- function(qgt, rgt, afOneL, afAlOneL, probIBD, mutation  = FALSE, 
   afAlOneL_dummy <- as.numeric(names(afOneL_dummy))
   like2 <- c(0, 0)
   for(i in 1:nrow(dummyGt)){
-    like2 <- like2 + kinLike2(dummyGt[i, ], rgt, afOneL_dummy, afAlOneL_dummy, probIBD, mutation, myuOneL, apeOneL)
+    like2 <- like2 + kinLike(dummyGt[i, ], rgt, afOneL_dummy, afAlOneL_dummy, probIBD, mutation, myuOneL, apeOneL)
   }
 
   likeH1 <- (1 - pd) * like1[1] + pd * like2[1]
@@ -207,13 +207,13 @@ calcKinLr <- function(query, ref, af, probIBD, mutation = FALSE, myu = numeric(0
     }else if(dropMethStr != 0){
       #qgt : heterozygote
       if(length(unique(qgt)) == 2){
-        ans[c(1, 2), i] <- kinLike2(qgt, rgt, afOneL, afAlOneL, probIBD, mutation, myuOneL, apeOneL)
+        ans[c(1, 2), i] <- kinLike(qgt, rgt, afOneL, afAlOneL, probIBD, mutation, myuOneL, apeOneL)
       #qgt : homozygote or heterozygote
       }else{
         if(dropMethStr == 1){
           #qgt : homozygote
           if(length(qgt) == 2){
-            ans[c(1, 2), i] <- kinLike2(qgt, rgt, afOneL, afAlOneL, probIBD, mutation, myuOneL, apeOneL)
+            ans[c(1, 2), i] <- kinLike(qgt, rgt, afOneL, afAlOneL, probIBD, mutation, myuOneL, apeOneL)
           #considering drop-out
           }else{
             # myuOneL <- 0
@@ -229,7 +229,7 @@ calcKinLr <- function(query, ref, af, probIBD, mutation = FALSE, myu = numeric(0
       }
     #not considering drop-out
     }else{
-      ans[c(1, 2), i] <- kinLike2(qgt, rgt, afOneL, afAlOneL, probIBD, mutation, myuOneL, apeOneL)
+      ans[c(1, 2), i] <- kinLike(qgt, rgt, afOneL, afAlOneL, probIBD, mutation, myuOneL, apeOneL)
     }
   }
   ans[1, nL + 1] <- prod(ans[1, 1:nL])
