@@ -18,23 +18,29 @@ NumericVector kinLike2(NumericVector qgt, NumericVector rgt, NumericVector af, N
   double k0 = probIBD[2];
 
   if(qgt.length() == 1){
-    auto posQ = find(afAl.begin(), afAl.end(), qgt[0]);
+    auto iterQ = find(afAl.begin(), afAl.end(), qgt[0]);
+    int posQ = *iterQ;
     double a = af[posQ];
     double b = af[posQ];
   }else{
-    auto posQ1 = find(afAl.begin(), afAl.end(), qgt[0]);
+    auto iterQ1 = find(afAl.begin(), afAl.end(), qgt[0]);
+    int posQ1 = *iterQ1;
     double a = af[posQ1];
-    auto posQ2 = find(afAl.begin(), afAl.end(), qgt[1]);
+    auto iterQ2 = find(afAl.begin(), afAl.end(), qgt[1]);
+    int posQ2 = *iterQ2;
     double b = af[posQ2];
   }
   if(rgt.length() == 1){
-    auto posR = find(afAl.begin(), afAl.end(), rgt[0]);
+    auto iterR = find(afAl.begin(), afAl.end(), rgt[0]);
+    int posR = *iterR;
     double c = af[posR];
     double d = af[posR];
   }else{
-    auto posR1 = find(afAl.begin(), afAl.end(), rgt[0]);
+    auto iterR1 = find(afAl.begin(), afAl.end(), rgt[0]);
+    int posR1 = *iterR1;
     double c = af[posR1];
-    auto posR2 = find(afAl.begin(), afAl.end(), rgt[1]);
+    auto iterR2 = find(afAl.begin(), afAl.end(), rgt[1]);
+    int posR2 = *iterR2;
     double d = af[posR2];
   }
 
