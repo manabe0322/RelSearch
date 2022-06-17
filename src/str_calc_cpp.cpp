@@ -17,6 +17,7 @@ NumericVector kinLike2(NumericVector qgt, NumericVector rgt, NumericVector af, N
   double k1 = probIBD[1];
   double k0 = probIBD[2];
 
+  double a, b, c, d;
   if(qgt.length() == 1){
     auto iterQ = find(afAl.begin(), afAl.end(), qgt[0]);
     int posQ = *iterQ;
@@ -46,6 +47,7 @@ NumericVector kinLike2(NumericVector qgt, NumericVector rgt, NumericVector af, N
 
   NumericVector uniQRgt = union_(qgt, rgt);
   bool existQ1 = find(rgt.begin(), rgt.end(), qgt[0]) != rgt.end();
+  bool existQ2;
   if(qgt.length() == 2){
     bool existQ2 = find(rgt.begin(), rgt.end(), qgt[1]) != rgt.end();
   }else{
