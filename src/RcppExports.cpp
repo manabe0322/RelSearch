@@ -10,6 +10,18 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// searchPos
+int searchPos(NumericVector vec, double target);
+RcppExport SEXP _relsearch_searchPos(SEXP vecSEXP, SEXP targetSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type vec(vecSEXP);
+    Rcpp::traits::input_parameter< double >::type target(targetSEXP);
+    rcpp_result_gen = Rcpp::wrap(searchPos(vec, target));
+    return rcpp_result_gen;
+END_RCPP
+}
 // kinLike2
 NumericVector kinLike2(NumericVector qgt, NumericVector rgt, NumericVector af, NumericVector afAl, NumericVector probIBD, bool consMu, double myu, double ape);
 RcppExport SEXP _relsearch_kinLike2(SEXP qgtSEXP, SEXP rgtSEXP, SEXP afSEXP, SEXP afAlSEXP, SEXP probIBDSEXP, SEXP consMuSEXP, SEXP myuSEXP, SEXP apeSEXP) {
@@ -42,6 +54,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_relsearch_searchPos", (DL_FUNC) &_relsearch_searchPos, 2},
     {"_relsearch_kinLike2", (DL_FUNC) &_relsearch_kinLike2, 8},
     {"_relsearch_matchY2", (DL_FUNC) &_relsearch_matchY2, 2},
     {NULL, NULL, 0}

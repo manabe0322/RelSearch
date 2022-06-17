@@ -1,11 +1,25 @@
 #include <Rcpp.h>
+#include <stdio.h>
 using namespace Rcpp;
 using namespace std;
+
+// [[Rcpp::export]]
+int searchPos(NumericVector vec, double target){
+  int len = vec.length();
+  int pos = len;
+  for(int i = 0; i < len; ++i){
+    if(vec[i] == target){
+      pos = i;
+      break;
+    }
+  }
+  return(pos);
+}
 
 //' @export
 // [[Rcpp::export]]
 NumericVector kinLike2(NumericVector qgt, NumericVector rgt, NumericVector af, NumericVector afAl, NumericVector probIBD,
-                       bool consMu, double myu, double ape) {
+                       bool consMu, double myu, double ape){
   NumericVector likeH12(2);
 
   sort(qgt.begin(), qgt.end());
@@ -14,44 +28,38 @@ NumericVector kinLike2(NumericVector qgt, NumericVector rgt, NumericVector af, N
   rgt.erase(unique(rgt.begin(), rgt.end()), rgt.end());
 
   double k2 = probIBD[0];
-  double k1 = probIBD[1];
+  double k1 = probIBD[1] / 2;
   double k0 = probIBD[2];
 
   double a, b, c, d;
   if(qgt.length() == 1){
-    auto iterQ = find(afAl.begin(), afAl.end(), qgt[0]);
-    int posQ = *iterQ;
-    double a = af[posQ];
-    double b = af[posQ];
+    int posQ = searchPos(afAl, qgt[0]);
+    a = af[posQ];
+    b = af[posQ];
   }else{
-    auto iterQ1 = find(afAl.begin(), afAl.end(), qgt[0]);
-    int posQ1 = *iterQ1;
-    double a = af[posQ1];
-    auto iterQ2 = find(afAl.begin(), afAl.end(), qgt[1]);
-    int posQ2 = *iterQ2;
-    double b = af[posQ2];
+    int posQ1 = searchPos(afAl, qgt[0]);
+    a = af[posQ1];
+    int posQ2 = searchPos(afAl, qgt[1]);
+    b = af[posQ2];
   }
   if(rgt.length() == 1){
-    auto iterR = find(afAl.begin(), afAl.end(), rgt[0]);
-    int posR = *iterR;
-    double c = af[posR];
-    double d = af[posR];
+    int posR = searchPos(afAl, rgt[0]);
+    c = af[posR];
+    d = af[posR];
   }else{
-    auto iterR1 = find(afAl.begin(), afAl.end(), rgt[0]);
-    int posR1 = *iterR1;
-    double c = af[posR1];
-    auto iterR2 = find(afAl.begin(), afAl.end(), rgt[1]);
-    int posR2 = *iterR2;
-    double d = af[posR2];
+    int posR1 = searchPos(afAl, rgt[0]);
+    c = af[posR1];
+    int posR2 = searchPos(afAl, rgt[1]);
+    d = af[posR2];
   }
 
   NumericVector uniQRgt = union_(qgt, rgt);
-  bool existQ1 = find(rgt.begin(), rgt.end(), qgt[0]) != rgt.end();
+  bool existQ1 = searchPos(rgt, qgt[0]) != rgt.length();
   bool existQ2;
   if(qgt.length() == 2){
-    bool existQ2 = find(rgt.begin(), rgt.end(), qgt[1]) != rgt.end();
+    existQ2 = searchPos(rgt, qgt[1]) != rgt.length();
   }else{
-    bool existQ2 = find(rgt.begin(), rgt.end(), qgt[0]) != rgt.end();
+    existQ2 = searchPos(rgt, qgt[0]) != rgt.length();
   }
 
   if(!existQ1 && !existQ2){
