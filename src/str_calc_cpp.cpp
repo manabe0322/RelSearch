@@ -112,3 +112,69 @@ NumericVector kinLike2(NumericVector qgt, NumericVector rgt, NumericVector af, N
   }
   return(likeH12);
 }
+
+// [[Rcpp::export]]
+NumericMatrix makeDummyGt2(NumericVector qgt, NumericVector rgt){
+  sort(rgt.begin(), rgt.end());
+  rgt.erase(unique(rgt.begin(), rgt.end()), rgt.end());
+
+  bool existQ = searchPos(rgt, qgt) != rgt.length();
+
+  if(rgt.length() == 1){
+    if(existQ){
+      NumericMatrix dummyGt(1, 2);
+      dummyGt(1, 1) = qgt;
+      dummyGt(1, 2) = 99;
+    }else{
+      NumericMatrix dummyGt(2, 2);
+      dummyGt(1, 1) = qgt;
+      dummyGt(1, 2) = rgt;
+      dummyGt(2, 1) = qgt;
+      dummyGt(2, 2) = 99;
+    }
+  }else{
+    if(existQ){
+      NumericMatrix dummyGt(2, 2);
+      dummyGt(1, 1) = rgt[0];
+      dummyGt(1, 2) = rgt[1];
+      dummyGt(2, 1) = qgt;
+      dummyGt(2, 2) = 99;
+    }else{
+      NumericMatrix dummyGt(3, 2);
+      dummyGt(1, 1) = qgt;
+      dummyGt(1, 2) = rgt[0];
+      dummyGt(2, 1) = qgt;
+      dummyGt(2, 2) = rgt[1];
+      dummyGt(3, 1) = qgt;
+      dummyGt(3, 2) = 99;
+    }
+  }
+  return(dummyGt);
+}
+
+// [[Rcpp::export]]
+NumericMatrix makeDummyAf(){
+
+}
+
+//' @export
+// [[Rcpp::export]]
+NumericVector kinLikeDrop2(NumericVector qgt, NumericVector rgt, NumericVector af, NumericVector afAl, NumericVector probIBD,
+                           bool consMu, double myu, double ape, double pd){
+  /*homozygote (no drop-out)*/
+  NumericVector like1 = kinLike2(qgt, rgt, af, afAl, probIBD, consMu, myu, ape);
+
+  /*heterozygote (drop-out)*/
+  NumericMatrix dummyGt = makeDummyGt2(NumericVector qgt, NumericVector rgt);
+  /*dummyGt <- makeDummyGt(qgt, rgt)
+    afOneL_dummy <- makeDummyAf(dummyGt, afOneL, afAlOneL)
+    afAlOneL_dummy <- as.numeric(names(afOneL_dummy))
+    like2 <- c(0, 0)
+    for(i in 1:nrow(dummyGt)){
+      like2 <- like2 + kinLike2(dummyGt[i, ], rgt, afOneL_dummy, afAlOneL_dummy, probIBD, mutation, myuOneL, apeOneL)
+    }
+
+    likeH1 <- (1 - pd) * like1[1] + pd * like2[1]
+    likeH2 <- (1 - pd) * like1[2] + pd * like2[2]
+    return(c(likeH1, likeH2))*/
+}
