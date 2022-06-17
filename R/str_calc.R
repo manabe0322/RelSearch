@@ -196,8 +196,8 @@ calcKinLr <- function(query, ref, af, probIBD, mutation = FALSE, myu = numeric(0
       myuOneL <- myu[i]
       apeOneL <- calcApe(afOneL)
     }else{
-      myuOneL <- numeric(0)
-      apeOneL <- numeric(0)
+      myuOneL <- 0
+      apeOneL <- 0
     }
 
     #locus drop-out or no information
