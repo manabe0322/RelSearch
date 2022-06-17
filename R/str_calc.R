@@ -191,7 +191,7 @@ calcKinLr <- function(query, ref, af, probIBD, mutation = FALSE, myu = numeric(0
     rgt <- as.numeric(ref[c(2 * i - 1, 2 * i)])
     rgt <- rgt[!is.na(rgt)]
     afOneL <- af[[i]]
-    afAlOneL <- names(afOneL)
+    afAlOneL <- as.numeric(names(afOneL))
     if(mutation){
       myuOneL <- myu[i]
       apeOneL <- calcApe(afOneL)
