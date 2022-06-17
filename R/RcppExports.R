@@ -2,6 +2,11 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #' @export
+kinLike2 <- function(qgt, rgt, af, afAl, probIBD, consMu, myu, ape) {
+    .Call(`_relsearch_kinLike2`, qgt, rgt, af, afAl, probIBD, consMu, myu, ape)
+}
+
+#' @export
 matchY2 <- function(qHap, rHap) {
     .Call(`_relsearch_matchY2`, qHap, rHap)
 }

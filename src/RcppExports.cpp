@@ -10,6 +10,24 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// kinLike2
+NumericVector kinLike2(NumericVector qgt, NumericVector rgt, NumericVector af, NumericVector afAl, NumericVector probIBD, bool consMu, double myu, double ape);
+RcppExport SEXP _relsearch_kinLike2(SEXP qgtSEXP, SEXP rgtSEXP, SEXP afSEXP, SEXP afAlSEXP, SEXP probIBDSEXP, SEXP consMuSEXP, SEXP myuSEXP, SEXP apeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type qgt(qgtSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type rgt(rgtSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type af(afSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type afAl(afAlSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type probIBD(probIBDSEXP);
+    Rcpp::traits::input_parameter< bool >::type consMu(consMuSEXP);
+    Rcpp::traits::input_parameter< double >::type myu(myuSEXP);
+    Rcpp::traits::input_parameter< double >::type ape(apeSEXP);
+    rcpp_result_gen = Rcpp::wrap(kinLike2(qgt, rgt, af, afAl, probIBD, consMu, myu, ape));
+    return rcpp_result_gen;
+END_RCPP
+}
 // matchY2
 IntegerMatrix matchY2(CharacterVector qHap, CharacterVector rHap);
 RcppExport SEXP _relsearch_matchY2(SEXP qHapSEXP, SEXP rHapSEXP) {
@@ -24,6 +42,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_relsearch_kinLike2", (DL_FUNC) &_relsearch_kinLike2, 8},
     {"_relsearch_matchY2", (DL_FUNC) &_relsearch_matchY2, 2},
     {NULL, NULL, 0}
 };
