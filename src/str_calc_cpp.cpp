@@ -6,7 +6,7 @@ using namespace std;
 // [[Rcpp::export]]
 IntegerVector tousa(int start, int end, int interval){
   int len = (end - start) / interval + 1;
-  IntegerVector vec[len];
+  IntegerVector vec(len);
   for(int i = 0; i < len; ++i){
     vec[i] = start + i * interval;
   }
@@ -124,23 +124,57 @@ NumericVector kinLike2(NumericVector qgt, NumericVector rgt, NumericVector af, N
 }
 
 // [[Rcpp::export]]
+NumericMatrix makeDummyAf2(NumericMatrix dummyGt, NumericVector af, NumericVector afAl){
+  int nInitRow = dummyGt.nrow();
+  NumericVector afAl_dummy(2 * nInitRow);
+  for(int i = 0; i < nInitRow; ++i){
+    NumericVector dummyGtOne = dummyGt(i, _);
+    afAl_dummy[2 * i] = dummyGtOne[0];
+    afAl_dummy[2 * i + 1] = dummyGtOne[1];
+  }
+  sort(afAl_dummy.begin(), afAl_dummy.end());
+  afAl_dummy.erase(unique(afAl_dummy.begin(), afAl_dummy.end()), afAl_dummy.end());
+
+  NumericVector alQ(1, 99);
+  NumericVector afAl_dummy_cut99 = setdiff(afAl_dummy, alQ);
+  int len = afAl_dummy_cut99.length();
+  IntegerVector posAl_1(len);
+  for(int i = 0; i < len; ++i){
+    posAl_1[i] = searchPos(afAl, afAl_dummy_cut99[i]);
+  }
+  IntegerVector posAl_all = tousa(0, afAl.length() - 1, 1);
+  IntegerVector posAl_2 = setdiff(posAl_all, posAl_1);
+
+  NumericMatrix dummyData(2, len + 1);
+  for(int i = 0; i < len; ++i){
+    int pos1 = posAl_1[i];
+    dummyData(0, i) = af[pos1];
+  }
+  NumericVector freqQ = af[posAl_2];
+  dummyData(0, len) = sum(freqQ);
+  dummyData(1, _) = afAl_dummy;
+
+  return(dummyData);
+}
+
+// [[Rcpp::export]]
 NumericMatrix makeDummyGt2(NumericVector qgt, NumericVector rgt){
   sort(rgt.begin(), rgt.end());
   rgt.erase(unique(rgt.begin(), rgt.end()), rgt.end());
 
-  bool existQ = searchPos(rgt, qgt) != rgt.length();
+  bool existQ = searchPos(rgt, qgt[0]) != rgt.length();
 
   NumericMatrix dummyGt;
   if(rgt.length() == 1){
     if(existQ){
       NumericMatrix dummyGt(1, 2);
-      dummyGt(1, 1) = qgt;
+      dummyGt(1, 1) = qgt[0];
       dummyGt(1, 2) = 99;
     }else{
       NumericMatrix dummyGt(2, 2);
-      dummyGt(1, 1) = qgt;
-      dummyGt(1, 2) = rgt;
-      dummyGt(2, 1) = qgt;
+      dummyGt(1, 1) = qgt[0];
+      dummyGt(1, 2) = rgt[0];
+      dummyGt(2, 1) = qgt[0];
       dummyGt(2, 2) = 99;
     }
   }else{
@@ -148,49 +182,19 @@ NumericMatrix makeDummyGt2(NumericVector qgt, NumericVector rgt){
       NumericMatrix dummyGt(2, 2);
       dummyGt(1, 1) = rgt[0];
       dummyGt(1, 2) = rgt[1];
-      dummyGt(2, 1) = qgt;
+      dummyGt(2, 1) = qgt[0];
       dummyGt(2, 2) = 99;
     }else{
       NumericMatrix dummyGt(3, 2);
-      dummyGt(1, 1) = qgt;
+      dummyGt(1, 1) = qgt[0];
       dummyGt(1, 2) = rgt[0];
-      dummyGt(2, 1) = qgt;
+      dummyGt(2, 1) = qgt[0];
       dummyGt(2, 2) = rgt[1];
-      dummyGt(3, 1) = qgt;
+      dummyGt(3, 1) = qgt[0];
       dummyGt(3, 2) = 99;
     }
   }
   return(dummyGt);
-}
-
-// [[Rcpp::export]]
-NumericMatrix makeDummyAf2(NumericMatrix dummyGt, NumericVector af, NumericVector afAl){
-  NumericVector afAl_dummy(nrow(dummyGt) * ncol(dummyGt));
-  for(int i = 0; i < nrow(dummyGt); ++i){
-    IntegerVector rangeAl(2);
-    rangeAl[0] = 2 * i;
-    rangeAl[1] = 2 * i + 1;
-    afAl_dummy[rangeAl] = dummyGt(i, _);
-  }
-  sort(afAl_dummy.begin(), afAl_dummy.end());
-  afAl_dummy.erase(unique(afAl_dummy.begin(), afAl_dummy.end()), afAl_dummy.end());
-
-  int len = afAl_dummy.length();
-  IntegerVector posAl(len);
-  for(int i = 0; i < len; ++i){
-    posAl[i] = searchPos(afAl, afAl_dummy[i]);
-  }
-  IntegerVector posAl_1 = setdiff(posAl, afAl.length());
-  IntegerVector posAl_all = tousa(0, afAl.length() - 1, 1);
-  IntegerVector posAl_2 = setdiff(posAl_all, posAl_1);
-
-  NumericMatrix dummyData(2, len);
-  IntegerVector rangeAl_1 = tousa(0, posAl_1.length() - 1, 0);
-  dummyData(0, rangeAl_1) = af[posAl_1];
-  dummyData(0, posAl_1.length()) = sum(af[posAl_2]);
-  dummyData(1, _) = afAl_dummy;
-
-  return(dummyData);
 }
 
 //' @export
@@ -207,7 +211,7 @@ NumericVector kinLikeDrop2(NumericVector qgt, NumericVector rgt, NumericVector a
   NumericVector afAl_dummy = dummyData(1, _);
 
   NumericVector like2(2);
-  for(int i = 0; i < nrow(dummyGt); ++i){
+  for(int i = 0; i < dummyGt.nrow(); ++i){
     NumericVector likeH12 = kinLike2(dummyGt(i, _), rgt, af_dummy, afAl_dummy, probIBD, consMu, myu, ape);
     like2 = like2 + likeH12;
   }
@@ -220,66 +224,85 @@ NumericVector kinLikeDrop2(NumericVector qgt, NumericVector rgt, NumericVector a
 
 //' @export
 // [[Rcpp::export]]
-NumericMatrix calcKinLr(NumericVector query, NumericVector ref, List afList, List afAlList, NumericVector probIBD,
-                        bool consMu, NumericVector myuAll, NumericVector apeAll, int dropMethStr, double pd){
+NumericMatrix calcKinLr2(NumericVector query, NumericVector ref, List afList, List afAlList, NumericVector probIBD,
+                         bool consMu, NumericVector myuAll, NumericVector apeAll, int dropMethStr, double pd){
   int nL = query.length() / 2;
   NumericMatrix ans(3, nL + 1);
+  double cl_H1 = 1;
+  double cl_H2 = 1;
   for(int i = 0; i < nL; ++i){
     IntegerVector rangeGt(2);
     rangeGt[0] = 2 * i;
     rangeGt[1] = 2 * i + 1;
-    NumericVector qgt = query[rangeGt];
-    NumericVector qgt = na_omit(qgt);
-    NumericVector rgt = ref[rangeGt];
-    NumericVector rgt = na_omit(rgt);
+    NumericVector qgtPre = query[rangeGt];
+    NumericVector qgt = na_omit(qgtPre);
+    NumericVector rgtPre = ref[rangeGt];
+    NumericVector rgt = na_omit(rgtPre);
     NumericVector af = afList[i];
     NumericVector afAl = afAlList[i];
 
     double myu = myuAll[i];
     double ape = apeAll[i];
 
-    NumericVector pos01 = {0, 1};
-
     /*locus drop-out or no information*/
     if(qgt.length() == 0 || rgt.length() == 0){
-      ans(_, i) = 1;
-    /*considering drop-out*/
+      NumericVector ansOne(3, 1);
+      ans(_, i) = ansOne;
+      /*considering drop-out*/
     }else if(dropMethStr != 0){
-      NumericVector qgtUni = unique(qgt.begin(), qgt.end());
+      NumericVector qgtUni = qgt;
       qgtUni.erase(unique(qgtUni.begin(), qgtUni.end()), qgtUni.end());
       /*qgt : heterozygote*/
       if(qgtUni.length() == 2){
-        ans(pos01, i) = kinLike2(qgt, rgt, af, afAl, probIBD, consMu, myu, ape);
-      /*qgt : homozygote or heterozygote*/
+        NumericVector likeH12 = kinLike2(qgt, rgt, af, afAl, probIBD, consMu, myu, ape);
+        ans(0, i) = likeH12[0];
+        ans(1, i) = likeH12[1];
+        cl_H1 = cl_H1 * likeH12[0];
+        cl_H2 = cl_H2 * likeH12[1];
+        /*qgt : homozygote or heterozygote*/
       }else{
         if(dropMethStr == 1){
           /*qgt : heterozygote*/
           if(qgt.length() == 2){
-            ans(pos01, i) = kinLike2(qgt, rgt, af, afAl, probIBD, consMu, myu, ape);
-          /*considering drop-out*/
+            NumericVector likeH12 = kinLike2(qgt, rgt, af, afAl, probIBD, consMu, myu, ape);
+            ans(0, i) = likeH12[0];
+            ans(1, i) = likeH12[1];
+            cl_H1 = cl_H1 * likeH12[0];
+            cl_H2 = cl_H2 * likeH12[1];
+            /*considering drop-out*/
           }else{
             /*myuOneL <- 0*/
             /*apeOneL <- 0*/
-            ans(pos01, i) <- kinLikeDrop(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd);
+            NumericVector likeH12 = kinLikeDrop2(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd);
+            ans(0, i) = likeH12[0];
+            ans(1, i) = likeH12[1];
+            cl_H1 = cl_H1 * likeH12[0];
+            cl_H2 = cl_H2 * likeH12[1];
           }
-        /*considering drop-out*/
+          /*considering drop-out*/
         }else if(dropMethStr == 2){
           /*myuOneL <- 0*/
           /*apeOneL <- 0*/
-          ans(pos01, i) <- kinLikeDrop(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd);
+          NumericVector likeH12 = kinLikeDrop2(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd);
+          ans(0, i) = likeH12[0];
+          ans(1, i) = likeH12[1];
+          cl_H1 = cl_H1 * likeH12[0];
+          cl_H2 = cl_H2 * likeH12[1];
         }
       }
-    /*not considering drop-out*/
+      /*not considering drop-out*/
     }else{
-      ans(pos01, i) = kinLike2(qgt, rgt, af, afAl, probIBD, consMu, myu, ape);
+      NumericVector likeH12 = kinLike2(qgt, rgt, af, afAl, probIBD, consMu, myu, ape);
+      ans(0, i) = likeH12[0];
+      ans(1, i) = likeH12[1];
+      cl_H1 = cl_H1 * likeH12[0];
+      cl_H2 = cl_H2 * likeH12[1];
     }
   }
 
-  IntegerVector posL = tousa(0, nL - 1, 1);
-  NumericVector cl_H1 = cumprod(ans(0, posL));
-  ans(0, nL) = cl_H1[nL - 1];
-  NumericVector cl_H2 = cumprod(ans(1, posL));
-  ans(1, nL) = cl_H2[nL - 1];
-  ans(3, _) = ans(1, _) / ans(2, _);
+  ans(0, nL) = cl_H1;
+  ans(1, nL) = cl_H2;
+  ans(2, _) = ans(0, _) / ans(1, _);
   return(ans);
 }
+
