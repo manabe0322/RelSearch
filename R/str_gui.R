@@ -527,14 +527,12 @@ guiScreenStr <- function(envProj, envGUI){
     probIBDAll <- read.csv(paste0(pathPack, "/parameters/ibd.csv"), header = TRUE, row.names = 1)
     probIBDAll <- as.matrix(probIBDAll)
 
-    nQ <- nrow(qStrInput)
     qCol <- colnames(qStrInput)
     posQName <- grep("Sample", qCol)
     qStrName <- qStrInput[, posQName]
     qStrData <- qStrInput[, -posQName, drop = FALSE]
     nameQL <- colnames(qStrData)[which(1:ncol(qStrData) %% 2 == 1)]
 
-    nR <- nrow(rStrInput)
     rCol <- colnames(rStrInput)
     posRName <- grep("Sample", rCol)
     rStrName <- rStrInput[, posRName]
@@ -556,16 +554,25 @@ guiScreenStr <- function(envProj, envGUI){
       dropMethStr <- get("dropMethStr", pos = envProj)
       pd <- get("pd", pos = envProj)
 
-      af <- freqSetting(qStrData, rStrData, afInput, maf)
+      afData <- freqSetting(qStrData, rStrData, afInput, maf)
+      afList <- afData[[1]]
+      afAlList <- afData[[2]]
+
       nQ <- nrow(qStrData)
       nR <- nrow(rStrData)
       nL <- length(nameQL)
 
-      myu <- rep(0, nL)
+      myuAll <- rep(0, nL)
       for(i in 1:nL){
-        myu[i] <- myuStr[which(nameMyuL == nameQL[i])]
+        myuAll[i] <- myuStr[which(nameMyuL == nameQL[i])]
       }
-      names(myu) <- nameQL
+      names(myuAll) <- nameQL
+
+      apeAll <- rep(0, nL)
+      for(i in 1:nL){
+        apeAll[i] <- calcApe(afList[[i]])
+      }
+      names(apeAll) <- nameQL
 
       likeH1All <- likeH2All <- lrAll <- array(0, dim = c(nQ, nR, nL + 1))
       for(i in 1:nR){
@@ -573,13 +580,13 @@ guiScreenStr <- function(envProj, envGUI){
         rel <- relStr[i]
         probIBD <- probIBDAll[rownames(probIBDAll) == rel, ]
         if(probIBD[3] == 0){
-          mutation <- TRUE
+          consMu <- TRUE
         }else{
-          mutation <- FALSE
+          consMu <- FALSE
         }
         for(j in 1:nQ){
           query <- as.numeric(qStrData[j, ])
-          lrData <- calcKinLr2(query, ref, af, probIBD, mutation, myu, dropMethStr, pd)
+          lrData <- calcKinLr2(query, ref, afList, afAlList, probIBD, consMu, myuAll, apeAll, dropMethStr, pd)
           likeH1All[j, i, ] <- lrData[1, ]
           likeH2All[j, i, ] <- lrData[2, ]
           lrAll[j, i, ] <- lrData[3, ]
@@ -596,7 +603,7 @@ guiScreenStr <- function(envProj, envGUI){
       assign("likeH2All", likeH2All, envir = envProj)
       assign("lrAll", lrAll, envir = envProj)
       assign("probIBDAll", probIBDAll, envir = envProj)
-      assign("myu", myu, envir = envProj)
+      assign("myuAll", myuAll, envir = envProj)
       assign("finStr", TRUE, envir = envProj)
       tabStrResult(envProj, envGUI)
       close(pb)
@@ -724,7 +731,7 @@ tabStrResult <- function(envProj, envGUI){
         posShowR <- which(rStrName == selectRName)
         selectRel <- displayData[posShow, 3]
         detailData <- matrix("", nL + 1, 6)
-        detailData[, 1] <- c(names(myu), "overall")
+        detailData[, 1] <- c(names(myuAll), "overall")
         colnames(detailData) <- c("Locus",
                                   paste("Query genotype (", selectQName, ")", sep = ""),
                                   paste("Reference genotype (", selectRName, ")", sep = ""),
@@ -775,12 +782,12 @@ tabStrResult <- function(envProj, envGUI){
     likeH2All <- get("likeH2All", pos = envProj)
     lrAll <- get("lrAll", pos = envProj)
     probIBDAll <- get("probIBDAll", pos = envProj)
-    myu <- get("myu", pos = envProj)
+    myuAll <- get("myuAll", pos = envProj)
     maf <- get("maf", pos = envProj)
     dropMethStr <- get("dropMethStr", pos = envProj)
     pd <- get("pd", pos = envProj)
 
-    nL <- length(myu)
+    nL <- length(myuAll)
     nQ <- length(qStrName)
     nR <- length(rStrName)
 
