@@ -579,7 +579,7 @@ guiScreenStr <- function(envProj, envGUI){
         }
         for(j in 1:nQ){
           query <- as.numeric(qStrData[j, ])
-          lrData <- calcKinLr(query, ref, af, probIBD, mutation, myu, dropMethStr, pd)
+          lrData <- calcKinLr2(query, ref, af, probIBD, mutation, myu, dropMethStr, pd)
           likeH1All[j, i, ] <- lrData[1, ]
           likeH2All[j, i, ] <- lrData[2, ]
           lrAll[j, i, ] <- lrData[3, ]
