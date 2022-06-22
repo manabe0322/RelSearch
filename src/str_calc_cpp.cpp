@@ -161,18 +161,19 @@ NumericMatrix makeDummyGt(NumericVector qgt, NumericVector rgt){
 
   bool existQ = searchPos(rgt, qgt[0]) != rgt.length();
 
-  NumericMatrix dummyGt;
   if(rgt.length() == 1){
     if(existQ){
       NumericMatrix dummyGt(1, 2);
       dummyGt(0, 0) = qgt[0];
       dummyGt(0, 1) = 99;
+      return(dummyGt);
     }else{
       NumericMatrix dummyGt(2, 2);
       dummyGt(0, 0) = qgt[0];
       dummyGt(0, 1) = rgt[0];
       dummyGt(1, 0) = qgt[0];
       dummyGt(1, 1) = 99;
+      return(dummyGt);
     }
   }else{
     if(existQ){
@@ -181,6 +182,7 @@ NumericMatrix makeDummyGt(NumericVector qgt, NumericVector rgt){
       dummyGt(0, 1) = rgt[1];
       dummyGt(1, 0) = qgt[0];
       dummyGt(1, 1) = 99;
+      return(dummyGt);
     }else{
       NumericMatrix dummyGt(3, 2);
       dummyGt(0, 0) = qgt[0];
@@ -189,9 +191,9 @@ NumericMatrix makeDummyGt(NumericVector qgt, NumericVector rgt){
       dummyGt(1, 1) = rgt[1];
       dummyGt(2, 0) = qgt[0];
       dummyGt(2, 1) = 99;
+      return(dummyGt);
     }
   }
-  return(dummyGt);
 }
 
 // [[Rcpp::export]]
