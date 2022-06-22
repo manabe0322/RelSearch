@@ -135,12 +135,10 @@ NumericMatrix makeDummyAf2(NumericMatrix dummyGt, NumericVector af, NumericVecto
   sort(afAl_dummy.begin(), afAl_dummy.end());
   afAl_dummy.erase(unique(afAl_dummy.begin(), afAl_dummy.end()), afAl_dummy.end());
 
-  NumericVector alQ(1, 99);
-  NumericVector afAl_dummy_cut99 = setdiff(afAl_dummy, alQ);
-  int len = afAl_dummy_cut99.length();
+  int len = afAl_dummy.length() - 1;
   IntegerVector posAl_1(len);
   for(int i = 0; i < len; ++i){
-    posAl_1[i] = searchPos(afAl, afAl_dummy_cut99[i]);
+    posAl_1[i] = searchPos(afAl, afAl_dummy[i]);
   }
   IntegerVector posAl_all = tousa(0, afAl.length() - 1, 1);
   IntegerVector posAl_2 = setdiff(posAl_all, posAl_1);
@@ -246,8 +244,8 @@ NumericMatrix calcKinLr2(NumericVector query, NumericVector ref, List afList, Li
 
     /*locus drop-out or no information*/
     if(qgt.length() == 0 || rgt.length() == 0){
-      NumericVector ansOne(3, 1);
-      ans(_, i) = ansOne;
+      ans(0, i) = 1;
+      ans(1, i) = 1;
       /*considering drop-out*/
     }else if(dropMethStr != 0){
       NumericVector qgtUni = qgt;
