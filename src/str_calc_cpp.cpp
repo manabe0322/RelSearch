@@ -26,7 +26,6 @@ int searchPos(NumericVector vec, double target){
   return(pos);
 }
 
-//' @export
 // [[Rcpp::export]]
 NumericVector kinLike2(NumericVector qgt, NumericVector rgt, NumericVector af, NumericVector afAl, NumericVector probIBD,
                        bool consMu, double myu, double ape){
@@ -195,7 +194,6 @@ NumericMatrix makeDummyGt2(NumericVector qgt, NumericVector rgt){
   return(dummyGt);
 }
 
-//' @export
 // [[Rcpp::export]]
 NumericVector kinLikeDrop2(NumericVector qgt, NumericVector rgt, NumericVector af, NumericVector afAl, NumericVector probIBD,
                            bool consMu, double myu, double ape, double pd){
