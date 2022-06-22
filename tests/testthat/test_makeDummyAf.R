@@ -14,7 +14,7 @@ test_that("makeDummyAf 1", {
 })
 
 test_that("makeDummyAf 2", {
-  dummyGt <- matrix(c(11, 12, 12, 99), ncol = 2, byrow = TRUE)
+  dummyGt <- matrix(c(12, 11, 12, 99), ncol = 2, byrow = TRUE)
   af <- c(0.15, 0.25, 0.3, 0.25, 0.05)
   afAl <- 11:15
   dummyData <- makeDummyAf(dummyGt, af, afAl)
