@@ -123,7 +123,7 @@ test_that("kinLikeDrop 5", {
   expect_equal(as.numeric(likelihoods[2]), calcHomo_H2 + calcHetero_H2)
 })
 
-test_that("kinLikeDrop mutation pattern 1", {
+test_that("kinLikeDrop mutation pattern 1 (actually not used)", {
   qgt <- 11
   rgt <- c(12, 12)
   af <- c(0.15, 0.25, 0.3, 0.25, 0.05)
