@@ -115,8 +115,13 @@ NumericVector kinLike(NumericVector qgt, NumericVector rgt, NumericVector af, Nu
       likeH12[0] = 2 * c * d * (a * k1 + a * a * k0);
       likeH12[1] = 2 * c * d * a * a;
     }else{
-      likeH12[0] = c * c * (2 * a * k1 + 2 * a * b * k0);
-      likeH12[1] = c * c * 2 * a * b;
+      if(existQ1){
+        likeH12[0] = c * c * (2 * b * k1 + 2 * a * b * k0);
+        likeH12[1] = c * c * 2 * a * b;
+      }else{
+        likeH12[0] = c * c * (2 * a * k1 + 2 * a * b * k0);
+        likeH12[1] = c * c * 2 * a * b;
+      }
     }
   }
   return(likeH12);
@@ -201,6 +206,8 @@ NumericVector kinLikeDrop(NumericVector qgt, NumericVector rgt, NumericVector af
                           bool consMu, double myu, double ape, double pd){
   /*homozygote (no drop-out)*/
   NumericVector like1 = kinLike(qgt, rgt, af, afAl, probIBD, consMu, myu, ape);
+  cout << like1[0] << endl;
+  cout << like1[1] << endl;
 
   /*heterozygote (drop-out)*/
   NumericMatrix dummyGt = makeDummyGt(qgt, rgt);
@@ -211,8 +218,12 @@ NumericVector kinLikeDrop(NumericVector qgt, NumericVector rgt, NumericVector af
   NumericVector like2(2);
   for(int i = 0; i < dummyGt.nrow(); ++i){
     NumericVector likeH12 = kinLike(dummyGt(i, _), rgt, af_dummy, afAl_dummy, probIBD, consMu, myu, ape);
+    cout << likeH12[0] << endl;
+    cout << likeH12[1] << endl;
     like2 = like2 + likeH12;
   }
+  cout << like2[0] << endl;
+  cout << like2[1] << endl;
 
   NumericVector likeDrop(2);
   likeDrop[0] = (1 - pd) * like1[0] + pd * like2[0];

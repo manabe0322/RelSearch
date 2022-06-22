@@ -134,7 +134,7 @@ test_that("kinLikeDrop mutation pattern 1 (actually not used)", {
   ape <- calcApe(af)
   pd <- 0.5
   likelihoods <- kinLikeDrop(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd)
-  expect_equal(as.numeric(likelihoods[1]), 0.5 * 0.002 + 0.5 * (0.15 * 0.25 * 0.25 + 0.002))
+  expect_equal(as.numeric(likelihoods[1]), 0.5 * 0.002 + 0.5 * (0.25^2 * 0.15 + 0.002))
   expect_equal(as.numeric(likelihoods[2]), 0.5 * 0.352925 + 0.5 * (2 * 0.15 * 0.25 * 0.25^2 + 0.352925))
 })
 

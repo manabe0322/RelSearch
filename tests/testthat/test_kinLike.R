@@ -82,6 +82,20 @@ test_that("kinLike IBS = 1 pattern 4", {
   expect_equal(likelihoods[2], (2 * 0.15 * 0.3) * (0.3^2))
 })
 
+test_that("kinLike IBS = 1 pattern 5", {
+  qgt <- c(11, 99)
+  rgt <- c(11, 11)
+  af <- c(0.15, 0.85)
+  afAl <- c(11, 99)
+  probIBD <- c(0.25, 0.5, 0.25)
+  consMu <- FALSE
+  myu <- 0.002
+  ape <- calcApe(af)
+  likelihoods <- kinLike(qgt, rgt, af, afAl, probIBD, consMu, myu, ape)
+  expect_equal(likelihoods[1], 0.15^2 * (2 * 0.25 * 0.85 + 0.25 * (2 * 0.15 * 0.85)))
+  expect_equal(likelihoods[2], 0.15^2 * (2 * 0.15 * 0.85))
+})
+
 test_that("kinLike IBS = 2 pattern 1", {
   qgt <- c(11, 11)
   rgt <- c(11, 11)
