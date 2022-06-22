@@ -165,30 +165,30 @@ NumericMatrix makeDummyGt(NumericVector qgt, NumericVector rgt){
   if(rgt.length() == 1){
     if(existQ){
       NumericMatrix dummyGt(1, 2);
-      dummyGt(1, 1) = qgt[0];
-      dummyGt(1, 2) = 99;
+      dummyGt(0, 0) = qgt[0];
+      dummyGt(0, 1) = 99;
     }else{
       NumericMatrix dummyGt(2, 2);
-      dummyGt(1, 1) = qgt[0];
-      dummyGt(1, 2) = rgt[0];
-      dummyGt(2, 1) = qgt[0];
-      dummyGt(2, 2) = 99;
+      dummyGt(0, 0) = qgt[0];
+      dummyGt(0, 1) = rgt[0];
+      dummyGt(1, 0) = qgt[0];
+      dummyGt(1, 1) = 99;
     }
   }else{
     if(existQ){
       NumericMatrix dummyGt(2, 2);
-      dummyGt(1, 1) = rgt[0];
-      dummyGt(1, 2) = rgt[1];
-      dummyGt(2, 1) = qgt[0];
-      dummyGt(2, 2) = 99;
+      dummyGt(0, 0) = rgt[0];
+      dummyGt(0, 1) = rgt[1];
+      dummyGt(1, 0) = qgt[0];
+      dummyGt(1, 1) = 99;
     }else{
       NumericMatrix dummyGt(3, 2);
-      dummyGt(1, 1) = qgt[0];
-      dummyGt(1, 2) = rgt[0];
-      dummyGt(2, 1) = qgt[0];
-      dummyGt(2, 2) = rgt[1];
-      dummyGt(3, 1) = qgt[0];
-      dummyGt(3, 2) = 99;
+      dummyGt(0, 0) = qgt[0];
+      dummyGt(0, 1) = rgt[0];
+      dummyGt(1, 0) = qgt[0];
+      dummyGt(1, 1) = rgt[1];
+      dummyGt(2, 0) = qgt[0];
+      dummyGt(2, 1) = 99;
     }
   }
   return(dummyGt);
