@@ -28,7 +28,7 @@ int searchPos(NumericVector vec, double target){
 
 // [[Rcpp::export]]
 NumericVector kinLike(NumericVector qgt, NumericVector rgt, NumericVector af, NumericVector afAl, NumericVector probIBD,
-                       bool consMu, double myu, double ape){
+                      bool consMu, double myu, double ape){
   NumericVector likeH12(2);
 
   sort(qgt.begin(), qgt.end());
@@ -196,7 +196,7 @@ NumericMatrix makeDummyGt(NumericVector qgt, NumericVector rgt){
 
 // [[Rcpp::export]]
 NumericVector kinLikeDrop(NumericVector qgt, NumericVector rgt, NumericVector af, NumericVector afAl, NumericVector probIBD,
-                           bool consMu, double myu, double ape, double pd){
+                          bool consMu, double myu, double ape, double pd){
   /*homozygote (no drop-out)*/
   NumericVector like1 = kinLike(qgt, rgt, af, afAl, probIBD, consMu, myu, ape);
 

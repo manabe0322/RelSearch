@@ -9,25 +9,25 @@ searchPos <- function(vec, target) {
     .Call(`_relsearch_searchPos`, vec, target)
 }
 
-kinLike2 <- function(qgt, rgt, af, afAl, probIBD, consMu, myu, ape) {
-    .Call(`_relsearch_kinLike2`, qgt, rgt, af, afAl, probIBD, consMu, myu, ape)
+kinLike <- function(qgt, rgt, af, afAl, probIBD, consMu, myu, ape) {
+    .Call(`_relsearch_kinLike`, qgt, rgt, af, afAl, probIBD, consMu, myu, ape)
 }
 
-makeDummyAf2 <- function(dummyGt, af, afAl) {
-    .Call(`_relsearch_makeDummyAf2`, dummyGt, af, afAl)
+makeDummyAf <- function(dummyGt, af, afAl) {
+    .Call(`_relsearch_makeDummyAf`, dummyGt, af, afAl)
 }
 
-makeDummyGt2 <- function(qgt, rgt) {
-    .Call(`_relsearch_makeDummyGt2`, qgt, rgt)
+makeDummyGt <- function(qgt, rgt) {
+    .Call(`_relsearch_makeDummyGt`, qgt, rgt)
 }
 
-kinLikeDrop2 <- function(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd) {
-    .Call(`_relsearch_kinLikeDrop2`, qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd)
+kinLikeDrop <- function(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd) {
+    .Call(`_relsearch_kinLikeDrop`, qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd)
 }
 
 #' @export
-calcKinLr2 <- function(query, ref, afList, afAlList, probIBD, consMu, myuAll, apeAll, dropMethStr, pd) {
-    .Call(`_relsearch_calcKinLr2`, query, ref, afList, afAlList, probIBD, consMu, myuAll, apeAll, dropMethStr, pd)
+calcKinLr <- function(query, ref, afList, afAlList, probIBD, consMu, myuAll, apeAll, dropMethStr, pd) {
+    .Call(`_relsearch_calcKinLr`, query, ref, afList, afAlList, probIBD, consMu, myuAll, apeAll, dropMethStr, pd)
 }
 
 #' @export

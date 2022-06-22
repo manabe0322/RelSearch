@@ -35,9 +35,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// kinLike2
-NumericVector kinLike2(NumericVector qgt, NumericVector rgt, NumericVector af, NumericVector afAl, NumericVector probIBD, bool consMu, double myu, double ape);
-RcppExport SEXP _relsearch_kinLike2(SEXP qgtSEXP, SEXP rgtSEXP, SEXP afSEXP, SEXP afAlSEXP, SEXP probIBDSEXP, SEXP consMuSEXP, SEXP myuSEXP, SEXP apeSEXP) {
+// kinLike
+NumericVector kinLike(NumericVector qgt, NumericVector rgt, NumericVector af, NumericVector afAl, NumericVector probIBD, bool consMu, double myu, double ape);
+RcppExport SEXP _relsearch_kinLike(SEXP qgtSEXP, SEXP rgtSEXP, SEXP afSEXP, SEXP afAlSEXP, SEXP probIBDSEXP, SEXP consMuSEXP, SEXP myuSEXP, SEXP apeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -49,38 +49,38 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type consMu(consMuSEXP);
     Rcpp::traits::input_parameter< double >::type myu(myuSEXP);
     Rcpp::traits::input_parameter< double >::type ape(apeSEXP);
-    rcpp_result_gen = Rcpp::wrap(kinLike2(qgt, rgt, af, afAl, probIBD, consMu, myu, ape));
+    rcpp_result_gen = Rcpp::wrap(kinLike(qgt, rgt, af, afAl, probIBD, consMu, myu, ape));
     return rcpp_result_gen;
 END_RCPP
 }
-// makeDummyAf2
-NumericMatrix makeDummyAf2(NumericMatrix dummyGt, NumericVector af, NumericVector afAl);
-RcppExport SEXP _relsearch_makeDummyAf2(SEXP dummyGtSEXP, SEXP afSEXP, SEXP afAlSEXP) {
+// makeDummyAf
+NumericMatrix makeDummyAf(NumericMatrix dummyGt, NumericVector af, NumericVector afAl);
+RcppExport SEXP _relsearch_makeDummyAf(SEXP dummyGtSEXP, SEXP afSEXP, SEXP afAlSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type dummyGt(dummyGtSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type af(afSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type afAl(afAlSEXP);
-    rcpp_result_gen = Rcpp::wrap(makeDummyAf2(dummyGt, af, afAl));
+    rcpp_result_gen = Rcpp::wrap(makeDummyAf(dummyGt, af, afAl));
     return rcpp_result_gen;
 END_RCPP
 }
-// makeDummyGt2
-NumericMatrix makeDummyGt2(NumericVector qgt, NumericVector rgt);
-RcppExport SEXP _relsearch_makeDummyGt2(SEXP qgtSEXP, SEXP rgtSEXP) {
+// makeDummyGt
+NumericMatrix makeDummyGt(NumericVector qgt, NumericVector rgt);
+RcppExport SEXP _relsearch_makeDummyGt(SEXP qgtSEXP, SEXP rgtSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type qgt(qgtSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type rgt(rgtSEXP);
-    rcpp_result_gen = Rcpp::wrap(makeDummyGt2(qgt, rgt));
+    rcpp_result_gen = Rcpp::wrap(makeDummyGt(qgt, rgt));
     return rcpp_result_gen;
 END_RCPP
 }
-// kinLikeDrop2
-NumericVector kinLikeDrop2(NumericVector qgt, NumericVector rgt, NumericVector af, NumericVector afAl, NumericVector probIBD, bool consMu, double myu, double ape, double pd);
-RcppExport SEXP _relsearch_kinLikeDrop2(SEXP qgtSEXP, SEXP rgtSEXP, SEXP afSEXP, SEXP afAlSEXP, SEXP probIBDSEXP, SEXP consMuSEXP, SEXP myuSEXP, SEXP apeSEXP, SEXP pdSEXP) {
+// kinLikeDrop
+NumericVector kinLikeDrop(NumericVector qgt, NumericVector rgt, NumericVector af, NumericVector afAl, NumericVector probIBD, bool consMu, double myu, double ape, double pd);
+RcppExport SEXP _relsearch_kinLikeDrop(SEXP qgtSEXP, SEXP rgtSEXP, SEXP afSEXP, SEXP afAlSEXP, SEXP probIBDSEXP, SEXP consMuSEXP, SEXP myuSEXP, SEXP apeSEXP, SEXP pdSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -93,13 +93,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type myu(myuSEXP);
     Rcpp::traits::input_parameter< double >::type ape(apeSEXP);
     Rcpp::traits::input_parameter< double >::type pd(pdSEXP);
-    rcpp_result_gen = Rcpp::wrap(kinLikeDrop2(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd));
+    rcpp_result_gen = Rcpp::wrap(kinLikeDrop(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd));
     return rcpp_result_gen;
 END_RCPP
 }
-// calcKinLr2
-NumericMatrix calcKinLr2(NumericVector query, NumericVector ref, List afList, List afAlList, NumericVector probIBD, bool consMu, NumericVector myuAll, NumericVector apeAll, int dropMethStr, double pd);
-RcppExport SEXP _relsearch_calcKinLr2(SEXP querySEXP, SEXP refSEXP, SEXP afListSEXP, SEXP afAlListSEXP, SEXP probIBDSEXP, SEXP consMuSEXP, SEXP myuAllSEXP, SEXP apeAllSEXP, SEXP dropMethStrSEXP, SEXP pdSEXP) {
+// calcKinLr
+NumericMatrix calcKinLr(NumericVector query, NumericVector ref, List afList, List afAlList, NumericVector probIBD, bool consMu, NumericVector myuAll, NumericVector apeAll, int dropMethStr, double pd);
+RcppExport SEXP _relsearch_calcKinLr(SEXP querySEXP, SEXP refSEXP, SEXP afListSEXP, SEXP afAlListSEXP, SEXP probIBDSEXP, SEXP consMuSEXP, SEXP myuAllSEXP, SEXP apeAllSEXP, SEXP dropMethStrSEXP, SEXP pdSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -113,7 +113,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type apeAll(apeAllSEXP);
     Rcpp::traits::input_parameter< int >::type dropMethStr(dropMethStrSEXP);
     Rcpp::traits::input_parameter< double >::type pd(pdSEXP);
-    rcpp_result_gen = Rcpp::wrap(calcKinLr2(query, ref, afList, afAlList, probIBD, consMu, myuAll, apeAll, dropMethStr, pd));
+    rcpp_result_gen = Rcpp::wrap(calcKinLr(query, ref, afList, afAlList, probIBD, consMu, myuAll, apeAll, dropMethStr, pd));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -133,11 +133,11 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_relsearch_tousa", (DL_FUNC) &_relsearch_tousa, 3},
     {"_relsearch_searchPos", (DL_FUNC) &_relsearch_searchPos, 2},
-    {"_relsearch_kinLike2", (DL_FUNC) &_relsearch_kinLike2, 8},
-    {"_relsearch_makeDummyAf2", (DL_FUNC) &_relsearch_makeDummyAf2, 3},
-    {"_relsearch_makeDummyGt2", (DL_FUNC) &_relsearch_makeDummyGt2, 2},
-    {"_relsearch_kinLikeDrop2", (DL_FUNC) &_relsearch_kinLikeDrop2, 9},
-    {"_relsearch_calcKinLr2", (DL_FUNC) &_relsearch_calcKinLr2, 10},
+    {"_relsearch_kinLike", (DL_FUNC) &_relsearch_kinLike, 8},
+    {"_relsearch_makeDummyAf", (DL_FUNC) &_relsearch_makeDummyAf, 3},
+    {"_relsearch_makeDummyGt", (DL_FUNC) &_relsearch_makeDummyGt, 2},
+    {"_relsearch_kinLikeDrop", (DL_FUNC) &_relsearch_kinLikeDrop, 9},
+    {"_relsearch_calcKinLr", (DL_FUNC) &_relsearch_calcKinLr, 10},
     {"_relsearch_matchY2", (DL_FUNC) &_relsearch_matchY2, 2},
     {NULL, NULL, 0}
 };
