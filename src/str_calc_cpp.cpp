@@ -267,8 +267,8 @@ NumericMatrix calcKinLr(NumericVector query, NumericVector ref, List afList, Lis
             cl_H2 = cl_H2 * likeH12[1];
             /*considering drop-out*/
           }else{
-            /*myuOneL <- 0*/
-            /*apeOneL <- 0*/
+            myu = 0;
+            ape = 0;
             NumericVector likeH12 = kinLikeDrop(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd);
             ans(0, i) = likeH12[0];
             ans(1, i) = likeH12[1];
@@ -277,8 +277,8 @@ NumericMatrix calcKinLr(NumericVector query, NumericVector ref, List afList, Lis
           }
           /*considering drop-out*/
         }else if(dropMethStr == 2){
-          /*myuOneL <- 0*/
-          /*apeOneL <- 0*/
+          myu = 0;
+          ape = 0;
           NumericVector likeH12 = kinLikeDrop(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd);
           ans(0, i) = likeH12[0];
           ans(1, i) = likeH12[1];
