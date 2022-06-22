@@ -9,7 +9,6 @@ searchPos <- function(vec, target) {
     .Call(`_relsearch_searchPos`, vec, target)
 }
 
-#' @export
 kinLike2 <- function(qgt, rgt, af, afAl, probIBD, consMu, myu, ape) {
     .Call(`_relsearch_kinLike2`, qgt, rgt, af, afAl, probIBD, consMu, myu, ape)
 }
@@ -22,7 +21,6 @@ makeDummyGt2 <- function(qgt, rgt) {
     .Call(`_relsearch_makeDummyGt2`, qgt, rgt)
 }
 
-#' @export
 kinLikeDrop2 <- function(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd) {
     .Call(`_relsearch_kinLikeDrop2`, qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd)
 }
