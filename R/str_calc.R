@@ -17,7 +17,6 @@ freqSetting <- function(qData, rData, afInput, maf){
       afAl <- c(afAl, alleleObs[posUnobs])
       af <- c(af, rep(maf, length(posUnobs)))
     }
-    names(afOneL) <- afAlOneL
     afList[[i]] <- af
     afAlList[[i]] <- afAl
   }
