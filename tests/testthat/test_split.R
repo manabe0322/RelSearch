@@ -1,0 +1,25 @@
+test_that("split pattern 1 (actually not used)", {
+  alPre <- split("15", ",")
+  expect_equal(length(alPre), 2)
+  expect_equal(alPre[1], "15")
+  expect_equal(alPre[2], "15")
+})
+
+test_that("split pattern 2-1", {
+  alPre <- split("15,16", ",")
+  expect_equal(length(alPre), 2)
+  expect_equal(alPre[1], "15")
+  expect_equal(alPre[2], "16")
+})
+
+test_that("split pattern 2-2  (actually not used)", {
+  alPre <- split("15, 16", ",")
+  expect_equal(length(alPre), 2)
+  expect_equal(alPre[1], "15")
+  expect_equal(alPre[2], " 16")
+})
+
+test_that("split pattern 3  (actually not used)", {
+  alPre <- split("", ",")
+  expect_equal(alPre, character(0))
+})

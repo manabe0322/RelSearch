@@ -30,6 +30,14 @@ calcKinLr <- function(query, ref, afList, afAlList, probIBD, consMu, myuAll, ape
     .Call(`_relsearch_calcKinLr`, query, ref, afList, afAlList, probIBD, consMu, myuAll, apeAll, dropMethStr, pd)
 }
 
+split <- function(str, del) {
+    .Call(`_relsearch_split`, str, del)
+}
+
+obtainAl <- function(hap) {
+    .Call(`_relsearch_obtainAl`, hap)
+}
+
 #' @export
 matchY2 <- function(qHap, rHap) {
     .Call(`_relsearch_matchY2`, qHap, rHap)

@@ -117,6 +117,29 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// split
+std::vector<std::string> split(std::string str, const char* del);
+RcppExport SEXP _relsearch_split(SEXP strSEXP, SEXP delSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type str(strSEXP);
+    Rcpp::traits::input_parameter< const char* >::type del(delSEXP);
+    rcpp_result_gen = Rcpp::wrap(split(str, del));
+    return rcpp_result_gen;
+END_RCPP
+}
+// obtainAl
+NumericVector obtainAl(std::string hap);
+RcppExport SEXP _relsearch_obtainAl(SEXP hapSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type hap(hapSEXP);
+    rcpp_result_gen = Rcpp::wrap(obtainAl(hap));
+    return rcpp_result_gen;
+END_RCPP
+}
 // matchY2
 IntegerMatrix matchY2(CharacterVector qHap, CharacterVector rHap);
 RcppExport SEXP _relsearch_matchY2(SEXP qHapSEXP, SEXP rHapSEXP) {
@@ -138,6 +161,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_relsearch_makeDummyGt", (DL_FUNC) &_relsearch_makeDummyGt, 2},
     {"_relsearch_kinLikeDrop", (DL_FUNC) &_relsearch_kinLikeDrop, 9},
     {"_relsearch_calcKinLr", (DL_FUNC) &_relsearch_calcKinLr, 10},
+    {"_relsearch_split", (DL_FUNC) &_relsearch_split, 2},
+    {"_relsearch_obtainAl", (DL_FUNC) &_relsearch_obtainAl, 1},
     {"_relsearch_matchY2", (DL_FUNC) &_relsearch_matchY2, 2},
     {NULL, NULL, 0}
 };
