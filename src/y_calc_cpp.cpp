@@ -68,7 +68,7 @@ IntegerMatrix matchY2(CharacterVector qHap, CharacterVector rHap) {
       judgeMat(0, i) = 1;
       sumL = sumL + 1;
       /*ignore or not*/
-      if(qAl.empty() = 1){
+      if(qAl.length() == 0){
         judgeMat(1, i) = 1;
       }else{
 
