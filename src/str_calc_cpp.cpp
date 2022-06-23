@@ -206,8 +206,6 @@ NumericVector kinLikeDrop(NumericVector qgt, NumericVector rgt, NumericVector af
                           bool consMu, double myu, double ape, double pd){
   /*homozygote (no drop-out)*/
   NumericVector like1 = kinLike(qgt, rgt, af, afAl, probIBD, consMu, myu, ape);
-  cout << like1[0] << endl;
-  cout << like1[1] << endl;
 
   /*heterozygote (drop-out)*/
   NumericMatrix dummyGt = makeDummyGt(qgt, rgt);
@@ -218,12 +216,8 @@ NumericVector kinLikeDrop(NumericVector qgt, NumericVector rgt, NumericVector af
   NumericVector like2(2);
   for(int i = 0; i < dummyGt.nrow(); ++i){
     NumericVector likeH12 = kinLike(dummyGt(i, _), rgt, af_dummy, afAl_dummy, probIBD, consMu, myu, ape);
-    cout << likeH12[0] << endl;
-    cout << likeH12[1] << endl;
     like2 = like2 + likeH12;
   }
-  cout << like2[0] << endl;
-  cout << like2[1] << endl;
 
   NumericVector likeDrop(2);
   likeDrop[0] = (1 - pd) * like1[0] + pd * like2[0];
@@ -280,9 +274,7 @@ NumericMatrix calcKinLr(NumericVector query, NumericVector ref, List afList, Lis
             cl_H2 = cl_H2 * likeH12[1];
             /*considering drop-out*/
           }else{
-            myu = 0;
-            ape = 0;
-            NumericVector likeH12 = kinLikeDrop(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd);
+            NumericVector likeH12 = kinLikeDrop(qgt, rgt, af, afAl, probIBD, false, myu, ape, pd);
             ans(0, i) = likeH12[0];
             ans(1, i) = likeH12[1];
             cl_H1 = cl_H1 * likeH12[0];
@@ -290,9 +282,7 @@ NumericMatrix calcKinLr(NumericVector query, NumericVector ref, List afList, Lis
           }
           /*considering drop-out*/
         }else if(dropMethStr == 2){
-          myu = 0;
-          ape = 0;
-          NumericVector likeH12 = kinLikeDrop(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd);
+          NumericVector likeH12 = kinLikeDrop(qgt, rgt, af, afAl, probIBD, false, myu, ape, pd);
           ans(0, i) = likeH12[0];
           ans(1, i) = likeH12[1];
           cl_H1 = cl_H1 * likeH12[0];

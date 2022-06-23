@@ -8,8 +8,8 @@ test_that("kinLikeDrop 1", {
   k0 <- 0.25
   probIBD <- c(k2, 2 * k1, k0)
   consMu <- FALSE
-  myu <- 0
-  ape <- 0
+  myu <- 0.002
+  ape <- calcApe(af)
   pd <- 0.5
   likelihoods <- kinLikeDrop(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd)
 
@@ -33,8 +33,8 @@ test_that("kinLikeDrop 2", {
   k0 <- 0.25
   probIBD <- c(k2, 2 * k1, k0)
   consMu <- FALSE
-  myu <- 0
-  ape <- 0
+  myu <- 0.002
+  ape <- calcApe(af)
   pd <- 0.5
   likelihoods <- kinLikeDrop(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd)
 
@@ -58,8 +58,8 @@ test_that("kinLikeDrop 3", {
   k0 <- 0.25
   probIBD <- c(k2, 2 * k1, k0)
   consMu <- FALSE
-  myu <- 0
-  ape <- 0
+  myu <- 0.002
+  ape <- calcApe(af)
   pd <- 0.5
   likelihoods <- kinLikeDrop(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd)
 
@@ -83,8 +83,8 @@ test_that("kinLikeDrop 4", {
   k0 <- 0.25
   probIBD <- c(k2, 2 * k1, k0)
   consMu <- FALSE
-  myu <- 0
-  ape <- 0
+  myu <- 0.002
+  ape <- calcApe(af)
   pd <- 0.5
   likelihoods <- kinLikeDrop(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd)
 
@@ -108,8 +108,8 @@ test_that("kinLikeDrop 5", {
   k0 <- 0.25
   probIBD <- c(k2, 2 * k1, k0)
   consMu <- FALSE
-  myu <- 0
-  ape <- 0
+  myu <- 0.002
+  ape <- calcApe(af)
   pd <- 0.5
   likelihoods <- kinLikeDrop(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd)
 
@@ -134,7 +134,36 @@ test_that("kinLikeDrop mutation pattern 1 (actually not used)", {
   ape <- calcApe(af)
   pd <- 0.5
   likelihoods <- kinLikeDrop(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd)
-  expect_equal(as.numeric(likelihoods[1]), 0.5 * 0.002 + 0.5 * (0.25^2 * 0.15 + 0.002))
-  expect_equal(as.numeric(likelihoods[2]), 0.5 * 0.352925 + 0.5 * (2 * 0.15 * 0.25 * 0.25^2 + 0.352925))
+
+  probRgt <- 0.25^2
+  calcHomo_H1 <- (1 - pd) * myu
+  calcHetero_H1 <- pd * (probRgt * 0.15 + myu)
+  calcHomo_H2 <- (1 - pd) * ape
+  calcHetero_H2 <- pd * (probRgt * 2 * 0.15 * 0.25 + ape)
+
+  expect_equal(as.numeric(likelihoods[1]), calcHomo_H1 + calcHetero_H1)
+  expect_equal(as.numeric(likelihoods[2]), calcHomo_H2 + calcHetero_H2)
+})
+
+test_that("kinLikeDrop mutation pattern 2", {
+  qgt <- 12
+  rgt <- c(11, 13)
+  af <- c(0.15, 0.25, 0.3, 0.25, 0.05)
+  afAl <- 11:15
+  probIBD <- c(0, 1, 0)
+  consMu <- FALSE
+  myu <- 0.002
+  ape <- calcApe(af)
+  pd <- 0.5
+  likelihoods <- kinLikeDrop(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd)
+
+  probRgt <- 2 * 0.15 * 0.3
+  calcHomo_H1 <- 0
+  calcHetero_H1 <- pd * probRgt * (0.5 * 0.25 + 0.5 * 0.25)
+  calcHomo_H2 <- (1 - pd) * probRgt * 0.25^2
+  calcHetero_H2 <- pd * probRgt * (2 * 0.15 * 0.25 + 2 * 0.25 * 0.3 + 2 * 0.25 * 0.3)
+
+  expect_equal(as.numeric(likelihoods[1]), calcHomo_H1 + calcHetero_H1)
+  expect_equal(as.numeric(likelihoods[2]), calcHomo_H2 + calcHetero_H2)
 })
 
