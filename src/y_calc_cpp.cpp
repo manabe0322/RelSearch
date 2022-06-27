@@ -49,12 +49,30 @@ NumericVector obtainAl(std::string hap){
   }
 }
 
+// [[Rcpp::export]]
+int calcMuStep(NumericVector qAl, NumericVector rAl){
+  int nqAl = qAl.length();
+  int nrAl = rAl.length();
+  IntegerVector diff(nqAl * nrAl);
+  int pos = 0
+  for(int i = 0; i < nqAl; ++i){
+    for(int j = 0; i < nrAl; ++j){
+      diff[pos] = qAl[i] - rAl[j];
+      pos = pos + 1;
+    }
+  }
+  IntegerVector diff2 = setdiff(abs(diff), 0);
+  int muStep = min(diff2);
+  return(muStep);
+}
+
 //' @export
 // [[Rcpp::export]]
-IntegerMatrix matchY2(CharacterVector qHap, CharacterVector rHap) {
+IntegerMatrix matchY(CharacterVector qHap, CharacterVector rHap){
   int nL = qHap.length();
   IntegerMatrix judgeMat(3, nL + 1);
-  int sumL = 0;
+  int sumL0 = 0;
+  int sumL1 = 0;
   std::vector<string> qHap_cpp = as<std::vector<string>>(qHap);
   std::vector<string> rHap_cpp = as<std::vector<string>>(rHap);
   for(int i = 0; i < nL; ++i){
@@ -66,16 +84,18 @@ IntegerMatrix matchY2(CharacterVector qHap, CharacterVector rHap) {
     /*mismatch or not*/
     if(matchQR == false){
       judgeMat(0, i) = 1;
-      sumL = sumL + 1;
+      sumL0 = sumL0 + 1;
       /*ignore or not*/
       if(qAl.length() == 0){
         judgeMat(1, i) = 1;
+        sumL1 = sumL1 + 1;
       }else{
-
+        judgeMat(2, i) = calcMuStep(qAl, rAl);
       }
     }
   }
-  judgeMat(0, nL) = sumL;
+  judgeMat(0, nL) = sumL0;
+  judgeMat(1, nL) = sumL1;
   return(judgeMat);
 }
 
