@@ -607,9 +607,9 @@ guiScreenStr <- function(envProj, envGUI){
           for(k in 1:nQ){
             query <- as.numeric(qStrData[k, ])
             lrData <- calcKinLr(query, ref, afList, afAlList, probIBDs[j, ], consMu[j], myuAll, apeAll, dropMethStr, pd)
-            likeH1All[j, countCf, ] <- lrData[1, ]
-            likeH2All[j, countCf, ] <- lrData[2, ]
-            lrAll[j, countCf, ] <- lrData[3, ]
+            likeH1All[k, countCf, ] <- lrData[1, ]
+            likeH2All[k, countCf, ] <- lrData[2, ]
+            lrAll[k, countCf, ] <- lrData[3, ]
             info <- sprintf("%d%% done", round((nQ * (countCf - 1) + k) * 100 / (nQ * (nR + 3 * nEmpRel))))
             setTkProgressBar(pb, (nQ * (countCf - 1) + k) * 100 / (nQ * (nR + 3 * nEmpRel)), sprintf("STR screening"), info)
           }
