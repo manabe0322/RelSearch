@@ -535,18 +535,19 @@ guiScreenStr <- function(envProj, envGUI){
 
     rCol <- colnames(rStrInput)
     posRName <- grep("Sample", rCol)
-    rStrName <- rStrInput[, posRName]
+    rStrNameInput <- rStrInput[, posRName]
     posRelation <- grep("Relationship", rCol)
-    relStr <- rStrInput[, posRelation]
-    rStrData <- rStrInput[, -c(posRName, posRelation), drop = FALSE]
-    nameRL <- colnames(rStrData)[which(1:ncol(rStrData) %% 2 == 1)]
+    relInput <- rStrInput[, posRelation]
+    nEmpRel <- length(which(relInput == ""))
+    rStrDataInput <- rStrInput[, -c(posRName, posRelation), drop = FALSE]
+    nameRL <- colnames(rStrDataInput)[which(1:ncol(rStrDataInput) %% 2 == 1)]
 
     nameAfL <- colnames(afInput)[-1]
 
     judgeL1 <- all(mapply(setequal, nameQL, nameRL))
     judgeL2 <- all(mapply(setequal, nameQL, nameAfL))
     judgeL3 <- all(is.element(nameQL, nameMyuL))
-    judgeR1 <- all(is.element(unique(relStr), rownames(probIBDAll)))
+    judgeR1 <- all(is.element(setdiff(relInput, ""), rownames(probIBDAll)))
     if(all(c(judgeL1, judgeL2, judgeL3, judgeR1))){
       pb <- tkProgressBar("STR screening", "0% done", 0, 100, 0)
 
@@ -554,12 +555,12 @@ guiScreenStr <- function(envProj, envGUI){
       dropMethStr <- get("dropMethStr", pos = envProj)
       pd <- get("pd", pos = envProj)
 
-      afData <- freqSetting(qStrData, rStrData, afInput, maf)
+      afData <- freqSetting(qStrData, rStrDataInput, afInput, maf)
       afList <- afData[[1]]
       afAlList <- afData[[2]]
 
       nQ <- nrow(qStrData)
-      nR <- nrow(rStrData)
+      nR <- nrow(rStrDataInput)
       nL <- length(nameQL)
 
       myuAll <- rep(0, nL)
@@ -574,24 +575,45 @@ guiScreenStr <- function(envProj, envGUI){
       }
       names(apeAll) <- nameQL
 
-      likeH1All <- likeH2All <- lrAll <- array(0, dim = c(nQ, nR, nL + 1))
+      likeH1All <- likeH2All <- lrAll <- array(0, dim = c(nQ, nR + 3 * nEmpRel, nL + 1))
+      rStrData <- matrix(0, nR + 3 * nEmpRel, ncol(rStrDataInput))
+      rStrName <- relStr <- rep(0, nR + 3 * nEmpRel)
+      countCf <- 1
       for(i in 1:nR){
-        ref <- as.numeric(rStrData[i, ])
-        rel <- relStr[i]
-        probIBD <- probIBDAll[rownames(probIBDAll) == rel, ]
-        if(probIBD[3] == 0){
-          consMu <- TRUE
+        ref <- as.numeric(rStrDataInput[i, ])
+        rn <- rStrNameInput[i]
+        rel <- relInput[i]
+        if(rel == ""){
+          probIBDs <- matrix(c(1, 0, 0, 
+                               0, 1, 0, 
+                               0.25, 0.5, 0.25, 
+                               0, 0.5, 0.5), 
+                             nrow = 4, byrow = TRUE)
+          rStrName[countCf:(countCf + 3)] <- rn
+          relStr[countCf:(countCf + 3)] <- c("direct", "parent-child", "sibling", "2nd-degree")
+          consMu <- c(FALSE, TRUE, FALSE, FALSE)
         }else{
-          consMu <- FALSE
+          probIBDs <- probIBDAll[rownames(probIBDAll) == rel, , drop = FALSE]
+          rStrName[countCf] <- rn
+          relStr[countCf] <- rel
+          if(probIBDs[1, 3] == 0){
+            consMu <- TRUE
+          }else{
+            consMu <- FALSE
+          }
         }
-        for(j in 1:nQ){
-          query <- as.numeric(qStrData[j, ])
-          lrData <- calcKinLr(query, ref, afList, afAlList, probIBD, consMu, myuAll, apeAll, dropMethStr, pd)
-          likeH1All[j, i, ] <- lrData[1, ]
-          likeH2All[j, i, ] <- lrData[2, ]
-          lrAll[j, i, ] <- lrData[3, ]
-          info <- sprintf("%d%% done", round((nQ * (i - 1) + j) * 100 / (nQ * nR)))
-          setTkProgressBar(pb, (nQ * (i - 1) + j) * 100 / (nQ * nR), sprintf("STR screening"), info)
+        for(j in 1:nrow(probIBDs)){
+          rStrData[countCf, ] <- ref
+          for(k in 1:nQ){
+            query <- as.numeric(qStrData[k, ])
+            lrData <- calcKinLr(query, ref, afList, afAlList, probIBDs[j, ], consMu[j], myuAll, apeAll, dropMethStr, pd)
+            likeH1All[j, countCf, ] <- lrData[1, ]
+            likeH2All[j, countCf, ] <- lrData[2, ]
+            lrAll[j, countCf, ] <- lrData[3, ]
+            info <- sprintf("%d%% done", round((nQ * (countCf - 1) + k) * 100 / (nQ * (nR + 3 * nEmpRel))))
+            setTkProgressBar(pb, (nQ * (countCf - 1) + k) * 100 / (nQ * (nR + 3 * nEmpRel)), sprintf("STR screening"), info)
+          }
+          countCf <- countCf + 1
         }
       }
       assign("qStrData", qStrData, envir = envProj)
@@ -602,7 +624,7 @@ guiScreenStr <- function(envProj, envGUI){
       assign("likeH1All", likeH1All, envir = envProj)
       assign("likeH2All", likeH2All, envir = envProj)
       assign("lrAll", lrAll, envir = envProj)
-      assign("probIBDAll", probIBDAll, envir = envProj)
+#      assign("probIBDAll", probIBDAll, envir = envProj)
       assign("myuAll", myuAll, envir = envProj)
       assign("finStr", TRUE, envir = envProj)
       tabStrResult(envProj, envGUI)
@@ -652,7 +674,7 @@ tabStrResult <- function(envProj, envGUI){
       selectQ <- tclVar("All")
       comboQ <- ttkcombobox(frameD1, values = candQ, textvariable = selectQ, state = "readonly")
 
-      candR <- c("All", rStrName)
+      candR <- c("All", unique(rStrName))
       selectR <- tclVar("All")
       comboR <- ttkcombobox(frameD1, values = candR, textvariable = selectR, state = "readonly")
 
@@ -730,6 +752,8 @@ tabStrResult <- function(envProj, envGUI){
         selectRName <- displayData[posShow, 2]
         posShowR <- which(rStrName == selectRName)
         selectRel <- displayData[posShow, 3]
+        posShowRel <- which(relStr == selectRel)
+        posShowR <- intersect(posShowR, posShowRel)
         detailData <- matrix("", nL + 1, 6)
         detailData[, 1] <- c(names(myuAll), "overall")
         colnames(detailData) <- c("Locus",
@@ -781,11 +805,11 @@ tabStrResult <- function(envProj, envGUI){
     likeH1All <- get("likeH1All", pos = envProj)
     likeH2All <- get("likeH2All", pos = envProj)
     lrAll <- get("lrAll", pos = envProj)
-    probIBDAll <- get("probIBDAll", pos = envProj)
+#    probIBDAll <- get("probIBDAll", pos = envProj)
     myuAll <- get("myuAll", pos = envProj)
-    maf <- get("maf", pos = envProj)
-    dropMethStr <- get("dropMethStr", pos = envProj)
-    pd <- get("pd", pos = envProj)
+#    maf <- get("maf", pos = envProj)
+#    dropMethStr <- get("dropMethStr", pos = envProj)
+#    pd <- get("pd", pos = envProj)
 
     nL <- length(myuAll)
     nQ <- length(qStrName)
