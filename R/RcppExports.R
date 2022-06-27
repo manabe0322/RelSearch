@@ -38,6 +38,10 @@ obtainAl <- function(hap) {
     .Call(`_relsearch_obtainAl`, hap)
 }
 
+is_integer <- function(x) {
+    .Call(`_relsearch_is_integer`, x)
+}
+
 calcMuStep <- function(qAl, rAl) {
     .Call(`_relsearch_calcMuStep`, qAl, rAl)
 }

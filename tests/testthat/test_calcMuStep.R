@@ -11,3 +11,17 @@ test_that("calcMuStep pattern 2", {
   muStep <- calcMuStep(qAl, rAl)
   expect_equal(muStep, 2)
 })
+
+test_that("calcMuStep pattern 3", {
+  qAl <- 15
+  rAl <- c(15, 17)
+  muStep <- calcMuStep(qAl, rAl)
+  expect_equal(muStep, 2)
+})
+
+test_that("calcMuStep pattern 4", {
+  qAl <- 15
+  rAl <- 15
+  muStep <- calcMuStep(qAl, rAl)
+  expect_equal(muStep, 99)
+})

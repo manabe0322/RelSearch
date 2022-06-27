@@ -140,6 +140,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// is_integer
+bool is_integer(double x);
+RcppExport SEXP _relsearch_is_integer(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(is_integer(x));
+    return rcpp_result_gen;
+END_RCPP
+}
 // calcMuStep
 int calcMuStep(NumericVector qAl, NumericVector rAl);
 RcppExport SEXP _relsearch_calcMuStep(SEXP qAlSEXP, SEXP rAlSEXP) {
@@ -175,6 +186,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_relsearch_calcKinLr", (DL_FUNC) &_relsearch_calcKinLr, 10},
     {"_relsearch_split", (DL_FUNC) &_relsearch_split, 2},
     {"_relsearch_obtainAl", (DL_FUNC) &_relsearch_obtainAl, 1},
+    {"_relsearch_is_integer", (DL_FUNC) &_relsearch_is_integer, 1},
     {"_relsearch_calcMuStep", (DL_FUNC) &_relsearch_calcMuStep, 2},
     {"_relsearch_matchY", (DL_FUNC) &_relsearch_matchY, 2},
     {NULL, NULL, 0}

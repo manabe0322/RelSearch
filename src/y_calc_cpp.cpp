@@ -2,7 +2,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <math.h>
 using namespace Rcpp;
 using namespace std;
 
@@ -51,6 +50,11 @@ NumericVector obtainAl(std::string hap){
 }
 
 // [[Rcpp::export]]
+bool is_integer(double x){
+  return(std::floor(x) == x);
+}
+
+// [[Rcpp::export]]
 int calcMuStep(NumericVector qAl, NumericVector rAl){
   int nqAl = qAl.length();
   int nrAl = rAl.length();
@@ -58,13 +62,11 @@ int calcMuStep(NumericVector qAl, NumericVector rAl){
   int pos = 0;
   for(int i = 0; i < nqAl; ++i){
     double q1 = qAl[i];
-    double remQ = fmod(q1, 1);
-    if(remQ == 0){
+    if(is_integer(q1)){
       int q2 = (int)q1;
-      for(int j = 0; i < nrAl; ++j){
+      for(int j = 0; j < nrAl; ++j){
         double r1 = rAl[j];
-        double remR = fmod(r1, 1);
-        if(remR == 0){
+        if(is_integer(r1)){
           int r2 = (int)r1;
           if(q2 > r2){
             diff[pos] = q2 - r2;
