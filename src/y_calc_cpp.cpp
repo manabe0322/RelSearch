@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <math.h>
 using namespace Rcpp;
 using namespace std;
 
@@ -53,16 +54,31 @@ NumericVector obtainAl(std::string hap){
 int calcMuStep(NumericVector qAl, NumericVector rAl){
   int nqAl = qAl.length();
   int nrAl = rAl.length();
-  IntegerVector diff(nqAl * nrAl);
-  int pos = 0
+  IntegerVector diff(nqAl * nrAl, 99);
+  int pos = 0;
   for(int i = 0; i < nqAl; ++i){
-    for(int j = 0; i < nrAl; ++j){
-      diff[pos] = qAl[i] - rAl[j];
-      pos = pos + 1;
+    double q1 = qAl[i];
+    double remQ = fmod(q1, 1);
+    if(remQ == 0){
+      int q2 = (int)q1;
+      for(int j = 0; i < nrAl; ++j){
+        double r1 = rAl[j];
+        double remR = fmod(r1, 1);
+        if(remR == 0){
+          int r2 = (int)r1;
+          if(q2 > r2){
+            diff[pos] = q2 - r2;
+          }else if(q2 < r2){
+            diff[pos] = r2 - q2;
+          }
+        }
+        pos = pos + 1;
+      }
+    }else{
+      pos = pos + nrAl;
     }
   }
-  IntegerVector diff2 = setdiff(abs(diff), 0);
-  int muStep = min(diff2);
+  int muStep = min(diff);
   return(muStep);
 }
 

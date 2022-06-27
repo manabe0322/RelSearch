@@ -140,15 +140,27 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// matchY2
-IntegerMatrix matchY2(CharacterVector qHap, CharacterVector rHap);
-RcppExport SEXP _relsearch_matchY2(SEXP qHapSEXP, SEXP rHapSEXP) {
+// calcMuStep
+int calcMuStep(NumericVector qAl, NumericVector rAl);
+RcppExport SEXP _relsearch_calcMuStep(SEXP qAlSEXP, SEXP rAlSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type qAl(qAlSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type rAl(rAlSEXP);
+    rcpp_result_gen = Rcpp::wrap(calcMuStep(qAl, rAl));
+    return rcpp_result_gen;
+END_RCPP
+}
+// matchY
+IntegerMatrix matchY(CharacterVector qHap, CharacterVector rHap);
+RcppExport SEXP _relsearch_matchY(SEXP qHapSEXP, SEXP rHapSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< CharacterVector >::type qHap(qHapSEXP);
     Rcpp::traits::input_parameter< CharacterVector >::type rHap(rHapSEXP);
-    rcpp_result_gen = Rcpp::wrap(matchY2(qHap, rHap));
+    rcpp_result_gen = Rcpp::wrap(matchY(qHap, rHap));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -163,7 +175,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_relsearch_calcKinLr", (DL_FUNC) &_relsearch_calcKinLr, 10},
     {"_relsearch_split", (DL_FUNC) &_relsearch_split, 2},
     {"_relsearch_obtainAl", (DL_FUNC) &_relsearch_obtainAl, 1},
-    {"_relsearch_matchY2", (DL_FUNC) &_relsearch_matchY2, 2},
+    {"_relsearch_calcMuStep", (DL_FUNC) &_relsearch_calcMuStep, 2},
+    {"_relsearch_matchY", (DL_FUNC) &_relsearch_matchY, 2},
     {NULL, NULL, 0}
 };
 

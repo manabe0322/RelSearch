@@ -38,8 +38,12 @@ obtainAl <- function(hap) {
     .Call(`_relsearch_obtainAl`, hap)
 }
 
+calcMuStep <- function(qAl, rAl) {
+    .Call(`_relsearch_calcMuStep`, qAl, rAl)
+}
+
 #' @export
-matchY2 <- function(qHap, rHap) {
-    .Call(`_relsearch_matchY2`, qHap, rHap)
+matchY <- function(qHap, rHap) {
+    .Call(`_relsearch_matchY`, qHap, rHap)
 }
 
