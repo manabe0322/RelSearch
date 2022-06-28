@@ -1,13 +1,14 @@
 #include "header.h"
 
+/*Obtain alleles from a haplotype*/
 // [[Rcpp::export]]
 NumericVector obtainAl(std::string hap){
-  hap.erase(remove(hap.begin(), hap.end(), ' '), hap.end());
+  hap.erase(std::remove(hap.begin(), hap.end(), ' '), hap.end());
   if(hap == ""){
     NumericVector al(0);
     return(al);
   }else{
-    if(hap.find(",") != string::npos){
+    if(hap.find(",") != std::string::npos){
       const char* del = ",";
       std::vector<std::string> alPre = split(hap, del);
       int len = alPre.size();
@@ -30,6 +31,7 @@ bool is_integer(double x){
   return(std::floor(x) == x);
 }
 
+/*Calculate mutational step between query alleles and reference alleles (testthat)*/
 // [[Rcpp::export]]
 int calcMuStep(NumericVector qAl, NumericVector rAl){
   int nqAl = qAl.length();
@@ -60,6 +62,7 @@ int calcMuStep(NumericVector qAl, NumericVector rAl){
   return(muStep);
 }
 
+/*Matching query and reference Y haplotypes (testthat)*/
 //' @export
 // [[Rcpp::export]]
 IntegerMatrix matchY(CharacterVector qHap, CharacterVector rHap){
@@ -67,8 +70,8 @@ IntegerMatrix matchY(CharacterVector qHap, CharacterVector rHap){
   IntegerMatrix judgeMat(3, nL + 1);
   int sumL0 = 0;
   int sumL1 = 0;
-  std::vector<string> qHap_cpp = as<std::vector<string>>(qHap);
-  std::vector<string> rHap_cpp = as<std::vector<string>>(rHap);
+  std::vector<std::string> qHap_cpp = as<std::vector<std::string>>(qHap);
+  std::vector<std::string> rHap_cpp = as<std::vector<std::string>>(rHap);
   for(int i = 0; i < nL; ++i){
     std::string qH = qHap_cpp[i];
     NumericVector qAl = obtainAl(qH);

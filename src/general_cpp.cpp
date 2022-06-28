@@ -13,9 +13,6 @@ std::vector<std::string> split(std::string str, const char* del){
       result.push_back(subStr);
       first = last + 1;
       last = str.find_first_of(del, first);
-      if(last == string::npos){
-        last = str.size();
-      }
     }
   }
   return(result);

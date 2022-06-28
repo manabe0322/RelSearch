@@ -1,5 +1,6 @@
 #include "header.h"
 
+/*Extract positions from range (testthat)*/
 // [[Rcpp::export]]
 std::vector<int> extPosMt(std::string range){
   const char* del_1 = " ";
@@ -22,3 +23,12 @@ std::vector<int> extPosMt(std::string range){
   return(posMt);
 }
 
+/*Extract shared positions between query range and reference range (testthat)*/
+// [[Rcpp::export]]
+std::vector<int> extPosMtQR(std::string qRan, std::string rRan){
+  std::vector<int> posMtQ = extPosMt(qRan);
+  std::vector<int> posMtR = extPosMt(rRan);
+  std::vector<int> posMtQR;
+  std::set_intersection(posMtQ.begin(), posMtQ.end(), posMtR.begin(), posMtR.end(), std::inserter(posMtQR, posMtQR.end()));
+  return(posMtQR);
+}

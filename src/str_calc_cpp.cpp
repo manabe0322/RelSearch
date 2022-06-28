@@ -1,14 +1,15 @@
 #include "header.h"
 
+/*General calculation of likelihoods for pairwise kinship analysis (testthat)*/
 // [[Rcpp::export]]
 NumericVector kinLike(NumericVector qgt, NumericVector rgt, NumericVector af, NumericVector afAl, NumericVector probIBD,
                       bool consMu, double myu, double ape){
   NumericVector likeH12(2);
 
-  sort(qgt.begin(), qgt.end());
-  qgt.erase(unique(qgt.begin(), qgt.end()), qgt.end());
-  sort(rgt.begin(), rgt.end());
-  rgt.erase(unique(rgt.begin(), rgt.end()), rgt.end());
+  std::sort(qgt.begin(), qgt.end());
+  qgt.erase(std::unique(qgt.begin(), qgt.end()), qgt.end());
+  std::sort(rgt.begin(), rgt.end());
+  rgt.erase(std::unique(rgt.begin(), rgt.end()), rgt.end());
 
   double k2 = probIBD[0];
   double k1 = probIBD[1] / 2;
@@ -101,6 +102,7 @@ NumericVector kinLike(NumericVector qgt, NumericVector rgt, NumericVector af, Nu
   return(likeH12);
 }
 
+/*Make allele frequencies for dummy genotypes (testthat)*/
 // [[Rcpp::export]]
 NumericMatrix makeDummyAf(NumericMatrix dummyGt, NumericVector af, NumericVector afAl){
   int nInitRow = dummyGt.nrow();
@@ -110,8 +112,8 @@ NumericMatrix makeDummyAf(NumericMatrix dummyGt, NumericVector af, NumericVector
     afAl_dummy[2 * i] = dummyGtOne[0];
     afAl_dummy[2 * i + 1] = dummyGtOne[1];
   }
-  sort(afAl_dummy.begin(), afAl_dummy.end());
-  afAl_dummy.erase(unique(afAl_dummy.begin(), afAl_dummy.end()), afAl_dummy.end());
+  std::sort(afAl_dummy.begin(), afAl_dummy.end());
+  afAl_dummy.erase(std::unique(afAl_dummy.begin(), afAl_dummy.end()), afAl_dummy.end());
 
   int len = afAl_dummy.length() - 1;
   std::vector<int> posAl_1(len);
@@ -140,10 +142,11 @@ NumericMatrix makeDummyAf(NumericMatrix dummyGt, NumericVector af, NumericVector
   return(dummyData);
 }
 
+/*Determine dummy genotypes considering a drop-out allele (testthat)*/
 // [[Rcpp::export]]
 NumericMatrix makeDummyGt(NumericVector qgt, NumericVector rgt){
-  sort(rgt.begin(), rgt.end());
-  rgt.erase(unique(rgt.begin(), rgt.end()), rgt.end());
+  std::sort(rgt.begin(), rgt.end());
+  rgt.erase(std::unique(rgt.begin(), rgt.end()), rgt.end());
 
   bool existQ = searchPos(rgt, qgt[0]) != rgt.length();
 
@@ -182,6 +185,7 @@ NumericMatrix makeDummyGt(NumericVector qgt, NumericVector rgt){
   }
 }
 
+/*Calculation of likelihoods for pairwise kinship analysis considering drop-out (testthat)*/
 // [[Rcpp::export]]
 NumericVector kinLikeDrop(NumericVector qgt, NumericVector rgt, NumericVector af, NumericVector afAl, NumericVector probIBD,
                           bool consMu, double myu, double ape, double pd){
@@ -206,6 +210,7 @@ NumericVector kinLikeDrop(NumericVector qgt, NumericVector rgt, NumericVector af
   return(likeDrop);
 }
 
+/*Calculation of likelihood ratio for kinship analysis*/
 //' @export
 // [[Rcpp::export]]
 NumericMatrix calcKinLr(NumericVector query, NumericVector ref, List afList, List afAlList, NumericVector probIBD,
@@ -235,7 +240,7 @@ NumericMatrix calcKinLr(NumericVector query, NumericVector ref, List afList, Lis
       /*considering drop-out*/
     }else if(dropMethStr != 0){
       NumericVector qgtUni = qgt;
-      qgtUni.erase(unique(qgtUni.begin(), qgtUni.end()), qgtUni.end());
+      qgtUni.erase(std::unique(qgtUni.begin(), qgtUni.end()), qgtUni.end());
       /*qgt : heterozygote*/
       if(qgtUni.length() == 2){
         NumericVector likeH12 = kinLike(qgt, rgt, af, afAl, probIBD, consMu, myu, ape);

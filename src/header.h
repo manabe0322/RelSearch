@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 using namespace Rcpp;
-using namespace std;
 
 std::vector<std::string> split(std::string str, const char* del);
 int str_to_int(std::string str);
