@@ -57,15 +57,27 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// searchPos
-int searchPos(NumericVector vec, double target);
-RcppExport SEXP _relsearch_searchPos(SEXP vecSEXP, SEXP targetSEXP) {
+// searchPos_double
+int searchPos_double(NumericVector vec, double target);
+RcppExport SEXP _relsearch_searchPos_double(SEXP vecSEXP, SEXP targetSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type vec(vecSEXP);
     Rcpp::traits::input_parameter< double >::type target(targetSEXP);
-    rcpp_result_gen = Rcpp::wrap(searchPos(vec, target));
+    rcpp_result_gen = Rcpp::wrap(searchPos_double(vec, target));
+    return rcpp_result_gen;
+END_RCPP
+}
+// searchPos_int
+int searchPos_int(IntegerVector vec, int target);
+RcppExport SEXP _relsearch_searchPos_int(SEXP vecSEXP, SEXP targetSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type vec(vecSEXP);
+    Rcpp::traits::input_parameter< int >::type target(targetSEXP);
+    rcpp_result_gen = Rcpp::wrap(searchPos_int(vec, target));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -248,7 +260,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_relsearch_str_to_int", (DL_FUNC) &_relsearch_str_to_int, 1},
     {"_relsearch_int_to_str", (DL_FUNC) &_relsearch_int_to_str, 1},
     {"_relsearch_tousa", (DL_FUNC) &_relsearch_tousa, 3},
-    {"_relsearch_searchPos", (DL_FUNC) &_relsearch_searchPos, 2},
+    {"_relsearch_searchPos_double", (DL_FUNC) &_relsearch_searchPos_double, 2},
+    {"_relsearch_searchPos_int", (DL_FUNC) &_relsearch_searchPos_int, 2},
     {"_relsearch_extPosMt", (DL_FUNC) &_relsearch_extPosMt, 1},
     {"_relsearch_testPosMt", (DL_FUNC) &_relsearch_testPosMt, 1},
     {"_relsearch_extPosMtQR", (DL_FUNC) &_relsearch_extPosMtQR, 2},

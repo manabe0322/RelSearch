@@ -17,8 +17,12 @@ tousa <- function(start, end, interval) {
     .Call(`_relsearch_tousa`, start, end, interval)
 }
 
-searchPos <- function(vec, target) {
-    .Call(`_relsearch_searchPos`, vec, target)
+searchPos_double <- function(vec, target) {
+    .Call(`_relsearch_searchPos_double`, vec, target)
+}
+
+searchPos_int <- function(vec, target) {
+    .Call(`_relsearch_searchPos_int`, vec, target)
 }
 
 extPosMt <- function(range) {
@@ -29,10 +33,12 @@ testPosMt <- function(range) {
     .Call(`_relsearch_testPosMt`, range)
 }
 
+#' @export
 extPosMtQR <- function(qRan, rRan) {
     .Call(`_relsearch_extPosMtQR`, qRan, rRan)
 }
 
+#' @export
 makeShareRange <- function(posMtQR) {
     .Call(`_relsearch_makeShareRange`, posMtQR)
 }
