@@ -70,7 +70,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // extPosMtQR
-IntegerVector extPosMtQR(std::string qRan, std::string rRan);
+std::vector<int> extPosMtQR(std::string qRan, std::string rRan);
 RcppExport SEXP _relsearch_extPosMtQR(SEXP qRanSEXP, SEXP rRanSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -78,16 +78,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::string >::type qRan(qRanSEXP);
     Rcpp::traits::input_parameter< std::string >::type rRan(rRanSEXP);
     rcpp_result_gen = Rcpp::wrap(extPosMtQR(qRan, rRan));
-    return rcpp_result_gen;
-END_RCPP
-}
-// makeShareRange
-std::string makeShareRange();
-RcppExport SEXP _relsearch_makeShareRange() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(makeShareRange());
     return rcpp_result_gen;
 END_RCPP
 }
@@ -227,7 +217,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_relsearch_searchPos", (DL_FUNC) &_relsearch_searchPos, 2},
     {"_relsearch_extPosMt", (DL_FUNC) &_relsearch_extPosMt, 1},
     {"_relsearch_extPosMtQR", (DL_FUNC) &_relsearch_extPosMtQR, 2},
-    {"_relsearch_makeShareRange", (DL_FUNC) &_relsearch_makeShareRange, 0},
     {"_relsearch_kinLike", (DL_FUNC) &_relsearch_kinLike, 8},
     {"_relsearch_makeDummyAf", (DL_FUNC) &_relsearch_makeDummyAf, 3},
     {"_relsearch_makeDummyGt", (DL_FUNC) &_relsearch_makeDummyGt, 2},

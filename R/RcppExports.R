@@ -25,10 +25,6 @@ extPosMtQR <- function(qRan, rRan) {
     .Call(`_relsearch_extPosMtQR`, qRan, rRan)
 }
 
-makeShareRange <- function() {
-    .Call(`_relsearch_makeShareRange`)
-}
-
 kinLike <- function(qgt, rgt, af, afAl, probIBD, consMu, myu, ape) {
     .Call(`_relsearch_kinLike`, qgt, rgt, af, afAl, probIBD, consMu, myu, ape)
 }
