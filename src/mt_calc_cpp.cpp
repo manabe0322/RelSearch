@@ -21,3 +21,4 @@ std::vector<int> extPosMt(std::string range){
   posMt.erase(std::unique(posMt.begin(), posMt.end()), posMt.end());
   return(posMt);
 }
+
