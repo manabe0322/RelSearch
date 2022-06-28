@@ -25,10 +25,17 @@ std::vector<int> extPosMt(std::string range){
 
 /*Extract shared positions between query range and reference range (testthat)*/
 // [[Rcpp::export]]
-std::vector<int> extPosMtQR(std::string qRan, std::string rRan){
-  std::vector<int> posMtQ = extPosMt(qRan);
-  std::vector<int> posMtR = extPosMt(rRan);
-  std::vector<int> posMtQR;
-  std::set_intersection(posMtQ.begin(), posMtQ.end(), posMtR.begin(), posMtR.end(), std::inserter(posMtQR, posMtQR.end()));
+IntegerVector extPosMtQR(std::string qRan, std::string rRan){
+  std::vector<int> posMtQ_cpp = extPosMt(qRan);
+  IntegerVector posMtQ = wrap(posMtQ_cpp);
+  std::vector<int> posMtR_cpp = extPosMt(rRan);
+  IntegerVector posMtR = wrap(posMtR_cpp);
+  IntegerVector posMtQR = intersect(posMtQ, posMtR);
   return(posMtQR);
+}
+
+/*Make shared range between query range and reference range (testthat)*/
+// [[Rcpp::export]]
+std::string makeShareRange(){
+
 }
