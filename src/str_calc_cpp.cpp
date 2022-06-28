@@ -17,33 +17,33 @@ NumericVector kinLike(NumericVector qgt, NumericVector rgt, NumericVector af, Nu
 
   double a, b, c, d;
   if(qgt.length() == 1){
-    int posQ = searchPos(afAl, qgt[0]);
+    int posQ = searchPos_double(afAl, qgt[0]);
     a = af[posQ];
     b = af[posQ];
   }else{
-    int posQ1 = searchPos(afAl, qgt[0]);
+    int posQ1 = searchPos_double(afAl, qgt[0]);
     a = af[posQ1];
-    int posQ2 = searchPos(afAl, qgt[1]);
+    int posQ2 = searchPos_double(afAl, qgt[1]);
     b = af[posQ2];
   }
   if(rgt.length() == 1){
-    int posR = searchPos(afAl, rgt[0]);
+    int posR = searchPos_double(afAl, rgt[0]);
     c = af[posR];
     d = af[posR];
   }else{
-    int posR1 = searchPos(afAl, rgt[0]);
+    int posR1 = searchPos_double(afAl, rgt[0]);
     c = af[posR1];
-    int posR2 = searchPos(afAl, rgt[1]);
+    int posR2 = searchPos_double(afAl, rgt[1]);
     d = af[posR2];
   }
 
   NumericVector uniQRgt = union_(qgt, rgt);
-  bool existQ1 = searchPos(rgt, qgt[0]) != rgt.length();
+  bool existQ1 = searchPos_double(rgt, qgt[0]) != rgt.length();
   bool existQ2;
   if(qgt.length() == 2){
-    existQ2 = searchPos(rgt, qgt[1]) != rgt.length();
+    existQ2 = searchPos_double(rgt, qgt[1]) != rgt.length();
   }else{
-    existQ2 = searchPos(rgt, qgt[0]) != rgt.length();
+    existQ2 = searchPos_double(rgt, qgt[0]) != rgt.length();
   }
 
   if(!existQ1 && !existQ2){
@@ -118,7 +118,7 @@ NumericMatrix makeDummyAf(NumericMatrix dummyGt, NumericVector af, NumericVector
   int len = afAl_dummy.length() - 1;
   std::vector<int> posAl_1(len);
   for(int i = 0; i < len; ++i){
-    posAl_1[i] = searchPos(afAl, afAl_dummy[i]);
+    posAl_1[i] = searchPos_double(afAl, afAl_dummy[i]);
   }
   std::vector<int> posAl_all = tousa(0, afAl.length() - 1, 1);
   std::vector<int> posAl_2;
@@ -148,7 +148,7 @@ NumericMatrix makeDummyGt(NumericVector qgt, NumericVector rgt){
   std::sort(rgt.begin(), rgt.end());
   rgt.erase(std::unique(rgt.begin(), rgt.end()), rgt.end());
 
-  bool existQ = searchPos(rgt, qgt[0]) != rgt.length();
+  bool existQ = searchPos_double(rgt, qgt[0]) != rgt.length();
 
   if(rgt.length() == 1){
     if(existQ){

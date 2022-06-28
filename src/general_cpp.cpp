@@ -44,7 +44,20 @@ std::vector<int> tousa(int start, int end, int interval){
 }
 
 // [[Rcpp::export]]
-int searchPos(NumericVector vec, double target){
+int searchPos_double(NumericVector vec, double target){
+  int len = vec.length();
+  int pos = len;
+  for(int i = 0; i < len; ++i){
+    if(vec[i] == target){
+      pos = i;
+      break;
+    }
+  }
+  return(pos);
+}
+
+// [[Rcpp::export]]
+int searchPos_int(IntegerVector vec, int target){
   int len = vec.length();
   int pos = len;
   for(int i = 0; i < len; ++i){
