@@ -26,5 +26,5 @@ test_that("split pattern 2-2", {
 
 test_that("split pattern 3", {
   alPre <- split("", ",")
-  expect_equal(alPre, character(0))
+  expect_equal(alPre, "")
 })

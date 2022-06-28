@@ -70,13 +70,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // testPosMt
-std::vector<int> testPosMt(std::vector<int> fromto);
-RcppExport SEXP _relsearch_testPosMt(SEXP fromtoSEXP) {
+std::vector<int> testPosMt(std::string range);
+RcppExport SEXP _relsearch_testPosMt(SEXP rangeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector<int> >::type fromto(fromtoSEXP);
-    rcpp_result_gen = Rcpp::wrap(testPosMt(fromto));
+    Rcpp::traits::input_parameter< std::string >::type range(rangeSEXP);
+    rcpp_result_gen = Rcpp::wrap(testPosMt(range));
     return rcpp_result_gen;
 END_RCPP
 }
