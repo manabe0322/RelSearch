@@ -5,10 +5,6 @@ std::vector<int> extPosMt(std::string range){
   const char* del_1 = " ";
   const char* del_2 = "-";
   std::vector<std::string> sepRange = split(range, del_1);
-
-  std::cout << "Hello world" << std::endl;
-
-
   int len = sepRange.size();
   std::vector<int> posMt(0);
   for(int i = 0; i < len; ++i){
