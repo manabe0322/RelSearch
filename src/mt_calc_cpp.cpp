@@ -49,12 +49,12 @@ std::vector<int> extPosMtQR(std::string qRan, std::string rRan){
 }
 
 /*Make shared range between query range and reference range (testthat)*/
-/*// [[Rcpp::export]]
+// [[Rcpp::export]]
 std::string makeShareRange(std::vector<int> posMtQR){
   int len = posMtQR.size();
   std::vector<int> posBreak;
-  posBreak.push_back(0);
-  for(int i = 2; i < len; ++i){
+  posBreak.push_back(-1);
+  for(int i = 1; i < len; ++i){
     int sa = posMtQR[i] - posMtQR[i - 1];
     if(sa != 1){
       posBreak.push_back(i - 1);
@@ -62,9 +62,26 @@ std::string makeShareRange(std::vector<int> posMtQR){
   }
   posBreak.push_back(len - 1);
   int nSeg = posBreak.size() - 1;
-  std::vector<std::string> seg;
+  std::string shareRange = "";
+  std::string hyphen = "-";
+  std::string space = " ";
   for(int i = 0; i < nSeg; ++i){
-
+    int posBreak_1 = posBreak[i] + 1;
+    int posFromInt = posMtQR[posBreak_1];
+    std::string posFrom = int_to_str(posFromInt);
+    int posBreak_2 = posBreak[i + 1];
+    int posToInt = posMtQR[posBreak_2];
+    std::string posTo = int_to_str(posToInt);
+    if(posBreak_1 == posBreak_2){
+      shareRange += posFrom;
+    }else{
+      shareRange += posFrom;
+      shareRange += hyphen;
+      shareRange += posTo;
+    }
+    if(i < nSeg - 1){
+      shareRange += space;
+    }
   }
-
-}*/
+  return(shareRange);
+}

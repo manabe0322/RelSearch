@@ -33,6 +33,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// int_to_str
+std::string int_to_str(int num);
+RcppExport SEXP _relsearch_int_to_str(SEXP numSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type num(numSEXP);
+    rcpp_result_gen = Rcpp::wrap(int_to_str(num));
+    return rcpp_result_gen;
+END_RCPP
+}
 // tousa
 std::vector<int> tousa(int start, int end, int interval);
 RcppExport SEXP _relsearch_tousa(SEXP startSEXP, SEXP endSEXP, SEXP intervalSEXP) {
@@ -89,6 +100,17 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::string >::type qRan(qRanSEXP);
     Rcpp::traits::input_parameter< std::string >::type rRan(rRanSEXP);
     rcpp_result_gen = Rcpp::wrap(extPosMtQR(qRan, rRan));
+    return rcpp_result_gen;
+END_RCPP
+}
+// makeShareRange
+std::string makeShareRange(std::vector<int> posMtQR);
+RcppExport SEXP _relsearch_makeShareRange(SEXP posMtQRSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<int> >::type posMtQR(posMtQRSEXP);
+    rcpp_result_gen = Rcpp::wrap(makeShareRange(posMtQR));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -224,11 +246,13 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_relsearch_split", (DL_FUNC) &_relsearch_split, 2},
     {"_relsearch_str_to_int", (DL_FUNC) &_relsearch_str_to_int, 1},
+    {"_relsearch_int_to_str", (DL_FUNC) &_relsearch_int_to_str, 1},
     {"_relsearch_tousa", (DL_FUNC) &_relsearch_tousa, 3},
     {"_relsearch_searchPos", (DL_FUNC) &_relsearch_searchPos, 2},
     {"_relsearch_extPosMt", (DL_FUNC) &_relsearch_extPosMt, 1},
     {"_relsearch_testPosMt", (DL_FUNC) &_relsearch_testPosMt, 1},
     {"_relsearch_extPosMtQR", (DL_FUNC) &_relsearch_extPosMtQR, 2},
+    {"_relsearch_makeShareRange", (DL_FUNC) &_relsearch_makeShareRange, 1},
     {"_relsearch_kinLike", (DL_FUNC) &_relsearch_kinLike, 8},
     {"_relsearch_makeDummyAf", (DL_FUNC) &_relsearch_makeDummyAf, 3},
     {"_relsearch_makeDummyGt", (DL_FUNC) &_relsearch_makeDummyGt, 2},

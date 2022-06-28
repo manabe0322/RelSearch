@@ -28,6 +28,12 @@ int str_to_int(std::string str){
 }
 
 // [[Rcpp::export]]
+std::string int_to_str(int num){
+  std::string str = std::to_string(num);
+  return(str);
+}
+
+// [[Rcpp::export]]
 std::vector<int> tousa(int start, int end, int interval){
   int len = (end - start) / interval + 1;
   std::vector<int> vec(len);

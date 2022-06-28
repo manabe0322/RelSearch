@@ -9,6 +9,10 @@ str_to_int <- function(str) {
     .Call(`_relsearch_str_to_int`, str)
 }
 
+int_to_str <- function(num) {
+    .Call(`_relsearch_int_to_str`, num)
+}
+
 tousa <- function(start, end, interval) {
     .Call(`_relsearch_tousa`, start, end, interval)
 }
@@ -27,6 +31,10 @@ testPosMt <- function(range) {
 
 extPosMtQR <- function(qRan, rRan) {
     .Call(`_relsearch_extPosMtQR`, qRan, rRan)
+}
+
+makeShareRange <- function(posMtQR) {
+    .Call(`_relsearch_makeShareRange`, posMtQR)
 }
 
 kinLike <- function(qgt, rgt, af, afAl, probIBD, consMu, myu, ape) {
