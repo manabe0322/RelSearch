@@ -10,6 +10,29 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// split
+std::vector<std::string> split(std::string str, const char* del);
+RcppExport SEXP _relsearch_split(SEXP strSEXP, SEXP delSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type str(strSEXP);
+    Rcpp::traits::input_parameter< const char* >::type del(delSEXP);
+    rcpp_result_gen = Rcpp::wrap(split(str, del));
+    return rcpp_result_gen;
+END_RCPP
+}
+// str_to_int
+int str_to_int(std::string str);
+RcppExport SEXP _relsearch_str_to_int(SEXP strSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type str(strSEXP);
+    rcpp_result_gen = Rcpp::wrap(str_to_int(str));
+    return rcpp_result_gen;
+END_RCPP
+}
 // tousa
 IntegerVector tousa(int start, int end, int interval);
 RcppExport SEXP _relsearch_tousa(SEXP startSEXP, SEXP endSEXP, SEXP intervalSEXP) {
@@ -32,6 +55,17 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type vec(vecSEXP);
     Rcpp::traits::input_parameter< double >::type target(targetSEXP);
     rcpp_result_gen = Rcpp::wrap(searchPos(vec, target));
+    return rcpp_result_gen;
+END_RCPP
+}
+// extPosMt
+IntegerVector extPosMt(std::string range);
+RcppExport SEXP _relsearch_extPosMt(SEXP rangeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type range(rangeSEXP);
+    rcpp_result_gen = Rcpp::wrap(extPosMt(range));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -117,18 +151,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// split
-std::vector<std::string> split(std::string str, const char* del);
-RcppExport SEXP _relsearch_split(SEXP strSEXP, SEXP delSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string >::type str(strSEXP);
-    Rcpp::traits::input_parameter< const char* >::type del(delSEXP);
-    rcpp_result_gen = Rcpp::wrap(split(str, del));
-    return rcpp_result_gen;
-END_RCPP
-}
 // obtainAl
 NumericVector obtainAl(std::string hap);
 RcppExport SEXP _relsearch_obtainAl(SEXP hapSEXP) {
@@ -177,14 +199,16 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_relsearch_split", (DL_FUNC) &_relsearch_split, 2},
+    {"_relsearch_str_to_int", (DL_FUNC) &_relsearch_str_to_int, 1},
     {"_relsearch_tousa", (DL_FUNC) &_relsearch_tousa, 3},
     {"_relsearch_searchPos", (DL_FUNC) &_relsearch_searchPos, 2},
+    {"_relsearch_extPosMt", (DL_FUNC) &_relsearch_extPosMt, 1},
     {"_relsearch_kinLike", (DL_FUNC) &_relsearch_kinLike, 8},
     {"_relsearch_makeDummyAf", (DL_FUNC) &_relsearch_makeDummyAf, 3},
     {"_relsearch_makeDummyGt", (DL_FUNC) &_relsearch_makeDummyGt, 2},
     {"_relsearch_kinLikeDrop", (DL_FUNC) &_relsearch_kinLikeDrop, 9},
     {"_relsearch_calcKinLr", (DL_FUNC) &_relsearch_calcKinLr, 10},
-    {"_relsearch_split", (DL_FUNC) &_relsearch_split, 2},
     {"_relsearch_obtainAl", (DL_FUNC) &_relsearch_obtainAl, 1},
     {"_relsearch_is_integer", (DL_FUNC) &_relsearch_is_integer, 1},
     {"_relsearch_calcMuStep", (DL_FUNC) &_relsearch_calcMuStep, 2},

@@ -1,30 +1,4 @@
-#include <Rcpp.h>
-#include <stdio.h>
-using namespace Rcpp;
-using namespace std;
-
-// [[Rcpp::export]]
-IntegerVector tousa(int start, int end, int interval){
-  int len = (end - start) / interval + 1;
-  IntegerVector vec(len);
-  for(int i = 0; i < len; ++i){
-    vec[i] = start + i * interval;
-  }
-  return(vec);
-}
-
-// [[Rcpp::export]]
-int searchPos(NumericVector vec, double target){
-  int len = vec.length();
-  int pos = len;
-  for(int i = 0; i < len; ++i){
-    if(vec[i] == target){
-      pos = i;
-      break;
-    }
-  }
-  return(pos);
-}
+#include "header.h"
 
 // [[Rcpp::export]]
 NumericVector kinLike(NumericVector qgt, NumericVector rgt, NumericVector af, NumericVector afAl, NumericVector probIBD,
