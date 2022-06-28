@@ -21,23 +21,6 @@ std::vector<int> extPosMt(std::string range){
   return(posMt);
 }
 
-/*Extract positions from range (testthat)*/
-// [[Rcpp::export]]
-std::vector<int> testPosMt(std::string range){
-  const char* del_1 = " ";
-  const char* del_2 = "-";
-  std::vector<std::string> sepRange = split(range, del_1);
-  int len = sepRange.size();
-  std::vector<int> posMt(0);
-  std::vector<std::string> sepRange2 = split(sepRange[0], del_2);
-  int len2 = sepRange2.size();
-  std::vector<int> fromto(len2);
-  for(int j = 0; j < len2; ++j){
-    fromto[j] = str_to_int(sepRange2[j]);
-  }
-  return(fromto);
-}
-
 /*Extract shared positions between query range and reference range (testthat)*/
 //' @export
 // [[Rcpp::export]]
