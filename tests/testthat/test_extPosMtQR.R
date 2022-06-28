@@ -9,9 +9,20 @@ test_that("extPosMtQR pattern 1", {
   expect_equal(posMtQR[610], 16365)
 })
 
-test_that("extPosMtQR pattern 2", {
+test_that("extPosMtQR pattern 2-1", {
   qRan <- "72-339 16024-16365"
   rRan <- "73-340 16025-16364"
+  posMtQR <- extPosMtQR(qRan, rRan)
+  expect_equal(length(posMtQR), 607)
+  expect_equal(posMtQR[1], 73)
+  expect_equal(posMtQR[267], 339)
+  expect_equal(posMtQR[268], 16025)
+  expect_equal(posMtQR[607], 16364)
+})
+
+test_that("extPosMtQR pattern 2-2", {
+  qRan <- "16024-16365 72-339"
+  rRan <- "16025-16364 73-340"
   posMtQR <- extPosMtQR(qRan, rRan)
   expect_equal(length(posMtQR), 607)
   expect_equal(posMtQR[1], 73)
