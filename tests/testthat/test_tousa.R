@@ -16,3 +16,9 @@ test_that("tousa pattern 2", {
   expect_equal(vec[4], 9)
   expect_equal(vec[5], 11)
 })
+
+test_that("tousa pattern 3", {
+  vec <- tousa(3, 3, 1)
+  expect_equal(length(vec), 1)
+  expect_equal(vec[1], 3)
+})

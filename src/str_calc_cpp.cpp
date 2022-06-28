@@ -114,19 +114,26 @@ NumericMatrix makeDummyAf(NumericMatrix dummyGt, NumericVector af, NumericVector
   afAl_dummy.erase(unique(afAl_dummy.begin(), afAl_dummy.end()), afAl_dummy.end());
 
   int len = afAl_dummy.length() - 1;
-  IntegerVector posAl_1(len);
+  std::vector<int> posAl_1(len);
   for(int i = 0; i < len; ++i){
     posAl_1[i] = searchPos(afAl, afAl_dummy[i]);
   }
-  IntegerVector posAl_all = tousa(0, afAl.length() - 1, 1);
-  IntegerVector posAl_2 = setdiff(posAl_all, posAl_1);
+  std::vector<int> posAl_all = tousa(0, afAl.length() - 1, 1);
+  std::vector<int> posAl_2;
+  set_difference(posAl_all.begin(), posAl_all.end(), posAl_1.begin(), posAl_1.end(), inserter(posAl_2, posAl_2.end()));
 
   NumericMatrix dummyData(2, len + 1);
   for(int i = 0; i < len; ++i){
     int pos1 = posAl_1[i];
     dummyData(0, i) = af[pos1];
   }
-  NumericVector freqQ = af[posAl_2];
+
+  int len2 = posAl_2.size();
+  NumericVector freqQ(len2);
+  for(int i = 0; i < len2; ++i){
+    int pos2 = posAl_2[i];
+    freqQ[i] = af[pos2];
+  }
   dummyData(0, len) = sum(freqQ);
   dummyData(1, _) = afAl_dummy;
 

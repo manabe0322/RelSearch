@@ -21,6 +21,10 @@ extPosMt <- function(range) {
     .Call(`_relsearch_extPosMt`, range)
 }
 
+testPosMt <- function(fromto) {
+    .Call(`_relsearch_testPosMt`, fromto)
+}
+
 kinLike <- function(qgt, rgt, af, afAl, probIBD, consMu, myu, ape) {
     .Call(`_relsearch_kinLike`, qgt, rgt, af, afAl, probIBD, consMu, myu, ape)
 }
