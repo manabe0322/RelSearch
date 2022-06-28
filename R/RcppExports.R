@@ -29,10 +29,6 @@ extPosMt <- function(range) {
     .Call(`_relsearch_extPosMt`, range)
 }
 
-testPosMt <- function(range) {
-    .Call(`_relsearch_testPosMt`, range)
-}
-
 #' @export
 extPosMtQR <- function(qRan, rRan) {
     .Call(`_relsearch_extPosMtQR`, qRan, rRan)

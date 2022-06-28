@@ -92,17 +92,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// testPosMt
-std::vector<int> testPosMt(std::string range);
-RcppExport SEXP _relsearch_testPosMt(SEXP rangeSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string >::type range(rangeSEXP);
-    rcpp_result_gen = Rcpp::wrap(testPosMt(range));
-    return rcpp_result_gen;
-END_RCPP
-}
 // extPosMtQR
 std::vector<int> extPosMtQR(std::string qRan, std::string rRan);
 RcppExport SEXP _relsearch_extPosMtQR(SEXP qRanSEXP, SEXP rRanSEXP) {
@@ -263,7 +252,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_relsearch_searchPos_double", (DL_FUNC) &_relsearch_searchPos_double, 2},
     {"_relsearch_searchPos_int", (DL_FUNC) &_relsearch_searchPos_int, 2},
     {"_relsearch_extPosMt", (DL_FUNC) &_relsearch_extPosMt, 1},
-    {"_relsearch_testPosMt", (DL_FUNC) &_relsearch_testPosMt, 1},
     {"_relsearch_extPosMtQR", (DL_FUNC) &_relsearch_extPosMtQR, 2},
     {"_relsearch_makeShareRange", (DL_FUNC) &_relsearch_makeShareRange, 1},
     {"_relsearch_kinLike", (DL_FUNC) &_relsearch_kinLike, 8},
