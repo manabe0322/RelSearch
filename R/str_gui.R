@@ -816,7 +816,8 @@ tabStrResult <- function(envProj, envGUI){
     nR <- length(rStrName)
 
     overLrAllMat <- lrAll[, , nL + 1]
-    rownames(overLrAllMat) <- qStrName
+    overLrAllMat <- rbind(relStr, overLrAllMat)
+    rownames(overLrAllMat) <- c("relationship", qStrName)
     colnames(overLrAllMat) <- rStrName
     overLrAll <- as.vector(overLrAllMat)
 
