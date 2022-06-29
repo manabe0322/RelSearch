@@ -80,13 +80,14 @@ IntegerMatrix matchY(CharacterVector qHap, CharacterVector rHap){
     bool matchQR = setequal(qAl, rAl);
     /*mismatch or not*/
     if(matchQR == false){
-      judgeMat(0, i) = 1;
-      sumL0 = sumL0 + 1;
-      /*ignore or not*/
+      /*ignore*/
       if(qAl.length() == 0){
         judgeMat(1, i) = 1;
         sumL1 = sumL1 + 1;
+      /*not ignore*/
       }else{
+        judgeMat(0, i) = 1;
+        sumL0 = sumL0 + 1;
         judgeMat(2, i) = calcMuStep(qAl, rAl);
       }
     }
