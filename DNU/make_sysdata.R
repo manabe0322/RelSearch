@@ -29,7 +29,7 @@ myuStrDefault[21] <- 0.001130039
 
 #Default probabilities of IBD
 probIBDDefault <- matrix(0, 5, 3)
-rownames(probIBDDefault) <- c("direct", "parent-child", "sibling", "2nd-degree", "3rd-degree")
+rownames(probIBDDefault) <- c("direct match", "parent-child", "sibling", "2nd-degree", "3rd-degree")
 colnames(probIBDDefault) <- c("Pr_IBD2", "Pr_IBD1", "Pr_IBD0")
 probIBDDefault[1, ] <- c(1, 0, 0)
 probIBDDefault[2, ] <- c(0, 1, 0)
