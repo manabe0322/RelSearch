@@ -142,7 +142,6 @@ relsearch <- function(){
   pathPack <- path.package("relsearch", quiet = FALSE)
   assign("softVer", softVer, envir = envGUI)
   assign("pathPack", pathPack, envir = envGUI)
-  assign("finStr", FALSE, envir = envGUI)
 
   tf <- tktoplevel()
   tkwm.title(tf, paste("relsearch ver. ", softVer, sep = ""))
