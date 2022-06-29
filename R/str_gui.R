@@ -816,10 +816,10 @@ tabStrResult <- function(envProj, envGUI){
     nR <- length(rStrName)
 
     overLrAllMat <- lrAll[, , nL + 1]
+    overLrAll <- as.vector(overLrAllMat)
     overLrAllMat <- rbind(relStr, overLrAllMat)
     rownames(overLrAllMat) <- c("relationship", qStrName)
     colnames(overLrAllMat) <- rStrName
-    overLrAll <- as.vector(overLrAllMat)
 
     nD <- nQ * nR
     displayDefault <- matrix(0, nD, 4)
@@ -830,7 +830,7 @@ tabStrResult <- function(envProj, envGUI){
     displayDefault[, 2] <- displayR
     displayRel <- as.vector(sapply(relStr, rep, nQ))
     displayDefault[, 3] <- displayRel
-    displayDefault[, 4] <- signif(overLrAll, digits = 4)
+    displayDefault[, 4] <- sprintf('%.2e', overLrAll)
     displayData <- displayDefault[which(overLrAll >= 1), , drop = FALSE]
     displayData <- displayData[order(as.numeric(displayData[, 4]), decreasing = TRUE), , drop = FALSE]
     assign("displayData", displayData, envir = envStrResult)
