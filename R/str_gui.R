@@ -526,6 +526,9 @@ guiScreenStr <- function(envProj, envGUI){
 
     probIBDAll <- read.csv(paste0(pathPack, "/parameters/ibd.csv"), header = TRUE, row.names = 1)
     probIBDAll <- as.matrix(probIBDAll)
+    nRelAll <- nrow(probIBDAll)
+    consMuGen <- rep(FALSE, nRelAll)
+    consMuGen[rownames(probIBDAll) == "parent-child"] <- TRUE
 
     qCol <- colnames(qStrInput)
     posQName <- grep("Sample", qCol)
@@ -575,28 +578,24 @@ guiScreenStr <- function(envProj, envGUI){
       }
       names(apeAll) <- nameQL
 
-      likeH1All <- likeH2All <- lrAll <- array(0, dim = c(nQ, nR + 3 * nEmpRel, nL + 1))
-      rStrData <- matrix(0, nR + 3 * nEmpRel, ncol(rStrDataInput))
-      rStrName <- relStr <- rep(0, nR + 3 * nEmpRel)
+      likeH1All <- likeH2All <- lrAll <- array(0, dim = c(nQ, nR + (nRelAll - 1) * nEmpRel, nL + 1))
+      rStrData <- matrix(0, nR + (nRelAll - 1) * nEmpRel, ncol(rStrDataInput))
+      rStrName <- relStr <- rep(0, nR + (nRelAll - 1) * nEmpRel)
       countCf <- 1
       for(i in 1:nR){
         ref <- as.numeric(rStrDataInput[i, ])
         rn <- rStrNameInput[i]
         rel <- relInput[i]
         if(rel == ""){
-          probIBDs <- matrix(c(1, 0, 0,
-                               0, 1, 0,
-                               0.25, 0.5, 0.25,
-                               0, 0.5, 0.5),
-                             nrow = 4, byrow = TRUE)
-          rStrName[countCf:(countCf + 3)] <- rn
-          relStr[countCf:(countCf + 3)] <- c("direct", "parent-child", "sibling", "2nd-degree")
-          consMu <- c(FALSE, TRUE, FALSE, FALSE)
+          probIBDs <- probIBDAll
+          rStrName[countCf:(countCf + nRelAll - 1)] <- rn
+          relStr[countCf:(countCf + nRelAll - 1)] <- rownames(probIBDAll)
+          consMu <- consMuGen
         }else{
           probIBDs <- probIBDAll[rownames(probIBDAll) == rel, , drop = FALSE]
           rStrName[countCf] <- rn
           relStr[countCf] <- rel
-          if(probIBDs[1, 3] == 0){
+          if(rel == "parent-child"){
             consMu <- TRUE
           }else{
             consMu <- FALSE
@@ -610,8 +609,8 @@ guiScreenStr <- function(envProj, envGUI){
             likeH1All[k, countCf, ] <- lrData[1, ]
             likeH2All[k, countCf, ] <- lrData[2, ]
             lrAll[k, countCf, ] <- lrData[3, ]
-            info <- sprintf("%d%% done", round((nQ * (countCf - 1) + k) * 100 / (nQ * (nR + 3 * nEmpRel))))
-            setTkProgressBar(pb, (nQ * (countCf - 1) + k) * 100 / (nQ * (nR + 3 * nEmpRel)), sprintf("STR screening"), info)
+            info <- sprintf("%d%% done", round((nQ * (countCf - 1) + k) * 100 / (nQ * (nR + (nRelAll - 1) * nEmpRel))))
+            setTkProgressBar(pb, (nQ * (countCf - 1) + k) * 100 / (nQ * (nR + (nRelAll - 1) * nEmpRel)), sprintf("STR screening"), info)
           }
           countCf <- countCf + 1
         }
