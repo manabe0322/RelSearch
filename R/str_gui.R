@@ -584,10 +584,10 @@ guiScreenStr <- function(envProj, envGUI){
         rn <- rStrNameInput[i]
         rel <- relInput[i]
         if(rel == ""){
-          probIBDs <- matrix(c(1, 0, 0, 
-                               0, 1, 0, 
-                               0.25, 0.5, 0.25, 
-                               0, 0.5, 0.5), 
+          probIBDs <- matrix(c(1, 0, 0,
+                               0, 1, 0,
+                               0.25, 0.5, 0.25,
+                               0, 0.5, 0.5),
                              nrow = 4, byrow = TRUE)
           rStrName[countCf:(countCf + 3)] <- rn
           relStr[countCf:(countCf + 3)] <- c("direct", "parent-child", "sibling", "2nd-degree")
@@ -728,7 +728,7 @@ tabStrResult <- function(envProj, envGUI){
         tk2column(resultMlb, "add", label = "LR", width = 15)
         tkgrid(resultMlb, scr1)
         displayData <- displayDefault[posExtract, , drop = FALSE]
-        displayData <- displayData[order(as.numeric(displayData[, 4]), decreasing = TRUE), ]
+        displayData <- displayData[order(as.numeric(displayData[, 4]), decreasing = TRUE), , drop = FALSE]
         tk2insert.multi(resultMlb, "end", displayData)
         assign("resultMlb", resultMlb, envir = envStrResult)
         assign("scr1", scr1, envir = envStrResult)
