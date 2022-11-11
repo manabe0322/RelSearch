@@ -87,7 +87,7 @@ mutationStr <- function(envProj, envGUI){
       assign("myuStr", myuStr, envir = envMyu)
       myuSave <- cbind(names(myuStr), myuStr)
       colnames(myuSave) <- c("Marker", "Myu")
-      write.csv(myuSave, paste0(pathPack, "/parameters/myu.csv"), row.names = FALSE)
+      write.csv(myuSave, paste0(pathPack, "/extdata/parameters/myu.csv"), row.names = FALSE)
 
       tkdestroy(myuMlb)
       myuMlb <- tk2mclistbox(frameMyu1, width = 30, height = 20, resizablecolumns = TRUE, selectmode = "single")
@@ -136,7 +136,7 @@ mutationStr <- function(envProj, envGUI){
       assign("myuStr", myuStr, envir = envMyu)
       myuSave <- cbind(names(myuStr), myuStr)
       colnames(myuSave) <- c("Marker", "Myu")
-      write.csv(myuSave, paste0(pathPack, "/parameters/myu.csv"), row.names = FALSE)
+      write.csv(myuSave, paste0(pathPack, "/extdata/parameters/myu.csv"), row.names = FALSE)
 
       myuMlb <- get("myuMlb", pos = envMyu)
       tk2insert.multi(myuMlb, "end", c(nameAddL, addMyu))
@@ -165,7 +165,7 @@ mutationStr <- function(envProj, envGUI){
         assign("myuStr", myuStr, envir = envMyu)
         myuSave <- cbind(names(myuStr), myuStr)
         colnames(myuSave) <- c("Marker", "Myu")
-        write.csv(myuSave, paste0(pathPack, "/parameters/myu.csv"), row.names = FALSE)
+        write.csv(myuSave, paste0(pathPack, "/extdata/parameters/myu.csv"), row.names = FALSE)
 
         tkdestroy(myuMlb)
         myuMlb <- tk2mclistbox(frameMyu1, width = 30, height = 20, resizablecolumns = TRUE, selectmode = "single")
@@ -179,9 +179,9 @@ mutationStr <- function(envProj, envGUI){
   }
 
   pathPack <- get("pathPack", pos = envGUI)
-  parFn <- list.files(paste0(pathPack, "/parameters"))
+  parFn <- list.files(paste0(pathPack, "/extdata/parameters"))
   if(is.element("myu.csv", parFn)){
-    myuStr <- read.csv(paste0(pathPack, "/parameters/myu.csv"), header = TRUE)
+    myuStr <- read.csv(paste0(pathPack, "/extdata/parameters/myu.csv"), header = TRUE)
     myuStr <- as.matrix(myuStr)
     nameL <- myuStr[, colnames(myuStr) == "Marker"]
     myuStr <- as.numeric(myuStr[, colnames(myuStr) == "Myu"])
@@ -272,7 +272,7 @@ probIBDStr <- function(envProj, envGUI){
       relationship <- rownames(probIBDAll)
       probIBDAll[posSelect, ] <- c(editPrIBD2, editPrIBD1, editPrIBD0)
       assign("probIBDAll", probIBDAll, envir = envIBD)
-      write.csv(probIBDAll, paste0(pathPack, "/parameters/ibd.csv"))
+      write.csv(probIBDAll, paste0(pathPack, "/extdata/parameters/ibd.csv"))
 
       tkdestroy(ibdMlb)
       ibdMlb <- tk2mclistbox(frameIBD1, width = 60, height = 20, resizablecolumns = TRUE, selectmode = "single")
@@ -329,7 +329,7 @@ probIBDStr <- function(envProj, envGUI){
       probIBDAll <- rbind(probIBDAll, c(addPrIBD2, addPrIBD1, addPrIBD0))
       rownames(probIBDAll) <- c(relationship, nameAddRel)
       assign("probIBDAll", probIBDAll, envir = envIBD)
-      write.csv(probIBDAll, paste0(pathPack, "/parameters/ibd.csv"))
+      write.csv(probIBDAll, paste0(pathPack, "/extdata/parameters/ibd.csv"))
 
       ibdMlb <- get("ibdMlb", pos = envIBD)
       tk2insert.multi(ibdMlb, "end", c(nameAddRel, addPrIBD2, addPrIBD1, addPrIBD0))
@@ -357,7 +357,7 @@ probIBDStr <- function(envProj, envGUI){
         probIBDAll <- probIBDAll[-posSelect, , drop = FALSE]
         relationship <- rownames(probIBDAll)
         assign("probIBDAll", probIBDAll, envir = envIBD)
-        write.csv(probIBDAll, paste0(pathPack, "/parameters/ibd.csv"))
+        write.csv(probIBDAll, paste0(pathPack, "/extdata/parameters/ibd.csv"))
 
         tkdestroy(ibdMlb)
         ibdMlb <- tk2mclistbox(frameIBD1, width = 60, height = 20, resizablecolumns = TRUE, selectmode = "single")
@@ -373,9 +373,9 @@ probIBDStr <- function(envProj, envGUI){
   }
 
   pathPack <- get("pathPack", pos = envGUI)
-  parFn <- list.files(paste0(pathPack, "/parameters"))
+  parFn <- list.files(paste0(pathPack, "/extdata/parameters"))
   if(is.element("ibd.csv", parFn)){
-    probIBDAll <- read.csv(paste0(pathPack, "/parameters/ibd.csv"), header = TRUE, row.names = 1)
+    probIBDAll <- read.csv(paste0(pathPack, "/extdata/parameters/ibd.csv"), header = TRUE, row.names = 1)
     probIBDAll <- as.matrix(probIBDAll)
   }else{
     probIBDAll <- matrix(0, 5, 3)
@@ -533,13 +533,13 @@ guiScreenStr <- function(envProj, envGUI){
   }else{
     pathPack <- get("pathPack", pos = envGUI)
 
-    myuStr <- read.csv(paste0(pathPack, "/parameters/myu.csv"), header = TRUE)
+    myuStr <- read.csv(paste0(pathPack, "/extdata/parameters/myu.csv"), header = TRUE)
     myuStr <- as.matrix(myuStr)
     nameMyuL <- myuStr[, colnames(myuStr) == "Marker"]
     myuStr <- as.numeric(myuStr[, colnames(myuStr) == "Myu"])
     names(myuStr) <- nameMyuL
 
-    probIBDAll <- read.csv(paste0(pathPack, "/parameters/ibd.csv"), header = TRUE, row.names = 1)
+    probIBDAll <- read.csv(paste0(pathPack, "/extdata/parameters/ibd.csv"), header = TRUE, row.names = 1)
     probIBDAll <- as.matrix(probIBDAll)
     nRelAll <- nrow(probIBDAll)
     consMuGen <- rep(FALSE, nRelAll)

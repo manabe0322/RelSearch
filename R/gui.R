@@ -159,7 +159,7 @@ relsearch <- function(){
 
   help_menu <- tkmenu(topMenu, tearoff = FALSE, activebackground = "lightskyblue1")
   tkadd(topMenu, "cascade", label = "Help", menu = help_menu)
-  tkadd(help_menu, "command", label = "Manual", command = function() browseURL(paste0(pathPack, "/manual/relsearch_v", softVer, "_manual.html")))
+  tkadd(help_menu, "command", label = "Manual", command = function() browseURL(paste0(pathPack, "/extdata/manual/relsearch_", softVer, "_manual.pdf")))
 
   tabs <- tk2notebook(tf, tabs = c("STR analysis", "STR results", "Y analysis", "Y results", "mtDNA analysis", "mtDNA results"))
   tab1 <- tk2notetab(tabs, "STR analysis")
