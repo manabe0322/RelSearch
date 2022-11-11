@@ -254,7 +254,7 @@ tabMtResult <- function(envProj, envGUI){
         detailData <- matrix("", nHap, 4)
         colnames(detailData) <- c(paste0("Query haplotype (", selectQName, ")"),
                                   paste0("Reference haplotype (", selectRName, ")"),
-                                  "Out of common range",
+                                  "Out of shared range",
                                   "Inconsistency")
         detailData[is.element(qrHap, qHap), 1] <- qHap
         detailData[is.element(qrHap, rHap), 2] <- rHap
@@ -266,14 +266,14 @@ tabMtResult <- function(envProj, envGUI){
         tfDetail <- tktoplevel()
         tkwm.title(tfDetail, "mtDNA result in detail")
 
-        tkgrid(tklabel(tfDetail, text = paste0("Common range : ", shareRange_mt[posShowQ, posShowR])), padx = 10, pady = 5)
+        tkgrid(tklabel(tfDetail, text = paste0("Shared range : ", shareRange_mt[posShowQ, posShowR])), padx = 10, pady = 5)
 
         frameDetail2 <- tkframe(tfDetail)
         scr2 <- tkscrollbar(frameDetail2, repeatinterval = 5, command = function(...) tkyview(detailMlb, ...))
         detailMlb <- tk2mclistbox(frameDetail2, width = 105, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr2, ...))
         tk2column(detailMlb, "add", label = paste0("Query haplotype (", selectQName, ")"), width = 30)
         tk2column(detailMlb, "add", label = paste0("Reference haplotype (", selectRName, ")"), width = 30)
-        tk2column(detailMlb, "add", label = "Out of common range", width = 25)
+        tk2column(detailMlb, "add", label = "Out of shared range", width = 25)
         tk2column(detailMlb, "add", label = "Inconsistency", width = 20)
         tkgrid(detailMlb, scr2)
         tk2insert.multi(detailMlb, "end", detailData)
