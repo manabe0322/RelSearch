@@ -34,31 +34,30 @@ bool is_integer(double x){
 /*Calculate mutational step between query alleles and reference alleles (testthat)*/
 // [[Rcpp::export]]
 int calcMuStep(NumericVector qAl, NumericVector rAl){
-  int nqAl = qAl.length();
-  int nrAl = rAl.length();
-  IntegerVector diff(nqAl * nrAl, 99);
-  int pos = 0;
-  for(int i = 0; i < nqAl; ++i){
-    double q1 = qAl[i];
-    if(is_integer(q1)){
-      int q2 = (int)q1;
+  int muStep = 0;
+  if(setequal(qAl, rAl) == false){
+    int nqAl = qAl.length();
+    int nrAl = rAl.length();
+    IntegerVector diff(nqAl * nrAl, 99);
+    int pos = 0;
+    for(int i = 0; i < nqAl; ++i){
+      double q1 = qAl[i];
       for(int j = 0; j < nrAl; ++j){
         double r1 = rAl[j];
-        if(is_integer(r1)){
-          int r2 = (int)r1;
-          if(q2 > r2){
-            diff[pos] = q2 - r2;
-          }else if(q2 < r2){
-            diff[pos] = r2 - q2;
-          }
+        double d = 99;
+        if(q1 > r1){
+          d = q1 - r1;
+        }else if(q1 < r1){
+          d = r1 - q1;
+        }
+        if(is_integer(d)){
+          diff[pos] = (int)d;
         }
         pos = pos + 1;
       }
-    }else{
-      pos = pos + nrAl;
     }
+    muStep = min(diff);
   }
-  int muStep = min(diff);
   return(muStep);
 }
 
