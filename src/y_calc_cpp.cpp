@@ -81,7 +81,9 @@ IntegerMatrix matchY(CharacterVector qHap, CharacterVector rHap){
     /*mismatch or not*/
     if(matchQR == false){
       /*ignore*/
-      if(qAl.length() == 0){
+      NumericVector qrAl = union_(qAl, rAl);
+      bool judgeIgnore = setequal(qrAl, rAl);
+      if(judgeIgnore){
         judgeMat(1, i) = 1;
         sumL1 = sumL1 + 1;
       /*not ignore*/
@@ -94,6 +96,7 @@ IntegerMatrix matchY(CharacterVector qHap, CharacterVector rHap){
   }
   judgeMat(0, nL) = sumL0;
   judgeMat(1, nL) = sumL1;
+  judgeMat(2, nL) = max(judgeMat(2, _));
   return(judgeMat);
 }
 
