@@ -150,6 +150,7 @@ tabYResult <- function(envProj, envGUI){
              tklabel(frameD1, text = "Reference"),
              tklabel(frameD1, text = "Maximum number of inconsistent loci"),
              tklabel(frameD1, text = "Maximum number of ignored loci"),
+             tklabel(frameD1, text = "Maximum mutational step"),
              padx = 10, pady = 5)
 
       candQ <- c("All", qYName)
@@ -166,31 +167,32 @@ tabYResult <- function(envProj, envGUI){
       selectNL_dVar <- tclVar(1)
       entryNL_d <- tkentry(frameD1, textvariable = selectNL_dVar, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
 
-      tkgrid(comboQ, comboR, entryNL_i, entryNL_d, padx = 10, pady = 5)
+      selectMMSVar <- tclVar(2)
+      entryMMS <- tkentry(frameD1, textvariable = selectMMSVar, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+
+      tkgrid(comboQ, comboR, entryNL_i, entryNL_d, entryMMS, padx = 10, pady = 5)
       tkgrid(frameD1)
 
       frameD2 <- tkframe(tf)
       tkgrid(tkbutton(frameD2, text = "    Set    ", cursor = "hand2",
-                      command = function() setDisplay2(tf, tclvalue(selectQVar), tclvalue(selectRVar), as.numeric(tclvalue(selectNL_iVar)), as.numeric(tclvalue(selectNL_dVar)))),
+                      command = function() setDisplay2(tf, tclvalue(selectQVar), tclvalue(selectRVar),
+                                                       as.numeric(tclvalue(selectNL_iVar)), as.numeric(tclvalue(selectNL_dVar)), as.numeric(tclvalue(selectMMSVar)))),
              padx = 10, pady = 5)
       tkgrid(frameD2)
     }
 
-    setDisplay2 <- function(tf, selectQ, selectR, selectNL_i, selectNL_d){
-      if(selectQ == "All"){
-        posQ <- 1:nD
-      }else{
-        posQ <- which(displayQ == selectQ)
+    setDisplay2 <- function(tf, selectQ, selectR, selectNL_i, selectNL_d, selectMMS){
+      selectMat <- matrix(TRUE, nD, 5)
+      if(selectQ != "All"){
+        selectMat[, 1] <- displayQ == selectQ
       }
-      if(selectR == "All"){
-        posR <- 1:nD
-      }else{
-        posR <- which(displayR == selectR)
+      if(selectR != "All"){
+        selectMat[, 2] <- displayR == selectR
       }
-      posNL_i <- which(nL_i <= selectNL_i)
-      posNL_d <- which(nL_d <= selectNL_d)
-
-      posExtract <- intersect(intersect(intersect(posQ, posR), posNL_i), posNL_d)
+      selectMat[, 3] <- nL_i <= selectNL_i
+      selectMat[, 4] <- nL_d <= selectNL_d
+      selectMat[, 5] <- mms <= selectMMS
+      posExtract <- which(apply(selectMat, 1, all) == TRUE)
 
       if(length(posExtract) != 0){
         resultMlb <- get("resultMlb", pos = envYResult)
@@ -198,15 +200,18 @@ tabYResult <- function(envProj, envGUI){
         scr1 <- get("scr1", pos = envYResult)
         tkdestroy(scr1)
         scr1 <- tkscrollbar(frameResult1, repeatinterval = 5, command = function(...) tkyview(resultMlb, ...))
-        resultMlb <- tk2mclistbox(frameResult1, width = 90, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+        resultMlb <- tk2mclistbox(frameResult1, width = 120, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
         tk2column(resultMlb, "add", label = "Query", width = 15)
         tk2column(resultMlb, "add", label = "Reference", width = 15)
         tk2column(resultMlb, "add", label = "Number of inconsistent loci", width = 30)
         tk2column(resultMlb, "add", label = "Number of ignored loci", width = 30)
+        tk2column(resultMlb, "add", label = "Maximum mutational step", width = 30)
         tkgrid(resultMlb, scr1)
         displayData <- displayDefault[posExtract, , drop = FALSE]
+        displayData <- displayData[order(as.numeric(displayData[, 5])), , drop = FALSE]
         displayData <- displayData[order(as.numeric(displayData[, 4])), , drop = FALSE]
         displayData <- displayData[order(as.numeric(displayData[, 3])), , drop = FALSE]
+        displayData[which(as.numeric(displayData[, 5]) == 99), 5] <- "Not integer"
         tk2insert.multi(resultMlb, "end", displayData)
         assign("resultMlb", resultMlb, envir = envYResult)
         assign("scr1", scr1, envir = envYResult)
@@ -249,6 +254,7 @@ tabYResult <- function(envProj, envGUI){
         detailData[, 5] <- c(qDrop_y_ext2, qDrop_y_ext[nL + 1])
         muStep_y_ext <- muStep_y[posShowQ, posShowR, ]
         muStep_y_ext[which(muStep_y_ext == 0)] <- ""
+        muStep_y_ext[which(muStep_y_ext == 99)] <- "Not integer"
         detailData[, 6] <- muStep_y_ext
 
         tfDetail <- tktoplevel()
@@ -294,10 +300,13 @@ tabYResult <- function(envProj, envGUI){
     numQDrop <- qDrop_y[, , nL + 1]
     rownames(numQDrop) <- qYName
     colnames(numQDrop) <- rYName
+    maxMuStep <- muStep_y[, , nL + 1]
+    rownames(maxMuStep) <- qYName
+    colnames(maxMuStep) <- rYName
 
     nD <- nQ * nR
-    displayDefault <- matrix(0, nD, 4)
-    colnames(displayDefault) <- c("Query", "Reference", "Number of inconsistent loci", "Number of ignored loci")
+    displayDefault <- matrix(0, nD, 5)
+    colnames(displayDefault) <- c("Query", "Reference", "Number of inconsistent loci", "Number of ignored loci", "Maximum mutational step")
     displayQ <- rep(qYName, nR)
     displayDefault[, 1] <- displayQ
     displayR <- as.vector(sapply(rYName, rep, nQ))
@@ -306,8 +315,11 @@ tabYResult <- function(envProj, envGUI){
     displayDefault[, 3] <- nL_i
     nL_d <- as.vector(numQDrop)
     displayDefault[, 4] <- nL_d
+    mms <- as.vector(maxMuStep)
+    displayDefault[, 5] <- mms
     displayData <- displayDefault[which(as.numeric(displayDefault[, 3]) <= 1), , drop = FALSE]
     displayData <- displayData[which(as.numeric(displayData[, 4]) <= 1), , drop = FALSE]
+    displayData <- displayData[which(as.numeric(displayData[, 5]) <= 2), , drop = FALSE]
     displayData <- displayData[order(as.numeric(displayData[, 4])), , drop = FALSE]
     displayData <- displayData[order(as.numeric(displayData[, 3])), , drop = FALSE]
     assign("displayData", displayData, envir = envYResult)
@@ -320,11 +332,12 @@ tabYResult <- function(envProj, envGUI){
 
     frameResult1 <- tkframe(frameTab4)
     scr1 <- tkscrollbar(frameResult1, repeatinterval = 5, command = function(...) tkyview(resultMlb, ...))
-    resultMlb <- tk2mclistbox(frameResult1, width = 90, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+    resultMlb <- tk2mclistbox(frameResult1, width = 120, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
     tk2column(resultMlb, "add", label = "Query", width = 15)
     tk2column(resultMlb, "add", label = "Reference", width = 15)
     tk2column(resultMlb, "add", label = "Number of inconsistent loci", width = 30)
     tk2column(resultMlb, "add", label = "Number of ignored loci", width = 30)
+    tk2column(resultMlb, "add", label = "Maximum mutational step", width = 30)
     tkgrid(resultMlb, scr1)
     tk2insert.multi(resultMlb, "end", displayData)
     assign("resultMlb", resultMlb, envir = envYResult)
