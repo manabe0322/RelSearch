@@ -56,8 +56,8 @@ kinLikeDrop <- function(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd) {
 }
 
 #' @export
-calcKinLr <- function(query, ref, afList, afAlList, probIBD, consMu, myuAll, apeAll, dropMethStr, pd) {
-    .Call(`_relsearch_calcKinLr`, query, ref, afList, afAlList, probIBD, consMu, myuAll, apeAll, dropMethStr, pd)
+calcKinLr <- function(query, ref, afList, afAlList, probIBD, consMu, myus, apes, dropMethStr, pd) {
+    .Call(`_relsearch_calcKinLr`, query, ref, afList, afAlList, probIBD, consMu, myus, apes, dropMethStr, pd)
 }
 
 obtainAl <- function(hap) {

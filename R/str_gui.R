@@ -599,6 +599,7 @@ guiScreenStr <- function(envProj, envGUI){
       countCf <- 1
       for(i in 1:nR){
         ref <- as.numeric(rStrDataInput[i, ])
+        ref[is.na(ref)] <- NaN
         rn <- rStrNameInput[i]
         rel <- relInput[i]
         if(rel == ""){
@@ -620,10 +621,11 @@ guiScreenStr <- function(envProj, envGUI){
           rStrData[countCf, ] <- ref
           for(k in 1:nQ){
             query <- as.numeric(qStrData[k, ])
+            query[is.na(query)] <- -99
             lrData <- calcKinLr(query, ref, afList, afAlList, probIBDs[j, ], consMu[j], myuAll, apeAll, dropMethStr, pd)
-            likeH1All[k, countCf, ] <- lrData[1, ]
-            likeH2All[k, countCf, ] <- lrData[2, ]
-            lrAll[k, countCf, ] <- lrData[3, ]
+            likeH1All[k, countCf, ] <- lrData[[1]]
+            likeH2All[k, countCf, ] <- lrData[[2]]
+            lrAll[k, countCf, ] <- lrData[[3]]
             info <- sprintf("%d%% done", round((nQ * (countCf - 1) + k) * 100 / (nQ * (nR + (nRelAll - 1) * nEmpRel))))
             setTkProgressBar(pb, (nQ * (countCf - 1) + k) * 100 / (nQ * (nR + (nRelAll - 1) * nEmpRel)), sprintf("STR screening"), info)
           }

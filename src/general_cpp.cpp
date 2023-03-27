@@ -2,19 +2,20 @@
 
 // [[Rcpp::export]]
 std::vector<std::string> split(std::string str, const char* del){
-  int first = 0;
-  int last = str.find_first_of(del);
+  auto first = 0;
+  auto last = str.find_first_of(del);
+  int lenStr = str.size();
   std::vector<std::string> result;
   if(last == std::string::npos){
     result.push_back(str);
   }else{
-    while(first < str.size()){
+    while(int(first) < lenStr){
       std::string subStr(str, first, last - first);
       result.push_back(subStr);
       first = last + 1;
       last = str.find_first_of(del, first);
       if(last == std::string::npos){
-        last = str.size();
+        last = lenStr;
       }
     }
   }
@@ -44,8 +45,8 @@ std::vector<int> tousa(int start, int end, int interval){
 }
 
 // [[Rcpp::export]]
-int searchPos_double(NumericVector vec, double target){
-  int len = vec.length();
+int searchPos_double(std::vector<double> vec, double target){
+  int len = vec.size();
   int pos = len;
   for(int i = 0; i < len; ++i){
     if(vec[i] == target){
@@ -57,8 +58,8 @@ int searchPos_double(NumericVector vec, double target){
 }
 
 // [[Rcpp::export]]
-int searchPos_int(IntegerVector vec, int target){
-  int len = vec.length();
+int searchPos_int(std::vector<int> vec, int target){
+  int len = vec.size();
   int pos = len;
   for(int i = 0; i < len; ++i){
     if(vec[i] == target){
@@ -68,4 +69,3 @@ int searchPos_int(IntegerVector vec, int target){
   }
   return(pos);
 }
-
