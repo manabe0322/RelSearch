@@ -198,7 +198,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // obtainAl
-NumericVector obtainAl(std::string hap);
+std::vector<double> obtainAl(std::string hap);
 RcppExport SEXP _relsearch_obtainAl(SEXP hapSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -220,25 +220,25 @@ BEGIN_RCPP
 END_RCPP
 }
 // calcMuStep
-int calcMuStep(NumericVector qAl, NumericVector rAl);
+int calcMuStep(std::vector<double> qAl, std::vector<double> rAl);
 RcppExport SEXP _relsearch_calcMuStep(SEXP qAlSEXP, SEXP rAlSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type qAl(qAlSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type rAl(rAlSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type qAl(qAlSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type rAl(rAlSEXP);
     rcpp_result_gen = Rcpp::wrap(calcMuStep(qAl, rAl));
     return rcpp_result_gen;
 END_RCPP
 }
 // matchY
-IntegerMatrix matchY(CharacterVector qHap, CharacterVector rHap);
+std::vector<std::vector<int>> matchY(std::vector<std::string> qHap, std::vector<std::string> rHap);
 RcppExport SEXP _relsearch_matchY(SEXP qHapSEXP, SEXP rHapSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< CharacterVector >::type qHap(qHapSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type rHap(rHapSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type qHap(qHapSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type rHap(rHapSEXP);
     rcpp_result_gen = Rcpp::wrap(matchY(qHap, rHap));
     return rcpp_result_gen;
 END_RCPP

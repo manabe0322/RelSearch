@@ -115,9 +115,9 @@ guiScreenY <- function(envProj, envGUI){
         for(j in 1:nQ){
           qHap <- qYData[j, ]
           judgeMat <- matchY(qHap, rHap)
-          mismatch_y[j, i, ] <- judgeMat[1, ]
-          qDrop_y[j, i, ] <- judgeMat[2, ]
-          muStep_y[j, i, ] <- judgeMat[3, ]
+          mismatch_y[j, i, ] <- judgeMat[[1]]
+          qDrop_y[j, i, ] <- judgeMat[[2]]
+          muStep_y[j, i, ] <- judgeMat[[3]]
           info <- sprintf("%d%% done", round((nQ * (i - 1) + j) * 100 / (nQ * nR)))
           setTkProgressBar(pb, (nQ * (i - 1) + j) * 100 / (nQ * nR), sprintf("Y screening"), info)
         }

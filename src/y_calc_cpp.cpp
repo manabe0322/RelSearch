@@ -2,25 +2,26 @@
 
 /*Obtain alleles from a haplotype*/
 // [[Rcpp::export]]
-NumericVector obtainAl(std::string hap){
+std::vector<double> obtainAl(std::string hap){
   hap.erase(std::remove(hap.begin(), hap.end(), ' '), hap.end());
   if(hap == ""){
-    NumericVector al(0);
+    std::vector<double> al(0);
     return(al);
   }else{
     if(hap.find(",") != std::string::npos){
       const char* del = ",";
       std::vector<std::string> alPre = split(hap, del);
       int len = alPre.size();
-      NumericVector al(len);
+      std::vector<double> al(len);
       for(int i = 0; i < len; ++i){
         std::string alOne = alPre[i];
-        al[i] = stod(alOne);
+        al[i] = std::stod(alOne);
       }
+      std::sort(al.begin(), al.end());
       return(al);
     }else{
-      NumericVector al(1);
-      al[0] = stod(hap);
+      std::vector<double> al(1);
+      al[0] = std::stod(hap);
       return(al);
     }
   }
@@ -33,12 +34,28 @@ bool is_integer(double x){
 
 /*Calculate mutational step between query alleles and reference alleles (testthat)*/
 // [[Rcpp::export]]
-int calcMuStep(NumericVector qAl, NumericVector rAl){
+int calcMuStep(std::vector<double> qAl, std::vector<double> rAl){
   int muStep = 0;
-  if(setequal(qAl, rAl) == false){
-    int nqAl = qAl.length();
-    int nrAl = rAl.length();
-    IntegerVector diff(nqAl * nrAl, 99);
+
+  int qAlSize = qAl.size();
+  int rAlSize = rAl.size();
+  bool matchQR = true;
+  if(qAlSize == rAlSize){
+    for(int i = 0; i < qAlSize; ++i){
+      bool equalAl = qAl[i] == rAl[i];
+      if(!equalAl){
+        matchQR = false;
+        break;
+      }
+    }
+  }else{
+    matchQR = false;
+  }
+
+  if(matchQR == false){
+    int nqAl = qAl.size();
+    int nrAl = rAl.size();
+    std::vector<int> diff(nqAl * nrAl, 99);
     int pos = 0;
     for(int i = 0; i < nqAl; ++i){
       double q1 = qAl[i];
@@ -56,7 +73,7 @@ int calcMuStep(NumericVector qAl, NumericVector rAl){
         pos = pos + 1;
       }
     }
-    muStep = min(diff);
+    muStep = *min_element(diff.begin(), diff.end());
   }
   return(muStep);
 }
@@ -64,38 +81,60 @@ int calcMuStep(NumericVector qAl, NumericVector rAl){
 /*Matching query and reference Y haplotypes (testthat)*/
 //' @export
 // [[Rcpp::export]]
-IntegerMatrix matchY(CharacterVector qHap, CharacterVector rHap){
-  int nL = qHap.length();
-  IntegerMatrix judgeMat(3, nL + 1);
+std::vector<std::vector<int>> matchY(std::vector<std::string> qHap, std::vector<std::string> rHap){
+  int nL = qHap.size();
+  std::vector<std::vector<int>> judgeMat(3, std::vector<int>(nL + 1));
   int sumL0 = 0;
   int sumL1 = 0;
-  std::vector<std::string> qHap_cpp = as<std::vector<std::string>>(qHap);
-  std::vector<std::string> rHap_cpp = as<std::vector<std::string>>(rHap);
+  int maxMuStep = 0;
   for(int i = 0; i < nL; ++i){
-    std::string qH = qHap_cpp[i];
-    NumericVector qAl = obtainAl(qH);
-    std::string rH = rHap_cpp[i];
-    NumericVector rAl = obtainAl(rH);
-    bool matchQR = setequal(qAl, rAl);
+    std::string qH = qHap[i];
+    std::vector<double> qAl = obtainAl(qH);
+    std::string rH = rHap[i];
+    std::vector<double> rAl = obtainAl(rH);
+
+    int qAlSize = qAl.size();
+    int rAlSize = rAl.size();
+    bool matchQR = true;
+    if(qAlSize == rAlSize){
+      for(int i = 0; i < qAlSize; ++i){
+        bool equalAl = qAl[i] == rAl[i];
+        if(!equalAl){
+          matchQR = false;
+          break;
+        }
+      }
+    }else{
+      matchQR = false;
+    }
+
     /*mismatch or not*/
     if(matchQR == false){
       /*ignore*/
-      NumericVector qrAl = union_(qAl, rAl);
-      bool judgeIgnore = setequal(qrAl, rAl);
-      if(judgeIgnore){
-        judgeMat(1, i) = 1;
+      std::vector<double> qrAl;
+      std::set_union(qAl.begin(), qAl.end(), rAl.begin(), rAl.end(), inserter(qrAl, qrAl.end()));
+
+      std::vector<double> onlyRefAl;
+      std::set_difference(rAl.begin(), rAl.end(), qrAl.begin(), qrAl.end(), inserter(onlyRefAl, onlyRefAl.end()));
+
+      if(onlyRefAl.size() == 0){
+        judgeMat.at(1).at(i) = 1;
         sumL1 = sumL1 + 1;
       /*not ignore*/
       }else{
-        judgeMat(0, i) = 1;
+        judgeMat.at(0).at(i) = 1;
         sumL0 = sumL0 + 1;
-        judgeMat(2, i) = calcMuStep(qAl, rAl);
+        int muStep = calcMuStep(qAl, rAl);
+        judgeMat.at(2).at(i) = muStep;
+        if(maxMuStep < muStep){
+          maxMuStep = muStep;
+        }
       }
     }
   }
-  judgeMat(0, nL) = sumL0;
-  judgeMat(1, nL) = sumL1;
-  judgeMat(2, nL) = max(judgeMat(2, _));
+  judgeMat.at(0).at(nL) = sumL0;
+  judgeMat.at(1).at(nL) = sumL1;
+  judgeMat.at(2).at(nL) = maxMuStep;
   return(judgeMat);
 }
 
