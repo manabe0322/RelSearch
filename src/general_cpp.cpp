@@ -45,7 +45,7 @@ std::vector<int> tousa(int start, int end, int interval){
 }
 
 // [[Rcpp::export]]
-int searchPos_double(std::vector<double> vec, double target){
+int search_pos_double(std::vector<double> vec, double target){
   int len = vec.size();
   int pos = len;
   for(int i = 0; i < len; ++i){
@@ -58,7 +58,7 @@ int searchPos_double(std::vector<double> vec, double target){
 }
 
 // [[Rcpp::export]]
-int searchPos_int(std::vector<int> vec, int target){
+int search_pos_int(std::vector<int> vec, int target){
   int len = vec.size();
   int pos = len;
   for(int i = 0; i < len; ++i){

@@ -1,754 +1,347 @@
-conditionStr <- function(envProj, envGUI){
-  saveConditionStr <- function(){
-    inputOk <- "ok"
-    finStr <- get("finStr", pos = envProj)
-    if(finStr){
-      inputOk <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
+make_tab1 <- function(env_proj, env_gui){
+  open_file <- function(type){
+    sign_input <- "ok"
+    fin_auto <- get("fin_auto", pos = env_proj)
+    if(fin_auto){
+      sign_input <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
     }
-    if(inputOk == "ok"){
-      assign("maf", as.numeric(tclvalue(mafVar)), envir = envProj)
-      assign("dropMethStr", as.numeric(tclvalue(dropMethStrVar)), envir = envProj)
-      assign("pd", as.numeric(tclvalue(pdVar)), envir = envProj)
-      assign("finStr", FALSE, envir = envProj)
-      tabStrResult(envProj, envGUI)
-      tkdestroy(tf)
-    }
-  }
+    if(sign_input == "ok"){
+      # Set environment variable (env_proj)
+      set_env_proj_auto(env_proj, FALSE)
 
-  maf <- get("maf", pos = envProj)
-  mafVar <- tclVar(maf)
-  dropMethStr <- get("dropMethStr", pos = envProj)
-  dropMethStrVar <- tclVar(dropMethStr)
-  pd <- get("pd", pos = envProj)
-  pdVar <- tclVar(pd)
+      # Make tab2
+      make_tab2(env_proj, env_gui)
 
-  tf <- tktoplevel()
-  tkwm.title(tf, "STR condition")
-
-  labelMaf <- tklabel(tf, text = "Minimum allele frequency")
-  entryMaf <- tkentry(tf, textvariable = mafVar, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-
-  labelDrop <- tklabel(tf, text = "Drop-out of query genotypes")
-  radioDropMeth0 <- tkradiobutton(tf, anchor = "w", width = 60, state = "normal", text = "Not consider", variable = dropMethStrVar, value = 0)
-  radioDropMeth1 <- tkradiobutton(tf, anchor = "w", width = 60, state = "normal", text = "Consider only in the case that one allele is designated", variable = dropMethStrVar, value = 1)
-  radioDropMeth2 <- tkradiobutton(tf, anchor = "w", width = 60, state = "normal", text = "Consider also in the case that two alleles in homozygotes are designated", variable = dropMethStrVar, value = 2)
-
-  labelPD <- tklabel(tf, text = "Probability of drop-out")
-  entryPD <- tkentry(tf, textvariable = pdVar, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-  buttSave <- tkbutton(tf, text = "    Save    ", cursor = "hand2", command = function() saveConditionStr())
-
-  tkgrid(labelMaf, entryMaf, padx = 10, pady = 5, sticky = "w")
-  tkgrid(labelDrop, radioDropMeth0, padx = 10, pady = 5, sticky = "w")
-  tkgrid(tklabel(tf, text = ""), radioDropMeth1, padx = 10, pady = 5, sticky = "w")
-  tkgrid(tklabel(tf, text = ""), radioDropMeth2, padx = 10, pady = 5, sticky = "w")
-  tkgrid(labelPD, entryPD, padx = 10, pady = 5, sticky = "w")
-  tkgrid(buttSave, padx = 10, pady = 5, sticky = "w")
-}
-
-mutationStr <- function(envProj, envGUI){
-  editMutationStr1 <- function(){
-    myuMlb <- get("myuMlb", pos = envMyu)
-    if(tclvalue(tkcurselection(myuMlb)) == ""){
-      tkmessageBox(message = "Select one locus!", icon = "error", type = "ok")
-    }else{
-      tf <- tktoplevel()
-      tkwm.title(tf, "Edit a mutation rate")
-
-      posSelect <- as.numeric(tclvalue(tkcurselection(myuMlb))) + 1
-      myuStr <- get("myuStr", pos = envMyu)
-      myuOneL <- myuStr[posSelect]
-
-      frameEdit1 <- tkframe(tf)
-      tkgrid(tklabel(frameEdit1, text = "Locus name"), tklabel(frameEdit1, text = "Mutation rate"), padx = 10, pady = 5)
-      labelEditL <- tklabel(frameEdit1, text = names(myuOneL))
-      editMyuVar <- tclVar(myuOneL)
-      entryEditMyu <- tkentry(frameEdit1, textvariable = editMyuVar, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-      tkgrid(labelEditL, entryEditMyu, padx = 10, pady = 5)
-      tkgrid(frameEdit1, padx = 20)
-
-      frameEdit2 <- tkframe(tf)
-      tkgrid(tkbutton(frameEdit2, text = "    Save    ", cursor = "hand2", command = function() editMutationStr2(tf, myuMlb, posSelect, as.numeric(tclvalue(editMyuVar)))), pady = 10)
-      tkgrid(frameEdit2)
-    }
-  }
-
-  editMutationStr2 <- function(tf, myuMlb, posSelect, editMyu){
-    inputOk <- "ok"
-    finStr <- get("finStr", pos = envProj)
-    if(finStr){
-      inputOk <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
-    }
-    if(inputOk == "ok"){
-      assign("finStr", FALSE, envir = envProj)
-      tabStrResult(envProj, envGUI)
-
-      myuStr <- get("myuStr", pos = envMyu)
-      myuStr[posSelect] <- editMyu
-      assign("myuStr", myuStr, envir = envMyu)
-      myuSave <- cbind(names(myuStr), myuStr)
-      colnames(myuSave) <- c("Marker", "Myu")
-      write.csv(myuSave, paste0(pathPack, "/extdata/parameters/myu.csv"), row.names = FALSE)
-
-      tkdestroy(myuMlb)
-      myuMlb <- tk2mclistbox(frameMyu1, width = 30, height = 20, resizablecolumns = TRUE, selectmode = "single")
-      tk2column(myuMlb, "add", label = "Locus", width = 15)
-      tk2column(myuMlb, "add", label = "Mutation rate", width = 15)
-      tkgrid(myuMlb)
-      tk2insert.multi(myuMlb, "end", cbind(names(myuStr), myuStr))
-      assign("myuMlb", myuMlb, envir = envMyu)
-
-      tkdestroy(tf)
-    }
-  }
-
-  addMutationStr1 <- function(){
-    tf <- tktoplevel()
-    tkwm.title(tf, "Add a locus")
-
-    frameAdd1 <- tkframe(tf)
-    tkgrid(tklabel(frameAdd1, text = "Locus name"), tklabel(frameAdd1, text = "Mutation rate"), padx = 10, pady = 5)
-    nameAddLVar <- tclVar("")
-    entryAddL <- tkentry(frameAdd1, textvariable = nameAddLVar, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-    addMyuVar <- tclVar("")
-    entryAddMyu <- tkentry(frameAdd1, textvariable = addMyuVar, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-    tkgrid(entryAddL, entryAddMyu, padx = 10, pady = 5)
-    tkgrid(frameAdd1)
-
-    frameAdd2 <- tkframe(tf)
-    tkgrid(tkbutton(frameAdd2, text = "    Save    ", cursor = "hand2", command = function() addMutationStr2(tf, tclvalue(nameAddLVar), as.numeric(tclvalue(addMyuVar)))), pady = 10)
-    tkgrid(frameAdd2)
-  }
-
-  addMutationStr2 <- function(tf, nameAddL, addMyu){
-    inputOk <- "ok"
-    finStr <- get("finStr", pos = envProj)
-    if(finStr){
-      inputOk <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
-    }
-    if(inputOk == "ok"){
-      assign("finStr", FALSE, envir = envProj)
-      tabStrResult(envProj, envGUI)
-
-      myuStr <- get("myuStr", pos = envMyu)
-      nameL <- names(myuStr)
-      myuStr[length(myuStr) + 1] <- addMyu
-      names(myuStr) <- c(nameL, nameAddL)
-      assign("myuStr", myuStr, envir = envMyu)
-      myuSave <- cbind(names(myuStr), myuStr)
-      colnames(myuSave) <- c("Marker", "Myu")
-      write.csv(myuSave, paste0(pathPack, "/extdata/parameters/myu.csv"), row.names = FALSE)
-
-      myuMlb <- get("myuMlb", pos = envMyu)
-      tk2insert.multi(myuMlb, "end", c(nameAddL, addMyu))
-      assign("myuMlb", myuMlb, envir = envMyu)
-      tkdestroy(tf)
-    }
-  }
-
-  deleteMutationStr <- function(){
-    myuMlb <- get("myuMlb", pos = envMyu)
-    if(tclvalue(tkcurselection(myuMlb)) == ""){
-      tkmessageBox(message = "Select one locus!", icon = "error", type = "ok")
-    }else{
-      inputOk <- "ok"
-      finStr <- get("finStr", pos = envProj)
-      if(finStr){
-        inputOk <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
-      }
-      if(inputOk == "ok"){
-        assign("finStr", FALSE, envir = envProj)
-        tabStrResult(envProj, envGUI)
-
-        myuStr <- get("myuStr", pos = envMyu)
-        posSelect <- as.numeric(tclvalue(tkcurselection(myuMlb))) + 1
-        myuStr <- myuStr[-posSelect]
-        assign("myuStr", myuStr, envir = envMyu)
-        myuSave <- cbind(names(myuStr), myuStr)
-        colnames(myuSave) <- c("Marker", "Myu")
-        write.csv(myuSave, paste0(pathPack, "/extdata/parameters/myu.csv"), row.names = FALSE)
-
-        tkdestroy(myuMlb)
-        myuMlb <- tk2mclistbox(frameMyu1, width = 30, height = 20, resizablecolumns = TRUE, selectmode = "single")
-        tk2column(myuMlb, "add", label = "Locus", width = 15)
-        tk2column(myuMlb, "add", label = "Mutation rate", width = 15)
-        tkgrid(myuMlb)
-        tk2insert.multi(myuMlb, "end", cbind(names(myuStr), myuStr))
-        assign("myuMlb", myuMlb, envir = envMyu)
-      }
-    }
-  }
-
-  pathPack <- get("pathPack", pos = envGUI)
-  parFn <- list.files(paste0(pathPack, "/extdata/parameters"))
-  if(is.element("myu.csv", parFn)){
-    myuStr <- read.csv(paste0(pathPack, "/extdata/parameters/myu.csv"), header = TRUE)
-    myuStr <- as.matrix(myuStr)
-    nameL <- myuStr[, colnames(myuStr) == "Marker"]
-    myuStr <- as.numeric(myuStr[, colnames(myuStr) == "Myu"])
-    names(myuStr) <- nameL
-  }else{
-    myuStr <- c(0.001474647, 0.002858327, 0.001479789, 0.002240583, 0.000227000,
-                0.001433812, 0.001130039, 0.001588339,
-                0.001521043, 0.001069792, 0.000092200, 0.002602109,
-                0.001521043, 0.001848550, 0.001574558, 0.001179836, 0.001521043,
-                0.001521043, 0.001521043, 0.001521043, 0.001130039)
-    names(myuStr) <- c("D3S1358", "vWA", "D16S539", "CSF1PO", "TPOX",
-                       "D8S1179", "D21S11", "D18S51",
-                       "D2S441", "D19S433", "TH01", "FGA",
-                       "D22S1045", "D5S818", "D13S317", "D7S820", "SE33",
-                       "D10S1248", "D1S1656", "D12S391", "D2S1338")
-    nameL <- names(myuStr)
-  }
-  envMyu <- new.env(parent = globalenv())
-  assign("myuStr", myuStr, envir = envMyu)
-
-  tf <- tktoplevel()
-  tkwm.title(tf, "STR mutation")
-
-  frameMyu1 <- tkframe(tf)
-  myuMlb <- tk2mclistbox(frameMyu1, width = 30, height = 20, resizablecolumns = TRUE, selectmode = "single")
-  tk2column(myuMlb, "add", label = "Locus", width = 15)
-  tk2column(myuMlb, "add", label = "Mutation rate", width = 15)
-  tkgrid(myuMlb)
-  tk2insert.multi(myuMlb, "end", cbind(nameL, myuStr))
-  assign("myuMlb", myuMlb, envir = envMyu)
-  tkgrid(frameMyu1)
-
-  frameMyu2 <- tkframe(tf)
-  buttEdit <- tkbutton(frameMyu2, text = "    Edit    ", cursor = "hand2", command = function() editMutationStr1())
-  buttAdd <- tkbutton(frameMyu2, text = "    Add    ", cursor = "hand2", command = function() addMutationStr1())
-  buttDelete <- tkbutton(frameMyu2, text = "    Delete    ", cursor = "hand2", command = function() deleteMutationStr())
-  tkgrid(buttEdit, buttAdd, buttDelete, padx = 20, pady = 5)
-  tkgrid(frameMyu2)
-}
-
-probIBDStr <- function(envProj, envGUI){
-  editIBD1 <- function(){
-    ibdMlb <- get("ibdMlb", pos = envIBD)
-    if(tclvalue(tkcurselection(ibdMlb)) == ""){
-      tkmessageBox(message = "Select one relationship!", icon = "error", type = "ok")
-    }else{
-      tf <- tktoplevel()
-      tkwm.title(tf, "Edit IBD probabilities")
-
-      posSelect <- as.numeric(tclvalue(tkcurselection(ibdMlb))) + 1
-      probIBDAll <- get("probIBDAll", pos = envIBD)
-      pIBD <- probIBDAll[posSelect, ]
-      rel <- rownames(probIBDAll)[posSelect]
-
-      frameEdit1 <- tkframe(tf)
-      tkgrid(tklabel(frameEdit1, text = "Relationship"),
-             tklabel(frameEdit1, text = "Pr (IBD = 2)"),
-             tklabel(frameEdit1, text = "Pr (IBD = 1)"),
-             tklabel(frameEdit1, text = "Pr (IBD = 0)"),
-             padx = 10, pady = 5)
-      labelEditRel <- tklabel(frameEdit1, text = rel)
-      editPrIBD2Var <- tclVar(pIBD[1])
-      editPrIBD1Var <- tclVar(pIBD[2])
-      editPrIBD0Var <- tclVar(pIBD[3])
-      entryEditPrIBD2 <- tkentry(frameEdit1, textvariable = editPrIBD2Var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-      entryEditPrIBD1 <- tkentry(frameEdit1, textvariable = editPrIBD1Var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-      entryEditPrIBD0 <- tkentry(frameEdit1, textvariable = editPrIBD0Var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-      tkgrid(labelEditRel, entryEditPrIBD2, entryEditPrIBD1, entryEditPrIBD0, padx = 10, pady = 5)
-      tkgrid(frameEdit1)
-
-      frameEdit2 <- tkframe(tf)
-      tkgrid(tkbutton(frameEdit2, text = "    Save    ", cursor = "hand2", command = function() editIBD2(tf, ibdMlb, posSelect, as.numeric(tclvalue(editPrIBD2Var)), as.numeric(tclvalue(editPrIBD1Var)), as.numeric(tclvalue(editPrIBD0Var)))), pady = 10)
-      tkgrid(frameEdit2)
-    }
-  }
-
-  editIBD2 <- function(tf, ibdMlb, posSelect, editPrIBD2, editPrIBD1, editPrIBD0){
-    inputOk <- "ok"
-    finStr <- get("finStr", pos = envProj)
-    if(finStr){
-      inputOk <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
-    }
-    if(inputOk == "ok"){
-      assign("finStr", FALSE, envir = envProj)
-      tabStrResult(envProj, envGUI)
-
-      probIBDAll <- get("probIBDAll", pos = envIBD)
-      relationship <- rownames(probIBDAll)
-      probIBDAll[posSelect, ] <- c(editPrIBD2, editPrIBD1, editPrIBD0)
-      assign("probIBDAll", probIBDAll, envir = envIBD)
-      write.csv(probIBDAll, paste0(pathPack, "/extdata/parameters/ibd.csv"))
-
-      tkdestroy(ibdMlb)
-      ibdMlb <- tk2mclistbox(frameIBD1, width = 60, height = 20, resizablecolumns = TRUE, selectmode = "single")
-      tk2column(ibdMlb, "add", label = "Relationship", width = 15)
-      tk2column(ibdMlb, "add", label = "Pr (IBD = 2)", width = 15)
-      tk2column(ibdMlb, "add", label = "Pr (IBD = 1)", width = 15)
-      tk2column(ibdMlb, "add", label = "Pr (IBD = 0)", width = 15)
-      tkgrid(ibdMlb)
-      tk2insert.multi(ibdMlb, "end", cbind(relationship, probIBDAll))
-      assign("ibdMlb", ibdMlb, envir = envIBD)
-
-      tkdestroy(tf)
-    }
-  }
-
-  addIBD1 <- function(){
-    tf <- tktoplevel()
-    tkwm.title(tf, "Add a relationship")
-
-    frameAdd1 <- tkframe(tf)
-    tkgrid(tklabel(frameAdd1, text = "Relationship"),
-           tklabel(frameAdd1, text = "Pr (IBD = 2)"),
-           tklabel(frameAdd1, text = "Pr (IBD = 1)"),
-           tklabel(frameAdd1, text = "Pr (IBD = 0)"),
-           padx = 10, pady = 5)
-    nameAddRelVar <- tclVar("")
-    entryAddRel <- tkentry(frameAdd1, textvariable = nameAddRelVar, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-    addPrIBD2Var <- tclVar("")
-    addPrIBD1Var <- tclVar("")
-    addPrIBD0Var <- tclVar("")
-    entryAddPrIBD2 <- tkentry(frameAdd1, textvariable = addPrIBD2Var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-    entryAddPrIBD1 <- tkentry(frameAdd1, textvariable = addPrIBD1Var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-    entryAddPrIBD0 <- tkentry(frameAdd1, textvariable = addPrIBD0Var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-    tkgrid(entryAddRel, entryAddPrIBD2, entryAddPrIBD1, entryAddPrIBD0, padx = 10, pady = 5)
-    tkgrid(frameAdd1)
-
-    frameAdd2 <- tkframe(tf)
-    tkgrid(tkbutton(frameAdd2, text = "    Save    ", cursor = "hand2", command = function() addIBD2(tf, tclvalue(nameAddRelVar), as.numeric(tclvalue(addPrIBD2Var)), as.numeric(tclvalue(addPrIBD1Var)), as.numeric(tclvalue(addPrIBD0Var)))), pady = 10)
-    tkgrid(frameAdd2)
-  }
-
-  addIBD2 <- function(tf, nameAddRel, addPrIBD2, addPrIBD1, addPrIBD0){
-    inputOk <- "ok"
-    finStr <- get("finStr", pos = envProj)
-    if(finStr){
-      inputOk <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
-    }
-    if(inputOk == "ok"){
-      assign("finStr", FALSE, envir = envProj)
-      tabStrResult(envProj, envGUI)
-
-      probIBDAll <- get("probIBDAll", pos = envIBD)
-      relationship <- rownames(probIBDAll)
-      probIBDAll <- rbind(probIBDAll, c(addPrIBD2, addPrIBD1, addPrIBD0))
-      rownames(probIBDAll) <- c(relationship, nameAddRel)
-      assign("probIBDAll", probIBDAll, envir = envIBD)
-      write.csv(probIBDAll, paste0(pathPack, "/extdata/parameters/ibd.csv"))
-
-      ibdMlb <- get("ibdMlb", pos = envIBD)
-      tk2insert.multi(ibdMlb, "end", c(nameAddRel, addPrIBD2, addPrIBD1, addPrIBD0))
-      assign("ibdMlb", ibdMlb, envir = envIBD)
-      tkdestroy(tf)
-    }
-  }
-
-  deleteIBD <- function(){
-    ibdMlb <- get("ibdMlb", pos = envIBD)
-    if(tclvalue(tkcurselection(ibdMlb)) == ""){
-      tkmessageBox(message = "Select one relationship!", icon = "error", type = "ok")
-    }else{
-      inputOk <- "ok"
-      finStr <- get("finStr", pos = envProj)
-      if(finStr){
-        inputOk <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
-      }
-      if(inputOk == "ok"){
-        assign("finStr", FALSE, envir = envProj)
-        tabStrResult(envProj, envGUI)
-
-        probIBDAll <- get("probIBDAll", pos = envIBD)
-        posSelect <- as.numeric(tclvalue(tkcurselection(ibdMlb))) + 1
-        probIBDAll <- probIBDAll[-posSelect, , drop = FALSE]
-        relationship <- rownames(probIBDAll)
-        assign("probIBDAll", probIBDAll, envir = envIBD)
-        write.csv(probIBDAll, paste0(pathPack, "/extdata/parameters/ibd.csv"))
-
-        tkdestroy(ibdMlb)
-        ibdMlb <- tk2mclistbox(frameIBD1, width = 60, height = 20, resizablecolumns = TRUE, selectmode = "single")
-        tk2column(ibdMlb, "add", label = "Relationship", width = 15)
-        tk2column(ibdMlb, "add", label = "Pr (IBD = 2)", width = 15)
-        tk2column(ibdMlb, "add", label = "Pr (IBD = 1)", width = 15)
-        tk2column(ibdMlb, "add", label = "Pr (IBD = 0)", width = 15)
-        tkgrid(ibdMlb)
-        tk2insert.multi(ibdMlb, "end", cbind(relationship, probIBDAll))
-        assign("ibdMlb", ibdMlb, envir = envIBD)
-      }
-    }
-  }
-
-  pathPack <- get("pathPack", pos = envGUI)
-  parFn <- list.files(paste0(pathPack, "/extdata/parameters"))
-  if(is.element("ibd.csv", parFn)){
-    probIBDAll <- read.csv(paste0(pathPack, "/extdata/parameters/ibd.csv"), header = TRUE, row.names = 1)
-    probIBDAll <- as.matrix(probIBDAll)
-  }else{
-    probIBDAll <- matrix(0, 5, 3)
-    probIBDAll[1, ] <- c(1, 0, 0)
-    probIBDAll[2, ] <- c(0, 1, 0)
-    probIBDAll[3, ] <- c(0.25, 0.5, 0.25)
-    probIBDAll[4, ] <- c(0, 0.5, 0.5)
-    probIBDAll[5, ] <- c(0, 0.25, 0.75)
-    rownames(probIBDAll) <- c("direct match", "parent-child", "sibling", "2nd-degree", "3rd-degree")
-  }
-  envIBD <- new.env(parent = globalenv())
-  assign("probIBDAll", probIBDAll, envir = envIBD)
-  relationship <- rownames(probIBDAll)
-
-  tf <- tktoplevel()
-  tkwm.title(tf, "IBD probabilities")
-
-  frameIBD1 <- tkframe(tf)
-  ibdMlb <- tk2mclistbox(frameIBD1, width = 60, height = 20, resizablecolumns = TRUE, selectmode = "single")
-  tk2column(ibdMlb, "add", label = "Relationship", width = 15)
-  tk2column(ibdMlb, "add", label = "Pr (IBD = 2)", width = 15)
-  tk2column(ibdMlb, "add", label = "Pr (IBD = 1)", width = 15)
-  tk2column(ibdMlb, "add", label = "Pr (IBD = 0)", width = 15)
-  tkgrid(ibdMlb)
-  tk2insert.multi(ibdMlb, "end", cbind(relationship, probIBDAll))
-  assign("ibdMlb", ibdMlb, envir = envIBD)
-  tkgrid(frameIBD1)
-
-  frameIBD2 <- tkframe(tf)
-  buttEdit <- tkbutton(frameIBD2, text = "    Edit    ", cursor = "hand2", command = function() editIBD1())
-  buttAdd <- tkbutton(frameIBD2, text = "    Add    ", cursor = "hand2", command = function() addIBD1())
-  buttDelete <- tkbutton(frameIBD2, text = "    Delete    ", cursor = "hand2", command = function() deleteIBD())
-  tkgrid(buttEdit, buttAdd, buttDelete, padx = 10, pady = 5)
-  tkgrid(frameIBD2)
-}
-
-tabStrSet <- function(envProj, envGUI){
-  openFile <- function(type){
-    inputOk <- "ok"
-    finStr <- get("finStr", pos = envProj)
-    if(finStr){
-      inputOk <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
-    }
-
-    if(inputOk == "ok"){
-      setEnvProj_str(envProj, FALSE)
-      tabStrResult(envProj, envGUI)
-
+      # Get a file path and a file name from environment variable (env_proj)
       if(type == "query"){
-        fp <- get("qFpStr", pos = envProj)
-        fn <- get("qFnStr", pos = envProj)
+        fp <- get("fp_auto_q", pos = env_proj)
+        fn <- get("fn_auto_q", pos = env_proj)
       }else if(type == "ref"){
-        fp <- get("rFpStr", pos = envProj)
-        fn <- get("rFnStr", pos = envProj)
+        fp <- get("fp_auto_r", pos = env_proj)
+        fn <- get("fn_auto_r", pos = env_proj)
       }else if(type == "af"){
-        fp <- get("afFpStr", pos = envProj)
-        fn <- get("afFnStr", pos = envProj)
+        fp <- get("fp_auto_af", pos = env_proj)
+        fn <- get("fn_auto_af", pos = env_proj)
       }
-      fpVar <- tclVar(fp)
-      fnVar <- tclVar(fn)
 
-      fileName <- tclvalue(tkgetOpenFile(initialdir = tclvalue(fpVar), multiple = "true", filetypes = "{{CSV Files} {.csv}}"))
-      if(!nchar(fileName)){
+      # Define tclvalue
+      fp_var <- tclVar(fp)
+      fn_var <- tclVar(fn)
+
+      # Select an input file
+      path_file <- tclvalue(tkgetOpenFile(initialdir = tclvalue(fp_var), multiple = "true", filetypes = "{{CSV Files} {.csv}}"))
+      if(!nchar(path_file)){
         tkmessageBox(message = "No file was selected!", icon = "error", type = "ok")
       }else{
-        tmp <- sub("\\}", fileName, replacement = "")
+        tmp <- sub("\\}", path_file, replacement = "")
         tmp2 <- sub("\\{", tmp, replacement = "")
-        tclvalue(fpVar) <- tmp2
+        tclvalue(fp_var) <- tmp2
         foo3 <- strsplit(tmp2, "/")[[1]]
-        tclvalue(fnVar) <- strsplit(foo3[length(foo3)], "\\.csv")[[1]][1]
+        tclvalue(fn_var) <- strsplit(foo3[length(foo3)], "\\.csv")[[1]][1]
         if(type == "query"){
-          tkconfigure(labelQFile, textvariable = fnVar)
-          qStrInput <- read.csv(tclvalue(fpVar), header = TRUE)
-          qStrInput <- as.matrix(qStrInput)
-          qStrInput[is.na(qStrInput)] <- ""
-          assign("qStrInput", qStrInput, envir = envProj)
-          assign("qFpStr", tclvalue(fpVar), envir = envProj)
-          assign("qFnStr", tclvalue(fnVar), envir = envProj)
+          tkconfigure(label_q_name, textvariable = fn_var)
+          data_auto_q <- read.csv(tclvalue(fp_var), header = TRUE)
+          data_auto_q <- as.matrix(data_auto_q)
+          data_auto_q[is.na(data_auto_q)] <- ""
+          assign("data_auto_q", data_auto_q, envir = env_proj)
+          assign("fp_auto_q", tclvalue(fp_var), envir = env_proj)
+          assign("fn_auto_q", tclvalue(fn_var), envir = env_proj)
         }else if(type == "ref"){
-          tkconfigure(labelRFile, textvariable = fnVar)
-          rStrInput <- read.csv(tclvalue(fpVar), header = TRUE)
-          rStrInput <- as.matrix(rStrInput)
-          rStrInput[is.na(rStrInput)] <- ""
-          assign("rStrInput", rStrInput, envir = envProj)
-          assign("rFpStr", tclvalue(fpVar), envir = envProj)
-          assign("rFnStr", tclvalue(fnVar), envir = envProj)
+          tkconfigure(label_r_name, textvariable = fn_var)
+          data_auto_r <- read.csv(tclvalue(fp_var), header = TRUE)
+          data_auto_r <- as.matrix(data_auto_r)
+          data_auto_r[is.na(data_auto_r)] <- ""
+          assign("data_auto_r", data_auto_r, envir = env_proj)
+          assign("fp_auto_r", tclvalue(fp_var), envir = env_proj)
+          assign("fn_auto_r", tclvalue(fn_var), envir = env_proj)
         }else if(type == "af"){
-          tkconfigure(labelAfFile, textvariable = fnVar)
-          afInput <- read.csv(tclvalue(fpVar), header = TRUE)
-          afInput <- as.matrix(afInput)
-          assign("afInput", afInput, envir = envProj)
-          assign("afFpStr", tclvalue(fpVar), envir = envProj)
-          assign("afFnStr", tclvalue(fnVar), envir = envProj)
+          tkconfigure(label_af_name, textvariable = fn_var)
+          data_auto_af <- read.csv(tclvalue(fp_var), header = TRUE)
+          data_auto_af <- as.matrix(data_auto_af)
+          assign("data_auto_af", data_auto_af, envir = env_proj)
+          assign("fp_auto_af", tclvalue(fp_var), envir = env_proj)
+          assign("fn_auto_af", tclvalue(fn_var), envir = env_proj)
         }
       }
     }
   }
 
-  qFnStr <- get("qFnStr", pos = envProj)
-  qFnStrVar <- tclVar(qFnStr)
-  rFnStr <- get("rFnStr", pos = envProj)
-  rFnStrVar <- tclVar(rFnStr)
-  afFnStr <- get("afFnStr", pos = envProj)
-  afFnStrVar <- tclVar(afFnStr)
+  # Get file names from environment variable (env_proj)
+  fn_auto_q <- get("fn_auto_q", pos = env_proj)
+  fn_auto_r <- get("fn_auto_r", pos = env_proj)
+  fn_auto_af <- get("fn_auto_af", pos = env_proj)
 
-  tab1 <- get("tab1", pos = envGUI)
-  frameTab1 <- get("frameTab1", pos = envGUI)
-  tkdestroy(frameTab1)
-  frameTab1 <- tkframe(tab1)
-  assign("frameTab1", frameTab1, envir = envGUI)
+  # Define tclvalue
+  fp_auto_q_var <- tclVar(fn_auto_q)
+  fn_auto_r_var <- tclVar(fn_auto_r)
+  fn_auto_afVar <- tclVar(fn_auto_af)
 
-  frame1_1 <- tkframe(frameTab1, relief = "groove", borderwidth = 2)
-  frame1_2 <- tkframe(frameTab1, relief = "groove", borderwidth = 2)
-  frame1_3 <- tkframe(frameTab1)
+  tab1 <- get("tab1", pos = env_gui)
+  frame_tab1 <- get("frame_tab1", pos = env_gui)
+  tkdestroy(frame_tab1)
+  frame_tab1 <- tkframe(tab1)
+  assign("frame_tab1", frame_tab1, envir = env_gui)
 
-  labelQ <- tklabel(frame1_1, text = "Query database")
-  labelQFile <- tklabel(frame1_1, textvariable = qFnStrVar, width = 30, highlightthickness = 1, relief = "groove", justify = "center", background = "white")
-  buttQ <- tkbutton(frame1_1, text = "    Load    ", cursor = "hand2", command = function() openFile("query"))
+  # Define frames
+  frame_1_1 <- tkframe(frame_tab1, relief = "groove", borderwidth = 2)
+  frame_1_2 <- tkframe(frame_tab1)
 
-  labelR <- tklabel(frame1_1, text = "Reference database")
-  labelRFile <- tklabel(frame1_1, textvariable = rFnStrVar, width = 30, highlightthickness = 1, relief = "groove", justify = "center", background = "white")
-  buttR <- tkbutton(frame1_1, text = "    Load    ", cursor = "hand2", command = function() openFile("ref"))
+  # Define widgets in frame_1_1
+  label_q_title <- tklabel(frame_1_1, text = "Query database")
+  label_q_name <- tklabel(frame_1_1, textvariable = fp_auto_q_var, width = 30, highlightthickness = 1, relief = "groove", justify = "center", background = "white")
+  butt_q <- tkbutton(frame_1_1, text = "    Load    ", cursor = "hand2", command = function() open_file("query"))
+  label_r_title <- tklabel(frame_1_1, text = "Reference database")
+  label_r_name <- tklabel(frame_1_1, textvariable = fn_auto_r_var, width = 30, highlightthickness = 1, relief = "groove", justify = "center", background = "white")
+  butt_r <- tkbutton(frame_1_1, text = "    Load    ", cursor = "hand2", command = function() open_file("ref"))
+  label_af_title <- tklabel(frame_1_1, text = "Allele frequencies")
+  label_af_name <- tklabel(frame_1_1, textvariable = fn_auto_afVar, width = 30, highlightthickness = 1, relief = "groove", justify = "center", background = "white")
+  butt_af <- tkbutton(frame_1_1, text = "    Load    ", cursor = "hand2", command = function() open_file("af"))
 
-  labelAf <- tklabel(frame1_1, text = "Allele frequencies")
-  labelAfFile <- tklabel(frame1_1, textvariable = afFnStrVar, width = 30, highlightthickness = 1, relief = "groove", justify = "center", background = "white")
-  buttAf <- tkbutton(frame1_1, text = "    Load    ", cursor = "hand2", command = function() openFile("af"))
+  # Define widgets in frame_1_2
+  butt_search <- tkbutton(frame_1_2, text = "    Search    ", cursor = "hand2", command = function() search_auto(env_proj, env_gui))
 
-  tkgrid(tklabel(frame1_1, text = "Input files", font = "Helvetica 10 bold"), padx = 10, pady = 5, sticky = "w")
-  tkgrid(labelQ, labelQFile, buttQ, padx = 10, pady = 5, sticky = "w")
-  tkgrid(labelR, labelRFile, buttR, padx = 10, pady = 5, sticky = "w")
-  tkgrid(labelAf, labelAfFile, buttAf, padx = 10, pady = 5, sticky = "w")
-  tkgrid(frame1_1, padx = 10, pady = 5, sticky = "w")
-
-  buttCondition <- tkbutton(frame1_2, text = "    Condition    ", cursor = "hand2", command = function() conditionStr(envProj, envGUI))
-  buttMutation <- tkbutton(frame1_2, text = "    Mutation rate    ", cursor = "hand2", command = function() mutationStr(envProj, envGUI))
-  buttProbIBD <- tkbutton(frame1_2, text = "    IBD probabilities    ", cursor = "hand2", command = function() probIBDStr(envProj, envGUI))
-
-  tkgrid(tklabel(frame1_2, text = "Setting", font = "Helvetica 10 bold"), padx = 10, pady = 5, sticky = "w")
-  tkgrid(buttCondition, buttMutation, buttProbIBD, padx = 10, pady = 5, sticky = "w")
-  tkgrid(frame1_2, padx = 10, pady = 5, sticky = "w")
-
-  buttScreening <- tkbutton(frame1_3, text = "    Screening    ", cursor = "hand2", command = function() guiScreenStr(envProj, envGUI))
-  tkgrid(buttScreening, pady = 10)
-  tkgrid(frame1_3, padx = 10, pady = 5)
-
-  tkgrid(frameTab1)
+  # Grid widgets
+  tkgrid(tklabel(frame_1_1, text = "Input files", font = "Helvetica 10 bold"), padx = 10, pady = 5, sticky = "w")
+  tkgrid(label_q_title, label_q_name, butt_q, padx = 10, pady = 5, sticky = "w")
+  tkgrid(label_r_title, label_r_name, butt_r, padx = 10, pady = 5, sticky = "w")
+  tkgrid(label_af_title, label_af_name, butt_af, padx = 10, pady = 5, sticky = "w")
+  tkgrid(butt_search, pady = 10)
+  tkgrid(frame_1_1, padx = 10, pady = 5, sticky = "w")
+  tkgrid(frame_1_2, padx = 10, pady = 5)
+  tkgrid(frame_tab1)
 }
 
-guiScreenStr <- function(envProj, envGUI){
-  qStrInput <- get("qStrInput", pos = envProj)
-  rStrInput <- get("rStrInput", pos = envProj)
-  afInput <- get("afInput", pos = envProj)
-  if(any(c(length(qStrInput) == 0, length(rStrInput) == 0, length(afInput) == 0))){
+search_auto <- function(env_proj, env_gui){
+  # Get input data from environment variable (env_proj)
+  data_auto_q <- get("data_auto_q", pos = env_proj)
+  data_auto_r <- get("data_auto_r", pos = env_proj)
+  data_auto_af <- get("data_auto_af", pos = env_proj)
+
+  # Check whether all data are loaded or not
+  if(any(c(length(data_auto_q) == 0, length(data_auto_r) == 0, length(data_auto_af) == 0))){
     tkmessageBox(message = "Load required file(s)!", icon = "error", type = "ok")
   }else{
-    pathPack <- get("pathPack", pos = envGUI)
+    # Get package path from environment variable (env_gui)
+    path_pack <- get("path_pack", pos = env_gui)
 
-    myuStr <- read.csv(paste0(pathPack, "/extdata/parameters/myu.csv"), header = TRUE)
-    myuStr <- as.matrix(myuStr)
-    nameMyuL <- myuStr[, colnames(myuStr) == "Marker"]
-    myuStr <- as.numeric(myuStr[, colnames(myuStr) == "Myu"])
-    names(myuStr) <- nameMyuL
+    # Load mutation rates
+    myu_all <- read.csv(paste0(path_pack, "/extdata/parameters/myu.csv"), header = TRUE)
+    myu_all <- as.matrix(myu_all)
+    locus_myu <- myu_all[, colnames(myu_all) == "Marker"]
+    myu_all <- as.numeric(myu_all[, colnames(myu_all) == "Myu"])
+    names(myu_all) <- locus_myu
 
-    probIBDAll <- read.csv(paste0(pathPack, "/extdata/parameters/ibd.csv"), header = TRUE, row.names = 1)
-    probIBDAll <- as.matrix(probIBDAll)
-    nRelAll <- nrow(probIBDAll)
-    consMuGen <- rep(FALSE, nRelAll)
-    consMuGen[rownames(probIBDAll) == "parent-child"] <- TRUE
+    # Load IBD probabilities
+    pibd_all <- read.csv(paste0(path_pack, "/extdata/parameters/ibd.csv"), header = TRUE, row.names = 1)
+    pibd_all <- as.matrix(pibd_all)
+    n_pibd_rel <- nrow(pibd_all)
+    bool_cons_mu_all <- rep(FALSE, n_pibd_rel)
+    bool_cons_mu_all[rownames(pibd_all) == "parent-child"] <- TRUE
 
-    qCol <- colnames(qStrInput)
-    posQName <- grep("Sample", qCol)
-    qStrName <- qStrInput[, posQName]
-    qStrData <- qStrInput[, -posQName, drop = FALSE]
-    nameQL <- colnames(qStrData)[which(1:ncol(qStrData) %% 2 == 1)]
+    pos_sn_q <- intersect(grep("Sample", colnames(data_auto_q)), grep("Name", colnames(data_auto_q)))
+    sn_auto_q <- data_auto_q[, pos_sn_q]
+    gt_auto_q <- data_auto_q[, -pos_sn_q, drop = FALSE]
+    locus_q <- colnames(gt_auto_q)[which(1:ncol(gt_auto_q) %% 2 == 1)]
 
-    rCol <- colnames(rStrInput)
-    posRName <- grep("Sample", rCol)
-    rStrNameInput <- rStrInput[, posRName]
-    posRelation <- grep("Relationship", rCol)
-    relInput <- rStrInput[, posRelation]
-    nEmpRel <- length(which(relInput == ""))
-    rStrDataInput <- rStrInput[, -c(posRName, posRelation), drop = FALSE]
-    nameRL <- colnames(rStrDataInput)[which(1:ncol(rStrDataInput) %% 2 == 1)]
+    pos_sn_r <- intersect(grep("Sample", colnames(data_auto_r)), grep("Name", colnames(data_auto_r)))
+    sn_auto_r <- data_auto_r[, pos_sn_r]
+    pos_rel_r <- grep("Relationship", colnames(data_auto_r))
+    rel_auto_r <- data_auto_r[, pos_rel_r]
+    n_emp_rel <- length(which(rel_auto_r == ""))
+    gt_auto_r <- data_auto_r[, -c(pos_sn_r, pos_rel_r), drop = FALSE]
+    locus_r <- colnames(gt_auto_r)[which(1:ncol(gt_auto_r) %% 2 == 1)]
 
-    nameAfL <- colnames(afInput)[-1]
+    locus_af <- colnames(data_auto_af)[-1]
 
-    judgeL1 <- all(mapply(setequal, nameQL, nameRL))
-    judgeL2 <- all(mapply(setequal, nameQL, nameAfL))
-    judgeL3 <- all(is.element(nameQL, nameMyuL))
-    judgeR1 <- all(is.element(setdiff(relInput, ""), rownames(probIBDAll)))
-    if(all(c(judgeL1, judgeL2, judgeL3, judgeR1))){
-      pb <- tkProgressBar("STR screening", "0% done", 0, 100, 0)
+    bool_locus_1 <- all(mapply(setequal, locus_q, locus_r))
+    bool_locus_2 <- all(mapply(setequal, locus_q, locus_af))
+    bool_locus_3 <- all(is.element(locus_q, locus_myu))
+    bool_rel_1 <- all(is.element(setdiff(rel_auto_r, ""), rownames(pibd_all)))
+    if(all(c(bool_locus_1, bool_locus_2, bool_locus_3, bool_rel_1))){
+      pb <- tkProgressBar("Searching", "0% done", 0, 100, 0)
 
-      maf <- get("maf", pos = envProj)
-      dropMethStr <- get("dropMethStr", pos = envProj)
-      pd <- get("pd", pos = envProj)
+      maf <- get("maf", pos = env_proj)
+      meth_d <- get("meth_d", pos = env_proj)
+      pd <- get("pd", pos = env_proj)
 
-      afData <- freqSetting(qStrData, rStrDataInput, afInput, maf)
-      afList <- afData[[1]]
-      afAlList <- afData[[2]]
+      tmp <- set_af(gt_auto_q, gt_auto_r, data_auto_af, maf)
+      af_list <- tmp[[1]]
+      af_al_list <- tmp[[2]]
 
-      nQ <- nrow(qStrData)
-      nR <- nrow(rStrDataInput)
-      nL <- length(nameQL)
+      n_q <- nrow(gt_auto_q)
+      n_r <- nrow(gt_auto_r)
+      n_l <- length(locus_q)
 
-      myuAll <- rep(0, nL)
-      for(i in 1:nL){
-        myuAll[i] <- myuStr[which(nameMyuL == nameQL[i])]
+      myus <- rep(0, n_l)
+      for(i in 1:n_l){
+        myus[i] <- myu_all[which(locus_myu == locus_q[i])]
       }
-      names(myuAll) <- nameQL
+      names(myus) <- locus_q
 
-      apeAll <- rep(0, nL)
-      for(i in 1:nL){
-        apeAll[i] <- calcApe(afList[[i]])
+      apes <- rep(0, n_l)
+      for(i in 1:n_l){
+        apes[i] <- calc_ape(af_list[[i]])
       }
-      names(apeAll) <- nameQL
+      names(apes) <- locus_q
 
-      likeH1All <- likeH2All <- lrAll <- array(0, dim = c(nQ, nR + (nRelAll - 1) * nEmpRel, nL + 1))
-      rStrData <- matrix(0, nR + (nRelAll - 1) * nEmpRel, ncol(rStrDataInput))
-      rStrName <- relStr <- rep(0, nR + (nRelAll - 1) * nEmpRel)
-      countCf <- 1
-      for(i in 1:nR){
-        ref <- as.numeric(rStrDataInput[i, ])
-        ref[is.na(ref)] <- NaN
-        rn <- rStrNameInput[i]
-        rel <- relInput[i]
-        if(rel == ""){
-          probIBDs <- probIBDAll
-          rStrName[countCf:(countCf + nRelAll - 1)] <- rn
-          relStr[countCf:(countCf + nRelAll - 1)] <- rownames(probIBDAll)
-          consMu <- consMuGen
+      like_h1_all <- like_h2_all <- lr_all <- array(0, dim = c(n_q, n_r + (n_pibd_rel - 1) * n_emp_rel, n_l + 1))
+      gt_auto_r_new <- matrix(0, n_r + (n_pibd_rel - 1) * n_emp_rel, ncol(gt_auto_r))
+      sn_auto_r_new <- rel_auto_r_new <- rep(0, n_r + (n_pibd_rel - 1) * n_emp_rel)
+      count <- 1
+      for(i in 1:n_r){
+        ref <- as.numeric(gt_auto_r[i, ])
+        ref[is.na(ref)] <- -99
+        if(rel_auto_r[i] == ""){
+          pibds <- pibd_all
+          sn_auto_r_new[count:(count + n_pibd_rel - 1)] <- sn_auto_r[i]
+          rel_auto_r_new[count:(count + n_pibd_rel - 1)] <- rownames(pibd_all)
+          bool_cons_mu <- bool_cons_mu_all
         }else{
-          probIBDs <- probIBDAll[rownames(probIBDAll) == rel, , drop = FALSE]
-          rStrName[countCf] <- rn
-          relStr[countCf] <- rel
-          if(rel == "parent-child"){
-            consMu <- TRUE
+          pibds <- pibd_all[rownames(pibd_all) == rel_auto_r[i], , drop = FALSE]
+          sn_auto_r_new[count] <- sn_auto_r[i]
+          rel_auto_r_new[count] <- rel_auto_r[i]
+          if(rel_auto_r[i] == "parent-child"){
+            bool_cons_mu <- TRUE
           }else{
-            consMu <- FALSE
+            bool_cons_mu <- FALSE
           }
         }
-        for(j in 1:nrow(probIBDs)){
-          rStrData[countCf, ] <- ref
-          for(k in 1:nQ){
-            query <- as.numeric(qStrData[k, ])
+        for(j in 1:nrow(pibds)){
+          gt_auto_r_new[count, ] <- ref
+          for(k in 1:n_q){
+            query <- as.numeric(gt_auto_q[k, ])
             query[is.na(query)] <- -99
-            lrData <- calcKinLr(query, ref, afList, afAlList, probIBDs[j, ], consMu[j], myuAll, apeAll, dropMethStr, pd)
-            likeH1All[k, countCf, ] <- lrData[[1]]
-            likeH2All[k, countCf, ] <- lrData[[2]]
-            lrAll[k, countCf, ] <- lrData[[3]]
-            info <- sprintf("%d%% done", round((nQ * (countCf - 1) + k) * 100 / (nQ * (nR + (nRelAll - 1) * nEmpRel))))
-            setTkProgressBar(pb, (nQ * (countCf - 1) + k) * 100 / (nQ * (nR + (nRelAll - 1) * nEmpRel)), sprintf("STR screening"), info)
+            tmp <- calc_kin_lr(query, ref, af_list, af_al_list, pibds[j, ], bool_cons_mu[j], myus, apes, meth_d, pd)
+            like_h1_all[k, count, ] <- tmp[[1]]
+            like_h2_all[k, count, ] <- tmp[[2]]
+            lr_all[k, count, ] <- tmp[[3]]
+            info <- sprintf("%d%% done", round((n_q * (count - 1) + k) * 100 / (n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel))))
+            setTkProgressBar(pb, (n_q * (count - 1) + k) * 100 / (n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel)), sprintf("STR screening"), info)
           }
-          countCf <- countCf + 1
+          count <- count + 1
         }
       }
-      assign("qStrData", qStrData, envir = envProj)
-      assign("rStrData", rStrData, envir = envProj)
-      assign("qStrName", qStrName, envir = envProj)
-      assign("rStrName", rStrName, envir = envProj)
-      assign("relStr", relStr, envir = envProj)
-      assign("likeH1All", likeH1All, envir = envProj)
-      assign("likeH2All", likeH2All, envir = envProj)
-      assign("lrAll", lrAll, envir = envProj)
-#      assign("probIBDAll", probIBDAll, envir = envProj)
-      assign("myuAll", myuAll, envir = envProj)
-      assign("finStr", TRUE, envir = envProj)
-      tabStrResult(envProj, envGUI)
+      assign("gt_auto_q", gt_auto_q, envir = env_proj)
+      assign("gt_auto_r_new", gt_auto_r_new, envir = env_proj)
+      assign("sn_auto_q", sn_auto_q, envir = env_proj)
+      assign("sn_auto_r_new", sn_auto_r_new, envir = env_proj)
+      assign("rel_auto_r_new", rel_auto_r_new, envir = env_proj)
+      assign("like_h1_all", like_h1_all, envir = env_proj)
+      assign("like_h2_all", like_h2_all, envir = env_proj)
+      assign("lr_all", lr_all, envir = env_proj)
+#      assign("pibd_all", pibd_all, envir = env_proj)
+      assign("myus", myus, envir = env_proj)
+      assign("fin_auto", TRUE, envir = env_proj)
+      tabStrResult(env_proj, env_gui)
       close(pb)
-    }else if(!judgeL1){
+    }else if(!bool_locus_1){
       tkmessageBox(message = "Locus set is not the same between query data and reference data!", icon = "error", type = "ok")
-    }else if(!judgeL2){
+    }else if(!bool_locus_2){
       tkmessageBox(message = "Locus set is not the same between query data and allele frequencies!", icon = "error", type = "ok")
-    }else if(!judgeL3){
+    }else if(!bool_locus_3){
       tkmessageBox(message = "There are some loci without mutation rates!", icon = "error", type = "ok")
-    }else if(!judgeR1){
+    }else if(!bool_rel_1){
       tkmessageBox(message = "There are some relationships without IBD probabilities!", icon = "error", type = "ok")
     }
   }
 }
 
-gtDisplay <- function(gtData){
-  nL <- length(gtData) / 2
-  gtMat <- rep("", nL)
-  for(i in 1:nL){
-    gt <- as.numeric(gtData[c(2 * i - 1, 2 * i)])
+display_gt <- function(data_gt){
+  n_l <- length(data_gt) / 2
+  data_display <- rep("", n_l)
+  for(i in 1:n_l){
+    gt <- as.numeric(data_gt[c(2 * i - 1, 2 * i)])
     gt <- gt[!is.na(gt)]
     if(length(gt) == 1){
-      gtMat[i] <- gt
+      data_display[i] <- gt
     }else if(length(gt) == 2){
-      gtMat[i] <- paste(gt[1], ", ", gt[2], sep = "")
+      data_display[i] <- paste(gt[1], ", ", gt[2], sep = "")
     }
   }
-  return(gtMat)
+  return(data_display)
 }
 
-tabStrResult <- function(envProj, envGUI){
-  finStr <- get("finStr", pos = envProj)
-  if(finStr){
-    setDisplay1 <- function(){
+make_tab2 <- function(env_proj, env_gui){
+  fin_auto <- get("fin_auto", pos = env_proj)
+  if(fin_auto){
+    set_display_1 <- function(){
+      # Define tclvalue
+      cand_q <- c("All", sn_auto_q)
+      select_q_var <- tclVar("All")
+      cand_r <- c("All", unique(sn_auto_r_new))
+      select_r_var <- tclVar("All")
+      cand_rel <- c("All", unique(rel_auto_r_new))
+      select_rel_var <- tclVar("All")
+      select_min_lr_var <- tclVar("1")
+
+      # Make a top frame
       tf <- tktoplevel()
       tkwm.title(tf, "Set display")
 
-      frameD1 <- tkframe(tf)
-      tkgrid(tklabel(frameD1, text = "Query"),
-             tklabel(frameD1, text = "Reference"),
-             tklabel(frameD1, text = "Relationship"),
-             tklabel(frameD1, text = "Minimum LR"),
-             padx = 10, pady = 5)
+      # Define frames
+      frame_display_1 <- tkframe(tf)
+      frame_display_2 <- tkframe(tf)
 
-      candQ <- c("All", qStrName)
-      selectQ <- tclVar("All")
-      comboQ <- ttkcombobox(frameD1, values = candQ, textvariable = selectQ, state = "readonly")
+      # Define widgets in frame_display_1
+      label_title_1 <- tklabel(frame_display_1, text = "Query")
+      label_title_2 <- tklabel(frame_display_1, text = "Reference")
+      label_title_3 <- tklabel(frame_display_1, text = "Relationship")
+      label_title_4 <- tklabel(frame_display_1, text = "Minimum LR")
+      combo_q <- ttkcombobox(frame_display_1, values = cand_q, textvariable = select_q_var, state = "readonly")
+      combo_r <- ttkcombobox(frame_display_1, values = cand_r, textvariable = select_r_var, state = "readonly")
+      combo_rel <- ttkcombobox(frame_display_1, values = cand_rel, textvariable = select_rel_var, state = "readonly")
+      entry_min_lr <- tkentry(frame_display_1, textvariable = select_min_lr_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
 
-      candR <- c("All", unique(rStrName))
-      selectR <- tclVar("All")
-      comboR <- ttkcombobox(frameD1, values = candR, textvariable = selectR, state = "readonly")
+      # Define widgets in frame_display_2
+      butt_set <- tkbutton(frame_display_2, text = "    Set    ", cursor = "hand2",
+                           command = function() set_display_2(tf, tclvalue(select_q_var), tclvalue(select_r_var), tclvalue(select_rel_var), as.numeric(tclvalue(select_min_lr_var))))
 
-      candRel <- c("All", unique(relStr))
-      selectRel <- tclVar("All")
-      comboRel <- ttkcombobox(frameD1, values = candRel, textvariable = selectRel, state = "readonly")
-
-      selectMinLr <- tclVar("1")
-      entryMinLr <- tkentry(frameD1, textvariable = selectMinLr, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-
-      tkgrid(comboQ, comboR, comboRel, entryMinLr, padx = 10, pady = 5)
-      tkgrid(frameD1)
-
-      frameD2 <- tkframe(tf)
-      tkgrid(tkbutton(frameD2, text = "    Set    ", cursor = "hand2",
-                      command = function() setDisplay2(tf, tclvalue(selectQ), tclvalue(selectR), tclvalue(selectRel), as.numeric(tclvalue(selectMinLr)))),
-             padx = 10, pady = 5)
-      tkgrid(frameD2)
+      # Grid widgets
+      tkgrid(label_title_1, label_title_2, label_title_3, label_title_4, padx = 10, pady = 5)
+      tkgrid(combo_q, combo_r, combo_rel, entry_min_lr, padx = 10, pady = 5)
+      tkgrid(butt_set, padx = 10, pady = 5)
+      tkgrid(frame_display_1)
+      tkgrid(frame_display_2)
     }
 
-    setDisplay2 <- function(tf, selectQ, selectR, selectRel, selectMinLr){
-      if(selectQ == "All"){
-        posQ <- 1:nD
+    set_display_2 <- function(tf, select_q, select_r, select_rel, select_min_lr){
+      if(select_q == "All"){
+        pos_q <- 1:n_data
       }else{
-        posQ <- which(displayQ == selectQ)
+        pos_q <- which(sn_auto_q_display == select_q)
       }
-      if(selectR == "All"){
-        posR <- 1:nD
+      if(select_r == "All"){
+        pos_r <- 1:n_data
       }else{
-        posR <- which(displayR == selectR)
+        pos_r <- which(sn_auto_r_display == select_r)
       }
-      if(selectRel == "All"){
-        posRel <- 1:nD
+      if(select_rel == "All"){
+        pos_rel <- 1:n_data
       }else{
-        posRel <- which(displayRel == selectRel)
+        pos_rel <- which(rel_auto_display == select_rel)
       }
-      posLr <- which(overLrAll > selectMinLr)
+      pos_lr <- which(clr_all > select_min_lr)
 
-      posExtract <- intersect(intersect(intersect(posQ, posR), posRel), posLr)
+      pos_extract <- intersect(intersect(intersect(pos_q, pos_r), pos_rel), pos_lr)
 
-      if(length(posExtract) != 0){
-        resultMlb <- get("resultMlb", pos = envStrResult)
-        tkdestroy(resultMlb)
-        scr1 <- get("scr1", pos = envStrResult)
+      if(length(pos_extract) != 0){
+        mlb_result <- get("mlb_result", pos = env_auto_result)
+        tkdestroy(mlb_result)
+        scr1 <- get("scr1", pos = env_auto_result)
         tkdestroy(scr1)
-        scr1 <- tkscrollbar(frameResult1, repeatinterval = 5, command = function(...) tkyview(resultMlb, ...))
-        resultMlb <- tk2mclistbox(frameResult1, width = 60, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
-        tk2column(resultMlb, "add", label = "Query", width = 15)
-        tk2column(resultMlb, "add", label = "Reference", width = 15)
-        tk2column(resultMlb, "add", label = "Relationship", width = 15)
-        tk2column(resultMlb, "add", label = "LR", width = 15)
-        tkgrid(resultMlb, scr1)
-        displayData <- displayDefault[posExtract, , drop = FALSE]
-        displayData <- displayData[order(as.numeric(displayData[, 4]), decreasing = TRUE), , drop = FALSE]
-        tk2insert.multi(resultMlb, "end", displayData)
-        assign("resultMlb", resultMlb, envir = envStrResult)
-        assign("scr1", scr1, envir = envStrResult)
-        assign("displayData", displayData, envir = envStrResult)
+        scr1 <- tkscrollbar(frame_result_1, repeatinterval = 5, command = function(...) tkyview(mlb_result, ...))
+        mlb_result <- tk2mclistbox(frame_result_1, width = 60, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+        tk2column(mlb_result, "add", label = "Query", width = 15)
+        tk2column(mlb_result, "add", label = "Reference", width = 15)
+        tk2column(mlb_result, "add", label = "Relationship", width = 15)
+        tk2column(mlb_result, "add", label = "LR", width = 15)
+        tkgrid(mlb_result, scr1)
+        data_display <- default_display[pos_extract, , drop = FALSE]
+        data_display <- data_display[order(as.numeric(data_display[, 4]), decreasing = TRUE), , drop = FALSE]
+        tk2insert.multi(mlb_result, "end", data_display)
+        assign("mlb_result", mlb_result, envir = env_auto_result)
+        assign("scr1", scr1, envir = env_auto_result)
+        assign("data_display", data_display, envir = env_auto_result)
         tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
         tkdestroy(tf)
       }else{
@@ -756,137 +349,160 @@ tabStrResult <- function(envProj, envGUI){
       }
     }
 
-    showDetail <- function(){
-      resultMlb <- get("resultMlb", pos = envStrResult)
-      if(tclvalue(tkcurselection(resultMlb)) == ""){
+    show_detail <- function(){
+      mlb_result <- get("mlb_result", pos = env_auto_result)
+      if(tclvalue(tkcurselection(mlb_result)) == ""){
         tkmessageBox(message = "Select one result!", icon = "error", type = "ok")
       }else{
-        displayData <- get("displayData", pos = envStrResult)
-        posShow <- as.numeric(tclvalue(tkcurselection(resultMlb))) + 1
-        selectQName <- displayData[posShow, 1]
-        posShowQ <- which(qStrName == selectQName)
-        selectRName <- displayData[posShow, 2]
-        posShowR <- which(rStrName == selectRName)
-        selectRel <- displayData[posShow, 3]
-        posShowRel <- which(relStr == selectRel)
-        posShowR <- intersect(posShowR, posShowRel)
-        detailData <- matrix("", nL + 1, 6)
-        detailData[, 1] <- c(names(myuAll), "overall")
-        colnames(detailData) <- c("Locus",
-                                  paste("Query genotype (", selectQName, ")", sep = ""),
-                                  paste("Reference genotype (", selectRName, ")", sep = ""),
+        data_display <- get("data_display", pos = env_auto_result)
+        pos_select <- as.numeric(tclvalue(tkcurselection(mlb_result))) + 1
+        sn_q_select <- data_display[pos_select, 1]
+        pos_select_q <- which(sn_auto_q == sn_q_select)
+        sn_r_select <- data_display[pos_select, 2]
+        pos_select_r <- which(sn_auto_r_new == sn_r_select)
+        rel_select <- data_display[pos_select, 3]
+        pos_select_rel <- which(rel_auto_r_new == rel_select)
+        pos_select_r <- intersect(pos_select_r, pos_select_rel)
+        data_detail <- matrix("", n_l + 1, 6)
+        data_detail[, 1] <- c(names(myus), "overall")
+        colnames(data_detail) <- c("Locus",
+                                  paste("Query genotype (", sn_q_select, ")", sep = ""),
+                                  paste("Reference genotype (", sn_r_select, ")", sep = ""),
                                   "Likelihood (related)",
                                   "Likelihood (unrelated)",
                                   "LR")
-        detailData[1:nL, 2] <- gtDisplay(qStrData[posShowQ, ])
-        detailData[1:nL, 3] <- gtDisplay(rStrData[posShowR, ])
-        detailData[, 4] <- signif(likeH1All[posShowQ, posShowR, ], digits = 4)
-        detailData[, 5] <- signif(likeH2All[posShowQ, posShowR, ], digits = 4)
-        detailData[, 6] <- signif(lrAll[posShowQ, posShowR, ], digits = 4)
+        data_detail[1:n_l, 2] <- display_gt(gt_auto_q[pos_select_q, ])
+        data_detail[1:n_l, 3] <- display_gt(gt_auto_r_new[pos_select_r, ])
+        data_detail[, 4] <- signif(like_h1_all[pos_select_q, pos_select_r, ], digits = 4)
+        data_detail[, 5] <- signif(like_h2_all[pos_select_q, pos_select_r, ], digits = 4)
+        data_detail[, 6] <- signif(lr_all[pos_select_q, pos_select_r, ], digits = 4)
 
-        tfDetail <- tktoplevel()
-        tkwm.title(tfDetail, "STR result in detail")
+        # Make a top frame
+        tf_detail <- tktoplevel()
+        tkwm.title(tf_detail, "STR result in detail")
 
-        frameDetail1 <- tkframe(tfDetail)
-        tkgrid(tklabel(frameDetail1, text = paste("Relationship : ", selectRel, sep = "")))
-        tkgrid(frameDetail1, padx = 10, pady = 5)
+        # Define frames
+        frame_detail_1 <- tkframe(tf_detail)
+        frame_detail_2 <- tkframe(tf_detail)
+        frame_detail_3 <- tkframe(tf_detail)
 
-        frameDetail2 <- tkframe(tfDetail)
-        scr2 <- tkscrollbar(frameDetail2, repeatinterval = 5, command = function(...) tkyview(detailMlb, ...))
-        detailMlb <- tk2mclistbox(frameDetail2, width = 140, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr2, ...))
-        tk2column(detailMlb, "add", label = "locus", width = 20)
-        tk2column(detailMlb, "add", label = paste("Query genotype (", selectQName, ")", sep = ""), width = 30)
-        tk2column(detailMlb, "add", label = paste("Reference genotype (", selectRName, ")", sep = ""), width = 30)
-        tk2column(detailMlb, "add", label = "likelihood (related)", width = 20)
-        tk2column(detailMlb, "add", label = "likelihood (unrelated)", width = 20)
-        tk2column(detailMlb, "add", label = "LR", width = 20)
-        tkgrid(detailMlb, scr2)
-        tk2insert.multi(detailMlb, "end", detailData)
+        # Define widgets in frame_detail_1
+        label_title <- tklabel(frame_detail_1, text = paste("Relationship : ", rel_select, sep = ""))
+
+        # Define a scrollbar for a multi-list box (mlb_detail)
+        scr2 <- tkscrollbar(frame_detail_2, repeatinterval = 5, command = function(...) tkyview(mlb_detail, ...))
+
+        # Define a multi-list box (mlb_detail)
+        mlb_detail <- tk2mclistbox(frame_detail_2, width = 140, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr2, ...))
+        tk2column(mlb_detail, "add", label = "locus", width = 20)
+        tk2column(mlb_detail, "add", label = paste("Query genotype (", sn_q_select, ")", sep = ""), width = 30)
+        tk2column(mlb_detail, "add", label = paste("Reference genotype (", sn_r_select, ")", sep = ""), width = 30)
+        tk2column(mlb_detail, "add", label = "likelihood (related)", width = 20)
+        tk2column(mlb_detail, "add", label = "likelihood (unrelated)", width = 20)
+        tk2column(mlb_detail, "add", label = "LR", width = 20)
+        tk2insert.multi(mlb_detail, "end", data_detail)
+
+        # Define widgets in frame_detail_3
+        butt_export <- tkbutton(frame_detail_3, text = "    Export    ", cursor = "hand2", command = function() export_data(data_detail, FALSE))
+
+        # Grid widgets
+        tkgrid(label_title)
+        tkgrid(mlb_detail, scr2)
         tkgrid.configure(scr2, rowspan = 20, sticky = "nsw")
-        tkgrid(frameDetail2, padx = 10, pady = 5)
-
-        frameDetail3 <- tkframe(tfDetail)
-        tkgrid(tkbutton(frameDetail3, text = "    Export    ", cursor = "hand2", command = function() exportData(detailData, FALSE)))
-        tkgrid(frameDetail3, padx = 10, pady = 5)
+        tkgrid(butt_export)
+        tkgrid(frame_detail_1, padx = 10, pady = 5)
+        tkgrid(frame_detail_2, padx = 10, pady = 5)
+        tkgrid(frame_detail_3, padx = 10, pady = 5)
       }
     }
 
-    envStrResult <- new.env(parent = globalenv())
+    env_auto_result <- new.env(parent = globalenv())
 
-    qStrData <- get("qStrData", pos = envProj)
-    rStrData <- get("rStrData", pos = envProj)
-    qStrName <- get("qStrName", pos = envProj)
-    rStrName <- get("rStrName", pos = envProj)
-    relStr <- get("relStr", pos = envProj)
-    likeH1All <- get("likeH1All", pos = envProj)
-    likeH2All <- get("likeH2All", pos = envProj)
-    lrAll <- get("lrAll", pos = envProj)
-#    probIBDAll <- get("probIBDAll", pos = envProj)
-    myuAll <- get("myuAll", pos = envProj)
-#    maf <- get("maf", pos = envProj)
-#    dropMethStr <- get("dropMethStr", pos = envProj)
-#    pd <- get("pd", pos = envProj)
+    gt_auto_q <- get("gt_auto_q", pos = env_proj)
+    gt_auto_r_new <- get("gt_auto_r_new", pos = env_proj)
+    sn_auto_q <- get("sn_auto_q", pos = env_proj)
+    sn_auto_r_new <- get("sn_auto_r_new", pos = env_proj)
+    rel_auto_r_new <- get("rel_auto_r_new", pos = env_proj)
+    like_h1_all <- get("like_h1_all", pos = env_proj)
+    like_h2_all <- get("like_h2_all", pos = env_proj)
+    lr_all <- get("lr_all", pos = env_proj)
+#    pibd_all <- get("pibd_all", pos = env_proj)
+    myus <- get("myus", pos = env_proj)
+#    maf <- get("maf", pos = env_proj)
+#    meth_d <- get("meth_d", pos = env_proj)
+#    pd <- get("pd", pos = env_proj)
 
-    nL <- length(myuAll)
-    nQ <- length(qStrName)
-    nR <- length(rStrName)
+    n_l <- length(myus)
+    n_q <- length(sn_auto_q)
+    n_r <- length(sn_auto_r_new)
 
-    overLrAllMat <- lrAll[, , nL + 1]
-    overLrAll <- as.vector(overLrAllMat)
-    overLrAllMat <- rbind(relStr, overLrAllMat)
-    rownames(overLrAllMat) <- c("relationship", qStrName)
-    colnames(overLrAllMat) <- rStrName
+    clr_all_mat <- lr_all[, , n_l + 1]
+    clr_all <- as.vector(clr_all_mat)
+    clr_all_mat <- rbind(rel_auto_r_new, clr_all_mat)
+    rownames(clr_all_mat) <- c("relationship", sn_auto_q)
+    colnames(clr_all_mat) <- sn_auto_r_new
 
-    nD <- nQ * nR
-    displayDefault <- matrix(0, nD, 4)
-    colnames(displayDefault) <- c("Query", "Reference", "Relationship", "LR")
-    displayQ <- rep(qStrName, nR)
-    displayDefault[, 1] <- displayQ
-    displayR <- as.vector(sapply(rStrName, rep, nQ))
-    displayDefault[, 2] <- displayR
-    displayRel <- as.vector(sapply(relStr, rep, nQ))
-    displayDefault[, 3] <- displayRel
-    displayDefault[, 4] <- sprintf('%.2e', overLrAll)
-    displayData <- displayDefault[which(overLrAll >= 1), , drop = FALSE]
-    displayData <- displayData[order(as.numeric(displayData[, 4]), decreasing = TRUE), , drop = FALSE]
-    assign("displayData", displayData, envir = envStrResult)
+    n_data <- n_q * n_r
+    default_display <- matrix(0, n_data, 4)
+    colnames(default_display) <- c("Query", "Reference", "Relationship", "LR")
+    sn_auto_q_display <- rep(sn_auto_q, n_r)
+    default_display[, 1] <- sn_auto_q_display
+    sn_auto_r_display <- as.vector(sapply(sn_auto_r_new, rep, n_q))
+    default_display[, 2] <- sn_auto_r_display
+    rel_auto_display <- as.vector(sapply(rel_auto_r_new, rep, n_q))
+    default_display[, 3] <- rel_auto_display
+    default_display[, 4] <- sprintf('%.2e', clr_all)
+    data_display <- default_display[which(clr_all >= 1), , drop = FALSE]
+    data_display <- data_display[order(as.numeric(data_display[, 4]), decreasing = TRUE), , drop = FALSE]
+    assign("data_display", data_display, envir = env_auto_result)
 
-    tabs <- get("tabs", pos = envGUI)
-    tab2 <- get("tab2", pos = envGUI)
-    frameTab2 <- get("frameTab2", pos = envGUI)
-    tkdestroy(frameTab2)
-    frameTab2 <- tkframe(tab2)
+    tabs <- get("tabs", pos = env_gui)
+    tab2 <- get("tab2", pos = env_gui)
+    frame_tab2 <- get("frame_tab2", pos = env_gui)
+    tkdestroy(frame_tab2)
+    frame_tab2 <- tkframe(tab2)
 
-    frameResult1 <- tkframe(frameTab2)
-    scr1 <- tkscrollbar(frameResult1, repeatinterval = 5, command = function(...) tkyview(resultMlb, ...))
-    resultMlb <- tk2mclistbox(frameResult1, width = 60, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
-    tk2column(resultMlb, "add", label = "Query", width = 15)
-    tk2column(resultMlb, "add", label = "Reference", width = 15)
-    tk2column(resultMlb, "add", label = "Relationship", width = 15)
-    tk2column(resultMlb, "add", label = "LR", width = 15)
-    tkgrid(resultMlb, scr1)
-    tk2insert.multi(resultMlb, "end", displayData)
-    assign("resultMlb", resultMlb, envir = envStrResult)
-    assign("scr1", scr1, envir = envStrResult)
+    # Define frames
+    frame_result_1 <- tkframe(frame_tab2)
+    frame_result_2 <- tkframe(frame_tab2)
+
+    # Define a scrollbar for a multi-list box (mlb_result)
+    scr1 <- tkscrollbar(frame_result_1, repeatinterval = 5, command = function(...) tkyview(mlb_result, ...))
+
+    # Define a multi-list box (mlb_result)
+    mlb_result <- tk2mclistbox(frame_result_1, width = 60, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+    tk2column(mlb_result, "add", label = "Query", width = 15)
+    tk2column(mlb_result, "add", label = "Reference", width = 15)
+    tk2column(mlb_result, "add", label = "Relationship", width = 15)
+    tk2column(mlb_result, "add", label = "LR", width = 15)
+    tk2insert.multi(mlb_result, "end", data_display)
+
+    # Define widgets in frame_result_2
+    butt_display <- tkbutton(frame_result_2, text = "    Set display    ", cursor = "hand2", command = function() set_display_1())
+    butt_detail <- tkbutton(frame_result_2, text = "    Show detail    ", cursor = "hand2", command = function() show_detail())
+    butt_export1 <- tkbutton(frame_result_2, text = "    Export displayed data    ", cursor = "hand2", command = function() export_data(get("data_display", pos = env_auto_result), FALSE))
+    butt_export2 <- tkbutton(frame_result_2, text = "    Export All LRs    ", cursor = "hand2", command = function() export_data(clr_all_mat, TRUE))
+
+    # Grid widgets
+    tkgrid(mlb_result, scr1)
     tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
-    tkgrid(frameResult1, padx = 10, pady = 5)
+    tkgrid(butt_display, butt_detail, butt_export1, butt_export2, padx = 10, pady = 5)
+    tkgrid(frame_result_1, padx = 10, pady = 5)
+    tkgrid(frame_result_2)
+    tkgrid(frame_tab2)
 
-    frameResult2 <- tkframe(frameTab2)
-    buttDisplay <- tkbutton(frameResult2, text = "    Set display    ", cursor = "hand2", command = function() setDisplay1())
-    buttDetail <- tkbutton(frameResult2, text = "    Show detail    ", cursor = "hand2", command = function() showDetail())
-    buttExport1 <- tkbutton(frameResult2, text = "    Export displayed data    ", cursor = "hand2", command = function() exportData(get("displayData", pos = envStrResult), FALSE))
-    buttExport2 <- tkbutton(frameResult2, text = "    Export All LRs    ", cursor = "hand2", command = function() exportData(overLrAllMat, TRUE))
-    tkgrid(buttDisplay, buttDetail, buttExport1, buttExport2, padx = 10, pady = 5)
-    tkgrid(frameResult2)
+    # Assign data to environment variable (env_auto_result)
+    assign("mlb_result", mlb_result, envir = env_auto_result)
+    assign("scr1", scr1, envir = env_auto_result)
+    assign("frame_tab2", frame_tab2, envir = env_gui)
 
-    tkgrid(frameTab2)
+    # Select tab2
     tk2notetab.select(tabs, "STR results")
-    assign("frameTab2", frameTab2, envir = envGUI)
   }else{
-    tab2 <- get("tab2", pos = envGUI)
-    frameTab2 <- get("frameTab2", pos = envGUI)
-    tkdestroy(frameTab2)
-    frameTab2 <- tkframe(tab2)
-    assign("frameTab2", frameTab2, envir = envGUI)
+    tab2 <- get("tab2", pos = env_gui)
+    frame_tab2 <- get("frame_tab2", pos = env_gui)
+    tkdestroy(frame_tab2)
+    frame_tab2 <- tkframe(tab2)
+    assign("frame_tab2", frame_tab2, envir = env_gui)
   }
 }

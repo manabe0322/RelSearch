@@ -1,123 +1,123 @@
-# Set objects of envProj for STR
-setEnvProj_str <- function(envProj, setfiles){
-  if(setfiles){
-    assign("qStrInput", NULL, envir = envProj)
-    assign("qFpStr", character(0), envir = envProj)
-    assign("qFnStr", character(0), envir = envProj)
-    assign("rStrInput", NULL, envir = envProj)
-    assign("rFpStr", character(0), envir = envProj)
-    assign("rFnStr", character(0), envir = envProj)
-    assign("afInput", NULL, envir = envProj)
-    assign("afFpStr", character(0), envir = envProj)
-    assign("afFnStr", character(0), envir = envProj)
+# Set objects of env_proj for STR
+set_env_proj_auto <- function(env_proj, bool_files){
+  if(bool_files){
+    assign("data_auto_q", NULL, envir = env_proj)
+    assign("fp_auto_q", character(0), envir = env_proj)
+    assign("fn_auto_q", character(0), envir = env_proj)
+    assign("data_auto_r", NULL, envir = env_proj)
+    assign("fp_auto_r", character(0), envir = env_proj)
+    assign("fn_auto_r", character(0), envir = env_proj)
+    assign("data_auto_af", NULL, envir = env_proj)
+    assign("fp_auto_af", character(0), envir = env_proj)
+    assign("fn_auto_af", character(0), envir = env_proj)
   }
-  assign("maf", 0.001, envir = envProj)
-  assign("pd", 0.5, envir = envProj)
-  assign("dropMethStr", 1, envir = envProj)
-  assign("finStr", FALSE, envir = envProj)
+  assign("maf", 0.001, envir = env_proj)
+  assign("pd", 0.5, envir = env_proj)
+  assign("meth_d", 1, envir = env_proj)
+  assign("fin_auto", FALSE, envir = env_proj)
 }
 
-# Set objects of envProj for Y
-setEnvProj_y <- function(envProj, setfiles){
-  if(setfiles){
-    assign("qYInput", NULL, envir = envProj)
-    assign("qFpY", character(0), envir = envProj)
-    assign("qFnY", character(0), envir = envProj)
-    assign("rYInput", NULL, envir = envProj)
-    assign("rFpY", character(0), envir = envProj)
-    assign("rFnY", character(0), envir = envProj)
+# Set objects of env_proj for Y
+set_env_proj_y <- function(env_proj, bool_files){
+  if(bool_files){
+    assign("data_y_q", NULL, envir = env_proj)
+    assign("fp_y_q", character(0), envir = env_proj)
+    assign("fn_y_q", character(0), envir = env_proj)
+    assign("data_y_r", NULL, envir = env_proj)
+    assign("fp_y_r", character(0), envir = env_proj)
+    assign("fn_y_r", character(0), envir = env_proj)
   }
-  assign("finY", FALSE, envir = envProj)
+  assign("fin_y", FALSE, envir = env_proj)
 }
 
-# Set objects of envProj for mtDNA
-setEnvProj_mt <- function(envProj, setfiles){
-  if(setfiles){
-    assign("qMtInput", NULL, envir = envProj)
-    assign("qFpMt", character(0), envir = envProj)
-    assign("qFnMt", character(0), envir = envProj)
-    assign("rMtInput", NULL, envir = envProj)
-    assign("rFpMt", character(0), envir = envProj)
-    assign("rFnMt", character(0), envir = envProj)
+# Set objects of env_proj for mtDNA
+set_env_proj_mt <- function(env_proj, bool_files){
+  if(bool_files){
+    assign("data_mt_q", NULL, envir = env_proj)
+    assign("fp_mt_q", character(0), envir = env_proj)
+    assign("fn_mt_q", character(0), envir = env_proj)
+    assign("data_mt_r", NULL, envir = env_proj)
+    assign("fp_mt_r", character(0), envir = env_proj)
+    assign("fn_mt_r", character(0), envir = env_proj)
   }
-  assign("finMt", FALSE, envir = envProj)
+  assign("fin_mt", FALSE, envir = env_proj)
 }
 
 # Open a new project
-newProj <- function(envProj, envGUI){
-  inputOk <- "ok"
-  finStr <- get("finStr", pos = envProj)
-  finY <- get("finY", pos = envProj)
-  finMt <- get("finMt", pos = envProj)
-  if(finStr || finY || finMt){
-    inputOk <- tclvalue(tkmessageBox(message = "Unsaved data will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
+renew_proj <- function(env_proj, env_gui){
+  sign_input <- "ok"
+  fin_auto <- get("fin_auto", pos = env_proj)
+  fin_y <- get("fin_y", pos = env_proj)
+  fin_mt <- get("fin_mt", pos = env_proj)
+  if(fin_auto || fin_y || fin_mt){
+    sign_input <- tclvalue(tkmessageBox(message = "Unsaved data will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
   }
-  if(inputOk == "ok"){
-    setEnvProj_str(envProj, TRUE)
-    setEnvProj_y(envProj, TRUE)
-    setEnvProj_mt(envProj, TRUE)
-    tabStrSet(envProj, envGUI)
-    tabStrResult(envProj, envGUI)
-    tabYSet(envProj, envGUI)
-    tabYResult(envProj, envGUI)
-    tabMtSet(envProj, envGUI)
-    tabMtResult(envProj, envGUI)
+  if(sign_input == "ok"){
+    set_env_proj_auto(env_proj, TRUE)
+    set_env_proj_y(env_proj, TRUE)
+    set_env_proj_mt(env_proj, TRUE)
+    make_tab1(env_proj, env_gui)
+    make_tab2(env_proj, env_gui)
+    make_tab3(env_proj, env_gui)
+    make_tab4(env_proj, env_gui)
+    make_tab5(env_proj, env_gui)
+    make_tab6(env_proj, env_gui)
   }
 }
 
 # Load a new project
-loadProj <- function(tf, envProj_old, envGUI){
-  inputOk <- "ok"
-  finStr <- get("finStr", pos = envProj_old)
-  finY <- get("finY", pos = envProj_old)
-  finMt <- get("finMt", pos = envProj_old)
-  if(finStr || finY || finMt){
-    inputOk <- tclvalue(tkmessageBox(message = "Unsaved data will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
+load_proj <- function(tf, env_proj_old, env_gui){
+  sign_input <- "ok"
+  fin_auto <- get("fin_auto", pos = env_proj_old)
+  fin_y <- get("fin_y", pos = env_proj_old)
+  fin_mt <- get("fin_mt", pos = env_proj_old)
+  if(fin_auto || fin_y || fin_mt){
+    sign_input <- tclvalue(tkmessageBox(message = "Unsaved data will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
   }
-  if(inputOk == "ok"){
-    fpVar <- tclVar("")
-    fileName <- tclvalue(tkgetOpenFile(parent = tf, initialdir = tclvalue(fpVar), multiple = "true", filetypes = "{{R Data Files} {.Rdata}}"))
-    if(!nchar(fileName)){
+  if(sign_input == "ok"){
+    fp_var <- tclVar("")
+    fp <- tclvalue(tkgetOpenFile(parent = tf, initialdir = tclvalue(fp_var), multiple = "true", filetypes = "{{R Data Files} {.Rdata}}"))
+    if(!nchar(fp)){
       tkmessageBox(message = "No file was selected!", icon = "error", type = "ok")
     }else{
-      load(fileName)
-      for(i in ls(envProj, all.names = TRUE)){
-        assign(i, get(i, envProj), envProj_old)
+      load(fp)
+      for(i in ls(env_proj, all.names = TRUE)){
+        assign(i, get(i, env_proj), env_proj_old)
       }
-      load(fileName)
-      tabStrSet(envProj_old, envGUI)
-      tabStrResult(envProj_old, envGUI)
-      tabYSet(envProj_old, envGUI)
-      tabYResult(envProj_old, envGUI)
-      tabMtSet(envProj_old, envGUI)
-      tabMtResult(envProj_old, envGUI)
+      load(fp)
+      make_tab1(env_proj_old, env_gui)
+      make_tab2(env_proj_old, env_gui)
+      make_tab3(env_proj_old, env_gui)
+      make_tab4(env_proj_old, env_gui)
+      make_tab5(env_proj_old, env_gui)
+      make_tab6(env_proj_old, env_gui)
     }
   }
 }
 
 # Save a project
-saveProj <- function(envProj){
-  saveAs <- tkgetSaveFile(filetypes = "{{R Data Files} {.RData}}")
-  if(tclvalue(saveAs) != ""){
-    if(substr(tclvalue(saveAs), nchar(tclvalue(saveAs)) - 5, nchar(tclvalue(saveAs))) == ".RData"){
-      reportName <- tclvalue(saveAs)
+save_proj <- function(env_proj){
+  save_as <- tkgetSaveFile(filetypes = "{{R Data Files} {.RData}}")
+  if(tclvalue(save_as) != ""){
+    if(substr(tclvalue(save_as), nchar(tclvalue(save_as)) - 5, nchar(tclvalue(save_as))) == ".RData"){
+      name_report <- tclvalue(save_as)
     }else{
-      reportName <- paste0(tclvalue(saveAs), ".RData")
+      name_report <- paste0(tclvalue(save_as), ".RData")
     }
-    save(envProj, file = reportName)
+    save(env_proj, file = name_report)
   }
 }
 
 # Export data
-exportData <- function(dataMat, rowNames){
-  saveAs <- tkgetSaveFile(filetypes = "{{CSV Files} {.csv}}")
-  if(tclvalue(saveAs) != ""){
-    if(substr(tclvalue(saveAs), nchar(tclvalue(saveAs)) - 3, nchar(tclvalue(saveAs))) == ".csv"){
-      fileName <- tclvalue(saveAs)
+export_data <- function(data, bool_rownames){
+  save_as <- tkgetSaveFile(filetypes = "{{CSV Files} {.csv}}")
+  if(tclvalue(save_as) != ""){
+    if(substr(tclvalue(save_as), nchar(tclvalue(save_as)) - 3, nchar(tclvalue(save_as))) == ".csv"){
+      fp <- tclvalue(save_as)
     }else{
-      fileName <- paste(tclvalue(saveAs), ".csv", sep = "")
+      fp <- paste(tclvalue(save_as), ".csv", sep = "")
     }
-    write.csv(dataMat, file = fileName, row.names = rowNames)
+    write.csv(data, file = fp, row.names = bool_rownames)
   }
 }
 
@@ -127,40 +127,58 @@ exportData <- function(dataMat, rowNames){
 #' @usage relsearch()
 #' @export
 relsearch <- function(){
-  if(is.element("envProj", ls(envir = parent.env(environment())))){
-    envProj <- get("envProj", pos = parent.env(environment()))
+  # Set environment variable (env_proj)
+  if(is.element("env_proj", ls(envir = parent.env(environment())))){
+    env_proj <- get("env_proj", pos = parent.env(environment()))
   }else{
-    envProj <- new.env(parent = globalenv())
-    setEnvProj_str(envProj, TRUE)
-    setEnvProj_y(envProj, TRUE)
-    setEnvProj_mt(envProj, TRUE)
+    env_proj <- new.env(parent = globalenv())
+    set_env_proj_auto(env_proj, TRUE)
+    set_env_proj_y(env_proj, TRUE)
+    set_env_proj_mt(env_proj, TRUE)
   }
 
-  envGUI <- new.env(parent = globalenv())
-  softVer <- packageVersion("relsearch")
-#  pathPack <- "D:/RStudio_GitHub/relsearch/inst"
-  pathPack <- path.package("relsearch", quiet = FALSE)
-  assign("softVer", softVer, envir = envGUI)
-  assign("pathPack", pathPack, envir = envGUI)
+  # Set environment variable (env_gui)
+  env_gui <- new.env(parent = globalenv())
 
+  # Set software version
+  ver_soft <- packageVersion("relsearch")
+  assign("ver_soft", ver_soft, envir = env_gui)
+
+  # Set package path
+#  path_pack <- "D:/RStudio_GitHub/relsearch/inst"
+  path_pack <- path.package("relsearch", quiet = FALSE)
+  assign("path_pack", path_pack, envir = env_gui)
+
+  # Make a top frame
   tf <- tktoplevel()
-  tkwm.title(tf, paste("relsearch ver. ", softVer, sep = ""))
+  tkwm.title(tf, paste("relsearch ver. ", ver_soft, sep = ""))
 
-  topMenu <- tkmenu(tf)
-  tkconfigure(tf, menu = topMenu)
+  # Make top menu
+  top_menu <- tkmenu(tf)
+  tkconfigure(tf, menu = top_menu)
 
-  file_menu <- tkmenu(topMenu, tearoff = FALSE, activebackground = "lightskyblue1")
-  tkadd(topMenu, "cascade", label = "File", menu = file_menu)
-  tkadd(file_menu, "command", label = "New project", command = function() newProj(envProj, envGUI))
-  tkadd(file_menu, "command", label = "Load project", command = function() loadProj(tf, envProj, envGUI))
-  tkadd(file_menu, "command", label = "Save project", command = function() saveProj(envProj))
+  # Make file menu
+  file_menu <- tkmenu(top_menu, tearoff = FALSE, activebackground = "lightskyblue1")
+  tkadd(top_menu, "cascade", label = "File", menu = file_menu)
+  tkadd(file_menu, "command", label = "New project", command = function() renew_proj(env_proj, env_gui))
+  tkadd(file_menu, "command", label = "Load project", command = function() load_proj(tf, env_proj, env_gui))
+  tkadd(file_menu, "command", label = "Save project", command = function() save_proj(env_proj))
   tkadd(file_menu, "separator")
   tkadd(file_menu, "command", label = "Quit", command = function() tkdestroy(tf))
 
-  help_menu <- tkmenu(topMenu, tearoff = FALSE, activebackground = "lightskyblue1")
-  tkadd(topMenu, "cascade", label = "Help", menu = help_menu)
-  tkadd(help_menu, "command", label = "Manual", command = function() browseURL(paste0(pathPack, "/extdata/manual/relsearch_", softVer, "_manual.pdf")))
+  # Make tools menu
+  tools_menu <- tkmenu(top_menu, tearoff = FALSE, activebackground = "lightskyblue1")
+  tkadd(top_menu, "cascade", label = "Tools", menu = tools_menu)
+  tkadd(tools_menu, "command", label = "Set parameters for autosomal STR", command = function() set_auto(env_proj))
+  tkadd(tools_menu, "command", label = "Set parameters for Y-STR", command = function() set_y())
+  tkadd(tools_menu, "command", label = "Set parameters for mtDNA", command = function() set_mt())
 
+  # Make help menu
+  help_menu <- tkmenu(top_menu, tearoff = FALSE, activebackground = "lightskyblue1")
+  tkadd(top_menu, "cascade", label = "Help", menu = help_menu)
+  tkadd(help_menu, "command", label = "Manual", command = function() browseURL(paste0(path_pack, "/extdata/manual/relsearch_", ver_soft, "_manual.pdf")))
+
+  # Define tabs
   tabs <- tk2notebook(tf, tabs = c("STR analysis", "STR results", "Y analysis", "Y results", "mtDNA analysis", "mtDNA results"))
   tab1 <- tk2notetab(tabs, "STR analysis")
   tab2 <- tk2notetab(tabs, "STR results")
@@ -168,29 +186,31 @@ relsearch <- function(){
   tab4 <- tk2notetab(tabs, "Y results")
   tab5 <- tk2notetab(tabs, "mtDNA analysis")
   tab6 <- tk2notetab(tabs, "mtDNA results")
-  frameTab1 <- tkframe(tab1)
-  frameTab2 <- tkframe(tab2)
-  frameTab3 <- tkframe(tab3)
-  frameTab4 <- tkframe(tab4)
-  frameTab5 <- tkframe(tab5)
-  frameTab6 <- tkframe(tab6)
 
-  assign("tabs", tabs, envir = envGUI)
-  assign("tab1", tab1, envir = envGUI)
-  assign("tab2", tab2, envir = envGUI)
-  assign("tab3", tab3, envir = envGUI)
-  assign("tab4", tab4, envir = envGUI)
-  assign("tab5", tab5, envir = envGUI)
-  assign("tab6", tab6, envir = envGUI)
-  assign("frameTab1", frameTab1, envir = envGUI)
-  assign("frameTab2", frameTab2, envir = envGUI)
-  assign("frameTab3", frameTab3, envir = envGUI)
-  assign("frameTab4", frameTab4, envir = envGUI)
-  assign("frameTab5", frameTab5, envir = envGUI)
-  assign("frameTab6", frameTab6, envir = envGUI)
+  # Define frames
+  frame_tab1 <- tkframe(tab1)
+  frame_tab2 <- tkframe(tab2)
+  frame_tab3 <- tkframe(tab3)
+  frame_tab4 <- tkframe(tab4)
+  frame_tab5 <- tkframe(tab5)
+  frame_tab6 <- tkframe(tab6)
+
+  assign("tabs", tabs, envir = env_gui)
+  assign("tab1", tab1, envir = env_gui)
+  assign("tab2", tab2, envir = env_gui)
+  assign("tab3", tab3, envir = env_gui)
+  assign("tab4", tab4, envir = env_gui)
+  assign("tab5", tab5, envir = env_gui)
+  assign("tab6", tab6, envir = env_gui)
+  assign("frame_tab1", frame_tab1, envir = env_gui)
+  assign("frame_tab2", frame_tab2, envir = env_gui)
+  assign("frame_tab3", frame_tab3, envir = env_gui)
+  assign("frame_tab4", frame_tab4, envir = env_gui)
+  assign("frame_tab5", frame_tab5, envir = env_gui)
+  assign("frame_tab6", frame_tab6, envir = env_gui)
 
   tkpack(tabs, fill = "both", expand = 1)
-  tabStrSet(envProj, envGUI)
-  tabYSet(envProj, envGUI)
-  tabMtSet(envProj, envGUI)
+  make_tab1(env_proj, env_gui)
+  make_tab3(env_proj, env_gui)
+  make_tab5(env_proj, env_gui)
 }

@@ -1,5 +1,5 @@
 # Setting allele frequencies
-freqSetting <- function(qData, rData, afInput, maf){
+set_af <- function(qData, rData, afInput, maf){
   nL <- ncol(afInput) - 1
   nameAl <- afInput[, 1]
   nameL <- colnames(afInput)[-1]
@@ -26,7 +26,7 @@ freqSetting <- function(qData, rData, afInput, maf){
 }
 
 # Calculation of the average probability of exclusion (testthat)
-calcApe <- function(af){
+calc_ape <- function(af){
   sigma1 <- sum(af^2 * (1 - af)^2)
   nAl <- length(af)
   posAf <- combn(1:nAl, 2)
