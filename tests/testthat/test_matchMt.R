@@ -39,3 +39,31 @@ test_that("matchMt pattern 3", {
   expect_equal(shareRange, "")
   expect_equal(lenShare, "0")
 })
+
+test_that("matchMt pattern 4", {
+  qHap <- ""
+  qRan <- ""
+  rHap <- "16209C 16223T 16291T 16324C 73G 263G 309.1C 315.1C"
+  rRan <- "73-340"
+  resultMt <- matchMt(qHap, qRan, rHap, rRan)
+  nMis <- resultMt[1]
+  shareRange <- resultMt[2]
+  lenShare <- resultMt[3]
+  expect_equal(nMis, "")
+  expect_equal(shareRange, "")
+  expect_equal(lenShare, "0")
+})
+
+test_that("matchMt pattern 5", {
+  qHap <- "73G"
+  qRan <- "73"
+  rHap <- "16209C 16223T 16291T 16324C 73G 263G 309.1C 315.1C"
+  rRan <- "73-340"
+  resultMt <- matchMt(qHap, qRan, rHap, rRan)
+  nMis <- resultMt[1]
+  shareRange <- resultMt[2]
+  lenShare <- resultMt[3]
+  expect_equal(nMis, "0")
+  expect_equal(shareRange, "73")
+  expect_equal(lenShare, "1")
+})
