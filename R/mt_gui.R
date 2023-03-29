@@ -1,361 +1,393 @@
-tabMtSet <- function(envProj, envGUI){
-  openFile <- function(type){
-    inputOk <- "ok"
-    finMt <- get("finMt", pos = envProj)
-    if(finMt){
-      inputOk <- tclvalue(tkmessageBox(message = "mtDNA results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
+make_tab5 <- function(env_proj, env_gui){
+  open_file <- function(type){
+    sign_input <- "ok"
+    fin_mt <- get("fin_mt", pos = env_proj)
+    if(fin_mt){
+      sign_input <- tclvalue(tkmessageBox(message = "mtDNA results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
     }
 
-    if(inputOk == "ok"){
-      setEnvProj_mt(envProj, FALSE)
-      tabMtResult(envProj, envGUI)
+    if(sign_input == "ok"){
+      setenv_proj_mt(env_proj, FALSE)
+      make_tab6(env_proj, env_gui)
 
       if(type == "query"){
-        fp <- get("qFpMt", pos = envProj)
-        fn <- get("qFnMt", pos = envProj)
+        fp <- get("fp_mt_q", pos = env_proj)
+        fn <- get("fn_mt_q", pos = env_proj)
       }else if(type == "ref"){
-        fp <- get("rFpMt", pos = envProj)
-        fn <- get("rFnMt", pos = envProj)
+        fp <- get("fp_mt_r", pos = env_proj)
+        fn <- get("fn_mt_r", pos = env_proj)
       }
-      fpVar <- tclVar(fp)
-      fnVar <- tclVar(fn)
+      fp_var <- tclVar(fp)
+      fn_var <- tclVar(fn)
 
-      fileName <- tclvalue(tkgetOpenFile(initialdir = tclvalue(fpVar), multiple = "true", filetypes = "{{CSV Files} {.csv}}"))
-      if(!nchar(fileName)){
+      path_file <- tclvalue(tkgetOpenFile(initialdir = tclvalue(fp_var), multiple = "true", filetypes = "{{CSV Files} {.csv}}"))
+      if(!nchar(path_file)){
         tkmessageBox(message = "No file was selected!", icon = "error", type = "ok")
       }else{
-        tmp <- sub("\\}", fileName, replacement = "")
+        tmp <- sub("\\}", path_file, replacement = "")
         tmp2 <- sub("\\{", tmp, replacement = "")
-        tclvalue(fpVar) <- tmp2
+        tclvalue(fp_var) <- tmp2
         foo3 <- strsplit(tmp2, "/")[[1]]
-        tclvalue(fnVar) <- strsplit(foo3[length(foo3)], "\\.csv")[[1]][1]
+        tclvalue(fn_var) <- strsplit(foo3[length(foo3)], "\\.csv")[[1]][1]
         if(type == "query"){
-          tkconfigure(labelQFile, textvariable = fnVar)
-          qMtInput <- read.csv(tclvalue(fpVar), header = TRUE)
-          qMtInput <- as.matrix(qMtInput)
-          qMtInput[is.na(qMtInput)] <- ""
-          assign("qMtInput", qMtInput, envir = envProj)
-          assign("qFpMt", tclvalue(fpVar), envir = envProj)
-          assign("qFnMt", tclvalue(fnVar), envir = envProj)
+          tkconfigure(label_q_name, textvariable = fn_var)
+          data_mt_q <- read.csv(tclvalue(fp_var), header = TRUE)
+          data_mt_q <- as.matrix(data_mt_q)
+          data_mt_q[is.na(data_mt_q)] <- ""
+          assign("data_mt_q", data_mt_q, envir = env_proj)
+          assign("fp_mt_q", tclvalue(fp_var), envir = env_proj)
+          assign("fn_mt_q", tclvalue(fn_var), envir = env_proj)
         }else if(type == "ref"){
-          tkconfigure(labelRFile, textvariable = fnVar)
-          rMtInput <- read.csv(tclvalue(fpVar), header = TRUE)
-          rMtInput <- as.matrix(rMtInput)
-          rMtInput[is.na(rMtInput)] <- ""
-          assign("rMtInput", rMtInput, envir = envProj)
-          assign("rFpMt", tclvalue(fpVar), envir = envProj)
-          assign("rFnMt", tclvalue(fnVar), envir = envProj)
+          tkconfigure(label_r_name, textvariable = fn_var)
+          data_mt_r <- read.csv(tclvalue(fp_var), header = TRUE)
+          data_mt_r <- as.matrix(data_mt_r)
+          data_mt_r[is.na(data_mt_r)] <- ""
+          assign("data_mt_r", data_mt_r, envir = env_proj)
+          assign("fp_mt_r", tclvalue(fp_var), envir = env_proj)
+          assign("fn_mt_r", tclvalue(fn_var), envir = env_proj)
         }
       }
     }
   }
 
-  qFnMt <- get("qFnMt", pos = envProj)
-  qFnMtVar <- tclVar(qFnMt)
-  rFnMt <- get("rFnMt", pos = envProj)
-  rFnMtVar <- tclVar(rFnMt)
+  fn_mt_q <- get("fn_mt_q", pos = env_proj)
+  fn_mt_q_var <- tclVar(fn_mt_q)
+  fn_mt_r <- get("fn_mt_r", pos = env_proj)
+  fn_mt_r_var <- tclVar(fn_mt_r)
 
-  tab5 <- get("tab5", pos = envGUI)
-  frameTab5 <- get("frameTab5", pos = envGUI)
-  tkdestroy(frameTab5)
-  frameTab5 <- tkframe(tab5)
-  assign("frameTab5", frameTab5, envir = envGUI)
+  tab5 <- get("tab5", pos = env_gui)
+  frame_tab5 <- get("frame_tab5", pos = env_gui)
+  tkdestroy(frame_tab5)
+  frame_tab5 <- tkframe(tab5)
+  assign("frame_tab5", frame_tab5, envir = env_gui)
 
-  frame5_1 <- tkframe(frameTab5, relief = "groove", borderwidth = 2)
-  frame5_2 <- tkframe(frameTab5)
+  # Define frames
+  frame_5_1 <- tkframe(frame_tab5, relief = "groove", borderwidth = 2)
+  frame_5_2 <- tkframe(frame_tab5)
 
-  labelQ <- tklabel(frame5_1, text = "Query database")
-  labelQFile <- tklabel(frame5_1, textvariable = qFnMtVar, width = 30, highlightthickness = 1, relief = "groove", justify = "center", background = "white")
-  buttQ <- tkbutton(frame5_1, text = "    Load    ", cursor = "hand2", command = function() openFile("query"))
+  # Define widgets in frame_5_1
+  label_q_title <- tklabel(frame_5_1, text = "Query database")
+  label_q_name <- tklabel(frame_5_1, textvariable = fn_mt_q_var, width = 30, highlightthickness = 1, relief = "groove", justify = "center", background = "white")
+  butt_q <- tkbutton(frame_5_1, text = "    Load    ", cursor = "hand2", command = function() open_file("query"))
+  label_r_title <- tklabel(frame_5_1, text = "Reference database")
+  label_r_name <- tklabel(frame_5_1, textvariable = fn_mt_r_var, width = 30, highlightthickness = 1, relief = "groove", justify = "center", background = "white")
+  butt_r <- tkbutton(frame_5_1, text = "    Load    ", cursor = "hand2", command = function() open_file("ref"))
 
-  labelR <- tklabel(frame5_1, text = "Reference database")
-  labelRFile <- tklabel(frame5_1, textvariable = rFnMtVar, width = 30, highlightthickness = 1, relief = "groove", justify = "center", background = "white")
-  buttR <- tkbutton(frame5_1, text = "    Load    ", cursor = "hand2", command = function() openFile("ref"))
+  # Define widgets in frame_5_2
+  butt_search <- tkbutton(frame_5_2, text = "    Screening    ", cursor = "hand2", command = function() search_mt(env_proj, env_gui))
 
-  tkgrid(tklabel(frame5_1, text = "Input files", font = "Helvetica 10 bold"), padx = 10, pady = 5, sticky = "w")
-  tkgrid(labelQ, labelQFile, buttQ, padx = 10, pady = 5, sticky = "w")
-  tkgrid(labelR, labelRFile, buttR, padx = 10, pady = 5, sticky = "w")
-  tkgrid(frame5_1, padx = 10, pady = 5, sticky = "w")
-
-  buttScreening <- tkbutton(frame5_2, text = "    Screening    ", cursor = "hand2", command = function() guiScreenMt(envProj, envGUI))
-  tkgrid(buttScreening, pady = 10)
-  tkgrid(frame5_2, padx = 10, pady = 5)
-
-  tkgrid(frameTab5)
+  # Grid widgets
+  tkgrid(tklabel(frame_5_1, text = "Input files", font = "Helvetica 10 bold"), padx = 10, pady = 5, sticky = "w")
+  tkgrid(label_q_title, label_q_name, butt_q, padx = 10, pady = 5, sticky = "w")
+  tkgrid(label_r_title, label_r_name, butt_r, padx = 10, pady = 5, sticky = "w")
+  tkgrid(butt_search, pady = 10)
+  tkgrid(frame_5_1, padx = 10, pady = 5, sticky = "w")
+  tkgrid(frame_5_2, padx = 10, pady = 5)
+  tkgrid(frame_tab5)
 }
 
-guiScreenMt <- function(envProj, envGUI){
-  qMtInput <- get("qMtInput", pos = envProj)
-  rMtInput <- get("rMtInput", pos = envProj)
-  if(any(c(length(qMtInput) == 0, length(rMtInput) == 0))){
+search_mt <- function(env_proj, env_gui){
+  data_mt_q <- get("data_mt_q", pos = env_proj)
+  data_mt_r <- get("data_mt_r", pos = env_proj)
+  if(any(c(length(data_mt_q) == 0, length(data_mt_r) == 0))){
     tkmessageBox(message = "Load required file(s)!", icon = "error", type = "ok")
   }else{
-    qCol <- colnames(qMtInput)
-    posQName <- grep("Sample", qCol)
-    qMtName <- qMtInput[, posQName]
-    qMtRange <- qMtInput[, "Range"]
-    qMtHap <- qMtInput[, "Haplotype"]
-
-    rCol <- colnames(rMtInput)
-    posRName <- grep("Sample", rCol)
-    rMtName <- rMtInput[, posRName]
-    rMtRange <- rMtInput[, "Range"]
-    rMtHap <- rMtInput[, "Haplotype"]
-
+    # Define a progress bar
     pb <- tkProgressBar("mtDNA screening", "0% done", 0, 100, 0)
-    nQ <- length(qMtHap)
-    nR <- length(rMtHap)
-    mismatch_mt <- shareRange_mt <- lenShare_mt <- matrix("", nrow = nQ, ncol = nR)
-    rownames(mismatch_mt) <- qMtName
-    colnames(mismatch_mt) <- rMtName
-    rownames(shareRange_mt) <- qMtName
-    colnames(shareRange_mt) <- rMtName
-    rownames(lenShare_mt) <- qMtName
-    colnames(lenShare_mt) <- rMtName
-    for(i in 1:nR){
-      rRan <- rMtRange[i]
-      rHap <- rMtHap[i]
-      for(j in 1:nQ){
-        qRan <- qMtRange[j]
-        qHap <- qMtHap[j]
-        result_mt <- matchMt(qHap, qRan, rHap, rRan)
+
+    pos_sn_q <- intersect(grep("Sample", colnames(data_mt_q)), grep("Name", colnames(data_mt_q)))
+    sn_mt_q <- data_mt_q[, pos_sn_q]
+    range_mt_q <- data_mt_q[, "Range"]
+    hap_mt_q <- data_mt_q[, "Haplotype"]
+
+    pos_sn_r <- intersect(grep("Sample", colnames(data_mt_r)), grep("Name", colnames(data_mt_r)))
+    sn_mt_r <- data_mt_r[, pos_sn_r]
+    range_mt_r <- data_mt_r[, "Range"]
+    hap_mt_r <- data_mt_r[, "Haplotype"]
+
+    n_q <- length(hap_mt_q)
+    n_r <- length(hap_mt_r)
+
+    mismatch_mt <- share_range_mt <- share_len_mt <- matrix("", nrow = n_q, ncol = n_r)
+    rownames(mismatch_mt) <- sn_mt_q
+    colnames(mismatch_mt) <- sn_mt_r
+    rownames(share_range_mt) <- sn_mt_q
+    colnames(share_range_mt) <- sn_mt_r
+    rownames(share_len_mt) <- sn_mt_q
+    colnames(share_len_mt) <- sn_mt_r
+    for(i in 1:n_r){
+      ran_r <- range_mt_r[i]
+      ref <- hap_mt_r[i]
+      for(j in 1:n_q){
+        ran_q <- range_mt_q[j]
+        query <- hap_mt_q[j]
+        result_mt <- match_mt(query, ran_q, ref, ran_r)
         mismatch_mt[j, i] <- result_mt[1]
-        shareRange_mt[j, i] <- result_mt[2]
-        lenShare_mt[j, i] <- result_mt[3]
-        info <- sprintf("%d%% done", round((nQ * (i - 1) + j) * 100 / (nQ * nR)))
-        setTkProgressBar(pb, (nQ * (i - 1) + j) * 100 / (nQ * nR), sprintf("mtDNA screening"), info)
+        share_range_mt[j, i] <- result_mt[2]
+        share_len_mt[j, i] <- result_mt[3]
+        info <- sprintf("%d%% done", round((n_q * (i - 1) + j) * 100 / (n_q * n_r)))
+        setTkProgressBar(pb, (n_q * (i - 1) + j) * 100 / (n_q * n_r), sprintf("mtDNA screening"), info)
       }
     }
-    assign("qMtName", qMtName, envir = envProj)
-    assign("qMtRange", qMtRange, envir = envProj)
-    assign("qMtHap", qMtHap, envir = envProj)
-    assign("rMtName", rMtName, envir = envProj)
-    assign("rMtRange", rMtRange, envir = envProj)
-    assign("rMtHap", rMtHap, envir = envProj)
-    assign("mismatch_mt", mismatch_mt, envir = envProj)
-    assign("shareRange_mt", shareRange_mt, envir = envProj)
-    assign("lenShare_mt", lenShare_mt, envir = envProj)
-    assign("finMt", TRUE, envir = envProj)
-    tabMtResult(envProj, envGUI)
+    assign("sn_mt_q", sn_mt_q, envir = env_proj)
+    assign("range_mt_q", range_mt_q, envir = env_proj)
+    assign("hap_mt_q", hap_mt_q, envir = env_proj)
+    assign("sn_mt_r", sn_mt_r, envir = env_proj)
+    assign("range_mt_r", range_mt_r, envir = env_proj)
+    assign("hap_mt_r", hap_mt_r, envir = env_proj)
+    assign("mismatch_mt", mismatch_mt, envir = env_proj)
+    assign("share_range_mt", share_range_mt, envir = env_proj)
+    assign("share_len_mt", share_len_mt, envir = env_proj)
+    assign("fin_mt", TRUE, envir = env_proj)
+    make_tab6(env_proj, env_gui)
     close(pb)
   }
 }
 
-tabMtResult <- function(envProj, envGUI){
-  finMt <- get("finMt", pos = envProj)
-  if(finMt){
-    setDisplay1 <- function(){
+make_tab6 <- function(env_proj, env_gui){
+  fin_mt <- get("fin_mt", pos = env_proj)
+  if(fin_mt){
+    set_display_1 <- function(){
+      # Define tclvalue
+      cand_q <- c("All", sn_mt_q)
+      select_q_var <- tclVar("All")
+      cand_r <- c("All", sn_mt_r)
+      select_r_var <- tclVar("All")
+      select_len_share_var <- tclVar(300)
+      select_n_mm_var <- tclVar(1)
+
+      # Make a top frame
       tf <- tktoplevel()
       tkwm.title(tf, "Set display")
 
-      frameD1 <- tkframe(tf)
-      tkgrid(tklabel(frameD1, text = "Query"),
-             tklabel(frameD1, text = "Reference"),
-             tklabel(frameD1, text = "Minimum shared length"),
-             tklabel(frameD1, text = "Maximum number of inconsistency"),
-             padx = 10, pady = 5)
+      # Define frames
+      frame_display_1 <- tkframe(tf)
+      frame_display_2 <- tkframe(tf)
 
-      candQ <- c("All", qMtName)
-      selectQVar <- tclVar("All")
-      comboQ <- ttkcombobox(frameD1, values = candQ, textvariable = selectQVar, state = "readonly")
+      # Define widgets in frame_display_1
+      label_title_1 <- tklabel(frame_display_1, text = "Query")
+      label_title_2 <- tklabel(frame_display_1, text = "Reference")
+      label_title_3 <- tklabel(frame_display_1, text = "Minimum shared length")
+      label_title_4 <- tklabel(frame_display_1, text = "Maximum number of inconsistency")
+      combo_q <- ttkcombobox(frame_display_1, values = cand_q, textvariable = select_q_var, state = "readonly")
+      combo_r <- ttkcombobox(frame_display_1, values = cand_r, textvariable = select_r_var, state = "readonly")
+      entry_len_share <- tkentry(frame_display_1, textvariable = select_len_share_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+      entry_n_mm <- tkentry(frame_display_1, textvariable = select_n_mm_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
 
-      candR <- c("All", rMtName)
-      selectRVar <- tclVar("All")
-      comboR <- ttkcombobox(frameD1, values = candR, textvariable = selectRVar, state = "readonly")
+      butt_set <- tkbutton(frame_display_2, text = "    Set    ", cursor = "hand2",
+                           command = function() set_display_2(tf, tclvalue(select_q_var), tclvalue(select_r_var),
+                                                              as.numeric(tclvalue(select_len_share_var)), as.numeric(tclvalue(select_n_mm_var))))
 
-      selectLenShareVar <- tclVar(300)
-      entryLenShare <- tkentry(frameD1, textvariable = selectLenShareVar, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-
-      selectNMisVar <- tclVar(1)
-      entryNMis <- tkentry(frameD1, textvariable = selectNMisVar, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-
-      tkgrid(comboQ, comboR, entryLenShare, entryNMis, padx = 10, pady = 5)
-      tkgrid(frameD1)
-
-      frameD2 <- tkframe(tf)
-      tkgrid(tkbutton(frameD2, text = "    Set    ", cursor = "hand2",
-                      command = function() setDisplay2(tf, tclvalue(selectQVar), tclvalue(selectRVar), as.numeric(tclvalue(selectLenShareVar)), as.numeric(tclvalue(selectNMisVar)))),
-             padx = 10, pady = 5)
-      tkgrid(frameD2)
+      # Grid widgets
+      tkgrid(label_title_1, label_title_2, label_title_3, label_title_4, padx = 10, pady = 5)
+      tkgrid(combo_q, combo_r, entry_len_share, entry_n_mm, padx = 10, pady = 5)
+      tkgrid(butt_set, padx = 10, pady = 5)
+      tkgrid(frame_display_1)
+      tkgrid(frame_display_2)
     }
 
-    setDisplay2 <- function(tf, selectQ, selectR, selectLenShare, selectNMis){
-      if(selectQ == "All"){
-        posQ <- 1:nD
+    set_display_2 <- function(tf, select_q, select_r, select_len_share, select_n_mm){
+      if(select_q == "All"){
+        pos_q <- 1:n_data
       }else{
-        posQ <- which(displayQ == selectQ)
+        pos_q <- which(sn_mt_q_display == select_q)
       }
-      if(selectR == "All"){
-        posR <- 1:nD
+      if(select_r == "All"){
+        pos_r <- 1:n_data
       }else{
-        posR <- which(displayR == selectR)
+        pos_r <- which(sn_mt_r_display == select_r)
       }
-      posLenShare <- which(lenShareAll >= selectLenShare)
-      posNMis <- which(nMisAll <= selectNMis)
+      pos_len_share <- which(share_len_all >= select_len_share)
+      pos_n_mm <- which(n_mm_vec <= select_n_mm)
 
-      posExtract <- intersect(intersect(intersect(posQ, posR), posLenShare), posNMis)
+      pos_extract <- intersect(intersect(intersect(pos_q, pos_r), pos_len_share), pos_n_mm)
 
-      if(length(posExtract) != 0){
-        resultMlb <- get("resultMlb", pos = envMtResult)
-        tkdestroy(resultMlb)
-        scr1 <- get("scr1", pos = envMtResult)
+      if(length(pos_extract) != 0){
+        mlb_result <- get("mlb_result", pos = env_mt_result)
+        tkdestroy(mlb_result)
+        scr1 <- get("scr1", pos = env_mt_result)
         tkdestroy(scr1)
-        scr1 <- tkscrollbar(frameResult1, repeatinterval = 5, command = function(...) tkyview(resultMlb, ...))
-        resultMlb <- tk2mclistbox(frameResult1, width = 130, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
-        tk2column(resultMlb, "add", label = "Query", width = 15)
-        tk2column(resultMlb, "add", label = "Reference", width = 15)
-        tk2column(resultMlb, "add", label = "Shared range", width = 50)
-        tk2column(resultMlb, "add", label = "Shared length", width = 20)
-        tk2column(resultMlb, "add", label = "Number of inconsistency", width = 30)
-        tkgrid(resultMlb)
-        displayData <- displayDefault[posExtract, , drop = FALSE]
-        displayData <- displayData[order(as.numeric(displayData[, 4]), decreasing = TRUE), , drop = FALSE]
-        displayData <- displayData[order(as.numeric(displayData[, 5])), , drop = FALSE]
-        tk2insert.multi(resultMlb, "end", displayData)
-        assign("resultMlb", resultMlb, envir = envMtResult)
-        assign("scr1", scr1, envir = envMtResult)
-        assign("displayData", displayData, envir = envMtResult)
+        scr1 <- tkscrollbar(frame_result_1, repeatinterval = 5, command = function(...) tkyview(mlb_result, ...))
+        mlb_result <- tk2mclistbox(frame_result_1, width = 130, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+        tk2column(mlb_result, "add", label = "Query", width = 15)
+        tk2column(mlb_result, "add", label = "Reference", width = 15)
+        tk2column(mlb_result, "add", label = "Shared range", width = 50)
+        tk2column(mlb_result, "add", label = "Shared length", width = 20)
+        tk2column(mlb_result, "add", label = "Number of inconsistency", width = 30)
+        tkgrid(mlb_result)
+        data_display <- default_display[pos_extract, , drop = FALSE]
+        data_display <- data_display[order(as.numeric(data_display[, 4]), decreasing = TRUE), , drop = FALSE]
+        data_display <- data_display[order(as.numeric(data_display[, 5])), , drop = FALSE]
+        tk2insert.multi(mlb_result, "end", data_display)
+        assign("mlb_result", mlb_result, envir = env_mt_result)
+        assign("scr1", scr1, envir = env_mt_result)
+        assign("data_display", data_display, envir = env_mt_result)
         tkdestroy(tf)
       }else{
         tkmessageBox(message = "There is no data that meet the condition!", icon = "error", type = "ok")
       }
     }
 
-    showDetail <- function(){
-      resultMlb <- get("resultMlb", pos = envMtResult)
-      if(tclvalue(tkcurselection(resultMlb)) == ""){
+    show_detail <- function(){
+      mlb_result <- get("mlb_result", pos = env_mt_result)
+      if(tclvalue(tkcurselection(mlb_result)) == ""){
         tkmessageBox(message = "Select one result!", icon = "error", type = "ok")
       }else{
-        displayData <- get("displayData", pos = envMtResult)
-        posShow <- as.numeric(tclvalue(tkcurselection(resultMlb))) + 1
+        data_display <- get("data_display", pos = env_mt_result)
+        pos_select <- as.numeric(tclvalue(tkcurselection(mlb_result))) + 1
 
-        selectQName <- displayData[posShow, 1]
-        posShowQ <- which(qMtName == selectQName)
-        qRan <- qMtRange[posShowQ]
-        qHap <- qMtHap[posShowQ]
-        qHap <- strsplit(qHap, " ")[[1]]
-        qHap <- setdiff(qHap, "")
-        qHap <- qHap[order(parse_number(qHap))]
+        select_q_name <- data_display[pos_select, 1]
+        pos_select_q <- which(sn_mt_q == select_q_name)
+        ran_q <- range_mt_q[pos_select_q]
+        query <- hap_mt_q[pos_select_q]
+        q_type <- strsplit(query, " ")[[1]]
+        q_type <- setdiff(q_type, "")
+        q_type <- q_type[order(parse_number(q_type))]
 
-        selectRName <- displayData[posShow, 2]
-        posShowR <- which(rMtName == selectRName)
-        rRan <- rMtRange[posShowR]
-        rHap <- rMtHap[posShowR]
-        rHap <- strsplit(rHap, " ")[[1]]
-        rHap <- setdiff(rHap, "")
-        rHap <- rHap[order(parse_number(rHap))]
+        select_r_name <- data_display[pos_select, 2]
+        pos_select_r <- which(sn_mt_r == select_r_name)
+        ran_r <- range_mt_r[pos_select_r]
+        ref <- hap_mt_r[pos_select_r]
+        r_type <- strsplit(ref, " ")[[1]]
+        r_type <- setdiff(r_type, "")
+        r_type <- r_type[order(parse_number(r_type))]
 
-        qrHap <- union(qHap, rHap)
-        qrHap <- qrHap[order(parse_number(qrHap))]
-        nHap <- length(qrHap)
+        qr_type <- union(q_type, r_type)
+        qr_type <- qr_type[order(parse_number(qr_type))]
+        n_type <- length(qr_type)
 
-        posMtQR <- extPosMtQR(qRan, rRan)
+        pos_mt_qr <- extract_pos_mt_qr(ran_q, ran_r)
 
-        detailData <- matrix("", nHap, 4)
-        colnames(detailData) <- c(paste0("Query haplotype (", selectQName, ")"),
-                                  paste0("Reference haplotype (", selectRName, ")"),
+        data_detail <- matrix("", n_type, 4)
+        colnames(data_detail) <- c(paste0("Query haplotype (", select_q_name, ")"),
+                                  paste0("Reference haplotype (", select_r_name, ")"),
                                   "Out of shared range",
                                   "Inconsistency")
-        detailData[is.element(qrHap, qHap), 1] <- qHap
-        detailData[is.element(qrHap, rHap), 2] <- rHap
-        posCommon <- is.element(round(parse_number(qrHap), 0), posMtQR)
-        detailData[!posCommon, 3] <- "X"
-        posInconsistent <- apply(rbind(!is.element(qrHap, qHap), !is.element(qrHap, rHap)), 2, any)
-        detailData[apply(rbind(posCommon, posInconsistent), 2, all), 4] <- "X"
+        data_detail[is.element(qr_type, q_type), 1] <- q_type
+        data_detail[is.element(qr_type, r_type), 2] <- r_type
+        pos_common <- is.element(round(parse_number(qr_type), 0), pos_mt_qr)
+        data_detail[!pos_common, 3] <- "X"
+        pos_inconsistent <- apply(rbind(!is.element(qr_type, q_type), !is.element(qr_type, r_type)), 2, any)
+        data_detail[apply(rbind(pos_common, pos_inconsistent), 2, all), 4] <- "X"
 
-        tfDetail <- tktoplevel()
-        tkwm.title(tfDetail, "mtDNA result in detail")
+        # Make a top frame
+        tf_detail <- tktoplevel()
+        tkwm.title(tf_detail, "mtDNA result in detail")
 
-        tkgrid(tklabel(tfDetail, text = paste0("Shared range : ", shareRange_mt[posShowQ, posShowR])), padx = 10, pady = 5)
+        # Define frames
+        frame_detail_1 <- tkframe(tf_detail)
+        frame_detail_2 <- tkframe(tf_detail)
 
-        frameDetail2 <- tkframe(tfDetail)
-        scr2 <- tkscrollbar(frameDetail2, repeatinterval = 5, command = function(...) tkyview(detailMlb, ...))
-        detailMlb <- tk2mclistbox(frameDetail2, width = 105, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr2, ...))
-        tk2column(detailMlb, "add", label = paste0("Query haplotype (", selectQName, ")"), width = 30)
-        tk2column(detailMlb, "add", label = paste0("Reference haplotype (", selectRName, ")"), width = 30)
-        tk2column(detailMlb, "add", label = "Out of shared range", width = 25)
-        tk2column(detailMlb, "add", label = "Inconsistency", width = 20)
-        tkgrid(detailMlb, scr2)
-        tk2insert.multi(detailMlb, "end", detailData)
+        # Define widgets in tf_detail
+        label_share_range <- tklabel(tf_detail, text = paste0("Shared range : ", share_range_mt[pos_select_q, pos_select_r]))
+
+        # Define a scrollbar for a multi-list box (mlb_detail)
+        scr2 <- tkscrollbar(frame_detail_1, repeatinterval = 5, command = function(...) tkyview(mlb_detail, ...))
+
+        # Define a multi-list box (mlb_detail)
+        mlb_detail <- tk2mclistbox(frame_detail_1, width = 105, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr2, ...))
+        tk2column(mlb_detail, "add", label = paste0("Query haplotype (", select_q_name, ")"), width = 30)
+        tk2column(mlb_detail, "add", label = paste0("Reference haplotype (", select_r_name, ")"), width = 30)
+        tk2column(mlb_detail, "add", label = "Out of shared range", width = 25)
+        tk2column(mlb_detail, "add", label = "Inconsistency", width = 20)
+        tk2insert.multi(mlb_detail, "end", data_detail)
+
+        # Define widgets in frame_detail_2
+        butt_export <- tkbutton(frame_detail_2, text = "    Export    ", cursor = "hand2", command = function() export_data(data_detail, FALSE))
+
+        # Grid widgets
+        tkgrid(label_share_range, padx = 10, pady = 5)
+        tkgrid(mlb_detail, scr2)
         tkgrid.configure(scr2, rowspan = 20, sticky = "nsw")
-        tkgrid(frameDetail2, padx = 10, pady = 5)
-
-        frameDetail3 <- tkframe(tfDetail)
-        tkgrid(tkbutton(frameDetail3, text = "    Export    ", cursor = "hand2", command = function() exportData(detailData, FALSE)))
-        tkgrid(frameDetail3, padx = 10, pady = 5)
+        tkgrid(butt_export)
+        tkgrid(frame_detail_1, padx = 10, pady = 5)
+        tkgrid(frame_detail_2, padx = 10, pady = 5)
       }
     }
 
-    envMtResult <- new.env(parent = globalenv())
+    env_mt_result <- new.env(parent = globalenv())
 
-    qMtName <- get("qMtName", pos = envProj)
-    qMtRange <- get("qMtRange", pos = envProj)
-    qMtHap <- get("qMtHap", pos = envProj)
-    rMtName <- get("rMtName", pos = envProj)
-    rMtRange <- get("rMtRange", pos = envProj)
-    rMtHap <- get("rMtHap", pos = envProj)
-    mismatch_mt <- get("mismatch_mt", pos = envProj)
-    shareRange_mt <- get("shareRange_mt", pos = envProj)
-    lenShare_mt <- get("lenShare_mt", pos = envProj)
+    sn_mt_q <- get("sn_mt_q", pos = env_proj)
+    range_mt_q <- get("range_mt_q", pos = env_proj)
+    hap_mt_q <- get("hap_mt_q", pos = env_proj)
+    sn_mt_r <- get("sn_mt_r", pos = env_proj)
+    range_mt_r <- get("range_mt_r", pos = env_proj)
+    hap_mt_r <- get("hap_mt_r", pos = env_proj)
+    mismatch_mt <- get("mismatch_mt", pos = env_proj)
+    share_range_mt <- get("share_range_mt", pos = env_proj)
+    share_len_mt <- get("share_len_mt", pos = env_proj)
 
-    nQ <- length(qMtName)
-    nR <- length(rMtName)
+    n_q <- length(sn_mt_q)
+    n_r <- length(sn_mt_r)
 
-    nD <- nQ * nR
-    displayDefault <- matrix(0, nD, 5)
-    colnames(displayDefault) <- c("Query", "Reference", "Shared range", "Shared length", "Number of inconsistency")
-    displayQ <- rep(qMtName, nR)
-    displayDefault[, 1] <- displayQ
-    displayR <- as.vector(sapply(rMtName, rep, nQ))
-    displayDefault[, 2] <- displayR
-    segAll <- as.vector(shareRange_mt)
-    displayDefault[, 3] <- segAll
-    lenShareAll <- as.numeric(as.vector(lenShare_mt))
-    displayDefault[, 4] <- lenShareAll
-    nMisAll <- as.numeric(as.vector(mismatch_mt))
-    displayDefault[, 5] <- nMisAll
-    displayData <- displayDefault[which(as.numeric(displayDefault[, 4]) >= 300), , drop = FALSE]
-    displayData <- displayData[which(as.numeric(displayData[, 5]) <= 1), , drop = FALSE]
-    displayData <- displayData[order(as.numeric(displayData[, 4]), decreasing = TRUE), , drop = FALSE]
-    displayData <- displayData[order(as.numeric(displayData[, 5])), , drop = FALSE]
-    assign("displayData", displayData, envir = envMtResult)
+    n_data <- n_q * n_r
+    default_display <- matrix(0, n_data, 5)
+    colnames(default_display) <- c("Query", "Reference", "Shared range", "Shared length", "Number of inconsistency")
+    sn_mt_q_display <- rep(sn_mt_q, n_r)
+    default_display[, 1] <- sn_mt_q_display
+    sn_mt_r_display <- as.vector(sapply(sn_mt_r, rep, n_q))
+    default_display[, 2] <- sn_mt_r_display
+    seg_all <- as.vector(share_range_mt)
+    default_display[, 3] <- seg_all
+    share_len_all <- as.numeric(as.vector(share_len_mt))
+    default_display[, 4] <- share_len_all
+    n_mm_vec <- as.numeric(as.vector(mismatch_mt))
+    default_display[, 5] <- n_mm_vec
+    data_display <- default_display[which(as.numeric(default_display[, 4]) >= 300), , drop = FALSE]
+    data_display <- data_display[which(as.numeric(data_display[, 5]) <= 1), , drop = FALSE]
+    data_display <- data_display[order(as.numeric(data_display[, 4]), decreasing = TRUE), , drop = FALSE]
+    data_display <- data_display[order(as.numeric(data_display[, 5])), , drop = FALSE]
+    assign("data_display", data_display, envir = env_mt_result)
 
-    tabs <- get("tabs", pos = envGUI)
-    tab6 <- get("tab6", pos = envGUI)
-    frameTab6 <- get("frameTab6", pos = envGUI)
-    tkdestroy(frameTab6)
-    frameTab6 <- tkframe(tab6)
+    tabs <- get("tabs", pos = env_gui)
+    tab6 <- get("tab6", pos = env_gui)
+    frame_tab6 <- get("frame_tab6", pos = env_gui)
+    tkdestroy(frame_tab6)
+    frame_tab6 <- tkframe(tab6)
 
-    frameResult1 <- tkframe(frameTab6)
-    scr1 <- tkscrollbar(frameResult1, repeatinterval = 5, command = function(...) tkyview(resultMlb, ...))
-    resultMlb <- tk2mclistbox(frameResult1, width = 130, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
-    tk2column(resultMlb, "add", label = "Query", width = 15)
-    tk2column(resultMlb, "add", label = "Reference", width = 15)
-    tk2column(resultMlb, "add", label = "Shared range", width = 50)
-    tk2column(resultMlb, "add", label = "Shared length", width = 20)
-    tk2column(resultMlb, "add", label = "Number of inconsistency", width = 30)
-    tkgrid(resultMlb, scr1)
-    tk2insert.multi(resultMlb, "end", displayData)
-    assign("resultMlb", resultMlb, envir = envMtResult)
-    assign("scr1", scr1, envir = envMtResult)
+    # Define frames
+    frame_result_1 <- tkframe(frame_tab6)
+    frame_result_2 <- tkframe(frame_tab6)
+
+    # Define a scrollbar for a multi-list box (mlb_result)
+    scr1 <- tkscrollbar(frame_result_1, repeatinterval = 5, command = function(...) tkyview(mlb_result, ...))
+
+    # Define a multi-list box (mlb_result)
+    mlb_result <- tk2mclistbox(frame_result_1, width = 130, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+    tk2column(mlb_result, "add", label = "Query", width = 15)
+    tk2column(mlb_result, "add", label = "Reference", width = 15)
+    tk2column(mlb_result, "add", label = "Shared range", width = 50)
+    tk2column(mlb_result, "add", label = "Shared length", width = 20)
+    tk2column(mlb_result, "add", label = "Number of inconsistency", width = 30)
+    tk2insert.multi(mlb_result, "end", data_display)
+
+    # Define widgets in frame_result_2
+    butt_display <- tkbutton(frame_result_2, text = "    Set display    ", cursor = "hand2", command = function() set_display_1())
+    butt_detail <- tkbutton(frame_result_2, text = "    Show detail    ", cursor = "hand2", command = function() show_detail())
+    butt_export <- tkbutton(frame_result_2, text = "    Export displayed data    ", cursor = "hand2", command = function() export_data(get("data_display", pos = env_mt_result), FALSE))
+
+    # Grid widgets
+    tkgrid(mlb_result, scr1)
     tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
-    tkgrid(frameResult1, padx = 10, pady = 5)
+    tkgrid(butt_display, butt_detail, butt_export, padx = 10, pady = 5)
+    tkgrid(frame_result_1, padx = 10, pady = 5)
+    tkgrid(frame_result_2)
+    tkgrid(frame_tab6)
 
-    frameResult2 <- tkframe(frameTab6)
-    buttDisplay <- tkbutton(frameResult2, text = "    Set display    ", cursor = "hand2", command = function() setDisplay1())
-    buttDetail <- tkbutton(frameResult2, text = "    Show detail    ", cursor = "hand2", command = function() showDetail())
-    buttExport1 <- tkbutton(frameResult2, text = "    Export displayed data    ", cursor = "hand2", command = function() exportData(get("displayData", pos = envMtResult), FALSE))
-    tkgrid(buttDisplay, buttDetail, buttExport1, padx = 10, pady = 5)
-    tkgrid(frameResult2)
+    # Assign data to environment variable (env_mt_result)
+    assign("mlb_result", mlb_result, envir = env_mt_result)
+    assign("scr1", scr1, envir = env_mt_result)
 
-    tkgrid(frameTab6)
+    # Assign data to environment variable (env_gui)
+    assign("frame_tab6", frame_tab6, envir = env_gui)
+
+    # Select tab6
     tk2notetab.select(tabs, "mtDNA results")
-    assign("frameTab6", frameTab6, envir = envGUI)
   }else{
-    tab6 <- get("tab6", pos = envGUI)
-    frameTab6 <- get("frameTab6", pos = envGUI)
-    tkdestroy(frameTab6)
-    frameTab6 <- tkframe(tab6)
-    assign("frameTab6", frameTab6, envir = envGUI)
+    tab6 <- get("tab6", pos = env_gui)
+    frame_tab6 <- get("frame_tab6", pos = env_gui)
+    tkdestroy(frame_tab6)
+    frame_tab6 <- tkframe(tab6)
+    assign("frame_tab6", frame_tab6, envir = env_gui)
   }
 }
