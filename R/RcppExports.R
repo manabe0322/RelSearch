@@ -17,63 +17,63 @@ tousa <- function(start, end, interval) {
     .Call(`_relsearch_tousa`, start, end, interval)
 }
 
-searchPos_double <- function(vec, target) {
-    .Call(`_relsearch_searchPos_double`, vec, target)
+search_pos_double <- function(vec, target) {
+    .Call(`_relsearch_search_pos_double`, vec, target)
 }
 
-searchPos_int <- function(vec, target) {
-    .Call(`_relsearch_searchPos_int`, vec, target)
+search_pos_int <- function(vec, target) {
+    .Call(`_relsearch_search_pos_int`, vec, target)
 }
 
-extPosMt <- function(range) {
-    .Call(`_relsearch_extPosMt`, range)
-}
-
-#' @export
-extPosMtQR <- function(qRan, rRan) {
-    .Call(`_relsearch_extPosMtQR`, qRan, rRan)
+extract_pos_mt <- function(range) {
+    .Call(`_relsearch_extract_pos_mt`, range)
 }
 
 #' @export
-makeShareRange <- function(posMtQR) {
-    .Call(`_relsearch_makeShareRange`, posMtQR)
-}
-
-kinLike <- function(qgt, rgt, af, afAl, probIBD, consMu, myu, ape) {
-    .Call(`_relsearch_kinLike`, qgt, rgt, af, afAl, probIBD, consMu, myu, ape)
-}
-
-makeDummyAf <- function(dummyGt, af, afAl) {
-    .Call(`_relsearch_makeDummyAf`, dummyGt, af, afAl)
-}
-
-makeDummyGt <- function(qgt, rgt) {
-    .Call(`_relsearch_makeDummyGt`, qgt, rgt)
-}
-
-kinLikeDrop <- function(qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd) {
-    .Call(`_relsearch_kinLikeDrop`, qgt, rgt, af, afAl, probIBD, consMu, myu, ape, pd)
+extract_pos_mt_qr <- function(ran_q, ran_r) {
+    .Call(`_relsearch_extract_pos_mt_qr`, ran_q, ran_r)
 }
 
 #' @export
-calcKinLr <- function(query, ref, afList, afAlList, probIBD, consMu, myus, apes, dropMethStr, pd) {
-    .Call(`_relsearch_calcKinLr`, query, ref, afList, afAlList, probIBD, consMu, myus, apes, dropMethStr, pd)
+make_share_range <- function(pos_mt_qr) {
+    .Call(`_relsearch_make_share_range`, pos_mt_qr)
 }
 
-obtainAl <- function(hap) {
-    .Call(`_relsearch_obtainAl`, hap)
+calc_kin_like <- function(qgt, rgt, af, af_al, pibd, cons_mu, myu, ape) {
+    .Call(`_relsearch_calc_kin_like`, qgt, rgt, af, af_al, pibd, cons_mu, myu, ape)
+}
+
+make_dummy_af <- function(dummy_gt, af, af_al) {
+    .Call(`_relsearch_make_dummy_af`, dummy_gt, af, af_al)
+}
+
+make_dummy_gt <- function(qgt, rgt) {
+    .Call(`_relsearch_make_dummy_gt`, qgt, rgt)
+}
+
+calc_kin_like_drop <- function(qgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd) {
+    .Call(`_relsearch_calc_kin_like_drop`, qgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd)
+}
+
+#' @export
+calc_kin_lr <- function(query, ref, af_list, af_al_list, pibd, cons_mu, myus, apes, meth_d, pd) {
+    .Call(`_relsearch_calc_kin_lr`, query, ref, af_list, af_al_list, pibd, cons_mu, myus, apes, meth_d, pd)
+}
+
+obtain_al <- function(hap) {
+    .Call(`_relsearch_obtain_al`, hap)
 }
 
 is_integer <- function(x) {
     .Call(`_relsearch_is_integer`, x)
 }
 
-calcMuStep <- function(qAl, rAl) {
-    .Call(`_relsearch_calcMuStep`, qAl, rAl)
+calc_mu_step <- function(q_al, r_al) {
+    .Call(`_relsearch_calc_mu_step`, q_al, r_al)
 }
 
 #' @export
-matchY <- function(qHap, rHap) {
-    .Call(`_relsearch_matchY`, qHap, rHap)
+match_y <- function(query, ref) {
+    .Call(`_relsearch_match_y`, query, ref)
 }
 

@@ -23,7 +23,7 @@ set_myu <- function(env_proj, env_gui){
       label_title_1 = tklabel(frame_edit_1, text = "Locus")
       label_title_2 = tklabel(frame_edit_1, text = "Mutation rate")
       label_locus <- tklabel(frame_edit_1, text = names(myu_select))
-      entry_myu <- tkentry(frameEdit1, textvariable = myu_select_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+      entry_myu <- tkentry(frame_edit_1, textvariable = myu_select_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
 
       # Define widgets in frame_edit_2
       butt_save <- tkbutton(frame_edit_2, text = "    Save    ", cursor = "hand2",
@@ -55,14 +55,34 @@ set_myu <- function(env_proj, env_gui){
       colnames(myu_save) <- c("Marker", "Myu")
       write.csv(myu_save, paste0(path_pack, "/extdata/parameters/myu.csv"), row.names = FALSE)
 
+      # Get widgets from environment variable (env_myu)
+      mlb_myu <- get("mlb_myu", pos = env_myu)
+      scr1 <- get("scr1", pos = env_myu)
+
+      # Destroy the scrollbar (scr1)
+      tkdestroy(scr1)
+
+      # Destroy the multi-list box (mlb_myu)
       tkdestroy(mlb_myu)
-      mlb_myu <- tk2mclistbox(frame_myu_1, width = 30, height = 20, resizablecolumns = TRUE, selectmode = "single")
+
+      # Define a scrollbar for a multi-list box (mlb_myu)
+      scr1 <- tkscrollbar(frame_myu_1, repeatinterval = 5, command = function(...) tkyview(mlb_myu, ...))
+
+      # Define a multi-list box (mlb_myu)
+      mlb_myu <- tk2mclistbox(frame_myu_1, width = 30, height = 25, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
       tk2column(mlb_myu, "add", label = "Locus", width = 15)
       tk2column(mlb_myu, "add", label = "Mutation rate", width = 15)
-      tkgrid(mlb_myu)
       tk2insert.multi(mlb_myu, "end", myu_save)
-      assign("mlb_myu", mlb_myu, envir = env_myu)
 
+      # Grid widgets
+      tkgrid(mlb_myu, scr1)
+      tkgrid.configure(scr1, rowspan = 25, sticky = "nsw")
+
+      # Assign widgets to environment variable (env_myu)
+      assign("mlb_myu", mlb_myu, envir = env_myu)
+      assign("scr1", scr1, envir = env_myu)
+
+      # Destroy the top frame
       tkdestroy(tf)
     }
   }
@@ -125,7 +145,9 @@ set_myu <- function(env_proj, env_gui){
   }
 
   delete_myu <- function(){
+    # Get the multi-list box (mlb_myu) from environment variable (env_myu)
     mlb_myu <- get("mlb_myu", pos = env_myu)
+
     if(tclvalue(tkcurselection(mlb_myu)) == ""){
       tkmessageBox(message = "Select one locus!", icon = "error", type = "ok")
     }else{
@@ -146,13 +168,31 @@ set_myu <- function(env_proj, env_gui){
         colnames(myu_save) <- c("Marker", "Myu")
         write.csv(myu_save, paste0(path_pack, "/extdata/parameters/myu.csv"), row.names = FALSE)
 
+        # Get the scrollbar (scr1) from environment variable (env_myu)
+        scr1 <- get("scr1", pos = env_myu)
+
+        # Destroy the scrollbar (scr1)
+        tkdestroy(scr1)
+
+        # Destroy the multi-list box (mlb_myu)
         tkdestroy(mlb_myu)
-        mlb_myu <- tk2mclistbox(frame_myu_1, width = 30, height = 20, resizablecolumns = TRUE, selectmode = "single")
+
+        # Define a scrollbar for a multi-list box (mlb_myu)
+        scr1 <- tkscrollbar(frame_myu_1, repeatinterval = 5, command = function(...) tkyview(mlb_myu, ...))
+
+        # Define a multi-list box (mlb_myu)
+        mlb_myu <- tk2mclistbox(frame_myu_1, width = 30, height = 25, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
         tk2column(mlb_myu, "add", label = "Locus", width = 15)
         tk2column(mlb_myu, "add", label = "Mutation rate", width = 15)
-        tkgrid(mlb_myu)
         tk2insert.multi(mlb_myu, "end", myu_save)
+
+        # Grid widgets
+        tkgrid(mlb_myu, scr1)
+        tkgrid.configure(scr1, rowspan = 25, sticky = "nsw")
+
+        # Assign widgets to environment variable (env_myu)
         assign("mlb_myu", mlb_myu, envir = env_myu)
+        assign("scr1", scr1, envir = env_myu)
       }
     }
   }
@@ -190,8 +230,11 @@ set_myu <- function(env_proj, env_gui){
   frame_myu_1 <- tkframe(tf)
   frame_myu_2 <- tkframe(tf)
 
-  # Define widgets in frame_myu1
-  mlb_myu <- tk2mclistbox(frame_myu_1, width = 30, height = 20, resizablecolumns = TRUE, selectmode = "single")
+  # Define a scrollbar for a multi-list box (mlb_myu)
+  scr1 <- tkscrollbar(frame_myu_1, repeatinterval = 5, command = function(...) tkyview(mlb_myu, ...))
+
+  # Define a multi-list box (mlb_myu)
+  mlb_myu <- tk2mclistbox(frame_myu_1, width = 30, height = 25, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
   tk2column(mlb_myu, "add", label = "Locus", width = 15)
   tk2column(mlb_myu, "add", label = "Mutation rate", width = 15)
   tk2insert.multi(mlb_myu, "end", cbind(locus_myu, myu_all))
@@ -202,12 +245,15 @@ set_myu <- function(env_proj, env_gui){
   butt_delete <- tkbutton(frame_myu_2, text = "    Delete    ", cursor = "hand2", command = function() delete_myu())
 
   # Grid widgets
-  tkgrid(mlb_myu)
+  tkgrid(mlb_myu, scr1)
+  tkgrid.configure(scr1, rowspan = 25, sticky = "nsw")
   tkgrid(butt_edit, butt_add, butt_delete, padx = 20, pady = 5)
   tkgrid(frame_myu_1)
   tkgrid(frame_myu_2)
 
+  # Assign widgets to environment variable (env_myu)
   assign("mlb_myu", mlb_myu, envir = env_myu)
+  assign("scr1", scr1, envir = env_myu)
 }
 
 # Set IBD probabilities for autosomal STR
@@ -275,16 +321,36 @@ set_pibd <- function(env_proj, env_gui){
       assign("pibd_all", pibd_all, envir = env_pibd)
       write.csv(pibd_all, paste0(path_pack, "/extdata/parameters/ibd.csv"))
 
+      # Get widgets from environment variable (env_pibd)
+      mlb_pibd <- get("mlb_result", pos = env_pibd)
+      scr1 <- get("scr1", pos = env_pibd)
+
+      # Destroy the scrollbar (scr1)
+      tkdestroy(scr1)
+
+      # Destroy the multi-list box (mlb_myu)
       tkdestroy(mlb_pibd)
-      mlb_pibd <- tk2mclistbox(frame_pibd_1, width = 60, height = 20, resizablecolumns = TRUE, selectmode = "single")
+
+      # Define a scrollbar for a multi-list box (mlb_pibd)
+      scr1 <- tkscrollbar(frame_pibd_1, repeatinterval = 5, command = function(...) tkyview(mlb_pibd, ...))
+
+      # Define a multi-list box (mlb_pibd)
+      mlb_pibd <- tk2mclistbox(frame_pibd_1, width = 60, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
       tk2column(mlb_pibd, "add", label = "Relationship", width = 15)
       tk2column(mlb_pibd, "add", label = "Pr (IBD = 2)", width = 15)
       tk2column(mlb_pibd, "add", label = "Pr (IBD = 1)", width = 15)
       tk2column(mlb_pibd, "add", label = "Pr (IBD = 0)", width = 15)
-      tkgrid(mlb_pibd)
       tk2insert.multi(mlb_pibd, "end", cbind(pibd_rel, pibd_all))
-      assign("mlb_pibd", mlb_pibd, envir = env_pibd)
 
+      # Grid widgets
+      tkgrid(mlb_pibd, scr1)
+      tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
+
+      # Assign widgets to environment variable (env_pibd)
+      assign("mlb_pibd", mlb_pibd, envir = env_pibd)
+      assign("scr1", scr1, envir = env_pibd)
+
+      # Destroy the top frame
       tkdestroy(tf)
     }
   }
@@ -351,6 +417,7 @@ set_pibd <- function(env_proj, env_gui){
   }
 
   delete_ibd <- function(){
+    # Get the multi-list box (mlb_pibd) from environment variable (env_pibd)
     mlb_pibd <- get("mlb_pibd", pos = env_pibd)
     if(tclvalue(tkcurselection(mlb_pibd)) == ""){
       tkmessageBox(message = "Select one relationship!", icon = "error", type = "ok")
@@ -371,15 +438,33 @@ set_pibd <- function(env_proj, env_gui){
         assign("pibd_all", pibd_all, envir = env_pibd)
         write.csv(pibd_all, paste0(path_pack, "/extdata/parameters/ibd.csv"))
 
+        # Get the scrollbar (scr1) from environment variable (env_pibd)
+        scr1 <- get("scr1", pos = env_pibd)
+
+        # Destroy the scrollbar (scr1)
+        tkdestroy(scr1)
+
+        # Destroy the multi-list box (mlb_myu)
         tkdestroy(mlb_pibd)
-        mlb_pibd <- tk2mclistbox(frame_pibd_1, width = 60, height = 20, resizablecolumns = TRUE, selectmode = "single")
+
+        # Define a scrollbar for a multi-list box (mlb_pibd)
+        scr1 <- tkscrollbar(frame_pibd_1, repeatinterval = 5, command = function(...) tkyview(mlb_pibd, ...))
+
+        # Define a multi-list box (mlb_pibd)
+        mlb_pibd <- tk2mclistbox(frame_pibd_1, width = 60, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
         tk2column(mlb_pibd, "add", label = "Relationship", width = 15)
         tk2column(mlb_pibd, "add", label = "Pr (IBD = 2)", width = 15)
         tk2column(mlb_pibd, "add", label = "Pr (IBD = 1)", width = 15)
         tk2column(mlb_pibd, "add", label = "Pr (IBD = 0)", width = 15)
-        tkgrid(mlb_pibd)
         tk2insert.multi(mlb_pibd, "end", cbind(pibd_rel, pibd_all))
+
+        # Grid widgets
+        tkgrid(mlb_pibd, scr1)
+        tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
+
+        # Assign widgets to environment variable (env_pibd)
         assign("mlb_pibd", mlb_pibd, envir = env_pibd)
+        assign("scr1", scr1, envir = env_pibd)
       }
     }
   }
@@ -410,8 +495,11 @@ set_pibd <- function(env_proj, env_gui){
   frame_pibd_1 <- tkframe(tf)
   frame_pibd_2 <- tkframe(tf)
 
-  # Define widgets in frame_pibd_1
-  mlb_pibd <- tk2mclistbox(frame_pibd_1, width = 60, height = 20, resizablecolumns = TRUE, selectmode = "single")
+  # Define a scrollbar for a multi-list box (mlb_pibd)
+  scr1 <- tkscrollbar(frame_pibd_1, repeatinterval = 5, command = function(...) tkyview(mlb_pibd, ...))
+
+  # Define a multi-list box (mlb_pibd)
+  mlb_pibd <- tk2mclistbox(frame_pibd_1, width = 60, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
   tk2column(mlb_pibd, "add", label = "Relationship", width = 15)
   tk2column(mlb_pibd, "add", label = "Pr (IBD = 2)", width = 15)
   tk2column(mlb_pibd, "add", label = "Pr (IBD = 1)", width = 15)
@@ -424,12 +512,15 @@ set_pibd <- function(env_proj, env_gui){
   butt_delete <- tkbutton(frame_pibd_2, text = "    Delete    ", cursor = "hand2", command = function() delete_pibd())
 
   # Grid widgets
-  tkgrid(mlb_pibd)
+  tkgrid(mlb_pibd, scr1)
+  tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
   tkgrid(butt_edit, butt_add, butt_delete, padx = 10, pady = 5)
   tkgrid(frame_pibd_1)
   tkgrid(frame_pibd_2)
 
+  # Assign widgets to environment variable (env_pibd)
   assign("mlb_pibd", mlb_pibd, envir = env_pibd)
+  assign("scr1", scr1, envir = env_pibd)
 }
 
 # Set analysis method for autosomal STR
