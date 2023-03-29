@@ -2,7 +2,7 @@
 
 /*Obtain alleles from a haplotype*/
 // [[Rcpp::export]]
-std::vector<double> obtainAl(std::string hap){
+std::vector<double> obtain_al(std::string hap){
   hap.erase(std::remove(hap.begin(), hap.end(), ' '), hap.end());
   if(hap == ""){
     std::vector<double> al(0);
@@ -10,12 +10,12 @@ std::vector<double> obtainAl(std::string hap){
   }else{
     if(hap.find(",") != std::string::npos){
       const char* del = ",";
-      std::vector<std::string> alPre = split(hap, del);
-      int len = alPre.size();
+      std::vector<std::string> al_pre = split(hap, del);
+      int len = al_pre.size();
       std::vector<double> al(len);
       for(int i = 0; i < len; ++i){
-        std::string alOne = alPre[i];
-        al[i] = std::stod(alOne);
+        std::string al_one = al_pre[i];
+        al[i] = std::stod(al_one);
       }
       std::sort(al.begin(), al.end());
       return(al);
@@ -34,33 +34,31 @@ bool is_integer(double x){
 
 /*Calculate mutational step between query alleles and reference alleles (testthat)*/
 // [[Rcpp::export]]
-int calcMuStep(std::vector<double> qAl, std::vector<double> rAl){
-  int muStep = 0;
+int calc_mu_step(std::vector<double> q_al, std::vector<double> r_al){
+  int mu_step = 0;
 
-  int qAlSize = qAl.size();
-  int rAlSize = rAl.size();
-  bool matchQR = true;
-  if(qAlSize == rAlSize){
-    for(int i = 0; i < qAlSize; ++i){
-      bool equalAl = qAl[i] == rAl[i];
-      if(!equalAl){
-        matchQR = false;
+  int q_al_size = q_al.size();
+  int r_al_size = r_al.size();
+  bool same_qr = true;
+  if(q_al_size == r_al_size){
+    for(int i = 0; i < q_al_size; ++i){
+      bool same_al = q_al[i] == r_al[i];
+      if(!same_al){
+        same_qr = false;
         break;
       }
     }
   }else{
-    matchQR = false;
+    same_qr = false;
   }
 
-  if(matchQR == false){
-    int nqAl = qAl.size();
-    int nrAl = rAl.size();
-    std::vector<int> diff(nqAl * nrAl, 99);
+  if(same_qr == false){
+    std::vector<int> diff(q_al_size * r_al_size, 99);
     int pos = 0;
-    for(int i = 0; i < nqAl; ++i){
-      double q1 = qAl[i];
-      for(int j = 0; j < nrAl; ++j){
-        double r1 = rAl[j];
+    for(int i = 0; i < q_al_size; ++i){
+      double q1 = q_al[i];
+      for(int j = 0; j < r_al_size; ++j){
+        double r1 = r_al[j];
         double d = 99;
         if(q1 > r1){
           d = q1 - r1;
@@ -73,68 +71,68 @@ int calcMuStep(std::vector<double> qAl, std::vector<double> rAl){
         pos = pos + 1;
       }
     }
-    muStep = *min_element(diff.begin(), diff.end());
+    mu_step = *min_element(diff.begin(), diff.end());
   }
-  return(muStep);
+  return(mu_step);
 }
 
 /*Matching query and reference Y haplotypes (testthat)*/
 //' @export
 // [[Rcpp::export]]
-std::vector<std::vector<int>> matchY(std::vector<std::string> qHap, std::vector<std::string> rHap){
-  int nL = qHap.size();
-  std::vector<std::vector<int>> judgeMat(3, std::vector<int>(nL + 1));
-  int sumL0 = 0;
-  int sumL1 = 0;
-  int maxMuStep = 0;
-  for(int i = 0; i < nL; ++i){
-    std::string qH = qHap[i];
-    std::vector<double> qAl = obtainAl(qH);
-    std::string rH = rHap[i];
-    std::vector<double> rAl = obtainAl(rH);
+std::vector<std::vector<int>> match_y(std::vector<std::string> query, std::vector<std::string> ref){
+  int n_l = query.size();
+  std::vector<std::vector<int>> ans(3, std::vector<int>(n_l + 1));
+  int sum_l_0 = 0;
+  int sum_l_1 = 0;
+  int max_mu_step = 0;
+  for(int i = 0; i < n_l; ++i){
+    std::string q_al_pre = query[i];
+    std::vector<double> q_al = obtain_al(q_al_pre);
+    std::string r_al_pre = ref[i];
+    std::vector<double> r_al = obtain_al(r_al_pre);
 
-    int qAlSize = qAl.size();
-    int rAlSize = rAl.size();
-    bool matchQR = true;
-    if(qAlSize == rAlSize){
-      for(int i = 0; i < qAlSize; ++i){
-        bool equalAl = qAl[i] == rAl[i];
-        if(!equalAl){
-          matchQR = false;
+    int q_al_size = q_al.size();
+    int r_al_size = r_al.size();
+    bool same_qr = true;
+    if(q_al_size == r_al_size){
+      for(int i = 0; i < q_al_size; ++i){
+        bool same_al = q_al[i] == r_al[i];
+        if(!same_al){
+          same_qr = false;
           break;
         }
       }
     }else{
-      matchQR = false;
+      same_qr = false;
     }
 
     /*mismatch or not*/
-    if(matchQR == false){
+    if(same_qr == false){
       /*ignore*/
-      std::vector<double> qrAl;
-      std::set_union(qAl.begin(), qAl.end(), rAl.begin(), rAl.end(), inserter(qrAl, qrAl.end()));
+      std::vector<double> qr_al;
+      std::set_union(q_al.begin(), q_al.end(), r_al.begin(), r_al.end(), inserter(qr_al, qr_al.end()));
 
-      std::vector<double> onlyRefAl;
-      std::set_difference(rAl.begin(), rAl.end(), qrAl.begin(), qrAl.end(), inserter(onlyRefAl, onlyRefAl.end()));
+      std::vector<double> only_r_al;
+      std::set_difference(r_al.begin(), r_al.end(), qr_al.begin(), qr_al.end(), inserter(only_r_al, only_r_al.end()));
 
-      if(onlyRefAl.size() == 0){
-        judgeMat.at(1).at(i) = 1;
-        sumL1 = sumL1 + 1;
+      if(only_r_al.size() == 0){
+        ans.at(1).at(i) = 1;
+        sum_l_1 = sum_l_1 + 1;
       /*not ignore*/
       }else{
-        judgeMat.at(0).at(i) = 1;
-        sumL0 = sumL0 + 1;
-        int muStep = calcMuStep(qAl, rAl);
-        judgeMat.at(2).at(i) = muStep;
-        if(maxMuStep < muStep){
-          maxMuStep = muStep;
+        ans.at(0).at(i) = 1;
+        sum_l_0 = sum_l_0 + 1;
+        int mu_step = calc_mu_step(q_al, r_al);
+        ans.at(2).at(i) = mu_step;
+        if(max_mu_step < mu_step){
+          max_mu_step = mu_step;
         }
       }
     }
   }
-  judgeMat.at(0).at(nL) = sumL0;
-  judgeMat.at(1).at(nL) = sumL1;
-  judgeMat.at(2).at(nL) = maxMuStep;
-  return(judgeMat);
+  ans.at(0).at(n_l) = sum_l_0;
+  ans.at(1).at(n_l) = sum_l_1;
+  ans.at(2).at(n_l) = max_mu_step;
+  return(ans);
 }
 

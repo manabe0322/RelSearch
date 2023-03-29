@@ -1,136 +1,137 @@
-tabYSet <- function(envProj, envGUI){
-  openFile <- function(type){
-    inputOk <- "ok"
-    finY <- get("finY", pos = envProj)
-    if(finY){
-      inputOk <- tclvalue(tkmessageBox(message = "Y-STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
+make_tab3 <- function(env_proj, env_gui){
+  open_file <- function(type){
+    sign_input <- "ok"
+    fin_y <- get("fin_y", pos = env_proj)
+    if(fin_y){
+      sign_input <- tclvalue(tkmessageBox(message = "Y-STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
     }
 
-    if(inputOk == "ok"){
-      setEnvProj_y(envProj, FALSE)
-      tabYResult(envProj, envGUI)
+    if(sign_input == "ok"){
+      setenv_proj_y(env_proj, FALSE)
+      make_tab4(env_proj, env_gui)
 
       if(type == "query"){
-        fp <- get("qFpY", pos = envProj)
-        fn <- get("qFnY", pos = envProj)
+        fp <- get("fp_y_q", pos = env_proj)
+        fn <- get("fn_y_q", pos = env_proj)
       }else if(type == "ref"){
-        fp <- get("rFpY", pos = envProj)
-        fn <- get("rFnY", pos = envProj)
+        fp <- get("fp_y_r", pos = env_proj)
+        fn <- get("fn_y_r", pos = env_proj)
       }
-      fpVar <- tclVar(fp)
-      fnVar <- tclVar(fn)
+      fp_var <- tclVar(fp)
+      fn_var <- tclVar(fn)
 
-      fileName <- tclvalue(tkgetOpenFile(initialdir = tclvalue(fpVar), multiple = "true", filetypes = "{{CSV Files} {.csv}}"))
-      if(!nchar(fileName)){
+      path_file <- tclvalue(tkgetOpenFile(initialdir = tclvalue(fp_var), multiple = "true", filetypes = "{{CSV Files} {.csv}}"))
+      if(!nchar(path_file)){
         tkmessageBox(message = "No file was selected!", icon = "error", type = "ok")
       }else{
-        tmp <- sub("\\}", fileName, replacement = "")
+        tmp <- sub("\\}", path_file, replacement = "")
         tmp2 <- sub("\\{", tmp, replacement = "")
-        tclvalue(fpVar) <- tmp2
+        tclvalue(fp_var) <- tmp2
         foo3 <- strsplit(tmp2, "/")[[1]]
-        tclvalue(fnVar) <- strsplit(foo3[length(foo3)], "\\.csv")[[1]][1]
+        tclvalue(fn_var) <- strsplit(foo3[length(foo3)], "\\.csv")[[1]][1]
         if(type == "query"){
-          tkconfigure(labelQFile, textvariable = fnVar)
-          qYInput <- read.csv(tclvalue(fpVar), header = TRUE)
-          qYInput <- as.matrix(qYInput)
-          qYInput[is.na(qYInput)] <- ""
-          assign("qYInput", qYInput, envir = envProj)
-          assign("qFpY", tclvalue(fpVar), envir = envProj)
-          assign("qFnY", tclvalue(fnVar), envir = envProj)
+          tkconfigure(label_q_name, textvariable = fn_var)
+          data_y_q <- read.csv(tclvalue(fp_var), header = TRUE)
+          data_y_q <- as.matrix(data_y_q)
+          data_y_q[is.na(data_y_q)] <- ""
+          assign("data_y_q", data_y_q, envir = env_proj)
+          assign("fp_y_q", tclvalue(fp_var), envir = env_proj)
+          assign("fn_y_q", tclvalue(fn_var), envir = env_proj)
         }else if(type == "ref"){
-          tkconfigure(labelRFile, textvariable = fnVar)
-          rYInput <- read.csv(tclvalue(fpVar), header = TRUE)
-          rYInput <- as.matrix(rYInput)
-          rYInput[is.na(rYInput)] <- ""
-          assign("rYInput", rYInput, envir = envProj)
-          assign("rFpY", tclvalue(fpVar), envir = envProj)
-          assign("rFnY", tclvalue(fnVar), envir = envProj)
+          tkconfigure(label_r_name, textvariable = fn_var)
+          data_y_r <- read.csv(tclvalue(fp_var), header = TRUE)
+          data_y_r <- as.matrix(data_y_r)
+          data_y_r[is.na(data_y_r)] <- ""
+          assign("data_y_r", data_y_r, envir = env_proj)
+          assign("fp_y_r", tclvalue(fp_var), envir = env_proj)
+          assign("fn_y_r", tclvalue(fn_var), envir = env_proj)
         }
       }
     }
   }
 
-  qFnY <- get("qFnY", pos = envProj)
-  qFnYVar <- tclVar(qFnY)
-  rFnY <- get("rFnY", pos = envProj)
-  rFnYVar <- tclVar(rFnY)
+  # Define tclvalue
+  fn_y_q <- get("fn_y_q", pos = env_proj)
+  fn_y_q_var <- tclVar(fn_y_q)
+  fn_y_r <- get("fn_y_r", pos = env_proj)
+  fn_y_r_var <- tclVar(fn_y_r)
 
-  tab3 <- get("tab3", pos = envGUI)
-  frameTab3 <- get("frameTab3", pos = envGUI)
-  tkdestroy(frameTab3)
-  frameTab3 <- tkframe(tab3)
-  assign("frameTab3", frameTab3, envir = envGUI)
+  tab3 <- get("tab3", pos = env_gui)
+  frame_tab3 <- get("frame_tab3", pos = env_gui)
+  tkdestroy(frame_tab3)
+  frame_tab3 <- tkframe(tab3)
+  assign("frame_tab3", frame_tab3, envir = env_gui)
 
-  frame3_1 <- tkframe(frameTab3, relief = "groove", borderwidth = 2)
-  frame3_2 <- tkframe(frameTab3)
+  # Define frames
+  frame_3_1 <- tkframe(frame_tab3, relief = "groove", borderwidth = 2)
+  frame_3_2 <- tkframe(frame_tab3)
 
-  labelQ <- tklabel(frame3_1, text = "Query database")
-  labelQFile <- tklabel(frame3_1, textvariable = qFnYVar, width = 30, highlightthickness = 1, relief = "groove", justify = "center", background = "white")
-  buttQ <- tkbutton(frame3_1, text = "    Load    ", cursor = "hand2", command = function() openFile("query"))
+  # Define widgets in frame_3_1
+  label_q_title <- tklabel(frame_3_1, text = "Query database")
+  label_q_name <- tklabel(frame_3_1, textvariable = fn_y_q_var, width = 30, highlightthickness = 1, relief = "groove", justify = "center", background = "white")
+  butt_q <- tkbutton(frame_3_1, text = "    Load    ", cursor = "hand2", command = function() open_file("query"))
+  label_r_title <- tklabel(frame_3_1, text = "Reference database")
+  label_r_name <- tklabel(frame_3_1, textvariable = fn_y_r_var, width = 30, highlightthickness = 1, relief = "groove", justify = "center", background = "white")
+  butt_r <- tkbutton(frame_3_1, text = "    Load    ", cursor = "hand2", command = function() open_file("ref"))
 
-  labelR <- tklabel(frame3_1, text = "Reference database")
-  labelRFile <- tklabel(frame3_1, textvariable = rFnYVar, width = 30, highlightthickness = 1, relief = "groove", justify = "center", background = "white")
-  buttR <- tkbutton(frame3_1, text = "    Load    ", cursor = "hand2", command = function() openFile("ref"))
+  # Define widgets in frame_3_2
+  butt_search <- tkbutton(frame_3_2, text = "    Screening    ", cursor = "hand2", command = function() search_y(env_proj, env_gui))
 
-  tkgrid(tklabel(frame3_1, text = "Input files", font = "Helvetica 10 bold"), padx = 10, pady = 5, sticky = "w")
-  tkgrid(labelQ, labelQFile, buttQ, padx = 10, pady = 5, sticky = "w")
-  tkgrid(labelR, labelRFile, buttR, padx = 10, pady = 5, sticky = "w")
-  tkgrid(frame3_1, padx = 10, pady = 5, sticky = "w")
-
-  buttScreening <- tkbutton(frame3_2, text = "    Screening    ", cursor = "hand2", command = function() guiScreenY(envProj, envGUI))
-  tkgrid(buttScreening, pady = 10)
-  tkgrid(frame3_2, padx = 10, pady = 5)
-
-  tkgrid(frameTab3)
+  # Grid widgets
+  tkgrid(tklabel(frame_3_1, text = "Input files", font = "Helvetica 10 bold"), padx = 10, pady = 5, sticky = "w")
+  tkgrid(label_q_title, label_q_name, butt_q, padx = 10, pady = 5, sticky = "w")
+  tkgrid(label_r_title, label_r_name, butt_r, padx = 10, pady = 5, sticky = "w")
+  tkgrid(butt_search, pady = 10)
+  tkgrid(frame_3_1, padx = 10, pady = 5, sticky = "w")
+  tkgrid(frame_3_2, padx = 10, pady = 5)
+  tkgrid(frame_tab3)
 }
 
-guiScreenY <- function(envProj, envGUI){
-  qYInput <- get("qYInput", pos = envProj)
-  rYInput <- get("rYInput", pos = envProj)
-  if(any(c(length(qYInput) == 0, length(rYInput) == 0))){
+search_y <- function(env_proj, env_gui){
+  data_y_q <- get("data_y_q", pos = env_proj)
+  data_y_r <- get("data_y_r", pos = env_proj)
+  if(any(c(length(data_y_q) == 0, length(data_y_r) == 0))){
     tkmessageBox(message = "Load required file(s)!", icon = "error", type = "ok")
   }else{
-    qCol <- colnames(qYInput)
-    posQName <- grep("Sample", qCol)
-    qYName <- qYInput[, posQName]
-    qYData <- qYInput[, -posQName, drop = FALSE]
-    nameQL <- colnames(qYData)
+    pos_sn_q <- intersect(grep("Sample", colnames(data_y_q)), grep("Name", colnames(data_y_q)))
+    sn_y_q <- data_y_q[, pos_sn_q]
+    hap_y_q <- data_y_q[, -pos_sn_q, drop = FALSE]
+    locus_q <- colnames(hap_y_q)
 
-    rCol <- colnames(rYInput)
-    posRName <- grep("Sample", rCol)
-    rYName <- rYInput[, posRName]
-    rYData <- rYInput[, -posRName, drop = FALSE]
-    nameRL <- colnames(rYData)
+    pos_sn_r <- intersect(grep("Sample", colnames(data_y_r)), grep("Name", colnames(data_y_r)))
+    sn_y_r <- data_y_r[, pos_sn_r]
+    hap_y_r <- data_y_r[, -pos_sn_r, drop = FALSE]
+    locus_r <- colnames(hap_y_r)
 
-    judgeL1 <- all(mapply(setequal, nameQL, nameRL))
-    if(judgeL1){
-      pb <- tkProgressBar("Y screening", "0% done", 0, 100, 0)
-      rYData <- rYData[, match(nameQL, nameRL)]
-      nQ <- nrow(qYData)
-      nR <- nrow(rYData)
-      nL <- length(nameQL)
-      mismatch_y <- qDrop_y <- muStep_y <- array(0, dim = c(nQ, nR, nL + 1))
-      for(i in 1:nR){
-        rHap <- rYData[i, ]
-        for(j in 1:nQ){
-          qHap <- qYData[j, ]
-          judgeMat <- matchY(qHap, rHap)
-          mismatch_y[j, i, ] <- judgeMat[[1]]
-          qDrop_y[j, i, ] <- judgeMat[[2]]
-          muStep_y[j, i, ] <- judgeMat[[3]]
-          info <- sprintf("%d%% done", round((nQ * (i - 1) + j) * 100 / (nQ * nR)))
-          setTkProgressBar(pb, (nQ * (i - 1) + j) * 100 / (nQ * nR), sprintf("Y screening"), info)
+    bool_locus_1 <- all(mapply(setequal, locus_q, locus_r))
+    if(bool_locus_1){
+      pb <- tkProgressBar("Searching", "0% done", 0, 100, 0)
+      hap_y_r <- hap_y_r[, match(locus_q, locus_r)]
+      n_q <- nrow(hap_y_q)
+      n_r <- nrow(hap_y_r)
+      n_l <- length(locus_q)
+      mismatch_y <- drop_q_y <- mu_step_y <- array(0, dim = c(n_q, n_r, n_l + 1))
+      for(i in 1:n_r){
+        ref <- hap_y_r[i, ]
+        for(j in 1:n_q){
+          query <- hap_y_q[j, ]
+          tmp <- match_y(query, ref)
+          mismatch_y[j, i, ] <- tmp[[1]]
+          drop_q_y[j, i, ] <- tmp[[2]]
+          mu_step_y[j, i, ] <- tmp[[3]]
+          info <- sprintf("%d%% done", round((n_q * (i - 1) + j) * 100 / (n_q * n_r)))
+          setTkProgressBar(pb, (n_q * (i - 1) + j) * 100 / (n_q * n_r), sprintf("Y screening"), info)
         }
       }
-      assign("qYData", qYData, envir = envProj)
-      assign("rYData", rYData, envir = envProj)
-      assign("qYName", qYName, envir = envProj)
-      assign("rYName", rYName, envir = envProj)
-      assign("mismatch_y", mismatch_y, envir = envProj)
-      assign("qDrop_y", qDrop_y, envir = envProj)
-      assign("muStep_y", muStep_y, envir = envProj)
-      assign("finY", TRUE, envir = envProj)
-      tabYResult(envProj, envGUI)
+      assign("hap_y_q", hap_y_q, envir = env_proj)
+      assign("hap_y_r", hap_y_r, envir = env_proj)
+      assign("sn_y_q", sn_y_q, envir = env_proj)
+      assign("sn_y_r", sn_y_r, envir = env_proj)
+      assign("mismatch_y", mismatch_y, envir = env_proj)
+      assign("drop_q_y", drop_q_y, envir = env_proj)
+      assign("mu_step_y", mu_step_y, envir = env_proj)
+      assign("fin_y", TRUE, envir = env_proj)
+      make_tab4(env_proj, env_gui)
       close(pb)
     }else{
       tkmessageBox(message = "Locus set is not the same between query data and reference data!", icon = "error", type = "ok")
@@ -138,84 +139,87 @@ guiScreenY <- function(envProj, envGUI){
   }
 }
 
-tabYResult <- function(envProj, envGUI){
-  finY <- get("finY", pos = envProj)
-  if(finY){
-    setDisplay1 <- function(){
+make_tab4 <- function(env_proj, env_gui){
+  fin_y <- get("fin_y", pos = env_proj)
+  if(fin_y){
+    set_display_1 <- function(){
+      # Define tclvalue
+      cand_q <- c("All", sn_y_q)
+      select_q_var <- tclVar("All")
+      cand_r <- c("All", sn_y_r)
+      select_r_var <- tclVar("All")
+      select_n_mm_var <- tclVar(1)
+      select_n_q_drop_var <- tclVar(1)
+      select_max_mu_step_var <- tclVar(2)
+
+      # Make a top frame
       tf <- tktoplevel()
       tkwm.title(tf, "Set display")
 
-      frameD1 <- tkframe(tf)
-      tkgrid(tklabel(frameD1, text = "Query"),
-             tklabel(frameD1, text = "Reference"),
-             tklabel(frameD1, text = "Maximum number of inconsistent loci"),
-             tklabel(frameD1, text = "Maximum number of ignored loci"),
-             tklabel(frameD1, text = "Maximum mutational step"),
-             padx = 10, pady = 5)
+      # Define frames
+      frame_display_1 <- tkframe(tf)
+      frame_display_2 <- tkframe(tf)
 
-      candQ <- c("All", qYName)
-      selectQVar <- tclVar("All")
-      comboQ <- ttkcombobox(frameD1, values = candQ, textvariable = selectQVar, state = "readonly")
+      # Define widgets in frame_display_1
+      label_title_1 <- tklabel(frame_display_1, text = "Query")
+      label_title_2 <- tklabel(frame_display_1, text = "Reference")
+      label_title_3 <- tklabel(frame_display_1, text = "Maximum number of inconsistent loci")
+      label_title_4 <- tklabel(frame_display_1, text = "Maximum number of ignored loci")
+      label_title_5 <- tklabel(frame_display_1, text = "Maximum mutational step")
+      combo_q <- ttkcombobox(frame_display_1, values = cand_q, textvariable = select_q_var, state = "readonly")
+      combo_r <- ttkcombobox(frame_display_1, values = cand_r, textvariable = select_r_var, state = "readonly")
+      entry_n_mm <- tkentry(frame_display_1, textvariable = select_n_mm_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+      entry_n_q_drop <- tkentry(frame_display_1, textvariable = select_n_q_drop_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+      entry_max_mu_step <- tkentry(frame_display_1, textvariable = select_max_mu_step_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
 
-      candR <- c("All", rYName)
-      selectRVar <- tclVar("All")
-      comboR <- ttkcombobox(frameD1, values = candR, textvariable = selectRVar, state = "readonly")
+      # Define widgets in frame_display_2
+      butt_set <- tkbutton(frame_display_2, text = "    Set    ", cursor = "hand2",
+                           command = function() set_display_2(tf, tclvalue(select_q_var), tclvalue(select_r_var),
+                                                              as.numeric(tclvalue(select_n_mm_var)), as.numeric(tclvalue(select_n_q_drop_var)), as.numeric(tclvalue(select_max_mu_step_var))))
 
-      selectNL_iVar <- tclVar(1)
-      entryNL_i <- tkentry(frameD1, textvariable = selectNL_iVar, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-
-      selectNL_dVar <- tclVar(1)
-      entryNL_d <- tkentry(frameD1, textvariable = selectNL_dVar, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-
-      selectMMSVar <- tclVar(2)
-      entryMMS <- tkentry(frameD1, textvariable = selectMMSVar, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-
-      tkgrid(comboQ, comboR, entryNL_i, entryNL_d, entryMMS, padx = 10, pady = 5)
-      tkgrid(frameD1)
-
-      frameD2 <- tkframe(tf)
-      tkgrid(tkbutton(frameD2, text = "    Set    ", cursor = "hand2",
-                      command = function() setDisplay2(tf, tclvalue(selectQVar), tclvalue(selectRVar),
-                                                       as.numeric(tclvalue(selectNL_iVar)), as.numeric(tclvalue(selectNL_dVar)), as.numeric(tclvalue(selectMMSVar)))),
-             padx = 10, pady = 5)
-      tkgrid(frameD2)
+      # Grid widgets
+      tkgrid(label_title_1, label_title_2, label_title_3, label_title_4, label_title_5, padx = 10, pady = 5)
+      tkgrid(combo_q, combo_r, entry_n_mm, entry_n_q_drop, entry_max_mu_step, padx = 10, pady = 5)
+      tkgrid(butt_set, padx = 10, pady = 5)
+      tkgrid(frame_display_1)
+      tkgrid(frame_display_2)
     }
 
-    setDisplay2 <- function(tf, selectQ, selectR, selectNL_i, selectNL_d, selectMMS){
-      selectMat <- matrix(TRUE, nD, 5)
-      if(selectQ != "All"){
-        selectMat[, 1] <- displayQ == selectQ
+    set_display_2 <- function(tf, select_q, select_r, select_n_mm, select_n_q_drop, select_max_mu_step){
+      select_mat <- matrix(TRUE, n_data, 5)
+      if(select_q != "All"){
+        select_mat[, 1] <- sn_y_q_display == select_q
       }
-      if(selectR != "All"){
-        selectMat[, 2] <- displayR == selectR
+      if(select_r != "All"){
+        select_mat[, 2] <- sn_y_r_display == select_r
       }
-      selectMat[, 3] <- nL_i <= selectNL_i
-      selectMat[, 4] <- nL_d <= selectNL_d
-      selectMat[, 5] <- mms <= selectMMS
-      posExtract <- which(apply(selectMat, 1, all) == TRUE)
+      select_mat[, 3] <- n_mm_vec <= select_n_mm
+      select_mat[, 4] <- n_q_drop_vec <= select_n_q_drop
+      select_mat[, 5] <- max_mu_step_vec <= select_max_mu_step
+      pos_extract <- which(apply(select_mat, 1, all) == TRUE)
 
-      if(length(posExtract) != 0){
-        resultMlb <- get("resultMlb", pos = envYResult)
-        tkdestroy(resultMlb)
-        scr1 <- get("scr1", pos = envYResult)
+      if(length(pos_extract) != 0){
+        mlb_result <- get("mlb_result", pos = env_y_result)
+        tkdestroy(mlb_result)
+        scr1 <- get("scr1", pos = env_y_result)
         tkdestroy(scr1)
-        scr1 <- tkscrollbar(frameResult1, repeatinterval = 5, command = function(...) tkyview(resultMlb, ...))
-        resultMlb <- tk2mclistbox(frameResult1, width = 120, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
-        tk2column(resultMlb, "add", label = "Query", width = 15)
-        tk2column(resultMlb, "add", label = "Reference", width = 15)
-        tk2column(resultMlb, "add", label = "Number of inconsistent loci", width = 30)
-        tk2column(resultMlb, "add", label = "Number of ignored loci", width = 30)
-        tk2column(resultMlb, "add", label = "Maximum mutational step", width = 30)
-        tkgrid(resultMlb, scr1)
-        displayData <- displayDefault[posExtract, , drop = FALSE]
-        displayData <- displayData[order(as.numeric(displayData[, 5])), , drop = FALSE]
-        displayData <- displayData[order(as.numeric(displayData[, 4])), , drop = FALSE]
-        displayData <- displayData[order(as.numeric(displayData[, 3])), , drop = FALSE]
-        displayData[which(as.numeric(displayData[, 5]) == 99), 5] <- "Not integer"
-        tk2insert.multi(resultMlb, "end", displayData)
-        assign("resultMlb", resultMlb, envir = envYResult)
-        assign("scr1", scr1, envir = envYResult)
-        assign("displayData", displayData, envir = envYResult)
+        scr1 <- tkscrollbar(frame_result_1, repeatinterval = 5, command = function(...) tkyview(mlb_result, ...))
+        mlb_result <- tk2mclistbox(frame_result_1, width = 120, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+        tk2column(mlb_result, "add", label = "Query", width = 15)
+        tk2column(mlb_result, "add", label = "Reference", width = 15)
+        tk2column(mlb_result, "add", label = "Number of inconsistent loci", width = 30)
+        tk2column(mlb_result, "add", label = "Number of ignored loci", width = 30)
+        tk2column(mlb_result, "add", label = "Maximum mutational step", width = 30)
+        tkgrid(mlb_result, scr1)
+        data_display <- default_display[pos_extract, , drop = FALSE]
+        data_display <- data_display[order(as.numeric(data_display[, 5])), , drop = FALSE]
+        data_display <- data_display[order(as.numeric(data_display[, 4])), , drop = FALSE]
+        data_display <- data_display[order(as.numeric(data_display[, 3])), , drop = FALSE]
+        data_display[which(as.numeric(data_display[, 5]) == 99), 5] <- "Not integer"
+        tk2insert.multi(mlb_result, "end", data_display)
+        assign("mlb_result", mlb_result, envir = env_y_result)
+        assign("scr1", scr1, envir = env_y_result)
+        assign("data_display", data_display, envir = env_y_result)
         tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
         tkdestroy(tf)
       }else{
@@ -223,143 +227,166 @@ tabYResult <- function(envProj, envGUI){
       }
     }
 
-    showDetail <- function(){
-      resultMlb <- get("resultMlb", pos = envYResult)
-      if(tclvalue(tkcurselection(resultMlb)) == ""){
+    show_detail <- function(){
+      mlb_result <- get("mlb_result", pos = env_y_result)
+      if(tclvalue(tkcurselection(mlb_result)) == ""){
         tkmessageBox(message = "Select one result!", icon = "error", type = "ok")
       }else{
-        displayData <- get("displayData", pos = envYResult)
-        posShow <- as.numeric(tclvalue(tkcurselection(resultMlb))) + 1
-        selectQName <- displayData[posShow, 1]
-        posShowQ <- which(qYName == selectQName)
-        selectRName <- displayData[posShow, 2]
-        posShowR <- which(rYName == selectRName)
-        detailData <- matrix("", nL + 1, 6)
-        detailData[, 1] <- c(colnames(qYData), "overall")
-        colnames(detailData) <- c("Locus",
-                                  paste0("Query haplotype (", selectQName, ")"),
-                                  paste0("Reference haplotype (", selectRName, ")"),
+        data_display <- get("data_display", pos = env_y_result)
+        pos_select <- as.numeric(tclvalue(tkcurselection(mlb_result))) + 1
+        select_q_name <- data_display[pos_select, 1]
+        pos_select_q <- which(sn_y_q == select_q_name)
+        select_r_name <- data_display[pos_select, 2]
+        pos_select_r <- which(sn_y_r == select_r_name)
+        data_detail <- matrix("", n_l + 1, 6)
+        data_detail[, 1] <- c(colnames(hap_y_q), "overall")
+        colnames(data_detail) <- c("Locus",
+                                  paste0("Query haplotype (", select_q_name, ")"),
+                                  paste0("Reference haplotype (", select_r_name, ")"),
                                   "Number of inconsistent loci",
                                   "Number of ignored loci",
                                   "Mutational step")
-        detailData[1:nL, 2] <- qYData[posShowQ, ]
-        detailData[1:nL, 3] <- rYData[posShowR, ]
-        mismatch_y_ext <- mismatch_y[posShowQ, posShowR, ]
-        mismatch_y_ext2 <- mismatch_y_ext[1:nL]
+        data_detail[1:n_l, 2] <- hap_y_q[pos_select_q, ]
+        data_detail[1:n_l, 3] <- hap_y_r[pos_select_r, ]
+        mismatch_y_ext <- mismatch_y[pos_select_q, pos_select_r, ]
+        mismatch_y_ext2 <- mismatch_y_ext[1:n_l]
         mismatch_y_ext2[which(mismatch_y_ext2 == 0)] <- ""
-        detailData[, 4] <- c(mismatch_y_ext2, mismatch_y_ext[nL + 1])
-        qDrop_y_ext <- qDrop_y[posShowQ, posShowR, ]
-        qDrop_y_ext2 <- qDrop_y_ext[1:nL]
-        qDrop_y_ext2[which(qDrop_y_ext2 == 0)] <- ""
-        detailData[, 5] <- c(qDrop_y_ext2, qDrop_y_ext[nL + 1])
-        muStep_y_ext <- muStep_y[posShowQ, posShowR, ]
-        muStep_y_ext[which(muStep_y_ext == 0)] <- ""
-        muStep_y_ext[which(muStep_y_ext == 99)] <- "Not integer"
-        detailData[, 6] <- muStep_y_ext
+        data_detail[, 4] <- c(mismatch_y_ext2, mismatch_y_ext[n_l + 1])
+        drop_q_y_ext <- drop_q_y[pos_select_q, pos_select_r, ]
+        drop_q_y_ext2 <- drop_q_y_ext[1:n_l]
+        drop_q_y_ext2[which(drop_q_y_ext2 == 0)] <- ""
+        data_detail[, 5] <- c(drop_q_y_ext2, drop_q_y_ext[n_l + 1])
+        mu_step_y_ext <- mu_step_y[pos_select_q, pos_select_r, ]
+        mu_step_y_ext[which(mu_step_y_ext == 0)] <- ""
+        mu_step_y_ext[which(mu_step_y_ext == 99)] <- "Not integer"
+        data_detail[, 6] <- mu_step_y_ext
 
-        tfDetail <- tktoplevel()
-        tkwm.title(tfDetail, "Y result in detail")
+        # Make a top frame
+        tf_detail <- tktoplevel()
+        tkwm.title(tf_detail, "Y result in detail")
 
-        frameDetail2 <- tkframe(tfDetail)
-        scr2 <- tkscrollbar(frameDetail2, repeatinterval = 5, command = function(...) tkyview(detailMlb, ...))
-        detailMlb <- tk2mclistbox(frameDetail2, width = 160, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr2, ...))
-        tk2column(detailMlb, "add", label = "locus", width = 20)
-        tk2column(detailMlb, "add", label = paste0("Query haplotype (", selectQName, ")"), width = 30)
-        tk2column(detailMlb, "add", label = paste0("Reference haplotype (", selectRName, ")"), width = 30)
-        tk2column(detailMlb, "add", label = "Number of inconsistent loci", width = 30)
-        tk2column(detailMlb, "add", label = "Number of ignored loci", width = 30)
-        tk2column(detailMlb, "add", label = "Mutational step", width = 20)
-        tkgrid(detailMlb, scr2)
-        tk2insert.multi(detailMlb, "end", detailData)
+        # Define frames
+        frame_detail_1 <- tkframe(tf_detail)
+        frame_detail_2 <- tkframe(tf_detail)
+
+        # Define a scrollbar for a multi-list box (mlb_detail)
+        scr2 <- tkscrollbar(frame_detail_1, repeatinterval = 5, command = function(...) tkyview(mlb_detail, ...))
+
+        # Define a multi-list box (mlb_detail)
+        mlb_detail <- tk2mclistbox(frame_detail_1, width = 160, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr2, ...))
+        tk2column(mlb_detail, "add", label = "locus", width = 20)
+        tk2column(mlb_detail, "add", label = paste0("Query haplotype (", select_q_name, ")"), width = 30)
+        tk2column(mlb_detail, "add", label = paste0("Reference haplotype (", select_r_name, ")"), width = 30)
+        tk2column(mlb_detail, "add", label = "Number of inconsistent loci", width = 30)
+        tk2column(mlb_detail, "add", label = "Number of ignored loci", width = 30)
+        tk2column(mlb_detail, "add", label = "Mutational step", width = 20)
+        tk2insert.multi(mlb_detail, "end", data_detail)
+
+        # Define widgets in frame_detail_2
+        butt_export <- tkbutton(frame_detail_2, text = "    Export    ", cursor = "hand2", command = function() export_data(data_detail, FALSE))
+
+        # Grid widgets
+        tkgrid(mlb_detail, scr2)
         tkgrid.configure(scr2, rowspan = 20, sticky = "nsw")
-        tkgrid(frameDetail2, padx = 10, pady = 5)
-
-        frameDetail3 <- tkframe(tfDetail)
-        tkgrid(tkbutton(frameDetail3, text = "    Export    ", cursor = "hand2", command = function() exportData(detailData, FALSE)))
-        tkgrid(frameDetail3, padx = 10, pady = 5)
+        tkgrid(butt_export)
+        tkgrid(frame_detail_1, padx = 10, pady = 5)
+        tkgrid(frame_detail_2, padx = 10, pady = 5)
       }
     }
 
-    envYResult <- new.env(parent = globalenv())
+    env_y_result <- new.env(parent = globalenv())
 
-    qYData <- get("qYData", pos = envProj)
-    rYData <- get("rYData", pos = envProj)
-    qYName <- get("qYName", pos = envProj)
-    rYName <- get("rYName", pos = envProj)
-    mismatch_y <- get("mismatch_y", pos = envProj)
-    qDrop_y <- get("qDrop_y", pos = envProj)
-    muStep_y <- get("muStep_y", pos = envProj)
+    hap_y_q <- get("hap_y_q", pos = env_proj)
+    hap_y_r <- get("hap_y_r", pos = env_proj)
+    sn_y_q <- get("sn_y_q", pos = env_proj)
+    sn_y_r <- get("sn_y_r", pos = env_proj)
+    mismatch_y <- get("mismatch_y", pos = env_proj)
+    drop_q_y <- get("drop_q_y", pos = env_proj)
+    mu_step_y <- get("mu_step_y", pos = env_proj)
 
-    nL <- ncol(qYData)
-    nQ <- length(qYName)
-    nR <- length(rYName)
+    n_l <- ncol(hap_y_q)
+    n_q <- length(sn_y_q)
+    n_r <- length(sn_y_r)
 
-    numMismatch <- mismatch_y[, , nL + 1]
-    rownames(numMismatch) <- qYName
-    colnames(numMismatch) <- rYName
-    numQDrop <- qDrop_y[, , nL + 1]
-    rownames(numQDrop) <- qYName
-    colnames(numQDrop) <- rYName
-    maxMuStep <- muStep_y[, , nL + 1]
-    rownames(maxMuStep) <- qYName
-    colnames(maxMuStep) <- rYName
+    n_mm <- mismatch_y[, , n_l + 1]
+    rownames(n_mm) <- sn_y_q
+    colnames(n_mm) <- sn_y_r
+    n_q_drop <- drop_q_y[, , n_l + 1]
+    rownames(n_q_drop) <- sn_y_q
+    colnames(n_q_drop) <- sn_y_r
+    max_mu_step <- mu_step_y[, , n_l + 1]
+    rownames(max_mu_step) <- sn_y_q
+    colnames(max_mu_step) <- sn_y_r
 
-    nD <- nQ * nR
-    displayDefault <- matrix(0, nD, 5)
-    colnames(displayDefault) <- c("Query", "Reference", "Number of inconsistent loci", "Number of ignored loci", "Maximum mutational step")
-    displayQ <- rep(qYName, nR)
-    displayDefault[, 1] <- displayQ
-    displayR <- as.vector(sapply(rYName, rep, nQ))
-    displayDefault[, 2] <- displayR
-    nL_i <- as.vector(numMismatch)
-    displayDefault[, 3] <- nL_i
-    nL_d <- as.vector(numQDrop)
-    displayDefault[, 4] <- nL_d
-    mms <- as.vector(maxMuStep)
-    displayDefault[, 5] <- mms
-    displayData <- displayDefault[which(as.numeric(displayDefault[, 3]) <= 1), , drop = FALSE]
-    displayData <- displayData[which(as.numeric(displayData[, 4]) <= 1), , drop = FALSE]
-    displayData <- displayData[which(as.numeric(displayData[, 5]) <= 2), , drop = FALSE]
-    displayData <- displayData[order(as.numeric(displayData[, 4])), , drop = FALSE]
-    displayData <- displayData[order(as.numeric(displayData[, 3])), , drop = FALSE]
-    assign("displayData", displayData, envir = envYResult)
+    n_data <- n_q * n_r
+    default_display <- matrix(0, n_data, 5)
+    colnames(default_display) <- c("Query", "Reference", "Number of inconsistent loci", "Number of ignored loci", "Maximum mutational step")
+    sn_y_q_display <- rep(sn_y_q, n_r)
+    default_display[, 1] <- sn_y_q_display
+    sn_y_r_display <- as.vector(sapply(sn_y_r, rep, n_q))
+    default_display[, 2] <- sn_y_r_display
+    n_mm_vec <- as.vector(n_mm)
+    default_display[, 3] <- n_mm_vec
+    n_q_drop_vec <- as.vector(n_q_drop)
+    default_display[, 4] <- n_q_drop_vec
+    max_mu_step_vec <- as.vector(max_mu_step)
+    default_display[, 5] <- max_mu_step_vec
+    data_display <- default_display[which(as.numeric(default_display[, 3]) <= 1), , drop = FALSE]
+    data_display <- data_display[which(as.numeric(data_display[, 4]) <= 1), , drop = FALSE]
+    data_display <- data_display[which(as.numeric(data_display[, 5]) <= 2), , drop = FALSE]
+    data_display <- data_display[order(as.numeric(data_display[, 4])), , drop = FALSE]
+    data_display <- data_display[order(as.numeric(data_display[, 3])), , drop = FALSE]
+    assign("data_display", data_display, envir = env_y_result)
 
-    tabs <- get("tabs", pos = envGUI)
-    tab4 <- get("tab4", pos = envGUI)
-    frameTab4 <- get("frameTab4", pos = envGUI)
-    tkdestroy(frameTab4)
-    frameTab4 <- tkframe(tab4)
+    tabs <- get("tabs", pos = env_gui)
+    tab4 <- get("tab4", pos = env_gui)
+    frame_tab4 <- get("frame_tab4", pos = env_gui)
+    tkdestroy(frame_tab4)
+    frame_tab4 <- tkframe(tab4)
 
-    frameResult1 <- tkframe(frameTab4)
-    scr1 <- tkscrollbar(frameResult1, repeatinterval = 5, command = function(...) tkyview(resultMlb, ...))
-    resultMlb <- tk2mclistbox(frameResult1, width = 120, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
-    tk2column(resultMlb, "add", label = "Query", width = 15)
-    tk2column(resultMlb, "add", label = "Reference", width = 15)
-    tk2column(resultMlb, "add", label = "Number of inconsistent loci", width = 30)
-    tk2column(resultMlb, "add", label = "Number of ignored loci", width = 30)
-    tk2column(resultMlb, "add", label = "Maximum mutational step", width = 30)
-    tkgrid(resultMlb, scr1)
-    tk2insert.multi(resultMlb, "end", displayData)
-    assign("resultMlb", resultMlb, envir = envYResult)
-    assign("scr1", scr1, envir = envYResult)
+    # Define frames
+    frame_result_1 <- tkframe(frame_tab4)
+    frame_result_2 <- tkframe(frame_tab4)
+
+    # Define a scrollbar for a multi-list box (mlb_result)
+    scr1 <- tkscrollbar(frame_result_1, repeatinterval = 5, command = function(...) tkyview(mlb_result, ...))
+
+    # Define a multi-list box (mlb_result)
+    mlb_result <- tk2mclistbox(frame_result_1, width = 120, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+    tk2column(mlb_result, "add", label = "Query", width = 15)
+    tk2column(mlb_result, "add", label = "Reference", width = 15)
+    tk2column(mlb_result, "add", label = "Number of inconsistent loci", width = 30)
+    tk2column(mlb_result, "add", label = "Number of ignored loci", width = 30)
+    tk2column(mlb_result, "add", label = "Maximum mutational step", width = 30)
+    tk2insert.multi(mlb_result, "end", data_display)
+
+    # Define widgets in frame_result_2
+    butt_display <- tkbutton(frame_result_2, text = "    Set display    ", cursor = "hand2", command = function() set_display_1())
+    butt_detail <- tkbutton(frame_result_2, text = "    Show detail    ", cursor = "hand2", command = function() show_detail())
+    butt_export <- tkbutton(frame_result_2, text = "    Export displayed data    ", cursor = "hand2", command = function() export_data(get("data_display", pos = env_y_result), FALSE))
+
+    # Grid widgets
+    tkgrid(mlb_result, scr1)
     tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
-    tkgrid(frameResult1, padx = 10, pady = 5)
+    tkgrid(butt_display, butt_detail, butt_export, padx = 10, pady = 5)
+    tkgrid(frame_result_1, padx = 10, pady = 5)
+    tkgrid(frame_result_2)
+    tkgrid(frame_tab4)
 
-    frameResult2 <- tkframe(frameTab4)
-    buttDisplay <- tkbutton(frameResult2, text = "    Set display    ", cursor = "hand2", command = function() setDisplay1())
-    buttDetail <- tkbutton(frameResult2, text = "    Show detail    ", cursor = "hand2", command = function() showDetail())
-    buttExport1 <- tkbutton(frameResult2, text = "    Export displayed data    ", cursor = "hand2", command = function() exportData(get("displayData", pos = envYResult), FALSE))
-    tkgrid(buttDisplay, buttDetail, buttExport1, padx = 10, pady = 5)
-    tkgrid(frameResult2)
+    # Assign data to environment variable (env_y_result)
+    assign("mlb_result", mlb_result, envir = env_y_result)
+    assign("scr1", scr1, envir = env_y_result)
 
-    tkgrid(frameTab4)
+    # Assign data to environment variable (env_gui)
+    assign("frame_tab4", frame_tab4, envir = env_gui)
+
+    # Select tab4
     tk2notetab.select(tabs, "Y results")
-    assign("frameTab4", frameTab4, envir = envGUI)
   }else{
-    tab4 <- get("tab4", pos = envGUI)
-    frameTab4 <- get("frameTab4", pos = envGUI)
-    tkdestroy(frameTab4)
-    frameTab4 <- tkframe(tab4)
-    assign("frameTab4", frameTab4, envir = envGUI)
+    tab4 <- get("tab4", pos = env_gui)
+    frame_tab4 <- get("frame_tab4", pos = env_gui)
+    tkdestroy(frame_tab4)
+    frame_tab4 <- tkframe(tab4)
+    assign("frame_tab4", frame_tab4, envir = env_gui)
   }
 }

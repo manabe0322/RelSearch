@@ -494,6 +494,8 @@ make_tab2 <- function(env_proj, env_gui){
     # Assign data to environment variable (env_auto_result)
     assign("mlb_result", mlb_result, envir = env_auto_result)
     assign("scr1", scr1, envir = env_auto_result)
+
+    # Assign data to environment variable (env_gui)
     assign("frame_tab2", frame_tab2, envir = env_gui)
 
     # Select tab2
