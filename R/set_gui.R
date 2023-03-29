@@ -1,41 +1,5 @@
-save_par_auto <- function(save_as){
-
-}
-
-set_cond <- function(env_proj, tab_cond){
-  # Get objects from env_proj
-  maf <- get("maf", pos = env_proj)
-  meth_d <- get("meth_d", pos = env_proj)
-  pd <- get("pd", pos = env_proj)
-
-  # Define tclvalue
-  maf_var <- tclVar(maf)
-  meth_d_var <- tclVar(meth_d)
-  pd_var <- tclVar(pd)
-
-  # Define widgets for maf
-  label_maf <- tklabel(tab_cond, text = "Minimum allele frequency")
-  entry_maf <- tkentry(tab_cond, textvariable = maf_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-
-  # Define widgets for meth_d
-  label_meth_d <- tklabel(tab_cond, text = "Drop-out of query genotypes")
-  radio_meth_d0 <- tkradiobutton(tab_cond, anchor = "w", width = 60, state = "normal", text = "Not consider", variable = meth_d_var, value = 0)
-  radio_meth_d1 <- tkradiobutton(tab_cond, anchor = "w", width = 60, state = "normal", text = "Consider only in the case that one allele is designated", variable = meth_d_var, value = 1)
-  radio_meth_d2 <- tkradiobutton(tab_cond, anchor = "w", width = 60, state = "normal", text = "Consider also in the case that two alleles in homozygotes are designated", variable = meth_d_var, value = 2)
-
-  # Define widgets for pd
-  label_pd <- tklabel(tab_cond, text = "Probability of drop-out")
-  entry_pd <- tkentry(tab_cond, textvariable = pd_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-
-  # Grid widgets
-  tkgrid(label_maf, entry_maf, padx = 10, pady = 5, sticky = "w")
-  tkgrid(label_meth_d, radio_meth_d0, padx = 10, pady = 5, sticky = "w")
-  tkgrid(tklabel(tab_cond, text = ""), radio_meth_d1, padx = 10, pady = 5, sticky = "w")
-  tkgrid(tklabel(tab_cond, text = ""), radio_meth_d2, padx = 10, pady = 5, sticky = "w")
-  tkgrid(label_pd, entry_pd, padx = 10, pady = 5, sticky = "w")
-}
-
-set_myu <- function(env_proj, env_gui, tab_myu){
+# Set mutation rates for autosomal STR
+set_myu <- function(env_proj, env_gui){
   edit_myu_1 <- function(){
     mlb_myu <- get("mlb_myu", pos = env_myu)
     if(tclvalue(tkcurselection(mlb_myu)) == ""){
@@ -218,9 +182,13 @@ set_myu <- function(env_proj, env_gui, tab_myu){
   env_myu <- new.env(parent = globalenv())
   assign("myu_all", myu_all, envir = env_myu)
 
+  # Make a top frame
+  tf <- tktoplevel()
+  tkwm.title(tf, "Set mutation rates")
+
   # Define frames
-  frame_myu_1 <- tkframe(tab_myu)
-  frame_myu_2 <- tkframe(tab_myu)
+  frame_myu_1 <- tkframe(tf)
+  frame_myu_2 <- tkframe(tf)
 
   # Define widgets in frame_myu1
   mlb_myu <- tk2mclistbox(frame_myu_1, width = 30, height = 20, resizablecolumns = TRUE, selectmode = "single")
@@ -242,7 +210,8 @@ set_myu <- function(env_proj, env_gui, tab_myu){
   assign("mlb_myu", mlb_myu, envir = env_myu)
 }
 
-set_pibd <- function(){
+# Set IBD probabilities for autosomal STR
+set_pibd <- function(env_proj, env_gui){
   edit_pibd_1 <- function(){
     mlb_pibd <- get("mlb_pibd", pos = env_pibd)
     if(tclvalue(tkcurselection(mlb_pibd)) == ""){
@@ -433,9 +402,13 @@ set_pibd <- function(){
   assign("pibd_all", pibd_all, envir = env_pibd)
   pibd_rel <- rownames(pibd_all)
 
+  # Make a top frame
+  tf <- tktoplevel()
+  tkwm.title(tf, "Set IBD probabilities")
+
   # Define frames
-  frame_pibd_1 <- tkframe(tab_ibd)
-  frame_pibd_2 <- tkframe(tab_ibd)
+  frame_pibd_1 <- tkframe(tf)
+  frame_pibd_2 <- tkframe(tf)
 
   # Define widgets in frame_pibd_1
   mlb_pibd <- tk2mclistbox(frame_pibd_1, width = 60, height = 20, resizablecolumns = TRUE, selectmode = "single")
@@ -443,50 +416,86 @@ set_pibd <- function(){
   tk2column(mlb_pibd, "add", label = "Pr (IBD = 2)", width = 15)
   tk2column(mlb_pibd, "add", label = "Pr (IBD = 1)", width = 15)
   tk2column(mlb_pibd, "add", label = "Pr (IBD = 0)", width = 15)
-  tkgrid(mlb_pibd)
   tk2insert.multi(mlb_pibd, "end", cbind(pibd_rel, pibd_all))
-  assign("mlb_pibd", mlb_pibd, envir = env_pibd)
-  tkgrid(frame_pibd_1)
 
   # Define widgets in frame_pibd_2
   butt_edit <- tkbutton(frame_pibd_2, text = "    Edit    ", cursor = "hand2", command = function() edit_pibd_1())
   butt_add <- tkbutton(frame_pibd_2, text = "    Add    ", cursor = "hand2", command = function() add_pibd_1())
   butt_delete <- tkbutton(frame_pibd_2, text = "    Delete    ", cursor = "hand2", command = function() delete_pibd())
-  tkgrid(butt_edit, butt_add, butt_delete, padx = 10, pady = 5)
-  tkgrid(frame_pibd_2)
-}
-
-# Set parameters for autosomal STR
-set_auto <- function(env_proj){
-  # Define frames
-  frame_set_1 <- tkframe(tf)
-  frame_set_2 <- tkframe(tf)
-
-  # Define tabs
-  tabs <- tk2notebook(frame_set1, tabs = c("Conditions", "Mutation rates", "IBD probabilities"))
-  tkpack(tabs, fill = "both", expand = 1)
-  tab_cond <- tk2notetab(tabs, "Conditions")
-  tab_myu <- tk2notetab(tabs, "Mutation rates")
-  tab_ibd <- tk2notetab(tabs, "IBD probabilities")
-
-  # Define widgets in frame_set_1
-  set_cond(env_proj, tab_cond)
-  set_myu(env_proj, env_gui, tab_myu)
-
-  # Define widgets in frame_set_2
-  butt_save <- tkbutton(frame_set_2, text = "    Save    ", cursor = "hand2", command = function() save_par_auto(saveAs = enterName))
-  butt_save_as <- tkbutton(frame_set_2, text = "    Save as   ", cursor = "hand2", command = function() save_par_auto(saveAs = TRUE))
 
   # Grid widgets
-  tkgrid(butt_save, butt_save_as, padx = 10, pady = 5)
-  tkgrid(frame_set_1)
-  tkgrid(frame_set_2)
+  tkgrid(mlb_pibd)
+  tkgrid(butt_edit, butt_add, butt_delete, padx = 10, pady = 5)
+  tkgrid(frame_pibd_1)
+  tkgrid(frame_pibd_2)
+
+  assign("mlb_pibd", mlb_pibd, envir = env_pibd)
 }
 
-setY <- function(){
+# Set analysis method for autosomal STR
+set_auto <- function(env_proj, env_gui){
+  save_auto <- function(){
+    sign_input <- "ok"
+    fin_str <- get("fin_str", pos = env_proj)
+    if(fin_str){
+      sign_input <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
+    }
+    if(sign_input == "ok"){
+      assign("maf", as.numeric(tclvalue(maf_var)), envir = env_proj)
+      assign("meth_d", as.numeric(tclvalue(meth_d_var)), envir = env_proj)
+      assign("pd", as.numeric(tclvalue(pd_var)), envir = env_proj)
+      assign("fin_str", FALSE, envir = env_proj)
+      make_tab2(env_proj, env_gui)
+      tkdestroy(tf)
+    }
+  }
+
+  # Get objects from env_proj
+  maf <- get("maf", pos = env_proj)
+  meth_d <- get("meth_d", pos = env_proj)
+  pd <- get("pd", pos = env_proj)
+
+  # Define tclvalue
+  maf_var <- tclVar(maf)
+  meth_d_var <- tclVar(meth_d)
+  pd_var <- tclVar(pd)
+
+  # Make a top frame
+  tf <- tktoplevel()
+  tkwm.title(tf, "Set parameters for autosomal STRs")
+
+  # Define widgets for maf
+  label_maf <- tklabel(tf, text = "Minimum allele frequency")
+  entry_maf <- tkentry(tf, textvariable = maf_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+
+  # Define widgets for meth_d
+  label_meth_d <- tklabel(tf, text = "Drop-out of query genotypes")
+  radio_meth_d0 <- tkradiobutton(tf, anchor = "w", width = 60, state = "normal", text = "Not consider", variable = meth_d_var, value = 0)
+  radio_meth_d1 <- tkradiobutton(tf, anchor = "w", width = 60, state = "normal", text = "Consider only in the case that one allele is designated", variable = meth_d_var, value = 1)
+  radio_meth_d2 <- tkradiobutton(tf, anchor = "w", width = 60, state = "normal", text = "Consider also in the case that two alleles in homozygotes are designated", variable = meth_d_var, value = 2)
+
+  # Define widgets for pd
+  label_pd <- tklabel(tf, text = "Probability of drop-out")
+  entry_pd <- tkentry(tf, textvariable = pd_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+
+  # Define a save button
+  butt_save <- tkbutton(tf, text = "    Save    ", cursor = "hand2", command = function() save_auto())
+
+  # Grid widgets
+  tkgrid(label_maf, entry_maf, padx = 10, pady = 5, sticky = "w")
+  tkgrid(label_meth_d, radio_meth_d0, padx = 10, pady = 5, sticky = "w")
+  tkgrid(tklabel(tf, text = ""), radio_meth_d1, padx = 10, pady = 5, sticky = "w")
+  tkgrid(tklabel(tf, text = ""), radio_meth_d2, padx = 10, pady = 5, sticky = "w")
+  tkgrid(label_pd, entry_pd, padx = 10, pady = 5, sticky = "w")
+  tkgrid(butt_save, padx = 10, pady = 5, sticky = "w")
+}
+
+# Set analysis method for Y-STR
+set_y <- function(){
 
 }
 
-setMt <- function(){
+# Set analysis method for mtDNA
+set_mt <- function(){
 
 }

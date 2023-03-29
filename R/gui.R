@@ -169,9 +169,11 @@ relsearch <- function(){
   # Make tools menu
   tools_menu <- tkmenu(top_menu, tearoff = FALSE, activebackground = "lightskyblue1")
   tkadd(top_menu, "cascade", label = "Tools", menu = tools_menu)
-  tkadd(tools_menu, "command", label = "Set parameters for autosomal STR", command = function() set_auto(env_proj))
-  tkadd(tools_menu, "command", label = "Set parameters for Y-STR", command = function() set_y())
-  tkadd(tools_menu, "command", label = "Set parameters for mtDNA", command = function() set_mt())
+  tkadd(tools_menu, "command", label = "Set mutation rates for autosomal STR", command = function() set_myu(env_proj, env_gui))
+  tkadd(tools_menu, "command", label = "Set IBD probabilities for autosomal STR", command = function() set_pibd(env_proj, env_gui))
+  tkadd(tools_menu, "command", label = "Set analysis method for autosomal STR", command = function() set_auto(env_proj, env_gui))
+  tkadd(tools_menu, "command", label = "Set analysis method for Y-STR", command = function() set_y())
+  tkadd(tools_menu, "command", label = "Set analysis method for mtDNA", command = function() set_mt())
 
   # Make help menu
   help_menu <- tkmenu(top_menu, tearoff = FALSE, activebackground = "lightskyblue1")
