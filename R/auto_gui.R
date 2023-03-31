@@ -234,7 +234,7 @@ search_auto <- function(env_proj, env_gui){
 #      assign("pibd_all", pibd_all, envir = env_proj)
       assign("myus", myus, envir = env_proj)
       assign("fin_auto", TRUE, envir = env_proj)
-      tabStrResult(env_proj, env_gui)
+      make_tab2(env_proj, env_gui)
       close(pb)
     }else if(!bool_locus_1){
       tkmessageBox(message = "Locus set is not the same between query data and reference data!", icon = "error", type = "ok")
