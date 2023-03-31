@@ -124,6 +124,12 @@ search_auto <- function(env_proj, env_gui){
     # Get package path from environment variable (env_gui)
     path_pack <- get("path_pack", pos = env_gui)
 
+    # Load parameters
+    par_auto <- read.csv(paste0(path_pack, "/extdata/parameters/par_auto.csv"), header = TRUE)
+    maf <- par_auto$Value[par_auto$Parameter == "Minimum allele frequency"]
+    meth_d <- par_auto$Value[par_auto$Parameter == "Drop-out of query alleles"]
+    pd <- par_auto$Value[par_auto$Parameter == "Probability of drop-out"]
+
     # Load mutation rates
     myu_all <- read.csv(paste0(path_pack, "/extdata/parameters/myu.csv"), header = TRUE)
     myu_all <- as.matrix(myu_all)
@@ -159,10 +165,6 @@ search_auto <- function(env_proj, env_gui){
     bool_rel_1 <- all(is.element(setdiff(rel_auto_r, ""), rownames(pibd_all)))
     if(all(c(bool_locus_1, bool_locus_2, bool_locus_3, bool_rel_1))){
       pb <- tkProgressBar("Searching", "0% done", 0, 100, 0)
-
-      maf <- get("maf", pos = env_proj)
-      meth_d <- get("meth_d", pos = env_proj)
-      pd <- get("pd", pos = env_proj)
 
       tmp <- set_af(gt_auto_q, gt_auto_r, data_auto_af, maf)
       af_list <- tmp[[1]]
