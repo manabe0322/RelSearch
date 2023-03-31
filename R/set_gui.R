@@ -536,7 +536,7 @@ set_auto <- function(env_proj, env_gui){
       colnames(par_auto) <- c("Parameter", "Value")
       par_auto[, 1] <- c("Minimum allele frequency", "Drop-out of query alleles", "Probability of drop-out")
       par_auto[, 2] <- c(tclvalue(maf_var), tclvalue(meth_d_var), tclvalue(pd_var))
-      write.csv(par_auto, paste0(path_pack, "/extdata/parameters/par_auto.csv"))
+      write.csv(par_auto, paste0(path_pack, "/extdata/parameters/par_auto.csv"), row.names = FALSE)
       assign("fin_auto", FALSE, envir = env_proj)
       make_tab2(env_proj, env_gui)
       tkdestroy(tf)
@@ -546,7 +546,7 @@ set_auto <- function(env_proj, env_gui){
   path_pack <- get("path_pack", pos = env_gui)
   fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
   if(is.element("par_auto.csv", fn_par)){
-    par_auto <- read.csv(paste0(path_pack, "/extdata/parameters/par_auto.csv"), header = TRUE, row.names = 1)
+    par_auto <- read.csv(paste0(path_pack, "/extdata/parameters/par_auto.csv"), header = TRUE)
     maf <- par_auto$Value[par_auto$Parameter == "Minimum allele frequency"]
     meth_d <- par_auto$Value[par_auto$Parameter == "Drop-out of query alleles"]
     pd <- par_auto$Value[par_auto$Parameter == "Probability of drop-out"]
