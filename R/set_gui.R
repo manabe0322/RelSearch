@@ -322,7 +322,7 @@ set_pibd <- function(env_proj, env_gui){
       write.csv(pibd_all, paste0(path_pack, "/extdata/parameters/ibd.csv"))
 
       # Get widgets from environment variable (env_pibd)
-      mlb_pibd <- get("mlb_result", pos = env_pibd)
+      mlb_pibd <- get("mlb_pibd", pos = env_pibd)
       scr1 <- get("scr1", pos = env_pibd)
 
       # Destroy the scrollbar (scr1)

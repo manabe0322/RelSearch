@@ -231,7 +231,7 @@ make_tab6 <- function(env_proj, env_gui){
     show_detail <- function(){
       mlb_result <- get("mlb_result", pos = env_mt_result)
       if(tclvalue(tkcurselection(mlb_result)) == ""){
-        tkmessageBox(message = "Select one result!", icon = "error", type = "ok")
+        tkmessageBox(message = "Select one line!", icon = "error", type = "ok")
       }else{
         data_display <- get("data_display", pos = env_mt_result)
         pos_select <- as.numeric(tclvalue(tkcurselection(mlb_result))) + 1
