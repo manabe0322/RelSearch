@@ -1,6 +1,6 @@
 # Set objects of env_proj for STR
-set_env_proj_auto <- function(env_proj, bool_files){
-  if(bool_files){
+set_env_proj_auto <- function(env_proj, bool_new){
+  if(bool_new){
     assign("data_auto_q", NULL, envir = env_proj)
     assign("fp_auto_q", character(0), envir = env_proj)
     assign("fn_auto_q", character(0), envir = env_proj)
@@ -10,13 +10,39 @@ set_env_proj_auto <- function(env_proj, bool_files){
     assign("data_auto_af", NULL, envir = env_proj)
     assign("fp_auto_af", character(0), envir = env_proj)
     assign("fn_auto_af", character(0), envir = env_proj)
+
+    myu_all <- c(0.001474647, 0.002858327, 0.001479789, 0.002240583, 0.000227000,
+                 0.001433812, 0.001130039, 0.001588339,
+                 0.001521043, 0.001069792, 0.000092200, 0.002602109,
+                 0.001521043, 0.001848550, 0.001574558, 0.001179836, 0.001521043,
+                 0.001521043, 0.001521043, 0.001521043, 0.001130039)
+    names(myu_all) <- c("D3S1358", "vWA", "D16S539", "CSF1PO", "TPOX",
+                        "D8S1179", "D21S11", "D18S51",
+                        "D2S441", "D19S433", "TH01", "FGA",
+                        "D22S1045", "D5S818", "D13S317", "D7S820", "SE33",
+                        "D10S1248", "D1S1656", "D12S391", "D2S1338")
+    assign("myu_all_default", myu_all, envir = env_proj)
+
+    pibd_all <- matrix(0, 5, 3)
+    pibd_all[1, ] <- c(1, 0, 0)
+    pibd_all[2, ] <- c(0, 1, 0)
+    pibd_all[3, ] <- c(0.25, 0.5, 0.25)
+    pibd_all[4, ] <- c(0, 0.5, 0.5)
+    pibd_all[5, ] <- c(0, 0.25, 0.75)
+    rownames(pibd_all) <- c("direct match", "parent-child", "sibling", "2nd-degree", "3rd-degree")
+    colnames(pibd_all) <- c("Pr_IBD2", "Pr_IBD1", "Pr_IBD0")
+    assign("pibd_all_default", pibd_all, envir = env_proj)
+
+    assign("maf_default", 0.001, envir = env_proj)
+    assign("meth_d_default", 1, envir = env_proj)
+    assign("pd_default", 0.5, envir = env_proj)
   }
   assign("fin_auto", FALSE, envir = env_proj)
 }
 
 # Set objects of env_proj for Y
-set_env_proj_y <- function(env_proj, bool_files){
-  if(bool_files){
+set_env_proj_y <- function(env_proj, bool_new){
+  if(bool_new){
     assign("data_y_q", NULL, envir = env_proj)
     assign("fp_y_q", character(0), envir = env_proj)
     assign("fn_y_q", character(0), envir = env_proj)
@@ -28,8 +54,8 @@ set_env_proj_y <- function(env_proj, bool_files){
 }
 
 # Set objects of env_proj for mtDNA
-set_env_proj_mt <- function(env_proj, bool_files){
-  if(bool_files){
+set_env_proj_mt <- function(env_proj, bool_new){
+  if(bool_new){
     assign("data_mt_q", NULL, envir = env_proj)
     assign("fp_mt_q", character(0), envir = env_proj)
     assign("fn_mt_q", character(0), envir = env_proj)

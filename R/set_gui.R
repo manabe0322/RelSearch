@@ -206,17 +206,11 @@ set_myu <- function(env_proj, env_gui){
     myu_all <- as.numeric(myu_data[, colnames(myu_data) == "Myu"])
     names(myu_all) <- locus_myu
   }else{
-    myu_all <- c(0.001474647, 0.002858327, 0.001479789, 0.002240583, 0.000227000,
-                0.001433812, 0.001130039, 0.001588339,
-                0.001521043, 0.001069792, 0.000092200, 0.002602109,
-                0.001521043, 0.001848550, 0.001574558, 0.001179836, 0.001521043,
-                0.001521043, 0.001521043, 0.001521043, 0.001130039)
-    locus_myu <- c("D3S1358", "vWA", "D16S539", "CSF1PO", "TPOX",
-                   "D8S1179", "D21S11", "D18S51",
-                   "D2S441", "D19S433", "TH01", "FGA",
-                   "D22S1045", "D5S818", "D13S317", "D7S820", "SE33",
-                   "D10S1248", "D1S1656", "D12S391", "D2S1338")
-    names(myu_all) <- locus_myu
+    myu_all <- get("myu_all_default", pos = env_proj)
+    locus_myu <- names(myu_all)
+    myu_save <- cbind(locus_myu, myu_all)
+    colnames(myu_save) <- c("Marker", "Myu")
+    write.csv(myu_save, paste0(path_pack, "/extdata/parameters/myu.csv"), row.names = FALSE)
   }
 
   env_myu <- new.env(parent = globalenv())
@@ -319,7 +313,7 @@ set_pibd <- function(env_proj, env_gui){
       pibd_rel <- rownames(pibd_all)
       pibd_all[pos_select, ] <- c(pibd2_select, pibd1_select, pibd0_select)
       assign("pibd_all", pibd_all, envir = env_pibd)
-      write.csv(pibd_all, paste0(path_pack, "/extdata/parameters/ibd.csv"))
+      write.csv(pibd_all, paste0(path_pack, "/extdata/parameters/pibd.csv"))
 
       # Get widgets from environment variable (env_pibd)
       mlb_pibd <- get("mlb_pibd", pos = env_pibd)
@@ -407,7 +401,7 @@ set_pibd <- function(env_proj, env_gui){
       pibd_all <- rbind(pibd_all, c(pibd2_add, pibd1_add, pibd0_add))
       rownames(pibd_all) <- c(pibd_rel, rel_add)
       assign("pibd_all", pibd_all, envir = env_pibd)
-      write.csv(pibd_all, paste0(path_pack, "/extdata/parameters/ibd.csv"))
+      write.csv(pibd_all, paste0(path_pack, "/extdata/parameters/pibd.csv"))
 
       mlb_pibd <- get("mlb_pibd", pos = env_pibd)
       tk2insert.multi(mlb_pibd, "end", c(rel_add, pibd2_add, pibd1_add, pibd0_add))
@@ -436,7 +430,7 @@ set_pibd <- function(env_proj, env_gui){
         pibd_all <- pibd_all[-pos_select, , drop = FALSE]
         pibd_rel <- rownames(pibd_all)
         assign("pibd_all", pibd_all, envir = env_pibd)
-        write.csv(pibd_all, paste0(path_pack, "/extdata/parameters/ibd.csv"))
+        write.csv(pibd_all, paste0(path_pack, "/extdata/parameters/pibd.csv"))
 
         # Get the scrollbar (scr1) from environment variable (env_pibd)
         scr1 <- get("scr1", pos = env_pibd)
@@ -471,17 +465,12 @@ set_pibd <- function(env_proj, env_gui){
 
   path_pack <- get("path_pack", pos = env_gui)
   fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
-  if(is.element("ibd.csv", fn_par)){
-    pibd_all <- read.csv(paste0(path_pack, "/extdata/parameters/ibd.csv"), header = TRUE, row.names = 1)
+  if(is.element("pibd.csv", fn_par)){
+    pibd_all <- read.csv(paste0(path_pack, "/extdata/parameters/pibd.csv"), header = TRUE, row.names = 1)
     pibd_all <- as.matrix(pibd_all)
   }else{
-    pibd_all <- matrix(0, 5, 3)
-    pibd_all[1, ] <- c(1, 0, 0)
-    pibd_all[2, ] <- c(0, 1, 0)
-    pibd_all[3, ] <- c(0.25, 0.5, 0.25)
-    pibd_all[4, ] <- c(0, 0.5, 0.5)
-    pibd_all[5, ] <- c(0, 0.25, 0.75)
-    rownames(pibd_all) <- c("direct match", "parent-child", "sibling", "2nd-degree", "3rd-degree")
+    pibd_all <- get("pibd_all_default", pos = env_proj)
+    write.csv(pibd_all, paste0(path_pack, "/extdata/parameters/pibd.csv"))
   }
   env_pibd <- new.env(parent = globalenv())
   assign("pibd_all", pibd_all, envir = env_pibd)
@@ -551,9 +540,14 @@ set_auto <- function(env_proj, env_gui){
     meth_d <- par_auto$Value[par_auto$Parameter == "Drop-out of query alleles"]
     pd <- par_auto$Value[par_auto$Parameter == "Probability of drop-out"]
   }else{
-    maf <- 0.001
-    meth_d <- 1
-    pd <- 0.5
+    maf <- get("maf_default", pos = env_proj)
+    meth_d <- get("meth_d_default", pos = env_proj)
+    pd <- get("pd_default", pos = env_proj)
+    par_auto <- matrix("", 3, 2)
+    colnames(par_auto) <- c("Parameter", "Value")
+    par_auto[, 1] <- c("Minimum allele frequency", "Drop-out of query alleles", "Probability of drop-out")
+    par_auto[, 2] <- c(maf, meth_d, pd)
+    write.csv(par_auto, paste0(path_pack, "/extdata/parameters/par_auto.csv"), row.names = FALSE)
   }
 
   # Define tclvalue

@@ -132,7 +132,7 @@ search_auto <- function(env_proj, env_gui){
     names(myu_all) <- locus_myu
 
     # Load IBD probabilities
-    pibd_all <- read.csv(paste0(path_pack, "/extdata/parameters/ibd.csv"), header = TRUE, row.names = 1)
+    pibd_all <- read.csv(paste0(path_pack, "/extdata/parameters/pibd.csv"), header = TRUE, row.names = 1)
     pibd_all <- as.matrix(pibd_all)
     n_pibd_rel <- nrow(pibd_all)
     bool_cons_mu_all <- rep(FALSE, n_pibd_rel)
