@@ -216,7 +216,7 @@ search_auto <- function(env_proj, env_gui){
             like_h2_all[k, count, ] <- tmp[[2]]
             lr_all[k, count, ] <- tmp[[3]]
             info <- sprintf("%d%% done", round((n_q * (count - 1) + k) * 100 / (n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel))))
-            setTkProgressBar(pb, (n_q * (count - 1) + k) * 100 / (n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel)), sprintf("STR screening"), info)
+            setTkProgressBar(pb, (n_q * (count - 1) + k) * 100 / (n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel)), sprintf("Searching"), info)
           }
           count <- count + 1
         }
