@@ -93,7 +93,7 @@ search_mt <- function(env_proj, env_gui){
     tkmessageBox(message = "Load required file(s)!", icon = "error", type = "ok")
   }else{
     # Define a progress bar
-    pb <- tkProgressBar("mtDNA screening", "0% done", 0, 100, 0)
+    pb <- tkProgressBar("Searching", "0% done", 0, 100, 0)
 
     pos_sn_q <- intersect(grep("Sample", colnames(data_mt_q)), grep("Name", colnames(data_mt_q)))
     sn_mt_q <- data_mt_q[, pos_sn_q]
@@ -126,7 +126,7 @@ search_mt <- function(env_proj, env_gui){
         share_range_mt[j, i] <- result_mt[2]
         share_len_mt[j, i] <- result_mt[3]
         info <- sprintf("%d%% done", round((n_q * (i - 1) + j) * 100 / (n_q * n_r)))
-        setTkProgressBar(pb, (n_q * (i - 1) + j) * 100 / (n_q * n_r), sprintf("mtDNA screening"), info)
+        setTkProgressBar(pb, (n_q * (i - 1) + j) * 100 / (n_q * n_r), sprintf("Searching"), info)
       }
     }
     assign("sn_mt_q", sn_mt_q, envir = env_proj)

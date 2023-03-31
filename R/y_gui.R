@@ -120,7 +120,7 @@ search_y <- function(env_proj, env_gui){
           drop_q_y[j, i, ] <- tmp[[2]]
           mu_step_y[j, i, ] <- tmp[[3]]
           info <- sprintf("%d%% done", round((n_q * (i - 1) + j) * 100 / (n_q * n_r)))
-          setTkProgressBar(pb, (n_q * (i - 1) + j) * 100 / (n_q * n_r), sprintf("Y screening"), info)
+          setTkProgressBar(pb, (n_q * (i - 1) + j) * 100 / (n_q * n_r), sprintf("Searching"), info)
         }
       }
       assign("hap_y_q", hap_y_q, envir = env_proj)
