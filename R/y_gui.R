@@ -7,7 +7,7 @@ make_tab3 <- function(env_proj, env_gui){
     }
 
     if(sign_input == "ok"){
-      setenv_proj_y(env_proj, FALSE)
+      set_env_proj_y(env_proj, FALSE)
       make_tab4(env_proj, env_gui)
 
       if(type == "query"){

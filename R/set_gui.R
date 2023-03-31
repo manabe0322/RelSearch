@@ -287,7 +287,7 @@ set_pibd <- function(env_proj, env_gui){
       label_title_2 <- tklabel(frame_edit_1, text = "Pr (IBD = 2)")
       label_title_3 <- tklabel(frame_edit_1, text = "Pr (IBD = 1)")
       label_title_4 <- tklabel(frame_edit_1, text = "Pr (IBD = 0)")
-      label_rel <- tklabel(frame_edit_1, text = rel)
+      label_rel <- tklabel(frame_edit_1, text = rel_select)
       entry_pibd2 <- tkentry(frame_edit_1, textvariable = pibd2_select_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
       entry_pibd1 <- tkentry(frame_edit_1, textvariable = pibd1_select_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
       entry_pibd0 <- tkentry(frame_edit_1, textvariable = pibd0_select_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
@@ -416,7 +416,7 @@ set_pibd <- function(env_proj, env_gui){
     }
   }
 
-  delete_ibd <- function(){
+  delete_pibd <- function(){
     # Get the multi-list box (mlb_pibd) from environment variable (env_pibd)
     mlb_pibd <- get("mlb_pibd", pos = env_pibd)
     if(tclvalue(tkcurselection(mlb_pibd)) == ""){
@@ -527,15 +527,15 @@ set_pibd <- function(env_proj, env_gui){
 set_auto <- function(env_proj, env_gui){
   save_auto <- function(){
     sign_input <- "ok"
-    fin_str <- get("fin_str", pos = env_proj)
-    if(fin_str){
+    fin_auto <- get("fin_auto", pos = env_proj)
+    if(fin_auto){
       sign_input <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
     }
     if(sign_input == "ok"){
       assign("maf", as.numeric(tclvalue(maf_var)), envir = env_proj)
       assign("meth_d", as.numeric(tclvalue(meth_d_var)), envir = env_proj)
       assign("pd", as.numeric(tclvalue(pd_var)), envir = env_proj)
-      assign("fin_str", FALSE, envir = env_proj)
+      assign("fin_auto", FALSE, envir = env_proj)
       make_tab2(env_proj, env_gui)
       tkdestroy(tf)
     }
