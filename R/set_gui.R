@@ -532,19 +532,29 @@ set_auto <- function(env_proj, env_gui){
       sign_input <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
     }
     if(sign_input == "ok"){
-      assign("maf", as.numeric(tclvalue(maf_var)), envir = env_proj)
-      assign("meth_d", as.numeric(tclvalue(meth_d_var)), envir = env_proj)
-      assign("pd", as.numeric(tclvalue(pd_var)), envir = env_proj)
+      par_auto <- matrix("", 3, 2)
+      colnames(par_auto) <- c("Parameter", "Value")
+      par_auto[, 1] <- c("Minimum allele frequency", "Drop-out of query alleles", "Probability of drop-out")
+      par_auto[, 2] <- c(tclvalue(maf_var), tclvalue(meth_d_var), tclvalue(pd_var))
+      write.csv(par_auto, paste0(path_pack, "/extdata/parameters/par_auto.csv"))
       assign("fin_auto", FALSE, envir = env_proj)
       make_tab2(env_proj, env_gui)
       tkdestroy(tf)
     }
   }
 
-  # Get objects from env_proj
-  maf <- get("maf", pos = env_proj)
-  meth_d <- get("meth_d", pos = env_proj)
-  pd <- get("pd", pos = env_proj)
+  path_pack <- get("path_pack", pos = env_gui)
+  fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
+  if(is.element("par_auto.csv", fn_par)){
+    par_auto <- read.csv(paste0(path_pack, "/extdata/parameters/par_auto.csv"), header = TRUE, row.names = 1)
+    maf <- par_auto$Value[par_auto$Parameter == "Minimum allele frequency"]
+    meth_d <- par_auto$Value[par_auto$Parameter == "Drop-out of query alleles"]
+    pd <- par_auto$Value[par_auto$Parameter == "Probability of drop-out"]
+  }else{
+    maf <- 0.001
+    meth_d <- 1
+    pd <- 0.5
+  }
 
   # Define tclvalue
   maf_var <- tclVar(maf)
@@ -560,7 +570,7 @@ set_auto <- function(env_proj, env_gui){
   entry_maf <- tkentry(tf, textvariable = maf_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
 
   # Define widgets for meth_d
-  label_meth_d <- tklabel(tf, text = "Drop-out of query genotypes")
+  label_meth_d <- tklabel(tf, text = "Drop-out of query alleles")
   radio_meth_d0 <- tkradiobutton(tf, anchor = "w", width = 60, state = "normal", text = "Not consider", variable = meth_d_var, value = 0)
   radio_meth_d1 <- tkradiobutton(tf, anchor = "w", width = 60, state = "normal", text = "Consider only in the case that one allele is designated", variable = meth_d_var, value = 1)
   radio_meth_d2 <- tkradiobutton(tf, anchor = "w", width = 60, state = "normal", text = "Consider also in the case that two alleles in homozygotes are designated", variable = meth_d_var, value = 2)

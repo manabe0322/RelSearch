@@ -11,9 +11,6 @@ set_env_proj_auto <- function(env_proj, bool_files){
     assign("fp_auto_af", character(0), envir = env_proj)
     assign("fn_auto_af", character(0), envir = env_proj)
   }
-  assign("maf", 0.001, envir = env_proj)
-  assign("pd", 0.5, envir = env_proj)
-  assign("meth_d", 1, envir = env_proj)
   assign("fin_auto", FALSE, envir = env_proj)
 }
 
