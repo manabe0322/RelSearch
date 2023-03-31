@@ -10,6 +10,88 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// calc_kin_like
+std::vector<double> calc_kin_like(std::vector<double> qgt, std::vector<double> rgt, std::vector<double> af, std::vector<double> af_al, std::vector<double> pibd, bool cons_mu, double myu, double ape);
+RcppExport SEXP _relsearch_calc_kin_like(SEXP qgtSEXP, SEXP rgtSEXP, SEXP afSEXP, SEXP af_alSEXP, SEXP pibdSEXP, SEXP cons_muSEXP, SEXP myuSEXP, SEXP apeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<double> >::type qgt(qgtSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type rgt(rgtSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type af(afSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type af_al(af_alSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type pibd(pibdSEXP);
+    Rcpp::traits::input_parameter< bool >::type cons_mu(cons_muSEXP);
+    Rcpp::traits::input_parameter< double >::type myu(myuSEXP);
+    Rcpp::traits::input_parameter< double >::type ape(apeSEXP);
+    rcpp_result_gen = Rcpp::wrap(calc_kin_like(qgt, rgt, af, af_al, pibd, cons_mu, myu, ape));
+    return rcpp_result_gen;
+END_RCPP
+}
+// make_dummy_af
+std::vector<std::vector<double>> make_dummy_af(std::vector<std::vector<double>> dummy_gt, std::vector<double> af, std::vector<double> af_al);
+RcppExport SEXP _relsearch_make_dummy_af(SEXP dummy_gtSEXP, SEXP afSEXP, SEXP af_alSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<std::vector<double>> >::type dummy_gt(dummy_gtSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type af(afSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type af_al(af_alSEXP);
+    rcpp_result_gen = Rcpp::wrap(make_dummy_af(dummy_gt, af, af_al));
+    return rcpp_result_gen;
+END_RCPP
+}
+// make_dummy_gt
+std::vector<std::vector<double>> make_dummy_gt(std::vector<double> qgt, std::vector<double> rgt);
+RcppExport SEXP _relsearch_make_dummy_gt(SEXP qgtSEXP, SEXP rgtSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<double> >::type qgt(qgtSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type rgt(rgtSEXP);
+    rcpp_result_gen = Rcpp::wrap(make_dummy_gt(qgt, rgt));
+    return rcpp_result_gen;
+END_RCPP
+}
+// calc_kin_like_drop
+std::vector<double> calc_kin_like_drop(std::vector<double> qgt, std::vector<double> rgt, std::vector<double> af, std::vector<double> af_al, std::vector<double> pibd, bool cons_mu, double myu, double ape, double pd);
+RcppExport SEXP _relsearch_calc_kin_like_drop(SEXP qgtSEXP, SEXP rgtSEXP, SEXP afSEXP, SEXP af_alSEXP, SEXP pibdSEXP, SEXP cons_muSEXP, SEXP myuSEXP, SEXP apeSEXP, SEXP pdSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<double> >::type qgt(qgtSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type rgt(rgtSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type af(afSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type af_al(af_alSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type pibd(pibdSEXP);
+    Rcpp::traits::input_parameter< bool >::type cons_mu(cons_muSEXP);
+    Rcpp::traits::input_parameter< double >::type myu(myuSEXP);
+    Rcpp::traits::input_parameter< double >::type ape(apeSEXP);
+    Rcpp::traits::input_parameter< double >::type pd(pdSEXP);
+    rcpp_result_gen = Rcpp::wrap(calc_kin_like_drop(qgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd));
+    return rcpp_result_gen;
+END_RCPP
+}
+// calc_kin_lr
+std::vector<std::vector<double>> calc_kin_lr(std::vector<double> query, std::vector<double> ref, std::vector<std::vector<double>> af_list, std::vector<std::vector<double>> af_al_list, std::vector<double> pibd, bool cons_mu, std::vector<double> myus, std::vector<double> apes, int meth_d, double pd);
+RcppExport SEXP _relsearch_calc_kin_lr(SEXP querySEXP, SEXP refSEXP, SEXP af_listSEXP, SEXP af_al_listSEXP, SEXP pibdSEXP, SEXP cons_muSEXP, SEXP myusSEXP, SEXP apesSEXP, SEXP meth_dSEXP, SEXP pdSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<double> >::type query(querySEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type ref(refSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::vector<double>> >::type af_list(af_listSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::vector<double>> >::type af_al_list(af_al_listSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type pibd(pibdSEXP);
+    Rcpp::traits::input_parameter< bool >::type cons_mu(cons_muSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type myus(myusSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type apes(apesSEXP);
+    Rcpp::traits::input_parameter< int >::type meth_d(meth_dSEXP);
+    Rcpp::traits::input_parameter< double >::type pd(pdSEXP);
+    rcpp_result_gen = Rcpp::wrap(calc_kin_lr(query, ref, af_list, af_al_list, pibd, cons_mu, myus, apes, meth_d, pd));
+    return rcpp_result_gen;
+END_RCPP
+}
 // split
 std::vector<std::string> split(std::string str, const char* del);
 RcppExport SEXP _relsearch_split(SEXP strSEXP, SEXP delSEXP) {
@@ -115,88 +197,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// calc_kin_like
-std::vector<double> calc_kin_like(std::vector<double> qgt, std::vector<double> rgt, std::vector<double> af, std::vector<double> af_al, std::vector<double> pibd, bool cons_mu, double myu, double ape);
-RcppExport SEXP _relsearch_calc_kin_like(SEXP qgtSEXP, SEXP rgtSEXP, SEXP afSEXP, SEXP af_alSEXP, SEXP pibdSEXP, SEXP cons_muSEXP, SEXP myuSEXP, SEXP apeSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector<double> >::type qgt(qgtSEXP);
-    Rcpp::traits::input_parameter< std::vector<double> >::type rgt(rgtSEXP);
-    Rcpp::traits::input_parameter< std::vector<double> >::type af(afSEXP);
-    Rcpp::traits::input_parameter< std::vector<double> >::type af_al(af_alSEXP);
-    Rcpp::traits::input_parameter< std::vector<double> >::type pibd(pibdSEXP);
-    Rcpp::traits::input_parameter< bool >::type cons_mu(cons_muSEXP);
-    Rcpp::traits::input_parameter< double >::type myu(myuSEXP);
-    Rcpp::traits::input_parameter< double >::type ape(apeSEXP);
-    rcpp_result_gen = Rcpp::wrap(calc_kin_like(qgt, rgt, af, af_al, pibd, cons_mu, myu, ape));
-    return rcpp_result_gen;
-END_RCPP
-}
-// make_dummy_af
-std::vector<std::vector<double>> make_dummy_af(std::vector<std::vector<double>> dummy_gt, std::vector<double> af, std::vector<double> af_al);
-RcppExport SEXP _relsearch_make_dummy_af(SEXP dummy_gtSEXP, SEXP afSEXP, SEXP af_alSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector<std::vector<double>> >::type dummy_gt(dummy_gtSEXP);
-    Rcpp::traits::input_parameter< std::vector<double> >::type af(afSEXP);
-    Rcpp::traits::input_parameter< std::vector<double> >::type af_al(af_alSEXP);
-    rcpp_result_gen = Rcpp::wrap(make_dummy_af(dummy_gt, af, af_al));
-    return rcpp_result_gen;
-END_RCPP
-}
-// make_dummy_gt
-std::vector<std::vector<double>> make_dummy_gt(std::vector<double> qgt, std::vector<double> rgt);
-RcppExport SEXP _relsearch_make_dummy_gt(SEXP qgtSEXP, SEXP rgtSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector<double> >::type qgt(qgtSEXP);
-    Rcpp::traits::input_parameter< std::vector<double> >::type rgt(rgtSEXP);
-    rcpp_result_gen = Rcpp::wrap(make_dummy_gt(qgt, rgt));
-    return rcpp_result_gen;
-END_RCPP
-}
-// calc_kin_like_drop
-std::vector<double> calc_kin_like_drop(std::vector<double> qgt, std::vector<double> rgt, std::vector<double> af, std::vector<double> af_al, std::vector<double> pibd, bool cons_mu, double myu, double ape, double pd);
-RcppExport SEXP _relsearch_calc_kin_like_drop(SEXP qgtSEXP, SEXP rgtSEXP, SEXP afSEXP, SEXP af_alSEXP, SEXP pibdSEXP, SEXP cons_muSEXP, SEXP myuSEXP, SEXP apeSEXP, SEXP pdSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector<double> >::type qgt(qgtSEXP);
-    Rcpp::traits::input_parameter< std::vector<double> >::type rgt(rgtSEXP);
-    Rcpp::traits::input_parameter< std::vector<double> >::type af(afSEXP);
-    Rcpp::traits::input_parameter< std::vector<double> >::type af_al(af_alSEXP);
-    Rcpp::traits::input_parameter< std::vector<double> >::type pibd(pibdSEXP);
-    Rcpp::traits::input_parameter< bool >::type cons_mu(cons_muSEXP);
-    Rcpp::traits::input_parameter< double >::type myu(myuSEXP);
-    Rcpp::traits::input_parameter< double >::type ape(apeSEXP);
-    Rcpp::traits::input_parameter< double >::type pd(pdSEXP);
-    rcpp_result_gen = Rcpp::wrap(calc_kin_like_drop(qgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd));
-    return rcpp_result_gen;
-END_RCPP
-}
-// calc_kin_lr
-std::vector<std::vector<double>> calc_kin_lr(std::vector<double> query, std::vector<double> ref, std::vector<std::vector<double>> af_list, std::vector<std::vector<double>> af_al_list, std::vector<double> pibd, bool cons_mu, std::vector<double> myus, std::vector<double> apes, int meth_d, double pd);
-RcppExport SEXP _relsearch_calc_kin_lr(SEXP querySEXP, SEXP refSEXP, SEXP af_listSEXP, SEXP af_al_listSEXP, SEXP pibdSEXP, SEXP cons_muSEXP, SEXP myusSEXP, SEXP apesSEXP, SEXP meth_dSEXP, SEXP pdSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector<double> >::type query(querySEXP);
-    Rcpp::traits::input_parameter< std::vector<double> >::type ref(refSEXP);
-    Rcpp::traits::input_parameter< std::vector<std::vector<double>> >::type af_list(af_listSEXP);
-    Rcpp::traits::input_parameter< std::vector<std::vector<double>> >::type af_al_list(af_al_listSEXP);
-    Rcpp::traits::input_parameter< std::vector<double> >::type pibd(pibdSEXP);
-    Rcpp::traits::input_parameter< bool >::type cons_mu(cons_muSEXP);
-    Rcpp::traits::input_parameter< std::vector<double> >::type myus(myusSEXP);
-    Rcpp::traits::input_parameter< std::vector<double> >::type apes(apesSEXP);
-    Rcpp::traits::input_parameter< int >::type meth_d(meth_dSEXP);
-    Rcpp::traits::input_parameter< double >::type pd(pdSEXP);
-    rcpp_result_gen = Rcpp::wrap(calc_kin_lr(query, ref, af_list, af_al_list, pibd, cons_mu, myus, apes, meth_d, pd));
-    return rcpp_result_gen;
-END_RCPP
-}
 // obtain_al
 std::vector<double> obtain_al(std::string hap);
 RcppExport SEXP _relsearch_obtain_al(SEXP hapSEXP) {
@@ -245,6 +245,11 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_relsearch_calc_kin_like", (DL_FUNC) &_relsearch_calc_kin_like, 8},
+    {"_relsearch_make_dummy_af", (DL_FUNC) &_relsearch_make_dummy_af, 3},
+    {"_relsearch_make_dummy_gt", (DL_FUNC) &_relsearch_make_dummy_gt, 2},
+    {"_relsearch_calc_kin_like_drop", (DL_FUNC) &_relsearch_calc_kin_like_drop, 9},
+    {"_relsearch_calc_kin_lr", (DL_FUNC) &_relsearch_calc_kin_lr, 10},
     {"_relsearch_split", (DL_FUNC) &_relsearch_split, 2},
     {"_relsearch_str_to_int", (DL_FUNC) &_relsearch_str_to_int, 1},
     {"_relsearch_int_to_str", (DL_FUNC) &_relsearch_int_to_str, 1},
@@ -254,11 +259,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_relsearch_extract_pos_mt", (DL_FUNC) &_relsearch_extract_pos_mt, 1},
     {"_relsearch_extract_pos_mt_qr", (DL_FUNC) &_relsearch_extract_pos_mt_qr, 2},
     {"_relsearch_make_share_range", (DL_FUNC) &_relsearch_make_share_range, 1},
-    {"_relsearch_calc_kin_like", (DL_FUNC) &_relsearch_calc_kin_like, 8},
-    {"_relsearch_make_dummy_af", (DL_FUNC) &_relsearch_make_dummy_af, 3},
-    {"_relsearch_make_dummy_gt", (DL_FUNC) &_relsearch_make_dummy_gt, 2},
-    {"_relsearch_calc_kin_like_drop", (DL_FUNC) &_relsearch_calc_kin_like_drop, 9},
-    {"_relsearch_calc_kin_lr", (DL_FUNC) &_relsearch_calc_kin_lr, 10},
     {"_relsearch_obtain_al", (DL_FUNC) &_relsearch_obtain_al, 1},
     {"_relsearch_is_integer", (DL_FUNC) &_relsearch_is_integer, 1},
     {"_relsearch_calc_mu_step", (DL_FUNC) &_relsearch_calc_mu_step, 2},

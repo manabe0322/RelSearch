@@ -546,7 +546,7 @@ set_auto <- function(env_proj, env_gui){
   path_pack <- get("path_pack", pos = env_gui)
   fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
   if(is.element("par_auto.csv", fn_par)){
-    par_auto <- read.csv(paste0(path_pack, "/extdata/parameters/par_auto.csv"), header = TRUE, row.names = 1)
+    par_auto <- read.csv(paste0(fn_par, "/par_auto.csv"), header = TRUE, row.names = 1)
     maf <- par_auto$Value[par_auto$Parameter == "Minimum allele frequency"]
     meth_d <- par_auto$Value[par_auto$Parameter == "Drop-out of query alleles"]
     pd <- par_auto$Value[par_auto$Parameter == "Probability of drop-out"]
