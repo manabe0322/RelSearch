@@ -203,25 +203,38 @@ make_tab6 <- function(env_proj, env_gui){
       pos_extract <- intersect(intersect(intersect(pos_q, pos_r), pos_len_share), pos_n_mm)
 
       if(length(pos_extract) != 0){
+        # Set display data
+        data_display <- default_display[pos_extract, , drop = FALSE]
+        data_display <- data_display[order(as.numeric(data_display[, 4]), decreasing = TRUE), , drop = FALSE]
+        data_display <- data_display[order(as.numeric(data_display[, 5])), , drop = FALSE]
+
         mlb_result <- get("mlb_result", pos = env_mt_result)
         tkdestroy(mlb_result)
         scr1 <- get("scr1", pos = env_mt_result)
         tkdestroy(scr1)
+
+        # Define a scrollbar for a multi-list box (mlb_result)
         scr1 <- tkscrollbar(frame_result_1, repeatinterval = 5, command = function(...) tkyview(mlb_result, ...))
-        mlb_result <- tk2mclistbox(frame_result_1, width = 130, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+
+        # Define a multi-list box (mlb_result)
+        mlb_result <- tk2mclistbox(frame_result_1, width = 130, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
         tk2column(mlb_result, "add", label = "Query", width = 15)
         tk2column(mlb_result, "add", label = "Reference", width = 15)
         tk2column(mlb_result, "add", label = "Shared range", width = 50)
         tk2column(mlb_result, "add", label = "Shared length", width = 20)
         tk2column(mlb_result, "add", label = "Number of inconsistency", width = 30)
-        tkgrid(mlb_result)
-        data_display <- default_display[pos_extract, , drop = FALSE]
-        data_display <- data_display[order(as.numeric(data_display[, 4]), decreasing = TRUE), , drop = FALSE]
-        data_display <- data_display[order(as.numeric(data_display[, 5])), , drop = FALSE]
         tk2insert.multi(mlb_result, "end", data_display)
+
+        # Grid widgets
+        tkgrid(mlb_result)
+        tkgrid.configure(scr1, rowspan = 30, sticky = "nsw")
+
+        # Assign widgets to environment variable (env_mt_result)
         assign("mlb_result", mlb_result, envir = env_mt_result)
         assign("scr1", scr1, envir = env_mt_result)
         assign("data_display", data_display, envir = env_mt_result)
+
+        # Destroy the top frame
         tkdestroy(tf)
       }else{
         tkmessageBox(message = "There is no data that meet the condition!", icon = "error", type = "ok")
@@ -259,8 +272,8 @@ make_tab6 <- function(env_proj, env_gui){
         pos_mt_qr <- extract_pos_mt_qr(ran_q, ran_r)
 
         data_detail <- matrix("", n_type, 4)
-        colnames(data_detail) <- c(paste0("Query haplotype (", select_q_name, ")"),
-                                  paste0("Reference haplotype (", select_r_name, ")"),
+        colnames(data_detail) <- c(paste0("Query (", select_q_name, ")"),
+                                  paste0("Reference (", select_r_name, ")"),
                                   "Out of shared range",
                                   "Inconsistency")
         data_detail[is.element(qr_type, q_type), 1] <- q_type
@@ -285,9 +298,9 @@ make_tab6 <- function(env_proj, env_gui){
         scr2 <- tkscrollbar(frame_detail_1, repeatinterval = 5, command = function(...) tkyview(mlb_detail, ...))
 
         # Define a multi-list box (mlb_detail)
-        mlb_detail <- tk2mclistbox(frame_detail_1, width = 105, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr2, ...))
-        tk2column(mlb_detail, "add", label = paste0("Query haplotype (", select_q_name, ")"), width = 30)
-        tk2column(mlb_detail, "add", label = paste0("Reference haplotype (", select_r_name, ")"), width = 30)
+        mlb_detail <- tk2mclistbox(frame_detail_1, width = 85, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr2, ...))
+        tk2column(mlb_detail, "add", label = paste0("Query (", select_q_name, ")"), width = 20)
+        tk2column(mlb_detail, "add", label = paste0("Reference (", select_r_name, ")"), width = 20)
         tk2column(mlb_detail, "add", label = "Out of shared range", width = 25)
         tk2column(mlb_detail, "add", label = "Inconsistency", width = 20)
         tk2insert.multi(mlb_detail, "end", data_detail)
@@ -298,7 +311,7 @@ make_tab6 <- function(env_proj, env_gui){
         # Grid widgets
         tkgrid(label_share_range, padx = 10, pady = 5)
         tkgrid(mlb_detail, scr2)
-        tkgrid.configure(scr2, rowspan = 20, sticky = "nsw")
+        tkgrid.configure(scr2, rowspan = 30, sticky = "nsw")
         tkgrid(butt_export)
         tkgrid(frame_detail_1, padx = 10, pady = 5)
         tkgrid(frame_detail_2, padx = 10, pady = 5)
@@ -353,7 +366,7 @@ make_tab6 <- function(env_proj, env_gui){
     scr1 <- tkscrollbar(frame_result_1, repeatinterval = 5, command = function(...) tkyview(mlb_result, ...))
 
     # Define a multi-list box (mlb_result)
-    mlb_result <- tk2mclistbox(frame_result_1, width = 130, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+    mlb_result <- tk2mclistbox(frame_result_1, width = 130, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
     tk2column(mlb_result, "add", label = "Query", width = 15)
     tk2column(mlb_result, "add", label = "Reference", width = 15)
     tk2column(mlb_result, "add", label = "Shared range", width = 50)
@@ -368,7 +381,7 @@ make_tab6 <- function(env_proj, env_gui){
 
     # Grid widgets
     tkgrid(mlb_result, scr1)
-    tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
+    tkgrid.configure(scr1, rowspan = 30, sticky = "nsw")
     tkgrid(butt_display, butt_detail, butt_export, padx = 10, pady = 5)
     tkgrid(frame_result_1, padx = 10, pady = 5)
     tkgrid(frame_result_2)

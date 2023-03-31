@@ -261,9 +261,9 @@ std::vector<std::vector<double>> calc_kin_lr(std::vector<double> query, std::vec
 
     /*locus drop-out or no information*/
     if(qgt.size() == 0 || rgt.size() == 0){
-      ans.at(0).at(i) = 0.2;
-      ans.at(1).at(i) = 0.4;
-      ans.at(2).at(i) = 0.6;
+      ans.at(0).at(i) = 1;
+      ans.at(1).at(i) = 1;
+      ans.at(2).at(i) = 1;
       /*considering drop-out*/
     }else if(meth_d != 0){
       std::vector<double> qgt_uni = qgt;

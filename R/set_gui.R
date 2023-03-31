@@ -69,14 +69,14 @@ set_myu <- function(env_proj, env_gui){
       scr1 <- tkscrollbar(frame_myu_1, repeatinterval = 5, command = function(...) tkyview(mlb_myu, ...))
 
       # Define a multi-list box (mlb_myu)
-      mlb_myu <- tk2mclistbox(frame_myu_1, width = 30, height = 25, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+      mlb_myu <- tk2mclistbox(frame_myu_1, width = 30, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
       tk2column(mlb_myu, "add", label = "Locus", width = 15)
       tk2column(mlb_myu, "add", label = "Mutation rate", width = 15)
       tk2insert.multi(mlb_myu, "end", myu_save)
 
       # Grid widgets
       tkgrid(mlb_myu, scr1)
-      tkgrid.configure(scr1, rowspan = 25, sticky = "nsw")
+      tkgrid.configure(scr1, rowspan = 30, sticky = "nsw")
 
       # Assign widgets to environment variable (env_myu)
       assign("mlb_myu", mlb_myu, envir = env_myu)
@@ -181,14 +181,14 @@ set_myu <- function(env_proj, env_gui){
         scr1 <- tkscrollbar(frame_myu_1, repeatinterval = 5, command = function(...) tkyview(mlb_myu, ...))
 
         # Define a multi-list box (mlb_myu)
-        mlb_myu <- tk2mclistbox(frame_myu_1, width = 30, height = 25, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+        mlb_myu <- tk2mclistbox(frame_myu_1, width = 30, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
         tk2column(mlb_myu, "add", label = "Locus", width = 15)
         tk2column(mlb_myu, "add", label = "Mutation rate", width = 15)
         tk2insert.multi(mlb_myu, "end", myu_save)
 
         # Grid widgets
         tkgrid(mlb_myu, scr1)
-        tkgrid.configure(scr1, rowspan = 25, sticky = "nsw")
+        tkgrid.configure(scr1, rowspan = 30, sticky = "nsw")
 
         # Assign widgets to environment variable (env_myu)
         assign("mlb_myu", mlb_myu, envir = env_myu)
@@ -228,7 +228,7 @@ set_myu <- function(env_proj, env_gui){
   scr1 <- tkscrollbar(frame_myu_1, repeatinterval = 5, command = function(...) tkyview(mlb_myu, ...))
 
   # Define a multi-list box (mlb_myu)
-  mlb_myu <- tk2mclistbox(frame_myu_1, width = 30, height = 25, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+  mlb_myu <- tk2mclistbox(frame_myu_1, width = 30, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
   tk2column(mlb_myu, "add", label = "Locus", width = 15)
   tk2column(mlb_myu, "add", label = "Mutation rate", width = 15)
   tk2insert.multi(mlb_myu, "end", cbind(locus_myu, myu_all))
@@ -240,7 +240,7 @@ set_myu <- function(env_proj, env_gui){
 
   # Grid widgets
   tkgrid(mlb_myu, scr1)
-  tkgrid.configure(scr1, rowspan = 25, sticky = "nsw")
+  tkgrid.configure(scr1, rowspan = 30, sticky = "nsw")
   tkgrid(butt_edit, butt_add, butt_delete, padx = 20, pady = 5)
   tkgrid(frame_myu_1)
   tkgrid(frame_myu_2)

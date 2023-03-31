@@ -204,7 +204,7 @@ make_tab4 <- function(env_proj, env_gui){
         scr1 <- get("scr1", pos = env_y_result)
         tkdestroy(scr1)
         scr1 <- tkscrollbar(frame_result_1, repeatinterval = 5, command = function(...) tkyview(mlb_result, ...))
-        mlb_result <- tk2mclistbox(frame_result_1, width = 120, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+        mlb_result <- tk2mclistbox(frame_result_1, width = 120, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
         tk2column(mlb_result, "add", label = "Query", width = 15)
         tk2column(mlb_result, "add", label = "Reference", width = 15)
         tk2column(mlb_result, "add", label = "Number of inconsistent loci", width = 30)
@@ -220,7 +220,7 @@ make_tab4 <- function(env_proj, env_gui){
         assign("mlb_result", mlb_result, envir = env_y_result)
         assign("scr1", scr1, envir = env_y_result)
         assign("data_display", data_display, envir = env_y_result)
-        tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
+        tkgrid.configure(scr1, rowspan = 30, sticky = "nsw")
         tkdestroy(tf)
       }else{
         tkmessageBox(message = "There is no data that meet the condition!", icon = "error", type = "ok")
@@ -241,10 +241,10 @@ make_tab4 <- function(env_proj, env_gui){
         data_detail <- matrix("", n_l + 1, 6)
         data_detail[, 1] <- c(colnames(hap_y_q), "overall")
         colnames(data_detail) <- c("Locus",
-                                  paste0("Query haplotype (", select_q_name, ")"),
-                                  paste0("Reference haplotype (", select_r_name, ")"),
-                                  "Number of inconsistent loci",
-                                  "Number of ignored loci",
+                                  paste0("Query (", select_q_name, ")"),
+                                  paste0("Reference (", select_r_name, ")"),
+                                  "Inconsistent loci",
+                                  "Ignored loci",
                                   "Mutational step")
         data_detail[1:n_l, 2] <- hap_y_q[pos_select_q, ]
         data_detail[1:n_l, 3] <- hap_y_r[pos_select_r, ]
@@ -273,12 +273,12 @@ make_tab4 <- function(env_proj, env_gui){
         scr2 <- tkscrollbar(frame_detail_1, repeatinterval = 5, command = function(...) tkyview(mlb_detail, ...))
 
         # Define a multi-list box (mlb_detail)
-        mlb_detail <- tk2mclistbox(frame_detail_1, width = 160, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr2, ...))
+        mlb_detail <- tk2mclistbox(frame_detail_1, width = 120, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr2, ...))
         tk2column(mlb_detail, "add", label = "locus", width = 20)
-        tk2column(mlb_detail, "add", label = paste0("Query haplotype (", select_q_name, ")"), width = 30)
-        tk2column(mlb_detail, "add", label = paste0("Reference haplotype (", select_r_name, ")"), width = 30)
-        tk2column(mlb_detail, "add", label = "Number of inconsistent loci", width = 30)
-        tk2column(mlb_detail, "add", label = "Number of ignored loci", width = 30)
+        tk2column(mlb_detail, "add", label = paste0("Query (", select_q_name, ")"), width = 20)
+        tk2column(mlb_detail, "add", label = paste0("Reference (", select_r_name, ")"), width = 20)
+        tk2column(mlb_detail, "add", label = "Inconsistent loci", width = 20)
+        tk2column(mlb_detail, "add", label = "Ignored loci", width = 20)
         tk2column(mlb_detail, "add", label = "Mutational step", width = 20)
         tk2insert.multi(mlb_detail, "end", data_detail)
 
@@ -287,7 +287,7 @@ make_tab4 <- function(env_proj, env_gui){
 
         # Grid widgets
         tkgrid(mlb_detail, scr2)
-        tkgrid.configure(scr2, rowspan = 20, sticky = "nsw")
+        tkgrid.configure(scr2, rowspan = 30, sticky = "nsw")
         tkgrid(butt_export)
         tkgrid(frame_detail_1, padx = 10, pady = 5)
         tkgrid(frame_detail_2, padx = 10, pady = 5)
@@ -352,7 +352,7 @@ make_tab4 <- function(env_proj, env_gui){
     scr1 <- tkscrollbar(frame_result_1, repeatinterval = 5, command = function(...) tkyview(mlb_result, ...))
 
     # Define a multi-list box (mlb_result)
-    mlb_result <- tk2mclistbox(frame_result_1, width = 120, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+    mlb_result <- tk2mclistbox(frame_result_1, width = 120, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
     tk2column(mlb_result, "add", label = "Query", width = 15)
     tk2column(mlb_result, "add", label = "Reference", width = 15)
     tk2column(mlb_result, "add", label = "Number of inconsistent loci", width = 30)
@@ -367,17 +367,17 @@ make_tab4 <- function(env_proj, env_gui){
 
     # Grid widgets
     tkgrid(mlb_result, scr1)
-    tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
+    tkgrid.configure(scr1, rowspan = 30, sticky = "nsw")
     tkgrid(butt_display, butt_detail, butt_export, padx = 10, pady = 5)
     tkgrid(frame_result_1, padx = 10, pady = 5)
     tkgrid(frame_result_2)
     tkgrid(frame_tab4)
 
-    # Assign data to environment variable (env_y_result)
+    # Assign widgets to environment variable (env_y_result)
     assign("mlb_result", mlb_result, envir = env_y_result)
     assign("scr1", scr1, envir = env_y_result)
 
-    # Assign data to environment variable (env_gui)
+    # Assign widgets to environment variable (env_gui)
     assign("frame_tab4", frame_tab4, envir = env_gui)
 
     # Select tab4
