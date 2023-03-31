@@ -39,12 +39,12 @@ set_myu <- function(env_proj, env_gui){
   }
 
   edit_myu_2 <- function(tf, mlb_myu, pos_select, myu_select){
-    sign_input <- "ok"
+    sign_ok <- "ok"
     fin_auto <- get("fin_auto", pos = env_proj)
     if(fin_auto){
-      sign_input <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
+      sign_ok <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
     }
-    if(sign_input == "ok"){
+    if(sign_ok == "ok"){
       assign("fin_auto", FALSE, envir = env_proj)
       make_tab2(env_proj, env_gui)
 
@@ -119,12 +119,12 @@ set_myu <- function(env_proj, env_gui){
   }
 
   add_myu_2 <- function(tf, locus_add, myu_add){
-    sign_input <- "ok"
+    sign_ok <- "ok"
     fin_auto <- get("fin_auto", pos = env_proj)
     if(fin_auto){
-      sign_input <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
+      sign_ok <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
     }
-    if(sign_input == "ok"){
+    if(sign_ok == "ok"){
       assign("fin_auto", FALSE, envir = env_proj)
       make_tab2(env_proj, env_gui)
 
@@ -151,12 +151,12 @@ set_myu <- function(env_proj, env_gui){
     if(tclvalue(tkcurselection(mlb_myu)) == ""){
       tkmessageBox(message = "Select one locus!", icon = "error", type = "ok")
     }else{
-      sign_input <- "ok"
+      sign_ok <- "ok"
       fin_auto <- get("fin_auto", pos = env_proj)
       if(fin_auto){
-        sign_input <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
+        sign_ok <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
       }
-      if(sign_input == "ok"){
+      if(sign_ok == "ok"){
         assign("fin_auto", FALSE, envir = env_proj)
         make_tab2(env_proj, env_gui)
 
@@ -306,12 +306,12 @@ set_pibd <- function(env_proj, env_gui){
   }
 
   edit_pibd_2 <- function(tf, mlb_pibd, pos_select, pibd2_select, pibd1_select, pibd0_select){
-    sign_input <- "ok"
+    sign_ok <- "ok"
     fin_auto <- get("fin_auto", pos = env_proj)
     if(fin_auto){
-      sign_input <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
+      sign_ok <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
     }
-    if(sign_input == "ok"){
+    if(sign_ok == "ok"){
       assign("fin_auto", FALSE, envir = env_proj)
       make_tab2(env_proj, env_gui)
 
@@ -393,12 +393,12 @@ set_pibd <- function(env_proj, env_gui){
   }
 
   add_pibd_2 <- function(tf, rel_add, pibd2_add, pibd1_add, pibd0_add){
-    sign_input <- "ok"
+    sign_ok <- "ok"
     fin_auto <- get("fin_auto", pos = env_proj)
     if(fin_auto){
-      sign_input <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
+      sign_ok <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
     }
-    if(sign_input == "ok"){
+    if(sign_ok == "ok"){
       assign("fin_auto", FALSE, envir = env_proj)
       make_tab2(env_proj, env_gui)
 
@@ -422,12 +422,12 @@ set_pibd <- function(env_proj, env_gui){
     if(tclvalue(tkcurselection(mlb_pibd)) == ""){
       tkmessageBox(message = "Select one relationship!", icon = "error", type = "ok")
     }else{
-      sign_input <- "ok"
+      sign_ok <- "ok"
       fin_auto <- get("fin_auto", pos = env_proj)
       if(fin_auto){
-        sign_input <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
+        sign_ok <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
       }
-      if(sign_input == "ok"){
+      if(sign_ok == "ok"){
         assign("fin_auto", FALSE, envir = env_proj)
         make_tab2(env_proj, env_gui)
 
@@ -526,12 +526,12 @@ set_pibd <- function(env_proj, env_gui){
 # Set analysis method for autosomal STR
 set_auto <- function(env_proj, env_gui){
   save_auto <- function(){
-    sign_input <- "ok"
+    sign_ok <- "ok"
     fin_auto <- get("fin_auto", pos = env_proj)
     if(fin_auto){
-      sign_input <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
+      sign_ok <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
     }
-    if(sign_input == "ok"){
+    if(sign_ok == "ok"){
       par_auto <- matrix("", 3, 2)
       colnames(par_auto) <- c("Parameter", "Value")
       par_auto[, 1] <- c("Minimum allele frequency", "Drop-out of query alleles", "Probability of drop-out")

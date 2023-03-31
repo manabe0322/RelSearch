@@ -1,12 +1,12 @@
 make_tab3 <- function(env_proj, env_gui){
   open_file <- function(type){
-    sign_input <- "ok"
+    sign_ok <- "ok"
     fin_y <- get("fin_y", pos = env_proj)
     if(fin_y){
-      sign_input <- tclvalue(tkmessageBox(message = "Y-STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
+      sign_ok <- tclvalue(tkmessageBox(message = "Y-STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
     }
 
-    if(sign_input == "ok"){
+    if(sign_ok == "ok"){
       set_env_proj_y(env_proj, FALSE)
       make_tab4(env_proj, env_gui)
 

@@ -1,11 +1,11 @@
 make_tab1 <- function(env_proj, env_gui){
   open_file <- function(type){
-    sign_input <- "ok"
+    sign_ok <- "ok"
     fin_auto <- get("fin_auto", pos = env_proj)
     if(fin_auto){
-      sign_input <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
+      sign_ok <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
     }
-    if(sign_input == "ok"){
+    if(sign_ok == "ok"){
       # Set environment variable (env_proj)
       set_env_proj_auto(env_proj, FALSE)
 

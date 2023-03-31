@@ -1,12 +1,12 @@
 make_tab5 <- function(env_proj, env_gui){
   open_file <- function(type){
-    sign_input <- "ok"
+    sign_ok <- "ok"
     fin_mt <- get("fin_mt", pos = env_proj)
     if(fin_mt){
-      sign_input <- tclvalue(tkmessageBox(message = "mtDNA results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
+      sign_ok <- tclvalue(tkmessageBox(message = "mtDNA results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
     }
 
-    if(sign_input == "ok"){
+    if(sign_ok == "ok"){
       set_env_proj_mt(env_proj, FALSE)
       make_tab6(env_proj, env_gui)
 

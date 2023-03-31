@@ -42,14 +42,14 @@ set_env_proj_mt <- function(env_proj, bool_files){
 
 # Open a new project
 renew_proj <- function(env_proj, env_gui){
-  sign_input <- "ok"
+  sign_ok <- "ok"
   fin_auto <- get("fin_auto", pos = env_proj)
   fin_y <- get("fin_y", pos = env_proj)
   fin_mt <- get("fin_mt", pos = env_proj)
   if(fin_auto || fin_y || fin_mt){
-    sign_input <- tclvalue(tkmessageBox(message = "Unsaved data will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
+    sign_ok <- tclvalue(tkmessageBox(message = "Unsaved data will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
   }
-  if(sign_input == "ok"){
+  if(sign_ok == "ok"){
     set_env_proj_auto(env_proj, TRUE)
     set_env_proj_y(env_proj, TRUE)
     set_env_proj_mt(env_proj, TRUE)
@@ -64,14 +64,14 @@ renew_proj <- function(env_proj, env_gui){
 
 # Load a new project
 load_proj <- function(tf, env_proj_old, env_gui){
-  sign_input <- "ok"
+  sign_ok <- "ok"
   fin_auto <- get("fin_auto", pos = env_proj_old)
   fin_y <- get("fin_y", pos = env_proj_old)
   fin_mt <- get("fin_mt", pos = env_proj_old)
   if(fin_auto || fin_y || fin_mt){
-    sign_input <- tclvalue(tkmessageBox(message = "Unsaved data will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
+    sign_ok <- tclvalue(tkmessageBox(message = "Unsaved data will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
   }
-  if(sign_input == "ok"){
+  if(sign_ok == "ok"){
     fp_var <- tclVar("")
     fp <- tclvalue(tkgetOpenFile(parent = tf, initialdir = tclvalue(fp_var), multiple = "true", filetypes = "{{R Data Files} {.Rdata}}"))
     if(!nchar(fp)){
@@ -102,6 +102,21 @@ save_proj <- function(env_proj){
       name_report <- paste0(tclvalue(save_as), ".RData")
     }
     save(env_proj, file = name_report)
+  }
+}
+
+# Quit relsearch
+quit_relsearch <- function(env_proj, tf){
+  fin_auto <- get("fin_auto", pos = env_proj)
+  fin_y <- get("fin_y", pos = env_proj)
+  fin_mt <- get("fin_mt", pos = env_proj)
+
+  sign_ok <- "ok"
+  if(any(fin_auto, fin_y, fin_mt)){
+    sign_ok <- tclvalue(tkmessageBox(message = "Unsaved data will be deleted. Do you want to quit?", type = "okcancel", icon = "warning"))
+  }
+  if(sign_ok == "ok"){
+    tkdestroy(tf)
   }
 }
 
@@ -161,7 +176,7 @@ relsearch <- function(){
   tkadd(file_menu, "command", label = "Load project", command = function() load_proj(tf, env_proj, env_gui))
   tkadd(file_menu, "command", label = "Save project", command = function() save_proj(env_proj))
   tkadd(file_menu, "separator")
-  tkadd(file_menu, "command", label = "Quit", command = function() tkdestroy(tf))
+  tkadd(file_menu, "command", label = "Quit", command = function() quit_relsearch(env_proj, tf))
 
   # Make tools menu
   tools_menu <- tkmenu(top_menu, tearoff = FALSE, activebackground = "lightskyblue1")
