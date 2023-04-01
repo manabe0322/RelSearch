@@ -124,11 +124,12 @@ search_auto <- function(env_proj, env_gui){
     # Get package path from environment variable (env_gui)
     path_pack <- get("path_pack", pos = env_gui)
 
-    # Load parameters
-    par_auto <- read.csv(paste0(path_pack, "/extdata/parameters/par_auto.csv"), header = TRUE)
-    maf <- par_auto$Value[par_auto$Parameter == "Minimum allele frequency"]
-    meth_d <- par_auto$Value[par_auto$Parameter == "Drop-out of query alleles"]
-    pd <- par_auto$Value[par_auto$Parameter == "Probability of drop-out"]
+    # Load criteria
+    criteria <- read.csv(paste0(path_pack, "/extdata/parameters/criteria.csv"), header = TRUE)
+    min_lr_auto <- criteria$Value[criteria$Criteria == "Minimum LR"]
+
+    # Assign criteria
+    assign("min_lr_auto", min_lr_auto, envir = env_proj)
 
     # Load mutation rates
     myu_all <- read.csv(paste0(path_pack, "/extdata/parameters/myu.csv"), header = TRUE)
@@ -143,6 +144,12 @@ search_auto <- function(env_proj, env_gui){
     n_pibd_rel <- nrow(pibd_all)
     bool_cons_mu_all <- rep(FALSE, n_pibd_rel)
     bool_cons_mu_all[rownames(pibd_all) == "parent-child"] <- TRUE
+
+    # Load parameters
+    par_auto <- read.csv(paste0(path_pack, "/extdata/parameters/par_auto.csv"), header = TRUE)
+    maf <- par_auto$Value[par_auto$Parameter == "Minimum allele frequency"]
+    meth_d <- par_auto$Value[par_auto$Parameter == "Drop-out of query alleles"]
+    pd <- par_auto$Value[par_auto$Parameter == "Probability of drop-out"]
 
     pos_sn_q <- intersect(grep("Sample", colnames(data_auto_q)), grep("Name", colnames(data_auto_q)))
     sn_auto_q <- data_auto_q[, pos_sn_q]

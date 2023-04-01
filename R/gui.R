@@ -1,6 +1,7 @@
-# Set objects of env_proj for STR
+# Set objects of env_proj for autosomal STR
 set_env_proj_auto <- function(env_proj, bool_new){
   if(bool_new){
+    # Assign objects for files
     assign("data_auto_q", NULL, envir = env_proj)
     assign("fp_auto_q", character(0), envir = env_proj)
     assign("fn_auto_q", character(0), envir = env_proj)
@@ -10,6 +11,15 @@ set_env_proj_auto <- function(env_proj, bool_new){
     assign("data_auto_af", NULL, envir = env_proj)
     assign("fp_auto_af", character(0), envir = env_proj)
     assign("fn_auto_af", character(0), envir = env_proj)
+
+    # Assign objects for criteria
+    assign("min_lr_auto", numeric(0), envir = env_proj)
+
+    # Assign objects for mutation rates
+
+    # Assign objects for IBD probabilities
+
+    # Assign objects for parameters
   }
   assign("fin_auto", FALSE, envir = env_proj)
 }
@@ -40,18 +50,17 @@ set_env_proj_mt <- function(env_proj, bool_new){
   assign("fin_mt", FALSE, envir = env_proj)
 }
 
-# Set objects of env_proj for default criteria
-set_env_proj_criteria <- function(env_proj){
+# Set objects of env_proj for default criteria and parameters
+set_env_proj_default <- function(env_proj){
+  # Set default criteria
   assign("min_lr_auto_default", 100, envir = env_proj)
   assign("max_inconsistent_y_default", 2, envir = env_proj)
   assign("max_ignore_y_default", 10, envir = env_proj)
   assign("max_mu_step_y_default", 2, envir = env_proj)
   assign("min_share_mt_default", 300, envir = env_proj)
   assign("max_inconsistent_mt_default", 1, envir = env_proj)
-}
 
-# Set objects of env_proj for default parameters
-set_env_proj_par <- function(env_proj){
+  # Set default mutation rates
   myu_all <- c(0.001474647, 0.002858327, 0.001479789, 0.002240583, 0.000227000,
                0.001433812, 0.001130039, 0.001588339,
                0.001521043, 0.001069792, 0.000092200, 0.002602109,
@@ -64,6 +73,7 @@ set_env_proj_par <- function(env_proj){
                       "D10S1248", "D1S1656", "D12S391", "D2S1338")
   assign("myu_all_default", myu_all, envir = env_proj)
 
+  # Set default IBD probabilities
   pibd_all <- matrix(0, 5, 3)
   pibd_all[1, ] <- c(1, 0, 0)
   pibd_all[2, ] <- c(0, 1, 0)
@@ -74,6 +84,7 @@ set_env_proj_par <- function(env_proj){
   colnames(pibd_all) <- c("Pr_IBD2", "Pr_IBD1", "Pr_IBD0")
   assign("pibd_all_default", pibd_all, envir = env_proj)
 
+  # Set default parameters for autosomal STR
   assign("maf_default", 0.001, envir = env_proj)
   assign("meth_d_default", 1, envir = env_proj)
   assign("pd_default", 0.5, envir = env_proj)
@@ -199,8 +210,7 @@ relsearch <- function(){
     set_env_proj_auto(env_proj, TRUE)
     set_env_proj_y(env_proj, TRUE)
     set_env_proj_mt(env_proj, TRUE)
-    set_env_proj_criteria(env_proj)
-    set_env_proj_par(env_proj)
+    set_env_proj_default(env_proj)
     set_env_proj_sn(env_proj, TRUE)
   }
 
@@ -247,13 +257,14 @@ relsearch <- function(){
   tkadd(help_menu, "command", label = "Manual", command = function() browseURL(paste0(path_pack, "/extdata/manual/relsearch_", ver_soft, "_manual.pdf")))
 
   # Define tabs
-  tabs <- tk2notebook(tf, tabs = c("STR analysis", "STR results", "Y analysis", "Y results", "mtDNA analysis", "mtDNA results"))
+  tabs <- tk2notebook(tf, tabs = c("STR analysis", "STR results", "Y analysis", "Y results", "mtDNA analysis", "mtDNA results", "Combined results"))
   tab1 <- tk2notetab(tabs, "STR analysis")
   tab2 <- tk2notetab(tabs, "STR results")
   tab3 <- tk2notetab(tabs, "Y analysis")
   tab4 <- tk2notetab(tabs, "Y results")
   tab5 <- tk2notetab(tabs, "mtDNA analysis")
   tab6 <- tk2notetab(tabs, "mtDNA results")
+  tab7 <- tk2notetab(tabs, "Combined results")
 
   # Define frames
   frame_tab1 <- tkframe(tab1)
@@ -262,6 +273,7 @@ relsearch <- function(){
   frame_tab4 <- tkframe(tab4)
   frame_tab5 <- tkframe(tab5)
   frame_tab6 <- tkframe(tab6)
+  frame_tab7 <- tkframe(tab7)
 
   assign("tabs", tabs, envir = env_gui)
   assign("tab1", tab1, envir = env_gui)
@@ -270,12 +282,14 @@ relsearch <- function(){
   assign("tab4", tab4, envir = env_gui)
   assign("tab5", tab5, envir = env_gui)
   assign("tab6", tab6, envir = env_gui)
+  assign("tab7", tab7, envir = env_gui)
   assign("frame_tab1", frame_tab1, envir = env_gui)
   assign("frame_tab2", frame_tab2, envir = env_gui)
   assign("frame_tab3", frame_tab3, envir = env_gui)
   assign("frame_tab4", frame_tab4, envir = env_gui)
   assign("frame_tab5", frame_tab5, envir = env_gui)
   assign("frame_tab6", frame_tab6, envir = env_gui)
+  assign("frame_tab7", frame_tab7, envir = env_gui)
 
   tkpack(tabs, fill = "both", expand = 1)
   make_tab1(env_proj, env_gui)
