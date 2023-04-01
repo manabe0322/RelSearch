@@ -1,0 +1,7 @@
+"Criteria","Value"
+"Minimum LR","100"
+"Maximum number of inconsistent loci","2"
+"Maximum number of ignored loci","10"
+"Maximum mutational steps","2"
+"Minimum shared length","300"
+"Maximum number of inconsistency","1"

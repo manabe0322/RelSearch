@@ -95,6 +95,9 @@ search_mt <- function(env_proj, env_gui){
     # Define a progress bar
     pb <- tkProgressBar("Searching", "0% done", 0, 100, 0)
 
+    # Update sample names
+    set_env_proj_sn(env_proj, FALSE, sn_mt_q, sn_mt_r)
+
     pos_sn_q <- intersect(grep("Sample", colnames(data_mt_q)), grep("Name", colnames(data_mt_q)))
     sn_mt_q <- data_mt_q[, pos_sn_q]
     range_mt_q <- data_mt_q[, "Range"]

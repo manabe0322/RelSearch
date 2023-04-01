@@ -164,7 +164,11 @@ search_auto <- function(env_proj, env_gui){
     bool_locus_3 <- all(is.element(locus_q, locus_myu))
     bool_rel_1 <- all(is.element(setdiff(rel_auto_r, ""), rownames(pibd_all)))
     if(all(c(bool_locus_1, bool_locus_2, bool_locus_3, bool_rel_1))){
+      # Define a progress bar
       pb <- tkProgressBar("Searching", "0% done", 0, 100, 0)
+
+      # Update sample names
+      set_env_proj_sn(env_proj, FALSE, sn_auto_q, sn_auto_r)
 
       tmp <- set_af(gt_auto_q, gt_auto_r, data_auto_af, maf)
       af_list <- tmp[[1]]
@@ -234,6 +238,7 @@ search_auto <- function(env_proj, env_gui){
 #      assign("pibd_all", pibd_all, envir = env_proj)
       assign("myus", myus, envir = env_proj)
       assign("fin_auto", TRUE, envir = env_proj)
+
       make_tab2(env_proj, env_gui)
       close(pb)
     }else if(!bool_locus_1){

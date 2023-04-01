@@ -105,7 +105,12 @@ search_y <- function(env_proj, env_gui){
 
     bool_locus_1 <- all(mapply(setequal, locus_q, locus_r))
     if(bool_locus_1){
+      # Define a progress bar
       pb <- tkProgressBar("Searching", "0% done", 0, 100, 0)
+
+      # Update sample names
+      set_env_proj_sn(env_proj, FALSE, sn_y_q, sn_y_r)
+
       hap_y_r <- hap_y_r[, match(locus_q, locus_r)]
       n_q <- nrow(hap_y_q)
       n_r <- nrow(hap_y_r)

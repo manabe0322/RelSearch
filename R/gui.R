@@ -10,32 +10,6 @@ set_env_proj_auto <- function(env_proj, bool_new){
     assign("data_auto_af", NULL, envir = env_proj)
     assign("fp_auto_af", character(0), envir = env_proj)
     assign("fn_auto_af", character(0), envir = env_proj)
-
-    myu_all <- c(0.001474647, 0.002858327, 0.001479789, 0.002240583, 0.000227000,
-                 0.001433812, 0.001130039, 0.001588339,
-                 0.001521043, 0.001069792, 0.000092200, 0.002602109,
-                 0.001521043, 0.001848550, 0.001574558, 0.001179836, 0.001521043,
-                 0.001521043, 0.001521043, 0.001521043, 0.001130039)
-    names(myu_all) <- c("D3S1358", "vWA", "D16S539", "CSF1PO", "TPOX",
-                        "D8S1179", "D21S11", "D18S51",
-                        "D2S441", "D19S433", "TH01", "FGA",
-                        "D22S1045", "D5S818", "D13S317", "D7S820", "SE33",
-                        "D10S1248", "D1S1656", "D12S391", "D2S1338")
-    assign("myu_all_default", myu_all, envir = env_proj)
-
-    pibd_all <- matrix(0, 5, 3)
-    pibd_all[1, ] <- c(1, 0, 0)
-    pibd_all[2, ] <- c(0, 1, 0)
-    pibd_all[3, ] <- c(0.25, 0.5, 0.25)
-    pibd_all[4, ] <- c(0, 0.5, 0.5)
-    pibd_all[5, ] <- c(0, 0.25, 0.75)
-    rownames(pibd_all) <- c("direct match", "parent-child", "sibling", "2nd-degree", "3rd-degree")
-    colnames(pibd_all) <- c("Pr_IBD2", "Pr_IBD1", "Pr_IBD0")
-    assign("pibd_all_default", pibd_all, envir = env_proj)
-
-    assign("maf_default", 0.001, envir = env_proj)
-    assign("meth_d_default", 1, envir = env_proj)
-    assign("pd_default", 0.5, envir = env_proj)
   }
   assign("fin_auto", FALSE, envir = env_proj)
 }
@@ -64,6 +38,58 @@ set_env_proj_mt <- function(env_proj, bool_new){
     assign("fn_mt_r", character(0), envir = env_proj)
   }
   assign("fin_mt", FALSE, envir = env_proj)
+}
+
+# Set objects of env_proj for default criteria
+set_env_proj_criteria <- function(env_proj){
+  assign("min_lr_auto_default", 100, envir = env_proj)
+  assign("max_inconsistent_y_default", 2, envir = env_proj)
+  assign("max_ignore_y_default", 10, envir = env_proj)
+  assign("max_mu_step_y_default", 2, envir = env_proj)
+  assign("min_share_mt_default", 300, envir = env_proj)
+  assign("max_inconsistent_mt_default", 1, envir = env_proj)
+}
+
+# Set objects of env_proj for default parameters
+set_env_proj_par <- function(env_proj){
+  myu_all <- c(0.001474647, 0.002858327, 0.001479789, 0.002240583, 0.000227000,
+               0.001433812, 0.001130039, 0.001588339,
+               0.001521043, 0.001069792, 0.000092200, 0.002602109,
+               0.001521043, 0.001848550, 0.001574558, 0.001179836, 0.001521043,
+               0.001521043, 0.001521043, 0.001521043, 0.001130039)
+  names(myu_all) <- c("D3S1358", "vWA", "D16S539", "CSF1PO", "TPOX",
+                      "D8S1179", "D21S11", "D18S51",
+                      "D2S441", "D19S433", "TH01", "FGA",
+                      "D22S1045", "D5S818", "D13S317", "D7S820", "SE33",
+                      "D10S1248", "D1S1656", "D12S391", "D2S1338")
+  assign("myu_all_default", myu_all, envir = env_proj)
+
+  pibd_all <- matrix(0, 5, 3)
+  pibd_all[1, ] <- c(1, 0, 0)
+  pibd_all[2, ] <- c(0, 1, 0)
+  pibd_all[3, ] <- c(0.25, 0.5, 0.25)
+  pibd_all[4, ] <- c(0, 0.5, 0.5)
+  pibd_all[5, ] <- c(0, 0.25, 0.75)
+  rownames(pibd_all) <- c("direct match", "parent-child", "sibling", "2nd-degree", "3rd-degree")
+  colnames(pibd_all) <- c("Pr_IBD2", "Pr_IBD1", "Pr_IBD0")
+  assign("pibd_all_default", pibd_all, envir = env_proj)
+
+  assign("maf_default", 0.001, envir = env_proj)
+  assign("meth_d_default", 1, envir = env_proj)
+  assign("pd_default", 0.5, envir = env_proj)
+}
+
+# Set objects of env_proj for sample names
+set_env_proj_sn <- function(env_proj, bool_new, sn_q_new = character(0), sn_r_new = character(0)){
+  if(bool_new){
+    assign("sn_q_all", character(0), envir = env_proj)
+    assign("sn_r_all", character(0), envir = env_proj)
+  }else{
+    sn_q_all <- get("sn_q_all", pos = env_proj)
+    sn_r_all <- get("sn_r_all", pos = env_proj)
+    assign("sn_q_all", union(sn_q_all, sn_q_new), envir = env_proj)
+    assign("sn_r_all", union(sn_r_all, sn_r_new), envir = env_proj)
+  }
 }
 
 # Open a new project
@@ -173,6 +199,9 @@ relsearch <- function(){
     set_env_proj_auto(env_proj, TRUE)
     set_env_proj_y(env_proj, TRUE)
     set_env_proj_mt(env_proj, TRUE)
+    set_env_proj_criteria(env_proj)
+    set_env_proj_par(env_proj)
+    set_env_proj_sn(env_proj, TRUE)
   }
 
   # Set environment variable (env_gui)
@@ -183,8 +212,8 @@ relsearch <- function(){
   assign("ver_soft", ver_soft, envir = env_gui)
 
   # Set package path
-#  path_pack <- "D:/RStudio_GitHub/relsearch/inst"
-  path_pack <- path.package("relsearch", quiet = FALSE)
+  path_pack <- "D:/RStudio_GitHub/relsearch/inst"
+#  path_pack <- path.package("relsearch", quiet = FALSE)
   assign("path_pack", path_pack, envir = env_gui)
 
   # Make a top frame
@@ -207,11 +236,10 @@ relsearch <- function(){
   # Make tools menu
   tools_menu <- tkmenu(top_menu, tearoff = FALSE, activebackground = "lightskyblue1")
   tkadd(top_menu, "cascade", label = "Tools", menu = tools_menu)
+  tkadd(tools_menu, "command", label = "Set criteria", command = function() set_criteria(env_proj, env_gui))
   tkadd(tools_menu, "command", label = "Set mutation rates for autosomal STR", command = function() set_myu(env_proj, env_gui))
   tkadd(tools_menu, "command", label = "Set IBD probabilities for autosomal STR", command = function() set_pibd(env_proj, env_gui))
   tkadd(tools_menu, "command", label = "Set analysis method for autosomal STR", command = function() set_auto(env_proj, env_gui))
-  tkadd(tools_menu, "command", label = "Set analysis method for Y-STR", command = function() set_y())
-  tkadd(tools_menu, "command", label = "Set analysis method for mtDNA", command = function() set_mt())
 
   # Make help menu
   help_menu <- tkmenu(top_menu, tearoff = FALSE, activebackground = "lightskyblue1")
