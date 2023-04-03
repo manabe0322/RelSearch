@@ -10,7 +10,8 @@ Encoding: UTF-8
 LazyData: true
 Depends: 
     R (>= 4.2.2), 
-    tcltk
+    tcltk, 
+    tcltk2
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
@@ -18,4 +19,4 @@ RoxygenNote: 7.2.3
 LinkingTo: 
     Rcpp
 Imports: 
-    Rcpp, readr, tcltk2
+    Rcpp, readr
