@@ -92,20 +92,20 @@ search_mt <- function(env_proj, env_gui){
   if(any(c(length(data_mt_q) == 0, length(data_mt_r) == 0))){
     tkmessageBox(message = "Load required file(s)!", icon = "error", type = "ok")
   }else{
+    # Get package path from environment variable (env_gui)
+    path_pack <- get("path_pack", pos = env_gui)
+
     # Define a progress bar
     pb <- tkProgressBar("Searching", "0% done", 0, 100, 0)
 
-    # Update sample names
-    set_env_proj_sn(env_proj, FALSE, sn_mt_q, sn_mt_r)
-
     # Load criteria
     criteria <- read.csv(paste0(path_pack, "/extdata/parameters/criteria.csv"), header = TRUE)
-    min_share_mt <- criteria$Value[criteria$Criteria == "Minimum shared length"]
-    max_inconsistent_mt <- criteria$Value[criteria$Criteria == "Maximum number of inconsistency"]
+    t_min_share_mt <- criteria$Value[criteria$Criteria == "Minimum shared length"]
+    t_max_diff_mt <- criteria$Value[criteria$Criteria == "Maximum number of inconsistency"]
 
     # Assign criteria
-    assign("min_share_mt", min_share_mt, envir = env_proj)
-    assign("max_inconsistent_mt", max_inconsistent_mt, envir = env_proj)
+    assign("t_min_share_mt", t_min_share_mt, envir = env_proj)
+    assign("t_max_diff_mt", t_max_diff_mt, envir = env_proj)
 
     pos_sn_q <- intersect(grep("Sample", colnames(data_mt_q)), grep("Name", colnames(data_mt_q)))
     sn_mt_q <- data_mt_q[, pos_sn_q]
@@ -116,6 +116,9 @@ search_mt <- function(env_proj, env_gui){
     sn_mt_r <- data_mt_r[, pos_sn_r]
     range_mt_r <- data_mt_r[, "Range"]
     hap_mt_r <- data_mt_r[, "Haplotype"]
+
+    # Update sample names
+    set_env_proj_sn(env_proj, FALSE, sn_mt_q, sn_mt_r)
 
     n_q <- length(hap_mt_q)
     n_r <- length(hap_mt_r)
@@ -154,8 +157,9 @@ search_mt <- function(env_proj, env_gui){
     assign("share_len_mt", share_len_mt, envir = env_proj)
     assign("fin_mt", TRUE, envir = env_proj)
 
-    # Make tab6
+    # Make tabs
     make_tab6(env_proj, env_gui)
+    make_tab7(env_proj, env_gui)
 
     # Close a progress bar
     close(pb)
@@ -409,7 +413,7 @@ make_tab6 <- function(env_proj, env_gui){
     assign("mlb_result", mlb_result, envir = env_mt_result)
     assign("scr1", scr1, envir = env_mt_result)
 
-    # Assign data to environment variable (env_gui)
+    # Assign frame_tab6 to environment variable (env_gui)
     assign("frame_tab6", frame_tab6, envir = env_gui)
 
     # Select tab6

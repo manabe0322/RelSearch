@@ -164,7 +164,13 @@ search_auto <- function(env_proj, env_gui){
     bool_locus_3 <- all(is.element(locus_q, locus_myu))
     bool_rel_1 <- all(is.element(setdiff(rel_auto_r, ""), rownames(pibd_all)))
     if(all(c(bool_locus_1, bool_locus_2, bool_locus_3, bool_rel_1))){
-      # Define a progress bar
+      # Make progress bars
+      # tf <- tktoplevel()
+      # label_pb1 <- tk2label(tf)
+      # pb1 <- tk2progress(tf, length = 300)
+      # tkconfigure(pb1, value = 0, maximum = 100)
+      # tkgrid(label_pb1)
+      # tkgrid(pb1)
       pb <- tkProgressBar("Searching", "0% done", 0, 100, 0)
 
       # Update sample names
@@ -172,10 +178,10 @@ search_auto <- function(env_proj, env_gui){
 
       # Load criteria
       criteria <- read.csv(paste0(path_pack, "/extdata/parameters/criteria.csv"), header = TRUE)
-      min_lr_auto <- criteria$Value[criteria$Criteria == "Minimum LR"]
+      t_min_lr_auto <- criteria$Value[criteria$Criteria == "Minimum LR"]
 
       # Assign criteria
-      assign("min_lr_auto", min_lr_auto, envir = env_proj)
+      assign("t_min_lr_auto", t_min_lr_auto, envir = env_proj)
 
       # Load parameters
       par_auto <- read.csv(paste0(path_pack, "/extdata/parameters/par_auto.csv"), header = TRUE)
@@ -256,6 +262,9 @@ search_auto <- function(env_proj, env_gui){
             like_h1_all[k, count, ] <- tmp[[1]]
             like_h2_all[k, count, ] <- tmp[[2]]
             lr_all[k, count, ] <- tmp[[3]]
+
+            # tkconfigure(label_pb1, text = paste())
+            #tkconfigure(pb1, value = (n_q * (count - 1) + k) * 100 / (n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel)))
             info <- sprintf("%d%% done", round((n_q * (count - 1) + k) * 100 / (n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel))))
             setTkProgressBar(pb, (n_q * (count - 1) + k) * 100 / (n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel)), sprintf("Searching"), info)
           }
@@ -274,10 +283,12 @@ search_auto <- function(env_proj, env_gui){
       assign("lr_all", lr_all, envir = env_proj)
       assign("fin_auto", TRUE, envir = env_proj)
 
-      # Make tab2
+      # Make tabs
       make_tab2(env_proj, env_gui)
+      make_tab7(env_proj, env_gui)
 
       # Close a progress bar
+      # tkdestroy(tf)
       close(pb)
     }else if(!bool_locus_1){
       tkmessageBox(message = "Locus set is not the same between query data and reference data!", icon = "error", type = "ok")

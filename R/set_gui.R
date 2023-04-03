@@ -14,9 +14,9 @@ set_criteria <- function(env_proj, env_gui){
       criteria[, 1] <- c("Minimum LR",
                          "Maximum number of inconsistent loci", "Maximum number of ignored loci", "Maximum mutational steps",
                          "Minimum shared length", "Maximum number of inconsistency")
-      criteria[, 2] <- c(tclvalue(min_lr_auto_var),
-                         tclvalue(max_inconsistent_y_var), tclvalue(max_ignore_y_var), tclvalue(max_mu_step_y_var),
-                         tclvalue(min_share_mt_var), tclvalue(max_inconsistent_mt_var))
+      criteria[, 2] <- c(tclvalue(t_min_lr_auto_var),
+                         tclvalue(t_max_diff_var), tclvalue(t_max_drop_y_var), tclvalue(t_max_mustep_y_var),
+                         tclvalue(t_min_share_mt_var), tclvalue(t_max_diff_mt_var))
       write.csv(criteria, paste0(path_pack, "/extdata/parameters/criteria.csv"), row.names = FALSE)
       assign("fin_auto", FALSE, envir = env_proj)
       assign("fin_y", FALSE, envir = env_proj)
@@ -33,35 +33,35 @@ set_criteria <- function(env_proj, env_gui){
   fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
   if(is.element("criteria.csv", fn_par)){
     criteria <- read.csv(paste0(path_pack, "/extdata/parameters/criteria.csv"), header = TRUE)
-    min_lr_auto <- criteria$Value[criteria$Criteria == "Minimum LR"]
-    max_inconsistent_y <- criteria$Value[criteria$Criteria == "Maximum number of inconsistent loci"]
-    max_ignore_y <- criteria$Value[criteria$Criteria == "Maximum number of ignored loci"]
-    max_mu_step_y <- criteria$Value[criteria$Criteria == "Maximum mutational steps"]
-    min_share_mt <- criteria$Value[criteria$Criteria == "Minimum shared length"]
-    max_inconsistent_mt <- criteria$Value[criteria$Criteria == "Maximum number of inconsistency"]
+    t_min_lr_auto <- criteria$Value[criteria$Criteria == "Minimum LR"]
+    t_max_diff <- criteria$Value[criteria$Criteria == "Maximum number of inconsistent loci"]
+    t_max_drop_y <- criteria$Value[criteria$Criteria == "Maximum number of ignored loci"]
+    t_max_mustep_y <- criteria$Value[criteria$Criteria == "Maximum mutational steps"]
+    t_min_share_mt <- criteria$Value[criteria$Criteria == "Minimum shared length"]
+    t_max_diff_mt <- criteria$Value[criteria$Criteria == "Maximum number of inconsistency"]
   }else{
-    min_lr_auto <- get("min_lr_auto_default", pos = env_proj)
-    max_inconsistent_y <- get("max_inconsistent_y_default", pos = env_proj)
-    max_ignore_y <- get("max_ignore_y_default", pos = env_proj)
-    max_mu_step_y <- get("max_mu_step_y_default", pos = env_proj)
-    min_share_mt <- get("min_share_mt_default", pos = env_proj)
-    max_inconsistent_mt <- get("max_inconsistent_mt_default", pos = env_proj)
+    t_min_lr_auto <- get("t_min_lr_auto_default", pos = env_proj)
+    t_max_diff <- get("t_max_diff_default", pos = env_proj)
+    t_max_drop_y <- get("t_max_drop_y_default", pos = env_proj)
+    t_max_mustep_y <- get("t_max_mustep_y_default", pos = env_proj)
+    t_min_share_mt <- get("t_min_share_mt_default", pos = env_proj)
+    t_max_diff_mt <- get("t_max_diff_mt_default", pos = env_proj)
     criteria <- matrix("", 6, 2)
     colnames(criteria) <- c("Criteria", "Value")
     criteria[, 1] <- c("Minimum LR",
                        "Maximum number of inconsistent loci", "Maximum number of ignored loci", "Maximum mutational steps",
                        "Minimum shared length", "Maximum number of inconsistency")
-    criteria[, 2] <- c(min_lr_auto, max_inconsistent_y, max_ignore_y, max_mu_step_y, min_share_mt, max_inconsistent_mt)
+    criteria[, 2] <- c(t_min_lr_auto, t_max_diff, t_max_drop_y, t_max_mustep_y, t_min_share_mt, t_max_diff_mt)
     write.csv(criteria, paste0(path_pack, "/extdata/parameters/criteria.csv"), row.names = FALSE)
   }
 
   # Define tclvalue
-  min_lr_auto_var <- tclVar(min_lr_auto)
-  max_inconsistent_y_var <- tclVar(max_inconsistent_y)
-  max_ignore_y_var <- tclVar(max_ignore_y)
-  max_mu_step_y_var <- tclVar(max_mu_step_y)
-  min_share_mt_var <- tclVar(min_share_mt)
-  max_inconsistent_mt_var <- tclVar(max_inconsistent_mt)
+  t_min_lr_auto_var <- tclVar(t_min_lr_auto)
+  t_max_diff_var <- tclVar(t_max_diff)
+  t_max_drop_y_var <- tclVar(t_max_drop_y)
+  t_max_mustep_y_var <- tclVar(t_max_mustep_y)
+  t_min_share_mt_var <- tclVar(t_min_share_mt)
+  t_max_diff_mt_var <- tclVar(t_max_diff_mt)
 
   # Make a top frame
   tf <- tktoplevel()
@@ -69,32 +69,32 @@ set_criteria <- function(env_proj, env_gui){
 
   # Define widgets
   label_title_auto <- tklabel(tf, text = "Autosomal STR")
-  label_min_lr_auto <- tklabel(tf, text = "    Minimum LR")
-  entry_min_lr_auto <- tkentry(tf, textvariable = min_lr_auto_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+  label_t_min_lr_auto <- tklabel(tf, text = "    Minimum LR")
+  entry_t_min_lr_auto <- tkentry(tf, textvariable = t_min_lr_auto_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
   label_title_y <- tklabel(tf, text = "Y-STR")
-  label_max_inconsistent_y <- tklabel(tf, text = "    Maximum number of inconsistent loci")
-  entry_max_inconsistent_y <- tkentry(tf, textvariable = max_inconsistent_y_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-  label_max_ignore_y <- tklabel(tf, text = "    Maximum number of ignored loci")
-  entry_max_ignore_y <- tkentry(tf, textvariable = max_ignore_y_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-  label_max_mu_step_y <- tklabel(tf, text = "    Maximum mutational steps")
-  entry_max_mu_step_y <- tkentry(tf, textvariable = max_mu_step_y_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+  label_t_max_diff <- tklabel(tf, text = "    Maximum number of inconsistent loci")
+  entry_t_max_diff <- tkentry(tf, textvariable = t_max_diff_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+  label_t_max_drop_y <- tklabel(tf, text = "    Maximum number of ignored loci")
+  entry_t_max_drop_y <- tkentry(tf, textvariable = t_max_drop_y_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+  label_t_max_mustep_y <- tklabel(tf, text = "    Maximum mutational steps")
+  entry_t_max_mustep_y <- tkentry(tf, textvariable = t_max_mustep_y_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
   label_title_mt <- tklabel(tf, text = "mtDNA")
-  label_min_share_mt <- tklabel(tf, text = "    Minimum shared length")
-  entry_min_share_mt <- tkentry(tf, textvariable = min_share_mt_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-  label_max_inconsistent_mt <- tklabel(tf, text = "    Maximum number of inconsistency")
-  entry_max_inconsistent_mt <- tkentry(tf, textvariable = max_inconsistent_mt_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+  label_t_min_share_mt <- tklabel(tf, text = "    Minimum shared length")
+  entry_t_min_share_mt <- tkentry(tf, textvariable = t_min_share_mt_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+  label_t_max_diff_mt <- tklabel(tf, text = "    Maximum number of inconsistency")
+  entry_t_max_diff_mt <- tkentry(tf, textvariable = t_max_diff_mt_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
   butt_save <- tkbutton(tf, text = "    Save    ", cursor = "hand2", command = function() save_criteria())
 
   # Grid widgets
   tkgrid(label_title_auto, padx = 10, pady = 5, sticky = "w")
-  tkgrid(label_min_lr_auto, entry_min_lr_auto, padx = 10, pady = 5, sticky = "w")
+  tkgrid(label_t_min_lr_auto, entry_t_min_lr_auto, padx = 10, pady = 5, sticky = "w")
   tkgrid(label_title_y, padx = 10, pady = 5, sticky = "w")
-  tkgrid(label_max_inconsistent_y, entry_max_inconsistent_y, padx = 10, pady = 5, sticky = "w")
-  tkgrid(label_max_ignore_y, entry_max_ignore_y, padx = 10, pady = 5, sticky = "w")
-  tkgrid(label_max_mu_step_y, entry_max_mu_step_y, padx = 10, pady = 5, sticky = "w")
+  tkgrid(label_t_max_diff, entry_t_max_diff, padx = 10, pady = 5, sticky = "w")
+  tkgrid(label_t_max_drop_y, entry_t_max_drop_y, padx = 10, pady = 5, sticky = "w")
+  tkgrid(label_t_max_mustep_y, entry_t_max_mustep_y, padx = 10, pady = 5, sticky = "w")
   tkgrid(label_title_mt, padx = 10, pady = 5, sticky = "w")
-  tkgrid(label_min_share_mt, entry_min_share_mt, padx = 10, pady = 5, sticky = "w")
-  tkgrid(label_max_inconsistent_mt, entry_max_inconsistent_mt, padx = 10, pady = 5, sticky = "w")
+  tkgrid(label_t_min_share_mt, entry_t_min_share_mt, padx = 10, pady = 5, sticky = "w")
+  tkgrid(label_t_max_diff_mt, entry_t_max_diff_mt, padx = 10, pady = 5, sticky = "w")
   tkgrid(butt_save, padx = 10, pady = 5, sticky = "w")
 }
 
