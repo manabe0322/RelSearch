@@ -111,6 +111,17 @@ search_y <- function(env_proj, env_gui){
       # Update sample names
       set_env_proj_sn(env_proj, FALSE, sn_y_q, sn_y_r)
 
+      # Load criteria
+      criteria <- read.csv(paste0(path_pack, "/extdata/parameters/criteria.csv"), header = TRUE)
+      max_inconsistent_y <- criteria$Value[criteria$Criteria == "Maximum number of inconsistent loci"]
+      max_ignore_y <- criteria$Value[criteria$Criteria == "Maximum number of ignored loci"]
+      max_mu_step_y <- criteria$Value[criteria$Criteria == "Maximum mutational steps"]
+
+      # Assign criteria
+      assign("max_inconsistent_y", max_inconsistent_y, envir = env_proj)
+      assign("max_ignore_y", max_ignore_y, envir = env_proj)
+      assign("max_mu_step_y", max_mu_step_y, envir = env_proj)
+
       hap_y_r <- hap_y_r[, match(locus_q, locus_r)]
       n_q <- nrow(hap_y_q)
       n_r <- nrow(hap_y_r)
@@ -128,6 +139,8 @@ search_y <- function(env_proj, env_gui){
           setTkProgressBar(pb, (n_q * (i - 1) + j) * 100 / (n_q * n_r), sprintf("Searching"), info)
         }
       }
+
+      # Assign results of Y-STR
       assign("hap_y_q", hap_y_q, envir = env_proj)
       assign("hap_y_r", hap_y_r, envir = env_proj)
       assign("sn_y_q", sn_y_q, envir = env_proj)
@@ -136,7 +149,11 @@ search_y <- function(env_proj, env_gui){
       assign("drop_q_y", drop_q_y, envir = env_proj)
       assign("mu_step_y", mu_step_y, envir = env_proj)
       assign("fin_y", TRUE, envir = env_proj)
+
+      # Make tab4
       make_tab4(env_proj, env_gui)
+
+      # Close a progress bar
       close(pb)
     }else{
       tkmessageBox(message = "Locus set is not the same between query data and reference data!", icon = "error", type = "ok")

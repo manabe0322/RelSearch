@@ -98,6 +98,15 @@ search_mt <- function(env_proj, env_gui){
     # Update sample names
     set_env_proj_sn(env_proj, FALSE, sn_mt_q, sn_mt_r)
 
+    # Load criteria
+    criteria <- read.csv(paste0(path_pack, "/extdata/parameters/criteria.csv"), header = TRUE)
+    min_share_mt <- criteria$Value[criteria$Criteria == "Minimum shared length"]
+    max_inconsistent_mt <- criteria$Value[criteria$Criteria == "Maximum number of inconsistency"]
+
+    # Assign criteria
+    assign("min_share_mt", min_share_mt, envir = env_proj)
+    assign("max_inconsistent_mt", max_inconsistent_mt, envir = env_proj)
+
     pos_sn_q <- intersect(grep("Sample", colnames(data_mt_q)), grep("Name", colnames(data_mt_q)))
     sn_mt_q <- data_mt_q[, pos_sn_q]
     range_mt_q <- data_mt_q[, "Range"]
@@ -132,6 +141,8 @@ search_mt <- function(env_proj, env_gui){
         setTkProgressBar(pb, (n_q * (i - 1) + j) * 100 / (n_q * n_r), sprintf("Searching"), info)
       }
     }
+
+    # Assign results of mtDNA
     assign("sn_mt_q", sn_mt_q, envir = env_proj)
     assign("range_mt_q", range_mt_q, envir = env_proj)
     assign("hap_mt_q", hap_mt_q, envir = env_proj)
@@ -142,7 +153,11 @@ search_mt <- function(env_proj, env_gui){
     assign("share_range_mt", share_range_mt, envir = env_proj)
     assign("share_len_mt", share_len_mt, envir = env_proj)
     assign("fin_mt", TRUE, envir = env_proj)
+
+    # Make tab6
     make_tab6(env_proj, env_gui)
+
+    # Close a progress bar
     close(pb)
   }
 }

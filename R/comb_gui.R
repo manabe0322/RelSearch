@@ -8,6 +8,7 @@ make_comb_data <- function(env_proj){
     sn_q_all <- get("sn_q_all", pos = env_proj)
     sn_r_all <- get("sn_r_all", pos = env_proj)
 
+    # The number of samples in all database
     n_q <- length(sn_q_all)
     n_r <- length(sn_r_all)
 
@@ -19,7 +20,7 @@ make_comb_data <- function(env_proj){
 
     alleged_rels <- rep("", n_q * n_r)
     if(fin_auto){
-
+      min_lr_auto <- get("min_lr_auto", pos = env_proj)
       sn_auto_q <- get("sn_auto_q", pos = env_proj)
       sn_auto_r_new <- get("sn_auto_r_new", pos = env_proj)
       rel_auto_r_new <- get("rel_auto_r_new", pos = env_proj)
@@ -33,10 +34,17 @@ make_comb_data <- function(env_proj){
             if(length(pos_r) > 0){
               rel_1 <- rel_auto_r_new[pos_r]
               clr_1 <- clr_all_mat[pos_q, pos_r]
+              pos_meet <- which(clr_1 >= min_lr_auto)
+              if(length(pos_meet) > 0){
+                alleged_rels[n_r * (i - 1) + j] <- paste0(rel_1[pos_meet], collapse = ", ")
+              }else{
+                alleged_rels[n_r * (i - 1) + j] <- ""
+              }
             }
           }
         }
       }
+      comb_data[, 3] <- alleged_rels
     }
 
     if(fin_y){

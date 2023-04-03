@@ -117,19 +117,12 @@ search_auto <- function(env_proj, env_gui){
   data_auto_r <- get("data_auto_r", pos = env_proj)
   data_auto_af <- get("data_auto_af", pos = env_proj)
 
-  # Check whether all data are loaded or not
+  # Check whether all data is loaded or not
   if(any(c(length(data_auto_q) == 0, length(data_auto_r) == 0, length(data_auto_af) == 0))){
     tkmessageBox(message = "Load required file(s)!", icon = "error", type = "ok")
   }else{
     # Get package path from environment variable (env_gui)
     path_pack <- get("path_pack", pos = env_gui)
-
-    # Load criteria
-    criteria <- read.csv(paste0(path_pack, "/extdata/parameters/criteria.csv"), header = TRUE)
-    min_lr_auto <- criteria$Value[criteria$Criteria == "Minimum LR"]
-
-    # Assign criteria
-    assign("min_lr_auto", min_lr_auto, envir = env_proj)
 
     # Load mutation rates
     myu_all <- read.csv(paste0(path_pack, "/extdata/parameters/myu.csv"), header = TRUE)
@@ -138,6 +131,9 @@ search_auto <- function(env_proj, env_gui){
     myu_all <- as.numeric(myu_all[, colnames(myu_all) == "Myu"])
     names(myu_all) <- locus_myu
 
+    # Assign mutation rates
+    assign("myu_all", myu_all, envir = env_proj)
+
     # Load IBD probabilities
     pibd_all <- read.csv(paste0(path_pack, "/extdata/parameters/pibd.csv"), header = TRUE, row.names = 1)
     pibd_all <- as.matrix(pibd_all)
@@ -145,11 +141,8 @@ search_auto <- function(env_proj, env_gui){
     bool_cons_mu_all <- rep(FALSE, n_pibd_rel)
     bool_cons_mu_all[rownames(pibd_all) == "parent-child"] <- TRUE
 
-    # Load parameters
-    par_auto <- read.csv(paste0(path_pack, "/extdata/parameters/par_auto.csv"), header = TRUE)
-    maf <- par_auto$Value[par_auto$Parameter == "Minimum allele frequency"]
-    meth_d <- par_auto$Value[par_auto$Parameter == "Drop-out of query alleles"]
-    pd <- par_auto$Value[par_auto$Parameter == "Probability of drop-out"]
+    # Assign IBD probabilities
+    assign("pibd_all", pibd_all, envir = env_proj)
 
     pos_sn_q <- intersect(grep("Sample", colnames(data_auto_q)), grep("Name", colnames(data_auto_q)))
     sn_auto_q <- data_auto_q[, pos_sn_q]
@@ -177,30 +170,65 @@ search_auto <- function(env_proj, env_gui){
       # Update sample names
       set_env_proj_sn(env_proj, FALSE, sn_auto_q, sn_auto_r)
 
+      # Load criteria
+      criteria <- read.csv(paste0(path_pack, "/extdata/parameters/criteria.csv"), header = TRUE)
+      min_lr_auto <- criteria$Value[criteria$Criteria == "Minimum LR"]
+
+      # Assign criteria
+      assign("min_lr_auto", min_lr_auto, envir = env_proj)
+
+      # Load parameters
+      par_auto <- read.csv(paste0(path_pack, "/extdata/parameters/par_auto.csv"), header = TRUE)
+      maf <- par_auto$Value[par_auto$Parameter == "Minimum allele frequency"]
+      meth_d <- par_auto$Value[par_auto$Parameter == "Drop-out of query alleles"]
+      pd <- par_auto$Value[par_auto$Parameter == "Probability of drop-out"]
+
+      # Assign parameters
+      assign("maf", maf, envir = env_proj)
+      assign("meth_d", meth_d, envir = env_proj)
+      assign("pd", pd, envir = env_proj)
+
+      # Set allele frequencies
       tmp <- set_af(gt_auto_q, gt_auto_r, data_auto_af, maf)
       af_list <- tmp[[1]]
       af_al_list <- tmp[[2]]
 
+      # The numbers of samples
       n_q <- nrow(gt_auto_q)
       n_r <- nrow(gt_auto_r)
+
+      # The number of loci
       n_l <- length(locus_q)
 
+      # Extract mutation rates
       myus <- rep(0, n_l)
       for(i in 1:n_l){
         myus[i] <- myu_all[which(locus_myu == locus_q[i])]
       }
       names(myus) <- locus_q
 
+      # Assign myus
+      assign("myus", myus, envir = env_proj)
+
+      # Calculate average probabilities of exclusion
       apes <- rep(0, n_l)
       for(i in 1:n_l){
         apes[i] <- calc_ape(af_list[[i]])
       }
       names(apes) <- locus_q
 
+      # Assign apes
+      assign("apes", apes, envir = env_proj)
+
+      # Define objects for results
       like_h1_all <- like_h2_all <- lr_all <- array(0, dim = c(n_q, n_r + (n_pibd_rel - 1) * n_emp_rel, n_l + 1))
       gt_auto_r_new <- matrix(0, n_r + (n_pibd_rel - 1) * n_emp_rel, ncol(gt_auto_r))
       sn_auto_r_new <- rel_auto_r_new <- rep(0, n_r + (n_pibd_rel - 1) * n_emp_rel)
+
+      # Set the number of counts for references
       count <- 1
+
+      # Start searching
       for(i in 1:n_r){
         ref <- as.numeric(gt_auto_r[i, ])
         ref[is.na(ref)] <- -99
@@ -234,6 +262,8 @@ search_auto <- function(env_proj, env_gui){
           count <- count + 1
         }
       }
+
+      # Assign results of autosomal STR
       assign("gt_auto_q", gt_auto_q, envir = env_proj)
       assign("gt_auto_r_new", gt_auto_r_new, envir = env_proj)
       assign("sn_auto_q", sn_auto_q, envir = env_proj)
@@ -242,11 +272,12 @@ search_auto <- function(env_proj, env_gui){
       assign("like_h1_all", like_h1_all, envir = env_proj)
       assign("like_h2_all", like_h2_all, envir = env_proj)
       assign("lr_all", lr_all, envir = env_proj)
-#      assign("pibd_all", pibd_all, envir = env_proj)
-      assign("myus", myus, envir = env_proj)
       assign("fin_auto", TRUE, envir = env_proj)
 
+      # Make tab2
       make_tab2(env_proj, env_gui)
+
+      # Close a progress bar
       close(pb)
     }else if(!bool_locus_1){
       tkmessageBox(message = "Locus set is not the same between query data and reference data!", icon = "error", type = "ok")

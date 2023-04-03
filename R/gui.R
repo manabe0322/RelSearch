@@ -16,10 +16,15 @@ set_env_proj_auto <- function(env_proj, bool_new){
     assign("min_lr_auto", numeric(0), envir = env_proj)
 
     # Assign objects for mutation rates
+    assign("myu_all", NULL, envir = env_proj)
 
     # Assign objects for IBD probabilities
+    assign("pibd_all", NULL, envir = env_proj)
 
     # Assign objects for parameters
+    assign("maf", numeric(0), envir = env_proj)
+    assign("meth_d", numeric(0), envir = env_proj)
+    assign("pd", numeric(0), envir = env_proj)
   }
   assign("fin_auto", FALSE, envir = env_proj)
 }
@@ -27,12 +32,18 @@ set_env_proj_auto <- function(env_proj, bool_new){
 # Set objects of env_proj for Y
 set_env_proj_y <- function(env_proj, bool_new){
   if(bool_new){
+    # Assign objects for files
     assign("data_y_q", NULL, envir = env_proj)
     assign("fp_y_q", character(0), envir = env_proj)
     assign("fn_y_q", character(0), envir = env_proj)
     assign("data_y_r", NULL, envir = env_proj)
     assign("fp_y_r", character(0), envir = env_proj)
     assign("fn_y_r", character(0), envir = env_proj)
+
+    # Assign objects for criteria
+    assign("max_inconsistent_y", numeric(0), envir = env_proj)
+    assign("max_ignore_y", numeric(0), envir = env_proj)
+    assign("max_mu_step_y", numeric(0), envir = env_proj)
   }
   assign("fin_y", FALSE, envir = env_proj)
 }
@@ -40,12 +51,17 @@ set_env_proj_y <- function(env_proj, bool_new){
 # Set objects of env_proj for mtDNA
 set_env_proj_mt <- function(env_proj, bool_new){
   if(bool_new){
+    # Assign objects for files
     assign("data_mt_q", NULL, envir = env_proj)
     assign("fp_mt_q", character(0), envir = env_proj)
     assign("fn_mt_q", character(0), envir = env_proj)
     assign("data_mt_r", NULL, envir = env_proj)
     assign("fp_mt_r", character(0), envir = env_proj)
     assign("fn_mt_r", character(0), envir = env_proj)
+
+    # Assign objects for criteria
+    assign("min_share_mt", numeric(0), envir = env_proj)
+    assign("max_inconsistent_mt", numeric(0), envir = env_proj)
   }
   assign("fin_mt", FALSE, envir = env_proj)
 }
