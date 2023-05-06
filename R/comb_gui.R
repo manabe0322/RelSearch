@@ -14,7 +14,7 @@ make_comb_data <- function(env_proj){
 
     # Define comb_data
     comb_data <- matrix("", n_q * n_r, 3)
-    colnames(comb_data) <- c("Query", "Reference", "Estimated relationship")
+    colnames(comb_data) <- c("Query", "Reference", "Estimated relationship") #Assumed relationship, Estimated relationship, Paternal lineage, Maternal lineage
     comb_data[, 1] <- rep(sn_q_all, n_r)
     comb_data[, 2] <- as.vector(sapply(sn_r_all, rep, n_q))
 
