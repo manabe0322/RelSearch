@@ -178,10 +178,10 @@ search_auto <- function(env_proj, env_gui){
 
       # Load criteria
       criteria <- read.csv(paste0(path_pack, "/extdata/parameters/criteria.csv"), header = TRUE)
-      t_min_lr_auto <- criteria$Value[criteria$Criteria == "Minimum LR"]
+      min_lr_auto <- criteria$Value[criteria$Criteria == "Minimum LR"]
 
       # Assign criteria
-      assign("t_min_lr_auto", t_min_lr_auto, envir = env_proj)
+      assign("min_lr_auto", min_lr_auto, envir = env_proj)
 
       # Load parameters
       par_auto <- read.csv(paste0(path_pack, "/extdata/parameters/par_auto.csv"), header = TRUE)
@@ -539,10 +539,14 @@ make_tab2 <- function(env_proj, env_gui){
     butt_export1 <- tkbutton(frame_result_2, text = "    Export displayed data    ", cursor = "hand2", command = function() export_data(get("data_display", pos = env_auto_result), FALSE))
     butt_export2 <- tkbutton(frame_result_2, text = "    Export All LRs    ", cursor = "hand2", command = function() export_data(clr_all_mat, TRUE))
 
-    # Grid widgets
+    # Grid a scrollbar and a multi-list box
     tkgrid(mlb_result, scr1)
     tkgrid.configure(scr1, rowspan = 30, sticky = "nsw")
+
+    # Grid widgets in frame_result_2
     tkgrid(butt_display, butt_detail, butt_export1, butt_export2, padx = 10, pady = 5)
+
+    # Grid frames
     tkgrid(frame_result_1, padx = 10, pady = 5)
     tkgrid(frame_result_2)
     tkgrid(frame_tab2)

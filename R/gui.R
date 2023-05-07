@@ -13,7 +13,7 @@ set_env_proj_auto <- function(env_proj, bool_new){
     assign("fn_auto_af", character(0), envir = env_proj)
 
     # Assign objects for criteria
-    assign("t_min_lr_auto", numeric(0), envir = env_proj)
+    assign("min_lr_auto", numeric(0), envir = env_proj)
 
     # Assign objects for mutation rates
     assign("myu_all", NULL, envir = env_proj)
@@ -41,9 +41,9 @@ set_env_proj_y <- function(env_proj, bool_new){
     assign("fn_y_r", character(0), envir = env_proj)
 
     # Assign objects for criteria
-    assign("t_max_diff_y", numeric(0), envir = env_proj)
-    assign("t_max_drop_y", numeric(0), envir = env_proj)
-    assign("t_max_mustep_y", numeric(0), envir = env_proj)
+    assign("max_diff_y", numeric(0), envir = env_proj)
+    assign("max_ignore_y", numeric(0), envir = env_proj)
+    assign("max_mustep_y", numeric(0), envir = env_proj)
   }
   assign("fin_y", FALSE, envir = env_proj)
 }
@@ -60,8 +60,8 @@ set_env_proj_mt <- function(env_proj, bool_new){
     assign("fn_mt_r", character(0), envir = env_proj)
 
     # Assign objects for criteria
-    assign("t_min_share_mt", numeric(0), envir = env_proj)
-    assign("t_max_diff_mt", numeric(0), envir = env_proj)
+    assign("min_share_mt", numeric(0), envir = env_proj)
+    assign("max_diff_mt", numeric(0), envir = env_proj)
   }
   assign("fin_mt", FALSE, envir = env_proj)
 }
@@ -69,12 +69,12 @@ set_env_proj_mt <- function(env_proj, bool_new){
 # Set objects of env_proj for default criteria and parameters
 set_env_proj_default <- function(env_proj){
   # Set default criteria
-  assign("t_min_lr_auto_default", 100, envir = env_proj)
-  assign("t_max_diff_y_default", 2, envir = env_proj)
-  assign("t_max_drop_y_default", 10, envir = env_proj)
-  assign("t_max_mustep_y_default", 2, envir = env_proj)
-  assign("t_min_share_mt_default", 300, envir = env_proj)
-  assign("t_max_diff_mt_default", 1, envir = env_proj)
+  assign("min_lr_auto_default", 100, envir = env_proj)
+  assign("max_diff_y_default", 2, envir = env_proj)
+  assign("max_ignore_y_default", 10, envir = env_proj)
+  assign("max_mustep_y_default", 2, envir = env_proj)
+  assign("min_share_mt_default", 300, envir = env_proj)
+  assign("max_diff_mt_default", 1, envir = env_proj)
 
   # Set default mutation rates
   myu_all <- c(0.001474647, 0.002858327, 0.001479789, 0.002240583, 0.000227000,
@@ -238,8 +238,8 @@ relsearch <- function(){
   assign("ver_soft", ver_soft, envir = env_gui)
 
   # Set package path
-  path_pack <- "D:/RStudio_GitHub/relsearch/inst"
-#  path_pack <- path.package("relsearch", quiet = FALSE)
+#  path_pack <- "D:/RStudio_GitHub/relsearch/inst"
+  path_pack <- path.package("relsearch", quiet = FALSE)
   assign("path_pack", path_pack, envir = env_gui)
 
   # Make a top frame

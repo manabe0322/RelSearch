@@ -100,12 +100,12 @@ search_mt <- function(env_proj, env_gui){
 
     # Load criteria
     criteria <- read.csv(paste0(path_pack, "/extdata/parameters/criteria.csv"), header = TRUE)
-    t_min_share_mt <- criteria$Value[criteria$Criteria == "Minimum shared length"]
-    t_max_diff_mt <- criteria$Value[criteria$Criteria == "Maximum number of inconsistency"]
+    min_share_mt <- criteria$Value[criteria$Criteria == "Minimum shared length"]
+    max_diff_mt <- criteria$Value[criteria$Criteria == "Maximum number of inconsistency"]
 
     # Assign criteria
-    assign("t_min_share_mt", t_min_share_mt, envir = env_proj)
-    assign("t_max_diff_mt", t_max_diff_mt, envir = env_proj)
+    assign("min_share_mt", min_share_mt, envir = env_proj)
+    assign("max_diff_mt", max_diff_mt, envir = env_proj)
 
     pos_sn_q <- intersect(grep("Sample", colnames(data_mt_q)), grep("Name", colnames(data_mt_q)))
     sn_mt_q <- data_mt_q[, pos_sn_q]

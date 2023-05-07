@@ -116,14 +116,14 @@ search_y <- function(env_proj, env_gui){
 
       # Load criteria
       criteria <- read.csv(paste0(path_pack, "/extdata/parameters/criteria.csv"), header = TRUE)
-      t_max_diff <- criteria$Value[criteria$Criteria == "Maximum number of inconsistent loci"]
-      t_max_drop_y <- criteria$Value[criteria$Criteria == "Maximum number of ignored loci"]
-      t_max_mustep_y <- criteria$Value[criteria$Criteria == "Maximum mutational steps"]
+      max_diff <- criteria$Value[criteria$Criteria == "Maximum number of inconsistent loci"]
+      max_ignore_y <- criteria$Value[criteria$Criteria == "Maximum number of ignored loci"]
+      max_mustep_y <- criteria$Value[criteria$Criteria == "Maximum mutational steps"]
 
       # Assign criteria
-      assign("t_max_diff", t_max_diff, envir = env_proj)
-      assign("t_max_drop_y", t_max_drop_y, envir = env_proj)
-      assign("t_max_mustep_y", t_max_mustep_y, envir = env_proj)
+      assign("max_diff", max_diff, envir = env_proj)
+      assign("max_ignore_y", max_ignore_y, envir = env_proj)
+      assign("max_mustep_y", max_mustep_y, envir = env_proj)
 
       hap_y_r <- hap_y_r[, match(locus_q, locus_r)]
       n_q <- nrow(hap_y_q)
