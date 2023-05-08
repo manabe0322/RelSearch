@@ -1,15 +1,25 @@
 make_tab3 <- function(env_proj, env_gui){
+  # The function to load required files for Y-STR analysis
   open_file <- function(type){
+    # Check whether the analysis of Y-sTR has been finished or not
     sign_ok <- "ok"
     fin_y <- get("fin_y", pos = env_proj)
+
+    # If the analysis of Y-sTR has been already finished
     if(fin_y){
+      # Warning message
       sign_ok <- tclvalue(tkmessageBox(message = "Y-STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
     }
 
+    # If the user clicks the "OK" button
     if(sign_ok == "ok"){
+      # Set the environment "env_proj"
       set_env_proj_y(env_proj, FALSE)
+
+      # Make tab4
       make_tab4(env_proj, env_gui)
 
+      # Get the file path and the file name from the environment "env_proj"
       if(type == "query"){
         fp <- get("fp_y_q", pos = env_proj)
         fn <- get("fn_y_q", pos = env_proj)
@@ -17,31 +27,53 @@ make_tab3 <- function(env_proj, env_gui){
         fp <- get("fp_y_r", pos = env_proj)
         fn <- get("fn_y_r", pos = env_proj)
       }
+
+      # Define tcl variables for the file path and the file name
       fp_var <- tclVar(fp)
       fn_var <- tclVar(fn)
 
+      # Open a window to select a file
       path_file <- tclvalue(tkgetOpenFile(initialdir = tclvalue(fp_var), multiple = "true", filetypes = "{{CSV Files} {.csv}}"))
+
+      # If the user does not select a file
       if(!nchar(path_file)){
         tkmessageBox(message = "No file was selected!", icon = "error", type = "ok")
+
+      # If the user selects a file
       }else{
+        # Update tcl variables for the file path and the file name
         tmp <- sub("\\}", path_file, replacement = "")
         tmp2 <- sub("\\{", tmp, replacement = "")
         tclvalue(fp_var) <- tmp2
         foo3 <- strsplit(tmp2, "/")[[1]]
         tclvalue(fn_var) <- strsplit(foo3[length(foo3)], "\\.csv")[[1]][1]
+
+        # If the user clicks the "Load" button for query database
         if(type == "query"){
+          # Update the name of query database
           tkconfigure(label_q_name, textvariable = fn_var)
+
+          # Load query database
           data_y_q <- read.csv(tclvalue(fp_var), header = TRUE)
           data_y_q <- as.matrix(data_y_q)
           data_y_q[is.na(data_y_q)] <- ""
+
+          # Assign objects to the environment "env_proj"
           assign("data_y_q", data_y_q, envir = env_proj)
           assign("fp_y_q", tclvalue(fp_var), envir = env_proj)
           assign("fn_y_q", tclvalue(fn_var), envir = env_proj)
+
+        # If the user clicks the "Load" button for reference database
         }else if(type == "ref"){
+          # Update the name of reference database
           tkconfigure(label_r_name, textvariable = fn_var)
+
+          # Load reference database
           data_y_r <- read.csv(tclvalue(fp_var), header = TRUE)
           data_y_r <- as.matrix(data_y_r)
           data_y_r[is.na(data_y_r)] <- ""
+
+          # Assign objects to the environment "env_proj"
           assign("data_y_r", data_y_r, envir = env_proj)
           assign("fp_y_r", tclvalue(fp_var), envir = env_proj)
           assign("fn_y_r", tclvalue(fn_var), envir = env_proj)
