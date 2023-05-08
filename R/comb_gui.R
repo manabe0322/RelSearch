@@ -13,8 +13,8 @@ make_data_comb <- function(env_proj){
   n_r <- length(sn_r_all)
 
   # Define data_comb
-  data_comb <- matrix("", n_q * n_r, 6)
-  colnames(data_comb) <- c("Query", "Reference", "Assumed relationship", "Estimated relationship", "Paternal lineage", "Maternal lineage")
+  data_comb <- matrix("", n_q * n_r, 8)
+  colnames(data_comb) <- c("Query", "Reference", "Assumed relationship", "Estimated relationship", "Paternal lineage", "Maternal lineage", "All Hp", "All LR")
   data_comb[, 1] <- rep(sn_q_all, n_r)
   data_comb[, 2] <- as.vector(sapply(sn_r_all, rep, n_q))
 
@@ -36,6 +36,12 @@ make_data_comb <- function(env_proj){
             pos_meet <- which(as.numeric(clr_1) >= min_lr_auto)
             if(length(rel_1) == 1){
               data_comb[n_r * (i - 1) + j, 3] <- rel_1
+              data_comb[n_r * (i - 1) + j, 7] <- rel_1
+              data_comb[n_r * (i - 1) + j, 8] <- clr_1
+            }else{
+              data_comb[n_r * (i - 1) + j, 3] <- "N/A"
+              data_comb[n_r * (i - 1) + j, 7] <- paste(rel_1, collapse = ", ")
+              data_comb[n_r * (i - 1) + j, 8] <- paste(clr_1, collapse = ", ")
             }
             if(length(pos_meet) > 0){
               data_comb[n_r * (i - 1) + j, 4] <- "Multiple candidates"
@@ -44,6 +50,9 @@ make_data_comb <- function(env_proj){
         }
       }
     }
+  }else{
+    data_comb[, 3] <- "N/A"
+    data_comb[, 4] <- "N/A"
   }
 
   if(fin_y){
@@ -70,11 +79,15 @@ make_data_comb <- function(env_proj){
             bool_max_mu_step <- as.numeric(max_mu_step[pos_q, pos_r]) <= max_mustep_y && max_mu_step[pos_q, pos_r] %% 1 == 0
             if(all(c(bool_n_mm, bool_n_q_drop, bool_max_mu_step))){
               data_comb[n_r * (i - 1) + j, 5] <- "\U2713"
+            }else{
+              data_comb[n_r * (i - 1) + j, 5] <- ""
             }
           }
         }
       }
     }
+  }else{
+    data_comb[, 5] <- "No data"
   }
 
   if(fin_mt){
@@ -94,11 +107,15 @@ make_data_comb <- function(env_proj){
             bool_share <- as.numeric(share_len_mt[pos_q, pos_r]) >= min_share_mt
             if(all(c(bool_n_mm, bool_share))){
               data_comb[n_r * (i - 1) + j, 6] <- "\U2713"
+            }else{
+              data_comb[n_r * (i - 1) + j, 6] <- ""
             }
           }
         }
       }
     }
+  }else{
+    data_comb[, 6] <- "No data"
   }
 
   return(data_comb)
@@ -119,8 +136,17 @@ make_tab7 <- function(env_proj, env_gui){
         pos_select <- as.numeric(tclvalue(tkcurselection(mlb_result))) + 1
         sn_q_select <- data_display[pos_select, 1]
         sn_r_select <- data_display[pos_select, 2]
-        rel_assumed_select <- data_display[pos_select, 3]
+
+        # Extract the estimated relationship
         rel_estimated_select <- data_display[pos_select, 4]
+
+        # Extract the result of Y-STRs
+        paternal_lineage_select <- data_display[pos_select, 5]
+        if(paternal_lineage_select == "\U2713"){
+          paternal_lineage_select <- "Paternal lineage"
+        }else if(paternal_lineage_select == ""){
+          paternal_lineage_select <- "Not paternal lineage"
+        }
 
         # Make a top frame
         tf_detail <- tktoplevel()
@@ -131,13 +157,27 @@ make_tab7 <- function(env_proj, env_gui){
         frame_detail_1_1 <- tkframe(frame_detail_1)
         frame_detail_2 <- tkframe(tf_detail)
 
-        # Define widgets in frame_detail_1
+        # Define widgets for sample names
+        label_title_sn <- tklabel(frame_detail_1, text = "Sample name")
+        label_sn_q <- tklabel(frame_detail_1, text = paste0("    Query     : ", sn_q_select))
+        label_sn_r <- tklabel(frame_detail_1, text = paste0("    Reference : ", sn_r_select))
+
+        # Define widgets for the estimated relationship
         label_title_rel <- tklabel(frame_detail_1, text = "Estimated relationship")
-        label_result_rel <- tklabel(frame_detail_1, text = "")
+        label_result_rel <- tklabel(frame_detail_1, text = rel_estimated_select)
+
+        # Define widgets for the result of autosomal STRs
         label_title_auto <- tklabel(frame_detail_1, text = "STR")
         label_assumed_rel <- tklabel(frame_detail_1, text = "")
+
+        # Define widgets for the result of Y-STRs
         label_title_y <- tklabel(frame_detail_1, text = "Y-STR")
+        label_result_y <- tklabel(frame_detail_1, text = "")
+
+        # Define widgets for the result of mtDNA
         label_title_mt <- tklabel(frame_detail_1, text = "mtDNA")
+
+        # Define widgets for the warning message
         label_title_warning <- tklabel(frame_detail_1, text = "Warning")
       }
 
@@ -174,7 +214,7 @@ make_tab7 <- function(env_proj, env_gui){
     tk2column(mlb_result, "add", label = "Estimated relationship", width = 30)
     tk2column(mlb_result, "add", label = "Paternal lineage", width = 20)
     tk2column(mlb_result, "add", label = "Maternal lineage", width = 20)
-    tk2insert.multi(mlb_result, "end", data_display)
+    tk2insert.multi(mlb_result, "end", data_display[, 1:6])
 
     # Define widgets in frame_result_2
     butt_detail <- tkbutton(frame_result_2, text = "    Show detail    ", cursor = "hand2", command = function() show_detail())
