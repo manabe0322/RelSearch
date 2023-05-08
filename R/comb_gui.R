@@ -1,4 +1,4 @@
-make_comb_data <- function(env_proj){
+make_data_comb <- function(env_proj){
   # Get finish sign
   fin_auto <- get("fin_auto", pos = env_proj)
   fin_y <- get("fin_y", pos = env_proj)
@@ -12,11 +12,11 @@ make_comb_data <- function(env_proj){
   n_q <- length(sn_q_all)
   n_r <- length(sn_r_all)
 
-  # Define comb_data
-  comb_data <- matrix("", n_q * n_r, 6)
-  colnames(comb_data) <- c("Query", "Reference", "Assumed relationship", "Estimated relationship", "Paternal lineage", "Maternal lineage")
-  comb_data[, 1] <- rep(sn_q_all, n_r)
-  comb_data[, 2] <- as.vector(sapply(sn_r_all, rep, n_q))
+  # Define data_comb
+  data_comb <- matrix("", n_q * n_r, 6)
+  colnames(data_comb) <- c("Query", "Reference", "Assumed relationship", "Estimated relationship", "Paternal lineage", "Maternal lineage")
+  data_comb[, 1] <- rep(sn_q_all, n_r)
+  data_comb[, 2] <- as.vector(sapply(sn_r_all, rep, n_q))
 
   if(fin_auto){
     min_lr_auto <- get("min_lr_auto", pos = env_proj)
@@ -35,10 +35,10 @@ make_comb_data <- function(env_proj){
             clr_1 <- clr_all_mat[pos_q, pos_r]
             pos_meet <- which(as.numeric(clr_1) >= min_lr_auto)
             if(length(rel_1) == 1){
-              comb_data[n_r * (i - 1) + j, 3] <- rel_1
+              data_comb[n_r * (i - 1) + j, 3] <- rel_1
             }
             if(length(pos_meet) > 0){
-              comb_data[n_r * (i - 1) + j, 4] <- "Multiple candidates"
+              data_comb[n_r * (i - 1) + j, 4] <- "Multiple candidates"
             }
           }
         }
@@ -69,7 +69,7 @@ make_comb_data <- function(env_proj){
             bool_n_q_drop <- as.numeric(n_q_drop[pos_q, pos_r]) <= max_ignore_y
             bool_max_mu_step <- as.numeric(max_mu_step[pos_q, pos_r]) <= max_mustep_y && max_mu_step[pos_q, pos_r] %% 1 == 0
             if(all(c(bool_n_mm, bool_n_q_drop, bool_max_mu_step))){
-              comb_data[n_r * (i - 1) + j, 5] <- "\U2713"
+              data_comb[n_r * (i - 1) + j, 5] <- "\U2713"
             }
           }
         }
@@ -93,7 +93,7 @@ make_comb_data <- function(env_proj){
             bool_n_mm <- as.numeric(mismatch_mt[pos_q, pos_r]) <= max_diff_mt
             bool_share <- as.numeric(share_len_mt[pos_q, pos_r]) >= min_share_mt
             if(all(c(bool_n_mm, bool_share))){
-              comb_data[n_r * (i - 1) + j, 6] <- "\U2713"
+              data_comb[n_r * (i - 1) + j, 6] <- "\U2713"
             }
           }
         }
@@ -101,7 +101,7 @@ make_comb_data <- function(env_proj){
     }
   }
 
-  return(comb_data)
+  return(data_comb)
 }
 
 make_tab7 <- function(env_proj, env_gui){
@@ -111,6 +111,35 @@ make_tab7 <- function(env_proj, env_gui){
 
   if(any(fin_auto, fin_y, fin_mt)){
     show_detail <- function(){
+      mlb_result <- get("mlb_result", pos = env_comb_result)
+      if(tclvalue(tkcurselection(mlb_result)) == ""){
+        tkmessageBox(message = "Select one result!", icon = "error", type = "ok")
+      }else{
+        data_display <- get("data_display", pos = env_comb_result)
+        pos_select <- as.numeric(tclvalue(tkcurselection(mlb_result))) + 1
+        sn_q_select <- data_display[pos_select, 1]
+        sn_r_select <- data_display[pos_select, 2]
+        rel_assumed_select <- data_display[pos_select, 3]
+        rel_estimated_select <- data_display[pos_select, 4]
+
+        # Make a top frame
+        tf_detail <- tktoplevel()
+        tkwm.title(tf_detail, "Combined results in detail")
+
+        # Define frames
+        frame_detail_1 <- tkframe(tf_detail)
+        frame_detail_1_1 <- tkframe(frame_detail_1)
+        frame_detail_2 <- tkframe(tf_detail)
+
+        # Define widgets in frame_detail_1
+        label_title_rel <- tklabel(frame_detail_1, text = "Estimated relationship")
+        label_result_rel <- tklabel(frame_detail_1, text = "")
+        label_title_auto <- tklabel(frame_detail_1, text = "STR")
+        label_assumed_rel <- tklabel(frame_detail_1, text = "")
+        label_title_y <- tklabel(frame_detail_1, text = "Y-STR")
+        label_title_mt <- tklabel(frame_detail_1, text = "mtDNA")
+        label_title_warning <- tklabel(frame_detail_1, text = "Warning")
+      }
 
     }
 
@@ -118,10 +147,10 @@ make_tab7 <- function(env_proj, env_gui){
     env_comb_result <- new.env(parent = globalenv())
 
     # Make combined data
-    comb_data <- make_comb_data(env_proj)
+    data_comb <- make_data_comb(env_proj)
 
     # Extract displayed data
-    display_data <- comb_data[sort(unique(c(which(comb_data[, 4] != ""), which(comb_data[, 5] != ""), which(comb_data[, 6] != "")))), , drop = FALSE]
+    data_display <- data_comb[sort(unique(c(which(data_comb[, 4] != ""), which(data_comb[, 5] != ""), which(data_comb[, 6] != "")))), , drop = FALSE]
 
     # Reset frame_tab7
     tabs <- get("tabs", pos = env_gui)
@@ -145,7 +174,7 @@ make_tab7 <- function(env_proj, env_gui){
     tk2column(mlb_result, "add", label = "Estimated relationship", width = 30)
     tk2column(mlb_result, "add", label = "Paternal lineage", width = 20)
     tk2column(mlb_result, "add", label = "Maternal lineage", width = 20)
-    tk2insert.multi(mlb_result, "end", display_data)
+    tk2insert.multi(mlb_result, "end", data_display)
 
     # Define widgets in frame_result_2
     butt_detail <- tkbutton(frame_result_2, text = "    Show detail    ", cursor = "hand2", command = function() show_detail())
@@ -162,6 +191,12 @@ make_tab7 <- function(env_proj, env_gui){
     tkgrid(frame_result_2)
     tkgrid(frame_tab7)
 
+    # Assign data to the environment variable (env_comb_result)
+    assign("mlb_result", mlb_result, envir = env_comb_result)
+    assign("scr1", scr1, envir = env_comb_result)
+    assign("data_display", data_display, envir = env_comb_result)
+
+    # Assign data to the environment variable (env_gui)
     assign("frame_tab7", frame_tab7, envir = env_gui)
   }
 }

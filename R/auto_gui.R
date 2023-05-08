@@ -510,7 +510,6 @@ make_tab2 <- function(env_proj, env_gui){
     default_display[, 4] <- sprintf('%.2e', clr_all)
     data_display <- default_display[which(clr_all >= 1), , drop = FALSE]
     data_display <- data_display[order(as.numeric(data_display[, 4]), decreasing = TRUE), , drop = FALSE]
-    assign("data_display", data_display, envir = env_auto_result)
 
     tabs <- get("tabs", pos = env_gui)
     tab2 <- get("tab2", pos = env_gui)
@@ -554,6 +553,7 @@ make_tab2 <- function(env_proj, env_gui){
     # Assign data to environment variable (env_auto_result)
     assign("mlb_result", mlb_result, envir = env_auto_result)
     assign("scr1", scr1, envir = env_auto_result)
+    assign("data_display", data_display, envir = env_auto_result)
 
     # Assign data to environment variable (env_gui)
     assign("frame_tab2", frame_tab2, envir = env_gui)
