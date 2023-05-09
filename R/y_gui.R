@@ -1,14 +1,17 @@
+# The function to make tab3
 make_tab3 <- function(env_proj, env_gui){
+
   # The function to load required files for Y-STR analysis
   open_file <- function(type){
-    # Check whether the analysis of Y-sTR has been finished or not
-    sign_ok <- "ok"
+    # Get the object "fin_y" from the environment "env_proj"
     fin_y <- get("fin_y", pos = env_proj)
 
-    # If the analysis of Y-sTR has been already finished
+    # If the analysis of the Y-sTR has been already finished
     if(fin_y){
       # Warning message
       sign_ok <- tclvalue(tkmessageBox(message = "Y-STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
+    }else{
+      sign_ok <- "ok"
     }
 
     # If the user clicks the "OK" button
@@ -88,11 +91,11 @@ make_tab3 <- function(env_proj, env_gui){
   fn_y_r <- get("fn_y_r", pos = env_proj)
   fn_y_r_var <- tclVar(fn_y_r)
 
+  # Remake frame_tab3
   tab3 <- get("tab3", pos = env_gui)
   frame_tab3 <- get("frame_tab3", pos = env_gui)
   tkdestroy(frame_tab3)
   frame_tab3 <- tkframe(tab3)
-  assign("frame_tab3", frame_tab3, envir = env_gui)
 
   # Define frames
   frame_3_1 <- tkframe(frame_tab3, relief = "groove", borderwidth = 2)
@@ -114,36 +117,66 @@ make_tab3 <- function(env_proj, env_gui){
   tkgrid(label_q_title, label_q_name, butt_q, padx = 10, pady = 5, sticky = "w")
   tkgrid(label_r_title, label_r_name, butt_r, padx = 10, pady = 5, sticky = "w")
   tkgrid(butt_search, pady = 10)
+
+  # Grid frames
   tkgrid(frame_3_1, padx = 10, pady = 5, sticky = "w")
   tkgrid(frame_3_2, padx = 10, pady = 5)
   tkgrid(frame_tab3)
+
+  # Assign widgets
+  assign("frame_tab3", frame_tab3, envir = env_gui)
 }
 
+# The function to perform screening relatives using Y-STR
 search_y <- function(env_proj, env_gui){
+
+  # Get database from the environment "env_proj"
   data_y_q <- get("data_y_q", pos = env_proj)
   data_y_r <- get("data_y_r", pos = env_proj)
+
+  # If database is not loaded
   if(any(c(length(data_y_q) == 0, length(data_y_r) == 0))){
     tkmessageBox(message = "Load required file(s)!", icon = "error", type = "ok")
+
+  # If database is loaded
   }else{
-    # Get package path from environment variable (env_gui)
+    # Get package path from the environment "env_gui"
     path_pack <- get("path_pack", pos = env_gui)
 
+    # Search the position of the column "Sample Name" in the reference database
     pos_sn_q <- intersect(grep("Sample", colnames(data_y_q)), grep("Name", colnames(data_y_q)))
+
+    # Extract sample names of the query database
     sn_y_q <- data_y_q[, pos_sn_q]
+
+    # Extract haplotypes of the query database
     hap_y_q <- data_y_q[, -pos_sn_q, drop = FALSE]
+
+    # Extract loci of the query database
     locus_q <- colnames(hap_y_q)
 
+    # Search the position of the column "Sample Name" in the reference database
     pos_sn_r <- intersect(grep("Sample", colnames(data_y_r)), grep("Name", colnames(data_y_r)))
+
+    # Extract sample names of the reference database
     sn_y_r <- data_y_r[, pos_sn_r]
+
+    # Extract haplotypes of the reference database
     hap_y_r <- data_y_r[, -pos_sn_r, drop = FALSE]
+
+    # Extract loci of the reference database
     locus_r <- colnames(hap_y_r)
 
+    # Whether the locus set of the query database is the same as that of the reference database or not
     bool_locus_1 <- all(mapply(setequal, locus_q, locus_r))
+
+    # If the locus set of the query database is the same as that of the reference database
     if(bool_locus_1){
+
       # Define a progress bar
       pb <- tkProgressBar("Searching", "0% done", 0, 100, 0)
 
-      # Update sample names
+      # Update sample names in the environment "env_proj"
       set_env_proj_sn(env_proj, FALSE, sn_y_q, sn_y_r)
 
       # Load criteria
@@ -152,36 +185,61 @@ search_y <- function(env_proj, env_gui){
       max_ignore_y <- criteria$Value[criteria$Criteria == "Maximum number of ignored loci"]
       max_mustep_y <- criteria$Value[criteria$Criteria == "Maximum mutational steps"]
 
-      # Assign criteria
+      # Assign criteria to the environment "env_proj"
       assign("max_diff", max_diff, envir = env_proj)
       assign("max_ignore_y", max_ignore_y, envir = env_proj)
       assign("max_mustep_y", max_mustep_y, envir = env_proj)
 
+      # Put the loci of the reference haplotypes in the same order as that of the query haplotypes
       hap_y_r <- hap_y_r[, match(locus_q, locus_r)]
+
+      # The number of individuals in the query database
       n_q <- nrow(hap_y_q)
+
+      # The number of individuals in the reference database
       n_r <- nrow(hap_y_r)
+
+      # The number of loci
       n_l <- length(locus_q)
-      mismatch_y <- drop_q_y <- mu_step_y <- array(0, dim = c(n_q, n_r, n_l + 1))
+
+      # Define an array to save information on the mismatched loci between query and reference haplotypes
+      mismatch_y <- array(0, dim = c(n_q, n_r, n_l + 1))
+
+      # Define an array to save information on the ignored loci
+      ignore_y <- mismatch_y
+
+      # Define an array to save information on the mutation step
+      mu_step_y <- mismatch_y
+
+      # Repetitive execution for each reference haplotype
       for(i in 1:n_r){
+        # Extract a reference haplotype
         ref <- hap_y_r[i, ]
+
+        # Repetitive execution for each query haplotype
         for(j in 1:n_q){
+          # Extract a query haplotype
           query <- hap_y_q[j, ]
+
+          # Compare a query haplotype with a reference haplotype
           tmp <- match_y(query, ref)
           mismatch_y[j, i, ] <- tmp[[1]]
-          drop_q_y[j, i, ] <- tmp[[2]]
+          ignore_y[j, i, ] <- tmp[[2]]
           mu_step_y[j, i, ] <- tmp[[3]]
+
+          # Update the progress bar
           info <- sprintf("%d%% done", round((n_q * (i - 1) + j) * 100 / (n_q * n_r)))
           setTkProgressBar(pb, (n_q * (i - 1) + j) * 100 / (n_q * n_r), sprintf("Searching"), info)
         }
       }
 
-      # Assign results of Y-STR
+      # Assign results of Y-STR to the environment "env_proj"
       assign("hap_y_q", hap_y_q, envir = env_proj)
       assign("hap_y_r", hap_y_r, envir = env_proj)
       assign("sn_y_q", sn_y_q, envir = env_proj)
       assign("sn_y_r", sn_y_r, envir = env_proj)
       assign("mismatch_y", mismatch_y, envir = env_proj)
-      assign("drop_q_y", drop_q_y, envir = env_proj)
+      assign("ignore_y", ignore_y, envir = env_proj)
       assign("mu_step_y", mu_step_y, envir = env_proj)
       assign("fin_y", TRUE, envir = env_proj)
 
@@ -191,23 +249,31 @@ search_y <- function(env_proj, env_gui){
 
       # Close a progress bar
       close(pb)
+
+    # If the locus set of the query database is not the same as that of the reference database
     }else{
       tkmessageBox(message = "Locus set is not the same between query data and reference data!", icon = "error", type = "ok")
     }
   }
 }
 
+# The function to make tab4
 make_tab4 <- function(env_proj, env_gui){
+  # Get the object "fin_y" from the environment "env_proj"
   fin_y <- get("fin_y", pos = env_proj)
+
+  # If the analysis of Y-sTR has been already finished
   if(fin_y){
+
+    # The function to make a window for setting displayed data
     set_display_1 <- function(){
-      # Define tclvalue
+      # Define tcl variables
       cand_q <- c("All", sn_y_q)
       select_q_var <- tclVar("All")
       cand_r <- c("All", sn_y_r)
       select_r_var <- tclVar("All")
-      select_n_mm_var <- tclVar(1)
-      select_n_q_drop_var <- tclVar(1)
+      select_n_mismatch_var <- tclVar(1)
+      select_n_ignore_var <- tclVar(1)
       select_max_mu_step_var <- tclVar(2)
 
       # Make a top frame
@@ -226,24 +292,29 @@ make_tab4 <- function(env_proj, env_gui){
       label_title_5 <- tklabel(frame_display_1, text = "Maximum mutational step")
       combo_q <- ttkcombobox(frame_display_1, values = cand_q, textvariable = select_q_var, state = "readonly")
       combo_r <- ttkcombobox(frame_display_1, values = cand_r, textvariable = select_r_var, state = "readonly")
-      entry_n_mm <- tkentry(frame_display_1, textvariable = select_n_mm_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-      entry_n_q_drop <- tkentry(frame_display_1, textvariable = select_n_q_drop_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+      entry_n_mismatch <- tkentry(frame_display_1, textvariable = select_n_mismatch_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+      entry_n_ignore <- tkentry(frame_display_1, textvariable = select_n_ignore_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
       entry_max_mu_step <- tkentry(frame_display_1, textvariable = select_max_mu_step_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
 
       # Define widgets in frame_display_2
       butt_set <- tkbutton(frame_display_2, text = "    Set    ", cursor = "hand2",
                            command = function() set_display_2(tf, tclvalue(select_q_var), tclvalue(select_r_var),
-                                                              as.numeric(tclvalue(select_n_mm_var)), as.numeric(tclvalue(select_n_q_drop_var)), as.numeric(tclvalue(select_max_mu_step_var))))
+                                                              as.numeric(tclvalue(select_n_mismatch_var)), as.numeric(tclvalue(select_n_ignore_var)), as.numeric(tclvalue(select_max_mu_step_var))))
 
       # Grid widgets
       tkgrid(label_title_1, label_title_2, label_title_3, label_title_4, label_title_5, padx = 10, pady = 5)
-      tkgrid(combo_q, combo_r, entry_n_mm, entry_n_q_drop, entry_max_mu_step, padx = 10, pady = 5)
+      tkgrid(combo_q, combo_r, entry_n_mismatch, entry_n_ignore, entry_max_mu_step, padx = 10, pady = 5)
       tkgrid(butt_set, padx = 10, pady = 5)
+
+      # Grid frames
       tkgrid(frame_display_1)
       tkgrid(frame_display_2)
     }
 
-    set_display_2 <- function(tf, select_q, select_r, select_n_mm, select_n_q_drop, select_max_mu_step){
+    # The function to save setting
+    set_display_2 <- function(tf, select_q, select_r, select_n_mismatch, select_n_ignore, select_max_mu_step){
+
+      # Investigate row indices to extract displayed data
       select_mat <- matrix(TRUE, n_data, 5)
       if(select_q != "All"){
         select_mat[, 1] <- sn_y_q_display == select_q
@@ -251,69 +322,117 @@ make_tab4 <- function(env_proj, env_gui){
       if(select_r != "All"){
         select_mat[, 2] <- sn_y_r_display == select_r
       }
-      select_mat[, 3] <- n_mm_vec <= select_n_mm
-      select_mat[, 4] <- n_q_drop_vec <= select_n_q_drop
+      select_mat[, 3] <- n_mismatch_vec <= select_n_mismatch
+      select_mat[, 4] <- n_ignore_vec <= select_n_ignore
       select_mat[, 5] <- max_mu_step_vec <= select_max_mu_step
       pos_extract <- which(apply(select_mat, 1, all) == TRUE)
 
+      # If there is at least one row index to extract displayed data
       if(length(pos_extract) != 0){
-        mlb_result <- get("mlb_result", pos = env_y_result)
-        tkdestroy(mlb_result)
+
+        # Destroy the scroll bar for displayed data
         scr1 <- get("scr1", pos = env_y_result)
         tkdestroy(scr1)
+
+        # Destroy the multi-list box for displayed data
+        mlb_result <- get("mlb_result", pos = env_y_result)
+        tkdestroy(mlb_result)
+
+        # Define the scroll bar for displayed data
         scr1 <- tkscrollbar(frame_result_1, repeatinterval = 5, command = function(...) tkyview(mlb_result, ...))
+
+        # Define the multi-list box for displayed data
         mlb_result <- tk2mclistbox(frame_result_1, width = 120, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
         tk2column(mlb_result, "add", label = "Query", width = 15)
         tk2column(mlb_result, "add", label = "Reference", width = 15)
         tk2column(mlb_result, "add", label = "Number of inconsistent loci", width = 30)
         tk2column(mlb_result, "add", label = "Number of ignored loci", width = 30)
         tk2column(mlb_result, "add", label = "Maximum mutational step", width = 30)
-        tkgrid(mlb_result, scr1)
-        data_display <- default_display[pos_extract, , drop = FALSE]
+
+        # Extract displayed data
+        data_display <- data_all[pos_extract, , drop = FALSE]
         data_display <- data_display[order(as.numeric(data_display[, 5])), , drop = FALSE]
         data_display <- data_display[order(as.numeric(data_display[, 4])), , drop = FALSE]
         data_display <- data_display[order(as.numeric(data_display[, 3])), , drop = FALSE]
         data_display[which(as.numeric(data_display[, 5]) == 99), 5] <- "Not integer"
         tk2insert.multi(mlb_result, "end", data_display)
+
+        # Grid the scroll bar and the multi-list box
+        tkgrid(mlb_result, scr1)
+        tkgrid.configure(scr1, rowspan = 30, sticky = "nsw")
+
+        # Assign the scroll bar and the multi-list box to the environment "env_y_result"
         assign("mlb_result", mlb_result, envir = env_y_result)
         assign("scr1", scr1, envir = env_y_result)
+
+        # Assign displayed data to the environment "env_y_result"
         assign("data_display", data_display, envir = env_y_result)
-        tkgrid.configure(scr1, rowspan = 30, sticky = "nsw")
+
+        # Destroy the top frame
         tkdestroy(tf)
+
+      # If there is no row index to extract displayed data
       }else{
         tkmessageBox(message = "There is no data that meet the condition!", icon = "error", type = "ok")
       }
     }
 
+    # The function to show data in detail
     show_detail <- function(){
+
+      # Get the multi-list box for displayed data from the environment "env_y_result"
       mlb_result <- get("mlb_result", pos = env_y_result)
+
+      # If the user does not select one line
       if(tclvalue(tkcurselection(mlb_result)) == ""){
         tkmessageBox(message = "Select one line!", icon = "error", type = "ok")
+
+      # If the user selects one line
       }else{
+
+        # Get displayed data from the environment "env_y_result"
         data_display <- get("data_display", pos = env_y_result)
+
+        # The row index which the user selected
         pos_select <- as.numeric(tclvalue(tkcurselection(mlb_result))) + 1
+
+        # Investigate indices to extract data
         select_q_name <- data_display[pos_select, 1]
         pos_select_q <- which(sn_y_q == select_q_name)
         select_r_name <- data_display[pos_select, 2]
         pos_select_r <- which(sn_y_r == select_r_name)
+
+        # Define a matrix for detailed data
         data_detail <- matrix("", n_l + 1, 6)
-        data_detail[, 1] <- c(colnames(hap_y_q), "overall")
         colnames(data_detail) <- c("Locus",
                                   paste0("Query (", select_q_name, ")"),
                                   paste0("Reference (", select_r_name, ")"),
                                   "Inconsistent loci",
                                   "Ignored loci",
                                   "Mutational step")
+
+        # 1st column for detailed data
+        data_detail[, 1] <- c(colnames(hap_y_q), "overall")
+
+        # 2nd column for detailed data
         data_detail[1:n_l, 2] <- hap_y_q[pos_select_q, ]
+
+        # 3rd column for detailed data
         data_detail[1:n_l, 3] <- hap_y_r[pos_select_r, ]
+
+        # 4th column for detailed data
         mismatch_y_ext <- mismatch_y[pos_select_q, pos_select_r, ]
         mismatch_y_ext2 <- mismatch_y_ext[1:n_l]
         mismatch_y_ext2[which(mismatch_y_ext2 == 0)] <- ""
         data_detail[, 4] <- c(mismatch_y_ext2, mismatch_y_ext[n_l + 1])
-        drop_q_y_ext <- drop_q_y[pos_select_q, pos_select_r, ]
-        drop_q_y_ext2 <- drop_q_y_ext[1:n_l]
-        drop_q_y_ext2[which(drop_q_y_ext2 == 0)] <- ""
-        data_detail[, 5] <- c(drop_q_y_ext2, drop_q_y_ext[n_l + 1])
+
+        # 5th column for detailed data
+        ignore_y_ext <- ignore_y[pos_select_q, pos_select_r, ]
+        ignore_y_ext2 <- ignore_y_ext[1:n_l]
+        ignore_y_ext2[which(ignore_y_ext2 == 0)] <- ""
+        data_detail[, 5] <- c(ignore_y_ext2, ignore_y_ext[n_l + 1])
+
+        # 6th column for detailed data
         mu_step_y_ext <- mu_step_y[pos_select_q, pos_select_r, ]
         mu_step_y_ext[which(mu_step_y_ext == 0)] <- ""
         mu_step_y_ext[which(mu_step_y_ext == 99)] <- "Not integer"
@@ -327,10 +446,10 @@ make_tab4 <- function(env_proj, env_gui){
         frame_detail_1 <- tkframe(tf_detail)
         frame_detail_2 <- tkframe(tf_detail)
 
-        # Define a scrollbar for a multi-list box (mlb_detail)
+        # Define a scrollbar for the multi-list box of the detailed data
         scr2 <- tkscrollbar(frame_detail_1, repeatinterval = 5, command = function(...) tkyview(mlb_detail, ...))
 
-        # Define a multi-list box (mlb_detail)
+        # Define a multi-list box of the detailed data
         mlb_detail <- tk2mclistbox(frame_detail_1, width = 120, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr2, ...))
         tk2column(mlb_detail, "add", label = "locus", width = 20)
         tk2column(mlb_detail, "add", label = paste0("Query (", select_q_name, ")"), width = 20)
@@ -340,61 +459,79 @@ make_tab4 <- function(env_proj, env_gui){
         tk2column(mlb_detail, "add", label = "Mutational step", width = 20)
         tk2insert.multi(mlb_detail, "end", data_detail)
 
-        # Define widgets in frame_detail_2
+        # Define a export button in frame_detail_2
         butt_export <- tkbutton(frame_detail_2, text = "    Export    ", cursor = "hand2", command = function() export_data(data_detail, FALSE))
 
         # Grid widgets
         tkgrid(mlb_detail, scr2)
         tkgrid.configure(scr2, rowspan = 30, sticky = "nsw")
         tkgrid(butt_export)
+
+        # Grid frames
         tkgrid(frame_detail_1, padx = 10, pady = 5)
         tkgrid(frame_detail_2, padx = 10, pady = 5)
       }
     }
 
+    # Define the environment "env_y_result"
     env_y_result <- new.env(parent = globalenv())
 
+    # Get data from the environment "env_proj"
     hap_y_q <- get("hap_y_q", pos = env_proj)
     hap_y_r <- get("hap_y_r", pos = env_proj)
     sn_y_q <- get("sn_y_q", pos = env_proj)
     sn_y_r <- get("sn_y_r", pos = env_proj)
     mismatch_y <- get("mismatch_y", pos = env_proj)
-    drop_q_y <- get("drop_q_y", pos = env_proj)
+    ignore_y <- get("ignore_y", pos = env_proj)
     mu_step_y <- get("mu_step_y", pos = env_proj)
 
-    n_l <- ncol(hap_y_q)
+    # The number of query individuals
     n_q <- length(sn_y_q)
+
+    # The number of reference individuals
     n_r <- length(sn_y_r)
 
-    n_mm <- mismatch_y[, , n_l + 1]
-    rownames(n_mm) <- sn_y_q
-    colnames(n_mm) <- sn_y_r
-    n_q_drop <- drop_q_y[, , n_l + 1]
-    rownames(n_q_drop) <- sn_y_q
-    colnames(n_q_drop) <- sn_y_r
+    # The number of loci
+    n_l <- ncol(hap_y_q)
+
+    # The number of mismatched loci
+    n_mismatch <- mismatch_y[, , n_l + 1]
+    rownames(n_mismatch) <- sn_y_q
+    colnames(n_mismatch) <- sn_y_r
+
+    # The number of ignored loci
+    n_ignore <- ignore_y[, , n_l + 1]
+    rownames(n_ignore) <- sn_y_q
+    colnames(n_ignore) <- sn_y_r
+
+    # The maximum mutational step
     max_mu_step <- mu_step_y[, , n_l + 1]
     rownames(max_mu_step) <- sn_y_q
     colnames(max_mu_step) <- sn_y_r
 
+    # The number of comparisons between query and reference haplotypes
     n_data <- n_q * n_r
-    default_display <- matrix(0, n_data, 5)
-    colnames(default_display) <- c("Query", "Reference", "Number of inconsistent loci", "Number of ignored loci", "Maximum mutational step")
+
+    # Define a matrix for all data
+    data_all <- matrix(0, n_data, 5)
+    colnames(data_all) <- c("Query", "Reference", "Number of mismatched loci", "Number of ignored loci", "Maximum mutational step")
     sn_y_q_display <- rep(sn_y_q, n_r)
-    default_display[, 1] <- sn_y_q_display
+    data_all[, 1] <- sn_y_q_display
     sn_y_r_display <- as.vector(sapply(sn_y_r, rep, n_q))
-    default_display[, 2] <- sn_y_r_display
-    n_mm_vec <- as.vector(n_mm)
-    default_display[, 3] <- n_mm_vec
-    n_q_drop_vec <- as.vector(n_q_drop)
-    default_display[, 4] <- n_q_drop_vec
+    data_all[, 2] <- sn_y_r_display
+    n_mismatch_vec <- as.vector(n_mismatch)
+    data_all[, 3] <- n_mismatch_vec
+    n_ignore_vec <- as.vector(n_ignore)
+    data_all[, 4] <- n_ignore_vec
     max_mu_step_vec <- as.vector(max_mu_step)
-    default_display[, 5] <- max_mu_step_vec
-    data_display <- default_display[which(as.numeric(default_display[, 3]) <= 1), , drop = FALSE]
+    data_all[, 5] <- max_mu_step_vec
+
+    # Define a matrix for the displayed data
+    data_display <- data_all[which(as.numeric(data_all[, 3]) <= 1), , drop = FALSE]
     data_display <- data_display[which(as.numeric(data_display[, 4]) <= 1), , drop = FALSE]
     data_display <- data_display[which(as.numeric(data_display[, 5]) <= 2), , drop = FALSE]
     data_display <- data_display[order(as.numeric(data_display[, 4])), , drop = FALSE]
     data_display <- data_display[order(as.numeric(data_display[, 3])), , drop = FALSE]
-    assign("data_display", data_display, envir = env_y_result)
 
     tabs <- get("tabs", pos = env_gui)
     tab4 <- get("tab4", pos = env_gui)
@@ -406,10 +543,10 @@ make_tab4 <- function(env_proj, env_gui){
     frame_result_1 <- tkframe(frame_tab4)
     frame_result_2 <- tkframe(frame_tab4)
 
-    # Define a scrollbar for a multi-list box (mlb_result)
+    # Define a scrollbar for the multi-list box of the displayed data
     scr1 <- tkscrollbar(frame_result_1, repeatinterval = 5, command = function(...) tkyview(mlb_result, ...))
 
-    # Define a multi-list box (mlb_result)
+    # Define a multi-list box of the displayed data
     mlb_result <- tk2mclistbox(frame_result_1, width = 120, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
     tk2column(mlb_result, "add", label = "Query", width = 15)
     tk2column(mlb_result, "add", label = "Reference", width = 15)
@@ -427,24 +564,35 @@ make_tab4 <- function(env_proj, env_gui){
     tkgrid(mlb_result, scr1)
     tkgrid.configure(scr1, rowspan = 30, sticky = "nsw")
     tkgrid(butt_display, butt_detail, butt_export, padx = 10, pady = 5)
+
+    # Grid frames
     tkgrid(frame_result_1, padx = 10, pady = 5)
     tkgrid(frame_result_2)
     tkgrid(frame_tab4)
 
-    # Assign widgets to environment variable (env_y_result)
+    # Assign displayed data to the environment "env_y_result"
+    assign("data_display", data_display, envir = env_y_result)
+
+    # Assign widgets to the environment "env_y_result"
     assign("mlb_result", mlb_result, envir = env_y_result)
     assign("scr1", scr1, envir = env_y_result)
 
-    # Assign widgets to environment variable (env_gui)
+    # Assign frame_tab4 to the environment "env_gui"
     assign("frame_tab4", frame_tab4, envir = env_gui)
 
     # Select tab4
     tk2notetab.select(tabs, "Y results")
+
+  # If the analysis of Y-sTR has not been finished
   }else{
+
+    # Reset frame_tab4
     tab4 <- get("tab4", pos = env_gui)
     frame_tab4 <- get("frame_tab4", pos = env_gui)
     tkdestroy(frame_tab4)
     frame_tab4 <- tkframe(tab4)
+
+    # Assign frame_tab4 to the environment "env_gui"
     assign("frame_tab4", frame_tab4, envir = env_gui)
   }
 }
