@@ -41,7 +41,7 @@ set_env_proj_y <- function(env_proj, bool_new){
     assign("fn_y_r", character(0), envir = env_proj)
 
     # Assign objects for criteria
-    assign("max_diff_y", numeric(0), envir = env_proj)
+    assign("max_mismatch_y", numeric(0), envir = env_proj)
     assign("max_ignore_y", numeric(0), envir = env_proj)
     assign("max_mustep_y", numeric(0), envir = env_proj)
   }
@@ -61,7 +61,7 @@ set_env_proj_mt <- function(env_proj, bool_new){
 
     # Assign objects for criteria
     assign("min_share_mt", numeric(0), envir = env_proj)
-    assign("max_diff_mt", numeric(0), envir = env_proj)
+    assign("max_mismatch_mt", numeric(0), envir = env_proj)
   }
   assign("fin_mt", FALSE, envir = env_proj)
 }
@@ -70,11 +70,11 @@ set_env_proj_mt <- function(env_proj, bool_new){
 set_env_proj_default <- function(env_proj){
   # Set default criteria
   assign("min_lr_auto_default", 100, envir = env_proj)
-  assign("max_diff_y_default", 2, envir = env_proj)
+  assign("max_mismatch_y_default", 2, envir = env_proj)
   assign("max_ignore_y_default", 10, envir = env_proj)
   assign("max_mustep_y_default", 2, envir = env_proj)
   assign("min_share_mt_default", 300, envir = env_proj)
-  assign("max_diff_mt_default", 1, envir = env_proj)
+  assign("max_mismatch_mt_default", 1, envir = env_proj)
 
   # Set default mutation rates
   myu_all <- c(0.001474647, 0.002858327, 0.001479789, 0.002240583, 0.000227000,
@@ -265,7 +265,7 @@ relsearch <- function(){
   tkadd(tools_menu, "command", label = "Set criteria", command = function() set_criteria(env_proj, env_gui))
   tkadd(tools_menu, "command", label = "Set mutation rates for autosomal STR", command = function() set_myu(env_proj, env_gui))
   tkadd(tools_menu, "command", label = "Set IBD probabilities for autosomal STR", command = function() set_pibd(env_proj, env_gui))
-  tkadd(tools_menu, "command", label = "Set analysis method for autosomal STR", command = function() set_auto(env_proj, env_gui))
+  tkadd(tools_menu, "command", label = "Set analysis methods for autosomal STR", command = function() set_auto(env_proj, env_gui))
 
   # Make help menu
   help_menu <- tkmenu(top_menu, tearoff = FALSE, activebackground = "lightskyblue1")

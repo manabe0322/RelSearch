@@ -1,14 +1,16 @@
+# The function to make data_comb
 make_data_comb <- function(env_proj){
-  # Get finish sign
+
+  # Get finish signs
   fin_auto <- get("fin_auto", pos = env_proj)
   fin_y <- get("fin_y", pos = env_proj)
   fin_mt <- get("fin_mt", pos = env_proj)
 
-  # Get sample names from the environment variable "env_proj"
+  # Get sample names from the environment "env_proj"
   sn_q_all <- get("sn_q_all", pos = env_proj)
   sn_r_all <- get("sn_r_all", pos = env_proj)
 
-  # The number of samples in all database
+  # The number of samples in each database
   n_q <- length(sn_q_all)
   n_r <- length(sn_r_all)
 

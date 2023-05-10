@@ -1,4 +1,4 @@
 Parameter,Value
-Minimum allele frequency,0.001
-Drop-out of query alleles,1
-Probability of drop-out,0.5
+maf,0.001
+meth_d,1
+pd,0.5

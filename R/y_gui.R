@@ -1,28 +1,27 @@
 # The function to make tab3
 make_tab3 <- function(env_proj, env_gui){
 
-  # The function to load required files for Y-STR analysis
+  # The function to load required files for the Y-STR analysis
   open_file <- function(type){
-    # Get the object "fin_y" from the environment "env_proj"
+
+    # Get the end sign of the Y-STR analysis from the environment "env_proj"
     fin_y <- get("fin_y", pos = env_proj)
 
-    # If the analysis of the Y-sTR has been already finished
+    # Confirm that the user allows to delete the Y-STR results
     if(fin_y){
-      # Warning message
       sign_ok <- tclvalue(tkmessageBox(message = "Y-STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
     }else{
       sign_ok <- "ok"
     }
-
-    # If the user clicks the "OK" button
     if(sign_ok == "ok"){
-      # Set the environment "env_proj"
+
+      # Reset the environmental variables for the Y-STR
       set_env_proj_y(env_proj, FALSE)
 
-      # Make tab4
+      # Reset tab4
       make_tab4(env_proj, env_gui)
 
-      # Get the file path and the file name from the environment "env_proj"
+      # Get a file path and a file name from the environment "env_proj"
       if(type == "query"){
         fp <- get("fp_y_q", pos = env_proj)
         fn <- get("fn_y_q", pos = env_proj)
@@ -44,6 +43,7 @@ make_tab3 <- function(env_proj, env_gui){
 
       # If the user selects a file
       }else{
+
         # Update tcl variables for the file path and the file name
         tmp <- sub("\\}", path_file, replacement = "")
         tmp2 <- sub("\\{", tmp, replacement = "")
@@ -53,6 +53,7 @@ make_tab3 <- function(env_proj, env_gui){
 
         # If the user clicks the "Load" button for query database
         if(type == "query"){
+
           # Update the name of query database
           tkconfigure(label_q_name, textvariable = fn_var)
 
@@ -68,6 +69,7 @@ make_tab3 <- function(env_proj, env_gui){
 
         # If the user clicks the "Load" button for reference database
         }else if(type == "ref"){
+
           # Update the name of reference database
           tkconfigure(label_r_name, textvariable = fn_var)
 
@@ -85,13 +87,15 @@ make_tab3 <- function(env_proj, env_gui){
     }
   }
 
-  # Define tclvalue
+  # Get file names from the environment "env_proj"
   fn_y_q <- get("fn_y_q", pos = env_proj)
-  fn_y_q_var <- tclVar(fn_y_q)
   fn_y_r <- get("fn_y_r", pos = env_proj)
+
+  # Define tcl variables
+  fn_y_q_var <- tclVar(fn_y_q)
   fn_y_r_var <- tclVar(fn_y_r)
 
-  # Remake frame_tab3
+  # Reset frame_tab3
   tab3 <- get("tab3", pos = env_gui)
   frame_tab3 <- get("frame_tab3", pos = env_gui)
   tkdestroy(frame_tab3)
@@ -123,48 +127,35 @@ make_tab3 <- function(env_proj, env_gui){
   tkgrid(frame_3_2, padx = 10, pady = 5)
   tkgrid(frame_tab3)
 
-  # Assign widgets
+  # Assign frame_tab3
   assign("frame_tab3", frame_tab3, envir = env_gui)
 }
 
-# The function to perform screening relatives using Y-STR
+# The function to perform screening relatives using the Y-STR
 search_y <- function(env_proj, env_gui){
 
   # Get database from the environment "env_proj"
   data_y_q <- get("data_y_q", pos = env_proj)
   data_y_r <- get("data_y_r", pos = env_proj)
 
-  # If database is not loaded
+  # Confirm that all database is loaded
   if(any(c(length(data_y_q) == 0, length(data_y_r) == 0))){
     tkmessageBox(message = "Load required file(s)!", icon = "error", type = "ok")
-
-  # If database is loaded
   }else{
+
     # Get package path from the environment "env_gui"
     path_pack <- get("path_pack", pos = env_gui)
 
-    # Search the position of the column "Sample Name" in the reference database
+    # Extract sample names, haplotypes, and loci from the query database
     pos_sn_q <- intersect(grep("Sample", colnames(data_y_q)), grep("Name", colnames(data_y_q)))
-
-    # Extract sample names of the query database
     sn_y_q <- data_y_q[, pos_sn_q]
-
-    # Extract haplotypes of the query database
     hap_y_q <- data_y_q[, -pos_sn_q, drop = FALSE]
-
-    # Extract loci of the query database
     locus_q <- colnames(hap_y_q)
 
-    # Search the position of the column "Sample Name" in the reference database
+    # Extract sample names, haplotypes, and loci from the reference database
     pos_sn_r <- intersect(grep("Sample", colnames(data_y_r)), grep("Name", colnames(data_y_r)))
-
-    # Extract sample names of the reference database
     sn_y_r <- data_y_r[, pos_sn_r]
-
-    # Extract haplotypes of the reference database
     hap_y_r <- data_y_r[, -pos_sn_r, drop = FALSE]
-
-    # Extract loci of the reference database
     locus_r <- colnames(hap_y_r)
 
     # Whether the locus set of the query database is the same as that of the reference database or not
@@ -173,82 +164,93 @@ search_y <- function(env_proj, env_gui){
     # If the locus set of the query database is the same as that of the reference database
     if(bool_locus_1){
 
-      # Define a progress bar
-      pb <- tkProgressBar("Searching", "0% done", 0, 100, 0)
+      # Check whether the file 'criteria.csv' is found or not
+      fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
+      if(is.element("criteria.csv", fn_par)){
 
-      # Update sample names in the environment "env_proj"
-      set_env_proj_sn(env_proj, FALSE, sn_y_q, sn_y_r)
+        # Load criteria
+        criteria <- read.csv(paste0(path_pack, "/extdata/parameters/criteria.csv"), header = TRUE)
+        max_mismatch_y <- criteria$Value[criteria$Criteria == "max_mismatch_y"]
+        max_ignore_y <- criteria$Value[criteria$Criteria == "max_ignore_y"]
+        max_mustep_y <- criteria$Value[criteria$Criteria == "max_mustep_y"]
 
-      # Load criteria
-      criteria <- read.csv(paste0(path_pack, "/extdata/parameters/criteria.csv"), header = TRUE)
-      max_diff <- criteria$Value[criteria$Criteria == "Maximum number of inconsistent loci"]
-      max_ignore_y <- criteria$Value[criteria$Criteria == "Maximum number of ignored loci"]
-      max_mustep_y <- criteria$Value[criteria$Criteria == "Maximum mutational steps"]
+        # Define a progress bar
+        pb <- tkProgressBar("Searching", "0% done", 0, 100, 0)
 
-      # Assign criteria to the environment "env_proj"
-      assign("max_diff", max_diff, envir = env_proj)
-      assign("max_ignore_y", max_ignore_y, envir = env_proj)
-      assign("max_mustep_y", max_mustep_y, envir = env_proj)
+        # Update sample names in the environment "env_proj"
+        set_env_proj_sn(env_proj, FALSE, sn_y_q, sn_y_r)
 
-      # Put the loci of the reference haplotypes in the same order as that of the query haplotypes
-      hap_y_r <- hap_y_r[, match(locus_q, locus_r)]
+        # Put the loci of the reference haplotypes in the same order as that of the query haplotypes
+        hap_y_r <- hap_y_r[, match(locus_q, locus_r)]
 
-      # The number of individuals in the query database
-      n_q <- nrow(hap_y_q)
+        # The number of samples in each database
+        n_q <- nrow(hap_y_q)
+        n_r <- nrow(hap_y_r)
 
-      # The number of individuals in the reference database
-      n_r <- nrow(hap_y_r)
+        # The number of loci
+        n_l <- length(locus_q)
 
-      # The number of loci
-      n_l <- length(locus_q)
+        # Define an array to save information on the mismatched loci between query and reference haplotypes
+        mismatch_y <- array(0, dim = c(n_q, n_r, n_l + 1))
 
-      # Define an array to save information on the mismatched loci between query and reference haplotypes
-      mismatch_y <- array(0, dim = c(n_q, n_r, n_l + 1))
+        # Define an array to save information on the ignored loci
+        ignore_y <- mismatch_y
 
-      # Define an array to save information on the ignored loci
-      ignore_y <- mismatch_y
+        # Define an array to save information on the mutation step
+        mu_step_y <- mismatch_y
 
-      # Define an array to save information on the mutation step
-      mu_step_y <- mismatch_y
+        # Repetitive execution for each reference haplotype
+        for(i in 1:n_r){
 
-      # Repetitive execution for each reference haplotype
-      for(i in 1:n_r){
-        # Extract a reference haplotype
-        ref <- hap_y_r[i, ]
+          # Extract a reference haplotype
+          ref <- hap_y_r[i, ]
 
-        # Repetitive execution for each query haplotype
-        for(j in 1:n_q){
-          # Extract a query haplotype
-          query <- hap_y_q[j, ]
+          # Repetitive execution for each query haplotype
+          for(j in 1:n_q){
 
-          # Compare a query haplotype with a reference haplotype
-          tmp <- match_y(query, ref)
-          mismatch_y[j, i, ] <- tmp[[1]]
-          ignore_y[j, i, ] <- tmp[[2]]
-          mu_step_y[j, i, ] <- tmp[[3]]
+            # Extract a query haplotype
+            query <- hap_y_q[j, ]
 
-          # Update the progress bar
-          info <- sprintf("%d%% done", round((n_q * (i - 1) + j) * 100 / (n_q * n_r)))
-          setTkProgressBar(pb, (n_q * (i - 1) + j) * 100 / (n_q * n_r), sprintf("Searching"), info)
+            # Compare a query haplotype with a reference haplotype
+            tmp <- match_y(query, ref)
+            mismatch_y[j, i, ] <- tmp[[1]]
+            ignore_y[j, i, ] <- tmp[[2]]
+            mu_step_y[j, i, ] <- tmp[[3]]
+
+            # Update the progress bar
+            info <- sprintf("%d%% done", round((n_q * (i - 1) + j) * 100 / (n_q * n_r)))
+            setTkProgressBar(pb, (n_q * (i - 1) + j) * 100 / (n_q * n_r), sprintf("Searching"), info)
+          }
         }
+
+        # Assign results of the Y-STR to the environment "env_proj"
+        assign("hap_y_q", hap_y_q, envir = env_proj)
+        assign("hap_y_r", hap_y_r, envir = env_proj)
+        assign("sn_y_q", sn_y_q, envir = env_proj)
+        assign("sn_y_r", sn_y_r, envir = env_proj)
+        assign("mismatch_y", mismatch_y, envir = env_proj)
+        assign("ignore_y", ignore_y, envir = env_proj)
+        assign("mu_step_y", mu_step_y, envir = env_proj)
+
+        # Assign criteria to the environment "env_proj"
+        assign("max_mismatch_y", max_mismatch_y, envir = env_proj)
+        assign("max_ignore_y", max_ignore_y, envir = env_proj)
+        assign("max_mustep_y", max_mustep_y, envir = env_proj)
+
+        # Assign the end sign
+        assign("fin_y", TRUE, envir = env_proj)
+
+        # Make tabs
+        make_tab4(env_proj, env_gui)
+        make_tab7(env_proj, env_gui)
+
+        # Close the progress bar
+        close(pb)
+
+      # If the file 'criteria.csv' is not found
+      }else{
+        tkmessageBox(message = paste0("The file 'criteria.csv' is not found in '", path_pack, "/extdata/parameters'. Set criteria via 'Tools > Set criteria.'"), icon = "error", type = "ok")
       }
-
-      # Assign results of Y-STR to the environment "env_proj"
-      assign("hap_y_q", hap_y_q, envir = env_proj)
-      assign("hap_y_r", hap_y_r, envir = env_proj)
-      assign("sn_y_q", sn_y_q, envir = env_proj)
-      assign("sn_y_r", sn_y_r, envir = env_proj)
-      assign("mismatch_y", mismatch_y, envir = env_proj)
-      assign("ignore_y", ignore_y, envir = env_proj)
-      assign("mu_step_y", mu_step_y, envir = env_proj)
-      assign("fin_y", TRUE, envir = env_proj)
-
-      # Make tabs
-      make_tab4(env_proj, env_gui)
-      make_tab7(env_proj, env_gui)
-
-      # Close a progress bar
-      close(pb)
 
     # If the locus set of the query database is not the same as that of the reference database
     }else{
@@ -259,22 +261,24 @@ search_y <- function(env_proj, env_gui){
 
 # The function to make tab4
 make_tab4 <- function(env_proj, env_gui){
-  # Get the object "fin_y" from the environment "env_proj"
+
+  # Get the end sign from the environment "env_proj"
   fin_y <- get("fin_y", pos = env_proj)
 
-  # If the analysis of Y-sTR has been already finished
+  # If the Y-sTR analysis has been already finished
   if(fin_y){
 
     # The function to make a window for setting displayed data
     set_display_1 <- function(){
+
       # Define tcl variables
       cand_q <- c("All", sn_y_q)
       select_q_var <- tclVar("All")
       cand_r <- c("All", sn_y_r)
       select_r_var <- tclVar("All")
-      select_n_mismatch_var <- tclVar(1)
-      select_n_ignore_var <- tclVar(1)
-      select_max_mu_step_var <- tclVar(2)
+      select_total_mismatch_var <- tclVar(max_mismatch_y)
+      select_total_ignore_var <- tclVar(max_ignore_y)
+      select_total_mustep_var <- tclVar(max_mustep_y)
 
       # Make a top frame
       tf <- tktoplevel()
@@ -287,23 +291,23 @@ make_tab4 <- function(env_proj, env_gui){
       # Define widgets in frame_display_1
       label_title_1 <- tklabel(frame_display_1, text = "Query")
       label_title_2 <- tklabel(frame_display_1, text = "Reference")
-      label_title_3 <- tklabel(frame_display_1, text = "Maximum number of inconsistent loci")
+      label_title_3 <- tklabel(frame_display_1, text = "Maximum number of mismatched loci")
       label_title_4 <- tklabel(frame_display_1, text = "Maximum number of ignored loci")
       label_title_5 <- tklabel(frame_display_1, text = "Maximum mutational step")
       combo_q <- ttkcombobox(frame_display_1, values = cand_q, textvariable = select_q_var, state = "readonly")
       combo_r <- ttkcombobox(frame_display_1, values = cand_r, textvariable = select_r_var, state = "readonly")
-      entry_n_mismatch <- tkentry(frame_display_1, textvariable = select_n_mismatch_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-      entry_n_ignore <- tkentry(frame_display_1, textvariable = select_n_ignore_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-      entry_max_mu_step <- tkentry(frame_display_1, textvariable = select_max_mu_step_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+      entry_total_mismatch <- tkentry(frame_display_1, textvariable = select_total_mismatch_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+      entry_total_ignore <- tkentry(frame_display_1, textvariable = select_total_ignore_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+      entry_total_mustep <- tkentry(frame_display_1, textvariable = select_total_mustep_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
 
       # Define widgets in frame_display_2
       butt_set <- tkbutton(frame_display_2, text = "    Set    ", cursor = "hand2",
                            command = function() set_display_2(tf, tclvalue(select_q_var), tclvalue(select_r_var),
-                                                              as.numeric(tclvalue(select_n_mismatch_var)), as.numeric(tclvalue(select_n_ignore_var)), as.numeric(tclvalue(select_max_mu_step_var))))
+                                                              as.numeric(tclvalue(select_total_mismatch_var)), as.numeric(tclvalue(select_total_ignore_var)), as.numeric(tclvalue(select_total_mustep_var))))
 
       # Grid widgets
       tkgrid(label_title_1, label_title_2, label_title_3, label_title_4, label_title_5, padx = 10, pady = 5)
-      tkgrid(combo_q, combo_r, entry_n_mismatch, entry_n_ignore, entry_max_mu_step, padx = 10, pady = 5)
+      tkgrid(combo_q, combo_r, entry_total_mismatch, entry_total_ignore, entry_total_mustep, padx = 10, pady = 5)
       tkgrid(butt_set, padx = 10, pady = 5)
 
       # Grid frames
@@ -311,20 +315,20 @@ make_tab4 <- function(env_proj, env_gui){
       tkgrid(frame_display_2)
     }
 
-    # The function to save setting
-    set_display_2 <- function(tf, select_q, select_r, select_n_mismatch, select_n_ignore, select_max_mu_step){
+    # The function to overwrite displayed data
+    set_display_2 <- function(tf, select_q, select_r, select_total_mismatch, select_total_ignore, select_total_mustep){
 
       # Investigate row indices to extract displayed data
       select_mat <- matrix(TRUE, n_data, 5)
       if(select_q != "All"){
-        select_mat[, 1] <- sn_y_q_display == select_q
+        select_mat[, 1] <- sn_y_q_vec == select_q
       }
       if(select_r != "All"){
-        select_mat[, 2] <- sn_y_r_display == select_r
+        select_mat[, 2] <- sn_y_r_vec == select_r
       }
-      select_mat[, 3] <- n_mismatch_vec <= select_n_mismatch
-      select_mat[, 4] <- n_ignore_vec <= select_n_ignore
-      select_mat[, 5] <- max_mu_step_vec <= select_max_mu_step
+      select_mat[, 3] <- total_mismatch_vec <= select_total_mismatch
+      select_mat[, 4] <- total_ignore_vec <= select_total_ignore
+      select_mat[, 5] <- total_mustep_vec <= select_total_mustep
       pos_extract <- which(apply(select_mat, 1, all) == TRUE)
 
       # If there is at least one row index to extract displayed data
@@ -345,7 +349,7 @@ make_tab4 <- function(env_proj, env_gui){
         mlb_result <- tk2mclistbox(frame_result_1, width = 120, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
         tk2column(mlb_result, "add", label = "Query", width = 15)
         tk2column(mlb_result, "add", label = "Reference", width = 15)
-        tk2column(mlb_result, "add", label = "Number of inconsistent loci", width = 30)
+        tk2column(mlb_result, "add", label = "Number of mismatched loci", width = 30)
         tk2column(mlb_result, "add", label = "Number of ignored loci", width = 30)
         tk2column(mlb_result, "add", label = "Maximum mutational step", width = 30)
 
@@ -361,11 +365,9 @@ make_tab4 <- function(env_proj, env_gui){
         tkgrid(mlb_result, scr1)
         tkgrid.configure(scr1, rowspan = 30, sticky = "nsw")
 
-        # Assign the scroll bar and the multi-list box to the environment "env_y_result"
+        # Assign objects to the environment "env_y_result"
         assign("mlb_result", mlb_result, envir = env_y_result)
         assign("scr1", scr1, envir = env_y_result)
-
-        # Assign displayed data to the environment "env_y_result"
         assign("data_display", data_display, envir = env_y_result)
 
         # Destroy the top frame
@@ -396,7 +398,7 @@ make_tab4 <- function(env_proj, env_gui){
         # The row index which the user selected
         pos_select <- as.numeric(tclvalue(tkcurselection(mlb_result))) + 1
 
-        # Investigate indices to extract data
+        # Search indices to extract data
         select_q_name <- data_display[pos_select, 1]
         pos_select_q <- which(sn_y_q == select_q_name)
         select_r_name <- data_display[pos_select, 2]
@@ -407,7 +409,7 @@ make_tab4 <- function(env_proj, env_gui){
         colnames(data_detail) <- c("Locus",
                                   paste0("Query (", select_q_name, ")"),
                                   paste0("Reference (", select_r_name, ")"),
-                                  "Inconsistent loci",
+                                  "mismatched loci",
                                   "Ignored loci",
                                   "Mutational step")
 
@@ -454,7 +456,7 @@ make_tab4 <- function(env_proj, env_gui){
         tk2column(mlb_detail, "add", label = "locus", width = 20)
         tk2column(mlb_detail, "add", label = paste0("Query (", select_q_name, ")"), width = 20)
         tk2column(mlb_detail, "add", label = paste0("Reference (", select_r_name, ")"), width = 20)
-        tk2column(mlb_detail, "add", label = "Inconsistent loci", width = 20)
+        tk2column(mlb_detail, "add", label = "Mismatched loci", width = 20)
         tk2column(mlb_detail, "add", label = "Ignored loci", width = 20)
         tk2column(mlb_detail, "add", label = "Mutational step", width = 20)
         tk2insert.multi(mlb_detail, "end", data_detail)
@@ -476,7 +478,7 @@ make_tab4 <- function(env_proj, env_gui){
     # Define the environment "env_y_result"
     env_y_result <- new.env(parent = globalenv())
 
-    # Get data from the environment "env_proj"
+    # Get results from the environment "env_proj"
     hap_y_q <- get("hap_y_q", pos = env_proj)
     hap_y_r <- get("hap_y_r", pos = env_proj)
     sn_y_q <- get("sn_y_q", pos = env_proj)
@@ -485,29 +487,39 @@ make_tab4 <- function(env_proj, env_gui){
     ignore_y <- get("ignore_y", pos = env_proj)
     mu_step_y <- get("mu_step_y", pos = env_proj)
 
-    # The number of query individuals
-    n_q <- length(sn_y_q)
+    # Get criteria from the environment "env_proj"
+    max_mismatch_y <- get("max_mismatch_y", pos = env_proj)
+    max_ignore_y <- assign("max_ignore_y", pos = env_proj)
+    max_mustep_y <- assign("max_mustep_y", pos = env_proj)
 
-    # The number of reference individuals
+    # The number of samples in each database
+    n_q <- length(sn_y_q)
     n_r <- length(sn_y_r)
 
     # The number of loci
     n_l <- ncol(hap_y_q)
 
-    # The number of mismatched loci
-    n_mismatch <- mismatch_y[, , n_l + 1]
-    rownames(n_mismatch) <- sn_y_q
-    colnames(n_mismatch) <- sn_y_r
+    # The total number of mismatched loci
+    total_mismatch <- mismatch_y[, , n_l + 1]
+    rownames(total_mismatch) <- sn_y_q
+    colnames(total_mismatch) <- sn_y_r
 
-    # The number of ignored loci
-    n_ignore <- ignore_y[, , n_l + 1]
-    rownames(n_ignore) <- sn_y_q
-    colnames(n_ignore) <- sn_y_r
+    # The total number of ignored loci
+    total_ignore <- ignore_y[, , n_l + 1]
+    rownames(total_ignore) <- sn_y_q
+    colnames(total_ignore) <- sn_y_r
 
-    # The maximum mutational step
-    max_mu_step <- mu_step_y[, , n_l + 1]
-    rownames(max_mu_step) <- sn_y_q
-    colnames(max_mu_step) <- sn_y_r
+    # The maximum mutational steps of all loci
+    total_mustep <- mu_step_y[, , n_l + 1]
+    rownames(total_mustep) <- sn_y_q
+    colnames(total_mustep) <- sn_y_r
+
+    # Define vectors for making displayed data
+    sn_y_q_vec <- rep(sn_y_q, n_r)
+    sn_y_r_vec <- as.vector(sapply(sn_y_r, rep, n_q))
+    total_mismatch_vec <- as.vector(total_mismatch)
+    total_ignore_vec <- as.vector(total_ignore)
+    total_mustep_vec <- as.vector(total_mustep)
 
     # The number of comparisons between query and reference haplotypes
     n_data <- n_q * n_r
@@ -515,24 +527,20 @@ make_tab4 <- function(env_proj, env_gui){
     # Define a matrix for all data
     data_all <- matrix(0, n_data, 5)
     colnames(data_all) <- c("Query", "Reference", "Number of mismatched loci", "Number of ignored loci", "Maximum mutational step")
-    sn_y_q_display <- rep(sn_y_q, n_r)
-    data_all[, 1] <- sn_y_q_display
-    sn_y_r_display <- as.vector(sapply(sn_y_r, rep, n_q))
-    data_all[, 2] <- sn_y_r_display
-    n_mismatch_vec <- as.vector(n_mismatch)
-    data_all[, 3] <- n_mismatch_vec
-    n_ignore_vec <- as.vector(n_ignore)
-    data_all[, 4] <- n_ignore_vec
-    max_mu_step_vec <- as.vector(max_mu_step)
-    data_all[, 5] <- max_mu_step_vec
+    data_all[, 1] <- sn_y_q_vec
+    data_all[, 2] <- sn_y_r_vec
+    data_all[, 3] <- total_mismatch_vec
+    data_all[, 4] <- total_ignore_vec
+    data_all[, 5] <- total_mustep_vec
 
     # Define a matrix for the displayed data
-    data_display <- data_all[which(as.numeric(data_all[, 3]) <= 1), , drop = FALSE]
-    data_display <- data_display[which(as.numeric(data_display[, 4]) <= 1), , drop = FALSE]
-    data_display <- data_display[which(as.numeric(data_display[, 5]) <= 2), , drop = FALSE]
+    data_display <- data_all[which(as.numeric(data_all[, 3]) <= max_mismatch_y), , drop = FALSE]
+    data_display <- data_display[which(as.numeric(data_display[, 4]) <= max_ignore_y), , drop = FALSE]
+    data_display <- data_display[which(as.numeric(data_display[, 5]) <= max_mustep_y), , drop = FALSE]
     data_display <- data_display[order(as.numeric(data_display[, 4])), , drop = FALSE]
     data_display <- data_display[order(as.numeric(data_display[, 3])), , drop = FALSE]
 
+    # Reset frame_tab4
     tabs <- get("tabs", pos = env_gui)
     tab4 <- get("tab4", pos = env_gui)
     frame_tab4 <- get("frame_tab4", pos = env_gui)
@@ -550,7 +558,7 @@ make_tab4 <- function(env_proj, env_gui){
     mlb_result <- tk2mclistbox(frame_result_1, width = 120, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
     tk2column(mlb_result, "add", label = "Query", width = 15)
     tk2column(mlb_result, "add", label = "Reference", width = 15)
-    tk2column(mlb_result, "add", label = "Number of inconsistent loci", width = 30)
+    tk2column(mlb_result, "add", label = "Number of mismatched loci", width = 30)
     tk2column(mlb_result, "add", label = "Number of ignored loci", width = 30)
     tk2column(mlb_result, "add", label = "Maximum mutational step", width = 30)
     tk2insert.multi(mlb_result, "end", data_display)
@@ -570,12 +578,10 @@ make_tab4 <- function(env_proj, env_gui){
     tkgrid(frame_result_2)
     tkgrid(frame_tab4)
 
-    # Assign displayed data to the environment "env_y_result"
-    assign("data_display", data_display, envir = env_y_result)
-
-    # Assign widgets to the environment "env_y_result"
+    # Assign objects to the environment "env_y_result"
     assign("mlb_result", mlb_result, envir = env_y_result)
     assign("scr1", scr1, envir = env_y_result)
+    assign("data_display", data_display, envir = env_y_result)
 
     # Assign frame_tab4 to the environment "env_gui"
     assign("frame_tab4", frame_tab4, envir = env_gui)
@@ -583,7 +589,7 @@ make_tab4 <- function(env_proj, env_gui){
     # Select tab4
     tk2notetab.select(tabs, "Y results")
 
-  # If the analysis of Y-sTR has not been finished
+  # If the Y-sTR analysis has not been finished
   }else{
 
     # Reset frame_tab4

@@ -1,7 +1,7 @@
-"Criteria","Value"
-"Minimum LR","100"
-"Maximum number of inconsistent loci","2"
-"Maximum number of ignored loci","10"
-"Maximum mutational steps","2"
-"Minimum shared length","300"
-"Maximum number of inconsistency","1"
+Criteria,Value
+min_lr_auto,100
+max_mismatch_y,2
+max_ignore_y,10
+max_mustep_y,2
+min_share_mt,300
+max_mismatch_mt,1

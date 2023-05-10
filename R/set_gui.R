@@ -1,5 +1,7 @@
-# Set criteria
+# The function to set criteria
 set_criteria <- function(env_proj, env_gui){
+
+  # The function to save criteria
   save_criteria <- function(){
     sign_ok <- "ok"
     fin_auto <- get("fin_auto", pos = env_proj)
@@ -11,12 +13,12 @@ set_criteria <- function(env_proj, env_gui){
     if(sign_ok == "ok"){
       criteria <- matrix("", 6, 2)
       colnames(criteria) <- c("Criteria", "Value")
-      criteria[, 1] <- c("Minimum LR",
-                         "Maximum number of inconsistent loci", "Maximum number of ignored loci", "Maximum mutational steps",
-                         "Minimum shared length", "Maximum number of inconsistency")
+      criteria[, 1] <- c("min_lr_auto",
+                         "max_mismatch_y", "max_ignore_y", "max_mustep_y",
+                         "min_share_mt", "max_mismatch_mt")
       criteria[, 2] <- c(tclvalue(min_lr_auto_var),
-                         tclvalue(max_diff_var), tclvalue(max_ignore_y_var), tclvalue(max_mustep_y_var),
-                         tclvalue(min_share_mt_var), tclvalue(max_diff_mt_var))
+                         tclvalue(max_mismatch_y_var), tclvalue(max_ignore_y_var), tclvalue(max_mustep_y_var),
+                         tclvalue(min_share_mt_var), tclvalue(max_mismatch_mt_var))
       write.csv(criteria, paste0(path_pack, "/extdata/parameters/criteria.csv"), row.names = FALSE)
       assign("fin_auto", FALSE, envir = env_proj)
       assign("fin_y", FALSE, envir = env_proj)
@@ -33,35 +35,35 @@ set_criteria <- function(env_proj, env_gui){
   fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
   if(is.element("criteria.csv", fn_par)){
     criteria <- read.csv(paste0(path_pack, "/extdata/parameters/criteria.csv"), header = TRUE)
-    min_lr_auto <- criteria$Value[criteria$Criteria == "Minimum LR"]
-    max_diff <- criteria$Value[criteria$Criteria == "Maximum number of inconsistent loci"]
-    max_ignore_y <- criteria$Value[criteria$Criteria == "Maximum number of ignored loci"]
-    max_mustep_y <- criteria$Value[criteria$Criteria == "Maximum mutational steps"]
-    min_share_mt <- criteria$Value[criteria$Criteria == "Minimum shared length"]
-    max_diff_mt <- criteria$Value[criteria$Criteria == "Maximum number of inconsistency"]
+    min_lr_auto <- criteria$Value[criteria$Criteria == "min_lr_auto"]
+    max_mismatch_y <- criteria$Value[criteria$Criteria == "max_mismatch_y"]
+    max_ignore_y <- criteria$Value[criteria$Criteria == "max_ignore_y"]
+    max_mustep_y <- criteria$Value[criteria$Criteria == "max_mustep_y"]
+    min_share_mt <- criteria$Value[criteria$Criteria == "min_share_mt"]
+    max_mismatch_mt <- criteria$Value[criteria$Criteria == "max_mismatch_mt"]
   }else{
     min_lr_auto <- get("min_lr_auto_default", pos = env_proj)
-    max_diff <- get("max_diff_default", pos = env_proj)
+    max_mismatch_y <- get("max_mismatch_y_default", pos = env_proj)
     max_ignore_y <- get("max_ignore_y_default", pos = env_proj)
     max_mustep_y <- get("max_mustep_y_default", pos = env_proj)
     min_share_mt <- get("min_share_mt_default", pos = env_proj)
-    max_diff_mt <- get("max_diff_mt_default", pos = env_proj)
+    max_mismatch_mt <- get("max_mismatch_mt_default", pos = env_proj)
     criteria <- matrix("", 6, 2)
     colnames(criteria) <- c("Criteria", "Value")
-    criteria[, 1] <- c("Minimum LR",
-                       "Maximum number of inconsistent loci", "Maximum number of ignored loci", "Maximum mutational steps",
-                       "Minimum shared length", "Maximum number of inconsistency")
-    criteria[, 2] <- c(min_lr_auto, max_diff, max_ignore_y, max_mustep_y, min_share_mt, max_diff_mt)
+    criteria[, 1] <- c("min_lr_auto",
+                       "max_mismatch_y", "max_ignore_y", "max_mustep_y",
+                       "min_share_mt", "max_mismatch_mt")
+    criteria[, 2] <- c(min_lr_auto, max_mismatch_y, max_ignore_y, max_mustep_y, min_share_mt, max_mismatch_mt)
     write.csv(criteria, paste0(path_pack, "/extdata/parameters/criteria.csv"), row.names = FALSE)
   }
 
   # Define tclvalue
   min_lr_auto_var <- tclVar(min_lr_auto)
-  max_diff_var <- tclVar(max_diff)
+  max_mismatch_y_var <- tclVar(max_mismatch_y)
   max_ignore_y_var <- tclVar(max_ignore_y)
   max_mustep_y_var <- tclVar(max_mustep_y)
   min_share_mt_var <- tclVar(min_share_mt)
-  max_diff_mt_var <- tclVar(max_diff_mt)
+  max_mismatch_mt_var <- tclVar(max_mismatch_mt)
 
   # Make a top frame
   tf <- tktoplevel()
@@ -72,8 +74,8 @@ set_criteria <- function(env_proj, env_gui){
   label_min_lr_auto <- tklabel(tf, text = "    Minimum LR")
   entry_min_lr_auto <- tkentry(tf, textvariable = min_lr_auto_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
   label_title_y <- tklabel(tf, text = "Y-STR")
-  label_max_diff <- tklabel(tf, text = "    Maximum number of inconsistent loci")
-  entry_max_diff <- tkentry(tf, textvariable = max_diff_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+  label_max_mismatch_y <- tklabel(tf, text = "    Maximum number of mismatched loci")
+  entry_max_mismatch_y <- tkentry(tf, textvariable = max_mismatch_y_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
   label_max_ignore_y <- tklabel(tf, text = "    Maximum number of ignored loci")
   entry_max_ignore_y <- tkentry(tf, textvariable = max_ignore_y_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
   label_max_mustep_y <- tklabel(tf, text = "    Maximum mutational steps")
@@ -81,20 +83,20 @@ set_criteria <- function(env_proj, env_gui){
   label_title_mt <- tklabel(tf, text = "mtDNA")
   label_min_share_mt <- tklabel(tf, text = "    Minimum shared length")
   entry_min_share_mt <- tkentry(tf, textvariable = min_share_mt_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-  label_max_diff_mt <- tklabel(tf, text = "    Maximum number of inconsistency")
-  entry_max_diff_mt <- tkentry(tf, textvariable = max_diff_mt_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+  label_max_mismatch_mt <- tklabel(tf, text = "    Maximum number of inconsistency")
+  entry_max_mismatch_mt <- tkentry(tf, textvariable = max_mismatch_mt_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
   butt_save <- tkbutton(tf, text = "    Save    ", cursor = "hand2", command = function() save_criteria())
 
   # Grid widgets
   tkgrid(label_title_auto, padx = 10, pady = 5, sticky = "w")
   tkgrid(label_min_lr_auto, entry_min_lr_auto, padx = 10, pady = 5, sticky = "w")
   tkgrid(label_title_y, padx = 10, pady = 5, sticky = "w")
-  tkgrid(label_max_diff, entry_max_diff, padx = 10, pady = 5, sticky = "w")
+  tkgrid(label_max_mismatch_y, entry_max_mismatch_y, padx = 10, pady = 5, sticky = "w")
   tkgrid(label_max_ignore_y, entry_max_ignore_y, padx = 10, pady = 5, sticky = "w")
   tkgrid(label_max_mustep_y, entry_max_mustep_y, padx = 10, pady = 5, sticky = "w")
   tkgrid(label_title_mt, padx = 10, pady = 5, sticky = "w")
   tkgrid(label_min_share_mt, entry_min_share_mt, padx = 10, pady = 5, sticky = "w")
-  tkgrid(label_max_diff_mt, entry_max_diff_mt, padx = 10, pady = 5, sticky = "w")
+  tkgrid(label_max_mismatch_mt, entry_max_mismatch_mt, padx = 10, pady = 5, sticky = "w")
   tkgrid(butt_save, padx = 10, pady = 5, sticky = "w")
 }
 
