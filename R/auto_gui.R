@@ -742,7 +742,7 @@ make_tab2 <- function(env_proj, env_gui){
     sn_auto_q_vec <- rep(sn_auto_q, n_r)
     sn_auto_r_vec <- as.vector(sapply(sn_auto_r_new, rep, n_q))
     rel_auto_vec <- as.vector(sapply(rel_auto_r_new, rep, n_q))
-    clr_all_vec <- as.vector(clr_all)
+    clr_all_vec <- as.vector(lr_all[, , n_l + 1])
 
     # The number of comparisons between query and reference haplotypes
     n_data <- n_q * n_r

@@ -194,7 +194,7 @@ search_y <- function(env_proj, env_gui){
         ignore_y <- mismatch_y
 
         # Define an array to save information on the mutation step
-        mu_step_y <- mismatch_y
+        mustep_y <- mismatch_y
 
         # Repetitive execution for each reference haplotype
         for(i in 1:n_r){
@@ -212,7 +212,7 @@ search_y <- function(env_proj, env_gui){
             tmp <- match_y(query, ref)
             mismatch_y[j, i, ] <- tmp[[1]]
             ignore_y[j, i, ] <- tmp[[2]]
-            mu_step_y[j, i, ] <- tmp[[3]]
+            mustep_y[j, i, ] <- tmp[[3]]
 
             # Update the progress bar
             info <- sprintf("%d%% done", round((n_q * (i - 1) + j) * 100 / (n_q * n_r)))
@@ -230,7 +230,7 @@ search_y <- function(env_proj, env_gui){
         assign("sn_y_r", sn_y_r, envir = env_proj)
         assign("mismatch_y", mismatch_y, envir = env_proj)
         assign("ignore_y", ignore_y, envir = env_proj)
-        assign("mu_step_y", mu_step_y, envir = env_proj)
+        assign("mustep_y", mustep_y, envir = env_proj)
 
         # Assign criteria to the environment "env_proj"
         assign("max_mismatch_y", max_mismatch_y, envir = env_proj)
@@ -291,8 +291,8 @@ make_tab4 <- function(env_proj, env_gui){
       # Define widgets in frame_display_1
       label_title_1 <- tklabel(frame_display_1, text = "Query")
       label_title_2 <- tklabel(frame_display_1, text = "Reference")
-      label_title_3 <- tklabel(frame_display_1, text = "Maximum number of mismatched loci")
-      label_title_4 <- tklabel(frame_display_1, text = "Maximum number of ignored loci")
+      label_title_3 <- tklabel(frame_display_1, text = "Number of mismatched loci")
+      label_title_4 <- tklabel(frame_display_1, text = "Number of ignored loci")
       label_title_5 <- tklabel(frame_display_1, text = "Maximum mutational step")
       combo_q <- ttkcombobox(frame_display_1, values = cand_q, textvariable = select_q_var, state = "readonly")
       combo_r <- ttkcombobox(frame_display_1, values = cand_r, textvariable = select_r_var, state = "readonly")
@@ -435,10 +435,10 @@ make_tab4 <- function(env_proj, env_gui){
         data_detail[, 5] <- c(ignore_y_ext2, ignore_y_ext[n_l + 1])
 
         # 6th column for detailed data
-        mu_step_y_ext <- mu_step_y[pos_select_q, pos_select_r, ]
-        mu_step_y_ext[which(mu_step_y_ext == 0)] <- ""
-        mu_step_y_ext[which(mu_step_y_ext == 99)] <- "Not integer"
-        data_detail[, 6] <- mu_step_y_ext
+        mustep_y_ext <- mustep_y[pos_select_q, pos_select_r, ]
+        mustep_y_ext[which(mustep_y_ext == 0)] <- ""
+        mustep_y_ext[which(mustep_y_ext == 99)] <- "Not integer"
+        data_detail[, 6] <- mustep_y_ext
 
         # Make a top frame
         tf_detail <- tktoplevel()
@@ -485,12 +485,12 @@ make_tab4 <- function(env_proj, env_gui){
     sn_y_r <- get("sn_y_r", pos = env_proj)
     mismatch_y <- get("mismatch_y", pos = env_proj)
     ignore_y <- get("ignore_y", pos = env_proj)
-    mu_step_y <- get("mu_step_y", pos = env_proj)
+    mustep_y <- get("mustep_y", pos = env_proj)
 
     # Get criteria from the environment "env_proj"
     max_mismatch_y <- get("max_mismatch_y", pos = env_proj)
-    max_ignore_y <- assign("max_ignore_y", pos = env_proj)
-    max_mustep_y <- assign("max_mustep_y", pos = env_proj)
+    max_ignore_y <- get("max_ignore_y", pos = env_proj)
+    max_mustep_y <- get("max_mustep_y", pos = env_proj)
 
     # The number of samples in each database
     n_q <- length(sn_y_q)
@@ -510,7 +510,7 @@ make_tab4 <- function(env_proj, env_gui){
     colnames(total_ignore) <- sn_y_r
 
     # The maximum mutational steps of all loci
-    total_mustep <- mu_step_y[, , n_l + 1]
+    total_mustep <- mustep_y[, , n_l + 1]
     rownames(total_mustep) <- sn_y_q
     colnames(total_mustep) <- sn_y_r
 

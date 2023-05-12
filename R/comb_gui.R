@@ -15,8 +15,8 @@ make_data_comb <- function(env_proj){
   n_r <- length(sn_r_all)
 
   # Define data_comb
-  data_comb <- matrix("", n_q * n_r, 8)
-  colnames(data_comb) <- c("Query", "Reference", "Assumed relationship", "Estimated relationship", "Paternal lineage", "Maternal lineage", "All Hp", "All LR")
+  data_comb <- matrix("", n_q * n_r, 10)
+  colnames(data_comb) <- c("Query", "Reference", "Assumed relationship", "Estimated relationship", "Paternal lineage", "Maternal lineage", "All H1", "All LR", "Data Y", "Data mt")
   data_comb[, 1] <- rep(sn_q_all, n_r)
   data_comb[, 2] <- as.vector(sapply(sn_r_all, rep, n_q))
 
@@ -45,11 +45,19 @@ make_data_comb <- function(env_proj){
               data_comb[n_r * (i - 1) + j, 7] <- paste(rel_1, collapse = ", ")
               data_comb[n_r * (i - 1) + j, 8] <- paste(clr_1, collapse = ", ")
             }
-            if(length(pos_meet) > 0){
+            if(length(pos_meet) > 1){
               data_comb[n_r * (i - 1) + j, 4] <- "Multiple candidates"
+            }else if(length(pos_meet) == 1){
+              data_comb[n_r * (i - 1) + j, 4] <- rel_1[pos_meet]
             }
+          }else{
+            data_comb[n_r * (i - 1) + j, 3] <- "N/A"
+            data_comb[n_r * (i - 1) + j, 4] <- "N/A"
           }
         }
+      }else{
+        data_comb[n_r * (i - 1) + j, 3] <- "N/A"
+        data_comb[n_r * (i - 1) + j, 4] <- "N/A"
       }
     }
   }else{
@@ -58,66 +66,105 @@ make_data_comb <- function(env_proj){
   }
 
   if(fin_y){
-    max_diff <- get("max_diff", pos = env_proj)
+
+    # Get criteria from the environment "env_proj"
+    max_mismatch_y <- get("max_mismatch_y", pos = env_proj)
     max_ignore_y <- get("max_ignore_y", pos = env_proj)
     max_mustep_y <- get("max_mustep_y", pos = env_proj)
+
+    # Get results from the environment "env_proj"
     sn_y_q <- get("sn_y_q", pos = env_proj)
     sn_y_r <- get("sn_y_r", pos = env_proj)
     mismatch_y <- get("mismatch_y", pos = env_proj)
-    pos_overall <- length(mismatch_y[1, 1, ])
-    n_mm <- mismatch_y[, , pos_overall]
-    drop_q_y <- get("drop_q_y", pos = env_proj)
-    n_q_drop <- drop_q_y[, , pos_overall]
-    mu_step_y <- get("mu_step_y", pos = env_proj)
-    max_mu_step <- mu_step_y[, , pos_overall]
+    ignore_y <- get("ignore_y", pos = env_proj)
+    mustep_y <- get("mustep_y", pos = env_proj)
+
+    # Get data of all loci
+    pos_total <- length(mismatch_y[1, 1, ])
+    total_mismatch <- mismatch_y[, , pos_total]
+    total_ignore <- ignore_y[, , pos_total]
+    total_mustep <- mustep_y[, , pos_total]
+
     for(i in 1:n_q){
       pos_q <- which(sn_y_q == sn_q_all[i])
       if(length(pos_q) == 1){
         for(j in 1:n_r){
           pos_r <- which(sn_y_r == sn_r_all[j])
           if(length(pos_r) == 1){
-            bool_n_mm <- as.numeric(n_mm[pos_q, pos_r]) <= max_diff
-            bool_n_q_drop <- as.numeric(n_q_drop[pos_q, pos_r]) <= max_ignore_y
-            bool_max_mu_step <- as.numeric(max_mu_step[pos_q, pos_r]) <= max_mustep_y && max_mu_step[pos_q, pos_r] %% 1 == 0
-            if(all(c(bool_n_mm, bool_n_q_drop, bool_max_mu_step))){
+
+            # Extract data in one case
+            total_mismatch_y_one <- as.numeric(total_mismatch[pos_q, pos_r])
+            total_ignore_y_one <- as.numeric(total_ignore[pos_q, pos_r])
+            total_mustep_y_one <- as.numeric(total_mustep[pos_q, pos_r])
+
+            # Save data
+            data_comb[n_r * (i - 1) + j, 9] <- paste(c(total_mismatch_y_one, total_ignore_y_one, total_mustep_y_one), collapse = ", ")
+
+            # Whether data is satisfied with criteria or not
+            bool_total_mismatch <- total_mismatch_y_one <= max_mismatch_y
+            bool_total_ignore <- total_ignore_y_one <= max_ignore_y
+            bool_total_mustep <- total_mustep_y_one <= max_mustep_y && total_mustep_y_one %% 1 == 0
+            if(all(c(bool_total_mismatch, bool_total_ignore, bool_total_mustep))){
               data_comb[n_r * (i - 1) + j, 5] <- "\U2713"
             }else{
               data_comb[n_r * (i - 1) + j, 5] <- ""
             }
+          }else{
+            data_comb[n_r * (i - 1) + j, 5] <- "N/A"
           }
         }
+      }else{
+        data_comb[n_r * (i - 1) + j, 5] <- "N/A"
       }
     }
   }else{
-    data_comb[, 5] <- "No data"
+    data_comb[, 5] <- "N/A"
   }
 
   if(fin_mt){
+
+    # Get criteria from the environment "env_proj"
     min_share_mt <- get("min_share_mt", envir = env_proj)
-    max_diff_mt <- get("max_diff_mt", envir = env_proj)
+    max_mismatch_mt <- get("max_mismatch_mt", envir = env_proj)
+
+    # Get results from the environment "env_proj"
     sn_mt_q <- get("sn_mt_q", envir = env_proj)
     sn_mt_r <- get("sn_mt_r", envir = env_proj)
-    mismatch_mt <- get("mismatch_mt", envir = env_proj)
     share_len_mt <- get("share_len_mt", envir = env_proj)
+    mismatch_mt <- get("mismatch_mt", envir = env_proj)
+
     for(i in 1:n_q){
       pos_q <- which(sn_mt_q == sn_q_all[i])
       if(length(pos_q) == 1){
         for(j in 1:n_r){
           pos_r <- which(sn_mt_r == sn_r_all[j])
           if(length(pos_r) == 1){
-            bool_n_mm <- as.numeric(mismatch_mt[pos_q, pos_r]) <= max_diff_mt
-            bool_share <- as.numeric(share_len_mt[pos_q, pos_r]) >= min_share_mt
-            if(all(c(bool_n_mm, bool_share))){
+
+            # Extract data in one case
+            share_len_mt_one <- as.numeric(share_len_mt[pos_q, pos_r])
+            mismatch_mt_one <- as.numeric(mismatch_mt[pos_q, pos_r])
+
+            # Save data
+            data_comb[n_r * (i - 1) + j, 10] <- paste(c(share_len_mt_one, mismatch_mt_one), collapse = ", ")
+
+            # Whether data is satisfied with criteria or not
+            bool_share <- share_len_mt_one >= min_share_mt
+            bool_mismatch <- mismatch_mt_one <= max_mismatch_mt
+            if(all(c(bool_share, bool_mismatch))){
               data_comb[n_r * (i - 1) + j, 6] <- "\U2713"
             }else{
               data_comb[n_r * (i - 1) + j, 6] <- ""
             }
+          }else{
+            data_comb[n_r * (i - 1) + j, 6] <- "N/A"
           }
         }
+      }else{
+        data_comb[n_r * (i - 1) + j, 6] <- "N/A"
       }
     }
   }else{
-    data_comb[, 6] <- "No data"
+    data_comb[, 6] <- "N/A"
   }
 
   return(data_comb)
@@ -129,18 +176,30 @@ make_tab7 <- function(env_proj, env_gui){
   fin_mt <- get("fin_mt", pos = env_proj)
 
   if(any(fin_auto, fin_y, fin_mt)){
+
+    # The function to show data in detail
     show_detail <- function(){
+
+      # Get the multi-list box for displayed data from the environment "env_comb_result"
       mlb_result <- get("mlb_result", pos = env_comb_result)
+
+      # If the user does not select one line
       if(tclvalue(tkcurselection(mlb_result)) == ""){
         tkmessageBox(message = "Select one result!", icon = "error", type = "ok")
-      }else{
-        data_display <- get("data_display", pos = env_comb_result)
-        pos_select <- as.numeric(tclvalue(tkcurselection(mlb_result))) + 1
-        sn_q_select <- data_display[pos_select, 1]
-        sn_r_select <- data_display[pos_select, 2]
 
-        # Extract the estimated relationship
-        rel_estimated_select <- data_display[pos_select, 4]
+      # If the user selects one line
+      }else{
+
+        # Get displayed data from the environment "env_comb_result"
+        data_display <- get("data_display", pos = env_comb_result)
+
+        # Extract selected data
+        pos_select <- as.numeric(tclvalue(tkcurselection(mlb_result))) + 1
+        sn_q_select <- data_display[pos_select, "Query"]
+        sn_r_select <- data_display[pos_select, "Reference"]
+        rel_estimated_select <- data_display[pos_select, "Estimated relationship"]
+        paternal_select <- data_display[pos_select, "Paternal lineage"]
+        maternal_select <- data_display[pos_select, "Maternal lineage"]
 
         # Extract the result of Y-STRs
         paternal_lineage_select <- data_display[pos_select, 5]
@@ -156,8 +215,10 @@ make_tab7 <- function(env_proj, env_gui){
 
         # Define frames
         frame_detail_1 <- tkframe(tf_detail)
-        frame_detail_1_1 <- tkframe(frame_detail_1)
         frame_detail_2 <- tkframe(tf_detail)
+        frame_detail_auto <- tkframe(frame_detail_1)
+        frame_detail_y <- tkframe(frame_detail_1)
+        frame_detail_mt <- tkframe(frame_detail_1)
 
         # Define widgets for sample names
         label_title_sn <- tklabel(frame_detail_1, text = "Sample name")
@@ -170,17 +231,154 @@ make_tab7 <- function(env_proj, env_gui){
 
         # Define widgets for the result of autosomal STRs
         label_title_auto <- tklabel(frame_detail_1, text = "STR")
-        label_assumed_rel <- tklabel(frame_detail_1, text = "")
 
-        # Define widgets for the result of Y-STRs
+        # No result of the autosomal STRs
+        if(data_display[pos_select, 4] == "N/A"){
+
+          # Define a label that indicates "No data"
+          label_result_auto <- tklabel(frame_detail_auto, text = "No data")
+
+          # Grid the label
+          tkgrid(label_result_auto, padx = 10, pady = 5)
+
+        # With result of the autosomal STRs
+        }else{
+
+          # Extract selected data
+          h1_select <- data_display[pos_select, "All H1"]
+          h1_select <- strsplit(h1_select, ", ")[[1]]
+          lr_select <- data_display[pos_select, "All LR"]
+          lr_select <- strsplit(lr_select, ", ")[[1]]
+          lr_select <- as.numeric(lr_select)
+
+          # Get objects from the environment "env_proj"
+          min_lr_auto <- get("min_lr_auto", pos = env_proj)
+
+          # Define a matrix for displayed LRs
+          lr_display <- matrix("", length(h1_select), 4)
+          lr_display[, 1] <- h1_select
+          lr_display[, 2] <- "Unrelated"
+          lr_display[, 3] <- sprintf('%.2e', lr_select)
+          lr_display[which(lr_select >= min_lr_auto), 4] <- "\U2713"
+
+          # Define a scrollbar for the multi-list box for LRs
+          scr_lr <- tkscrollbar(frame_detail_auto, repeatinterval = 5, command = function(...) tkyview(mlb_lr, ...))
+
+          # Define a multi-list box for LRs
+          mlb_lr <- tk2mclistbox(frame_detail_auto, width = 110, height = 5, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr_lr, ...))
+          tk2column(mlb_lr, "add", label = "Numerator hypothesis", width = 30)
+          tk2column(mlb_lr, "add", label = "Denominator hypothesis", width = 30)
+          tk2column(mlb_lr, "add", label = "LR", width = 30)
+          tk2column(mlb_lr, "add", label = "Satisfy criteria", width = 20)
+          tk2insert.multi(mlb_lr, "end", lr_display)
+
+          # Grid widgets
+          tkgrid(mlb_lr, scr_lr)
+          tkgrid.configure(scr_lr, rowspan = 5, sticky = "nsw")
+        }
+
+        # Define widgets for the result of the Y-STRs
         label_title_y <- tklabel(frame_detail_1, text = "Y-STR")
-        label_result_y <- tklabel(frame_detail_1, text = "")
 
-        # Define widgets for the result of mtDNA
+        # No result of the Y-STRs
+        if(data_display[pos_select, 5] == "N/A"){
+
+          # Define a label that indicates "No data"
+          label_result_y <- tklabel(frame_detail_y, text = "No data")
+
+          # Grid the label
+          tkgrid(label_result_y)
+
+        # With result of the Y-STRs
+        }else{
+
+          # Get objects from the environment "env_proj"
+          max_mismatch_y <- get("max_mismatch_y", pos = env_proj)
+          max_ignore_y <- get("max_ignore_y", pos = env_proj)
+          max_mustep_y <- get("max_mustep_y", pos = env_proj)
+
+          # Extract selected data
+          y_data_select <- data_display[pos_select, "Data Y"]
+          y_data_select <- strsplit(y_data_select, ", ")[[1]]
+          y_data_select <- as.numeric(y_data_select)
+
+          # Define a matrix for displayed Y-STR results
+          y_display <- matrix("", 1, 4)
+          y_display[1, 1] <- y_data_select[1]
+          y_display[1, 2] <- y_data_select[2]
+          y_display[1, 3] <- y_data_select[3]
+          y_display[1, 4] <- paternal_select
+
+          # Define a multi-list box for Y-STR results
+          mlb_y <- tk2mclistbox(frame_detail_y, width = 110, height = 1, resizablecolumns = TRUE, selectmode = "single")
+          tk2column(mlb_y, "add", label = "Number of mismatched loci", width = 30)
+          tk2column(mlb_y, "add", label = "Number of ignored loci", width = 30)
+          tk2column(mlb_y, "add", label = "Maximum mutational step", width = 30)
+          tk2column(mlb_y, "add", label = "Satisfy criteria", width = 20)
+          tk2insert.multi(mlb_y, "end", y_display)
+
+          # Grid widgets
+          tkgrid(mlb_y)
+        }
+
+        # Define widgets for the result of the mtDNA
         label_title_mt <- tklabel(frame_detail_1, text = "mtDNA")
+
+        # No result of the mtDNA
+        if(data_display[pos_select, 6] == "N/A"){
+
+          # Define a label that indicates "No data"
+          label_result_mt <- tklabel(frame_detail_mt, text = "No data")
+
+          # Grid the label
+          tkgrid(label_result_mt)
+
+        # With result of the Y-STRs
+        }else{
+
+          # Get objects from the environment "env_proj"
+          min_share_mt <- get("min_share_mt", envir = env_proj)
+          max_mismatch_mt <- get("max_mismatch_mt", envir = env_proj)
+
+          # Extract selected data
+          mt_data_select <- data_display[pos_select, "Data mt"]
+          mt_data_select <- strsplit(mt_data_select, ", ")[[1]]
+          mt_data_select <- as.numeric(mt_data_select)
+
+          # Define a matrix for displayed mtDNA results
+          mt_display <- matrix("", 1, 3)
+          mt_display[1, 1] <- mt_data_select[1]
+          mt_display[1, 2] <- mt_data_select[2]
+          mt_display[1, 3] <- maternal_select
+
+          # Define a multi-list box for Y-STR results
+          mlb_mt <- tk2mclistbox(frame_detail_mt, width = 110, height = 1, resizablecolumns = TRUE, selectmode = "single")
+          tk2column(mlb_mt, "add", label = "Shared length", width = 40)
+          tk2column(mlb_mt, "add", label = "Number of mismatch", width = 40)
+          tk2column(mlb_mt, "add", label = "Satisfy criteria", width = 30)
+          tk2insert.multi(mlb_mt, "end", mt_display)
+
+          # Grid widgets
+          tkgrid(mlb_mt)
+        }
 
         # Define widgets for the warning message
         label_title_warning <- tklabel(frame_detail_1, text = "Warning")
+
+        # Grid widgets and some frames
+        tkgrid(label_title_rel, padx = 10, pady = 5, sticky = "w")
+        tkgrid(label_result_rel, padx = 10, pady = 5, sticky = "w")
+        tkgrid(label_title_auto, padx = 10, pady = 5, sticky = "w")
+        tkgrid(frame_detail_auto, padx = 10, pady = 5, sticky = "w")
+        tkgrid(label_title_y, padx = 10, pady = 5, sticky = "w")
+        tkgrid(frame_detail_y, padx = 10, pady = 5, sticky = "w")
+        tkgrid(label_title_mt, padx = 10, pady = 5, sticky = "w")
+        tkgrid(frame_detail_mt, padx = 10, pady = 5, sticky = "w")
+        tkgrid(label_title_warning, padx = 10, pady = 5, sticky = "w")
+
+        # Grid frames
+        tkgrid(frame_detail_1, padx = 10, pady = 5, sticky = "w")
+        tkgrid(frame_detail_2, padx = 10, pady = 5, sticky = "w")
       }
 
     }

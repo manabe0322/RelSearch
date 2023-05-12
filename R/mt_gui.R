@@ -277,7 +277,7 @@ make_tab6 <- function(env_proj, env_gui){
       label_title_1 <- tklabel(frame_display_1, text = "Query")
       label_title_2 <- tklabel(frame_display_1, text = "Reference")
       label_title_3 <- tklabel(frame_display_1, text = "Minimum shared length")
-      label_title_4 <- tklabel(frame_display_1, text = "Maximum number of inconsistency")
+      label_title_4 <- tklabel(frame_display_1, text = "Maximum number of mismatch")
       combo_q <- ttkcombobox(frame_display_1, values = cand_q, textvariable = select_q_var, state = "readonly")
       combo_r <- ttkcombobox(frame_display_1, values = cand_r, textvariable = select_r_var, state = "readonly")
       entry_len_share <- tkentry(frame_display_1, textvariable = select_len_share_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
@@ -335,7 +335,7 @@ make_tab6 <- function(env_proj, env_gui){
         tk2column(mlb_result, "add", label = "Reference", width = 15)
         tk2column(mlb_result, "add", label = "Shared range", width = 50)
         tk2column(mlb_result, "add", label = "Shared length", width = 20)
-        tk2column(mlb_result, "add", label = "Number of inconsistency", width = 30)
+        tk2column(mlb_result, "add", label = "Number of mismatch", width = 30)
         tk2insert.multi(mlb_result, "end", data_display)
 
         # Grid widgets
@@ -389,13 +389,13 @@ make_tab6 <- function(env_proj, env_gui){
         colnames(data_detail) <- c(paste0("Query (", select_q_name, ")"),
                                   paste0("Reference (", select_r_name, ")"),
                                   "Out of shared range",
-                                  "Inconsistency")
+                                  "Mismatch")
         data_detail[is.element(qr_type, q_type), 1] <- q_type
         data_detail[is.element(qr_type, r_type), 2] <- r_type
         pos_common <- is.element(round(parse_number(qr_type), 0), pos_mt_qr)
         data_detail[!pos_common, 3] <- "X"
-        pos_inconsistent <- apply(rbind(!is.element(qr_type, q_type), !is.element(qr_type, r_type)), 2, any)
-        data_detail[apply(rbind(pos_common, pos_inconsistent), 2, all), 4] <- "X"
+        pos_mismatch <- apply(rbind(!is.element(qr_type, q_type), !is.element(qr_type, r_type)), 2, any)
+        data_detail[apply(rbind(pos_common, pos_mismatch), 2, all), 4] <- "X"
 
         # Make a top frame
         tf_detail <- tktoplevel()
@@ -416,7 +416,7 @@ make_tab6 <- function(env_proj, env_gui){
         tk2column(mlb_detail, "add", label = paste0("Query (", select_q_name, ")"), width = 20)
         tk2column(mlb_detail, "add", label = paste0("Reference (", select_r_name, ")"), width = 20)
         tk2column(mlb_detail, "add", label = "Out of shared range", width = 25)
-        tk2column(mlb_detail, "add", label = "Inconsistency", width = 20)
+        tk2column(mlb_detail, "add", label = "Mismatch", width = 20)
         tk2insert.multi(mlb_detail, "end", data_detail)
 
         # Define widgets in frame_detail_2
@@ -466,7 +466,7 @@ make_tab6 <- function(env_proj, env_gui){
 
     # Define a matrix for all data
     data_all <- matrix(0, n_data, 5)
-    colnames(data_all) <- c("Query", "Reference", "Shared range", "Shared length", "Number of inconsistency")
+    colnames(data_all) <- c("Query", "Reference", "Shared range", "Shared length", "Number of mismatch")
     data_all[, 1] <- sn_mt_q_vec
     data_all[, 2] <- sn_mt_r_vec
     data_all[, 3] <- share_range_mt_vec
@@ -499,7 +499,7 @@ make_tab6 <- function(env_proj, env_gui){
     tk2column(mlb_result, "add", label = "Reference", width = 15)
     tk2column(mlb_result, "add", label = "Shared range", width = 50)
     tk2column(mlb_result, "add", label = "Shared length", width = 20)
-    tk2column(mlb_result, "add", label = "Number of inconsistency", width = 30)
+    tk2column(mlb_result, "add", label = "Number of mismatch", width = 30)
     tk2insert.multi(mlb_result, "end", data_display)
 
     # Define widgets in frame_result_2
