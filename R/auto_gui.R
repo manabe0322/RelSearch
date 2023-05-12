@@ -249,9 +249,6 @@ search_auto <- function(env_proj, env_gui){
               # tkgrid(pb1)
               pb <- tkProgressBar("Searching", "0% done", 0, 100, 0)
 
-              # Update sample names
-              set_env_proj_sn(env_proj, FALSE, sn_auto_q, sn_auto_r)
-
               # Set allele frequencies
               tmp <- set_af(gt_auto_q, gt_auto_r, data_auto_af, maf)
               af_list <- tmp[[1]]
@@ -385,6 +382,9 @@ search_auto <- function(env_proj, env_gui){
                   count <- count + 1
                 }
               }
+
+              # Update sample names
+              set_env_proj_sn(env_proj, FALSE, sn_auto_q, sn_auto_r)
 
               # Assign data to the environment "env_proj"
               assign("gt_auto_q", gt_auto_q, envir = env_proj)

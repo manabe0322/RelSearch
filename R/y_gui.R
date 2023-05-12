@@ -177,9 +177,6 @@ search_y <- function(env_proj, env_gui){
         # Define a progress bar
         pb <- tkProgressBar("Searching", "0% done", 0, 100, 0)
 
-        # Update sample names in the environment "env_proj"
-        set_env_proj_sn(env_proj, FALSE, sn_y_q, sn_y_r)
-
         # Put the loci of the reference haplotypes in the same order as that of the query haplotypes
         hap_y_r <- hap_y_r[, match(locus_q, locus_r)]
 
@@ -222,6 +219,9 @@ search_y <- function(env_proj, env_gui){
             setTkProgressBar(pb, (n_q * (i - 1) + j) * 100 / (n_q * n_r), sprintf("Searching"), info)
           }
         }
+
+        # Update sample names in the environment "env_proj"
+        set_env_proj_sn(env_proj, FALSE, sn_y_q, sn_y_r)
 
         # Assign results of the Y-STR to the environment "env_proj"
         assign("hap_y_q", hap_y_q, envir = env_proj)

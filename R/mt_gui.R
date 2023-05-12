@@ -166,9 +166,6 @@ search_mt <- function(env_proj, env_gui){
     range_mt_r <- data_mt_r[, "Range"]
     hap_mt_r <- data_mt_r[, "Haplotype"]
 
-    # Update sample names
-    set_env_proj_sn(env_proj, FALSE, sn_mt_q, sn_mt_r)
-
     # The number of samples in each database
     n_q <- length(hap_mt_q)
     n_r <- length(hap_mt_r)
@@ -217,6 +214,9 @@ search_mt <- function(env_proj, env_gui){
         setTkProgressBar(pb, (n_q * (i - 1) + j) * 100 / (n_q * n_r), sprintf("Searching"), info)
       }
     }
+
+    # Update sample names
+    set_env_proj_sn(env_proj, FALSE, sn_mt_q, sn_mt_r)
 
     # Assign results of the mtDNA to the environment "env_proj"
     assign("sn_mt_q", sn_mt_q, envir = env_proj)
