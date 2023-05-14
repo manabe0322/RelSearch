@@ -239,6 +239,7 @@ relsearch <- function(){
 
   # Set package path
 #  path_pack <- "D:/RStudio_GitHub/relsearch/inst"
+#  path_pack <- "C:/Users/manab/Documents/RStudio/relsearch/inst"
   path_pack <- path.package("relsearch", quiet = FALSE)
   assign("path_pack", path_pack, envir = env_gui)
 
@@ -263,6 +264,7 @@ relsearch <- function(){
   tools_menu <- tkmenu(top_menu, tearoff = FALSE, activebackground = "lightskyblue1")
   tkadd(top_menu, "cascade", label = "Tools", menu = tools_menu)
   tkadd(tools_menu, "command", label = "Set criteria", command = function() set_criteria(env_proj, env_gui))
+  tkadd(tools_menu, "command", label = "Set relationships", command = function() set_rel(env_proj, env_gui))
   tkadd(tools_menu, "command", label = "Set mutation rates for autosomal STR", command = function() set_myu(env_proj, env_gui))
   tkadd(tools_menu, "command", label = "Set IBD probabilities for autosomal STR", command = function() set_pibd(env_proj, env_gui))
   tkadd(tools_menu, "command", label = "Set analysis methods for autosomal STR", command = function() set_auto(env_proj, env_gui))

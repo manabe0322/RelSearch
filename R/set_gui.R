@@ -3,14 +3,23 @@ set_criteria <- function(env_proj, env_gui){
 
   # The function to save criteria
   save_criteria <- function(){
-    sign_ok <- "ok"
+
+    # Get the end sign from the environment "env_proj"
     fin_auto <- get("fin_auto", pos = env_proj)
     fin_y <- get("fin_y", pos = env_proj)
     fin_mt <- get("fin_mt", pos = env_proj)
+
+    # Check whether all results are deleted or not
     if(any(fin_auto, fin_y, fin_mt)){
-      sign_ok <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
+      sign_ok <- tclvalue(tkmessageBox(message = "All results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
+    }else{
+      sign_ok <- "ok"
     }
+
+    # If all results are deleted
     if(sign_ok == "ok"){
+
+      # Define a matrix for criteria
       criteria <- matrix("", 6, 2)
       colnames(criteria) <- c("Criteria", "Value")
       criteria[, 1] <- c("min_lr_auto",
@@ -19,45 +28,69 @@ set_criteria <- function(env_proj, env_gui){
       criteria[, 2] <- c(tclvalue(min_lr_auto_var),
                          tclvalue(max_mismatch_y_var), tclvalue(max_ignore_y_var), tclvalue(max_mustep_y_var),
                          tclvalue(min_share_mt_var), tclvalue(max_mismatch_mt_var))
+
+      # Save criteria
       write.csv(criteria, paste0(path_pack, "/extdata/parameters/criteria.csv"), row.names = FALSE)
+
+      # Assign end signs
       assign("fin_auto", FALSE, envir = env_proj)
       assign("fin_y", FALSE, envir = env_proj)
       assign("fin_mt", FALSE, envir = env_proj)
+
+      # Reset tab2, tab4, and tab6
       make_tab2(env_proj, env_gui)
       make_tab4(env_proj, env_gui)
       make_tab6(env_proj, env_gui)
+
+      # Destroy the top frame
       tkdestroy(tf)
     }
   }
 
   # Get the package path
   path_pack <- get("path_pack", pos = env_gui)
+
+  # Get file names in the folder "parameters"
   fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
+
+  # If the file "criteria.csv" is found
   if(is.element("criteria.csv", fn_par)){
+
+    # Load the file "criteria.csv"
     criteria <- read.csv(paste0(path_pack, "/extdata/parameters/criteria.csv"), header = TRUE)
+
+    # Extract values
     min_lr_auto <- criteria$Value[criteria$Criteria == "min_lr_auto"]
     max_mismatch_y <- criteria$Value[criteria$Criteria == "max_mismatch_y"]
     max_ignore_y <- criteria$Value[criteria$Criteria == "max_ignore_y"]
     max_mustep_y <- criteria$Value[criteria$Criteria == "max_mustep_y"]
     min_share_mt <- criteria$Value[criteria$Criteria == "min_share_mt"]
     max_mismatch_mt <- criteria$Value[criteria$Criteria == "max_mismatch_mt"]
+
+  # If the file "criteria.csv" is missing
   }else{
+
+    # Get default values from the environment "env_proj"
     min_lr_auto <- get("min_lr_auto_default", pos = env_proj)
     max_mismatch_y <- get("max_mismatch_y_default", pos = env_proj)
     max_ignore_y <- get("max_ignore_y_default", pos = env_proj)
     max_mustep_y <- get("max_mustep_y_default", pos = env_proj)
     min_share_mt <- get("min_share_mt_default", pos = env_proj)
     max_mismatch_mt <- get("max_mismatch_mt_default", pos = env_proj)
+
+    # Define a matrix for criteria
     criteria <- matrix("", 6, 2)
     colnames(criteria) <- c("Criteria", "Value")
     criteria[, 1] <- c("min_lr_auto",
                        "max_mismatch_y", "max_ignore_y", "max_mustep_y",
                        "min_share_mt", "max_mismatch_mt")
     criteria[, 2] <- c(min_lr_auto, max_mismatch_y, max_ignore_y, max_mustep_y, min_share_mt, max_mismatch_mt)
+
+    # Save the file "criteria.csv"
     write.csv(criteria, paste0(path_pack, "/extdata/parameters/criteria.csv"), row.names = FALSE)
   }
 
-  # Define tclvalue
+  # Define tcl variables
   min_lr_auto_var <- tclVar(min_lr_auto)
   max_mismatch_y_var <- tclVar(max_mismatch_y)
   max_ignore_y_var <- tclVar(max_ignore_y)
@@ -65,7 +98,7 @@ set_criteria <- function(env_proj, env_gui){
   min_share_mt_var <- tclVar(min_share_mt)
   max_mismatch_mt_var <- tclVar(max_mismatch_mt)
 
-  # Make a top frame
+  # Create a top frame
   tf <- tktoplevel()
   tkwm.title(tf, "Set criteria")
 
@@ -299,9 +332,16 @@ set_myu <- function(env_proj, env_gui){
     }
   }
 
+  # Get the package path
   path_pack <- get("path_pack", pos = env_gui)
+
+  # Get file names in the folder "parameters"
   fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
+
+  # If the file "myu.csv" is found
   if(is.element("myu.csv", fn_par)){
+
+    # Load the file "myu.csv"
     myu_data <- read.csv(paste0(path_pack, "/extdata/parameters/myu.csv"), header = TRUE)
     myu_data <- as.matrix(myu_data)
     locus_myu <- myu_data[, colnames(myu_data) == "Marker"]
@@ -350,6 +390,139 @@ set_myu <- function(env_proj, env_gui){
   # Assign widgets to environment variable (env_myu)
   assign("mlb_myu", mlb_myu, envir = env_myu)
   assign("scr1", scr1, envir = env_myu)
+}
+
+# Set relationships
+set_rel <- function(env_proj, env_gui){
+
+  draw_tree <- function(){
+
+  }
+
+  edit_rel <- function(){
+
+    # Get the multi-list box from the environment "env_rel"
+    mlb_rel <- get("mlb_rel", pos = env_rel)
+
+    if(tclvalue(tkcurselection(mlb_rel)) == ""){
+      tkmessageBox(message = "Select one relationship!", icon = "error", type = "ok")
+    }else{
+
+      # Get relationship data from the environment "env_rel"
+      rel_data <- get("rel_data", pos = env_rel)
+
+      # Get the selected relationship
+      pos_select <- as.numeric(tclvalue(tkcurselection(mlb_rel))) + 1
+      rel_select <- rel_data[pos_select, "Name_relationship"]
+
+      # Define a tcl variable
+      rel_select_var <- tclVar(rel_select)
+
+      # Make a top frame
+      tf <- tktoplevel()
+      tkwm.title(tf, "Edit the name of a relationship")
+
+      # Define widgets in tf
+      label_title <- tklabel(tf, text = "Name of relationship")
+      entry_name <- tkentry(tf, textvariable = rel_select_var, width = 40, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+      butt_save <- tkbutton(tf, text = "    Save    ", cursor = "hand2", command = function() save_name_rel(tclvalue(rel_select_var)))
+
+      # Grid widgets
+      tkgrid(label_title, padx = 10, pady = 5)
+      tkgrid(entry_name, padx = 10, pady = 5)
+      tkgrid(butt_save, padx = 10, pady = 5)
+    }
+  }
+
+  save_name_rel <- function(rel_select){
+
+  }
+
+  add_rel <- function(){
+
+  }
+
+  delete_rel <- function(){
+
+    # Get the multi-list box from the environment "env_rel"
+    mlb_rel <- get("mlb_rel", pos = env_rel)
+
+    if(tclvalue(tkcurselection(mlb_myu)) == ""){
+      tkmessageBox(message = "Select one relationship!", icon = "error", type = "ok")
+    }else{
+
+      # Get relationship data from the environment "env_rel"
+      rel_data <- get("rel_data", pos = env_rel)
+
+      # Get a row index deleted
+      pos_select <- as.numeric(tclvalue(tkcurselection(mlb_rel))) + 1
+
+      #
+      rel_data <- rel_data[-pos_select, ]
+
+      #
+      assign("rel_data", rel_data, envir = env_rel)
+    }
+  }
+
+  reset_rel <- function(){
+
+  }
+
+  # Get the package path
+  path_pack <- get("path_pack", pos = env_gui)
+
+  # Get file names in the folder "parameters"
+  fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
+
+  if(is.element("rel.csv", fn_par)){
+    rel_data <- read.csv(paste0(path_pack, "/extdata/parameters/rel.csv"), header = TRUE)
+    rel_display <- rel_data[, 1:4]
+  }else{
+    rel_display <- NULL
+  }
+
+  # Make an environment
+  env_rel <- new.env(parent = globalenv())
+
+  # Make a top frame
+  tf <- tktoplevel()
+  tkwm.title(tf, "Set relationships")
+
+  # Define frames
+  frame_rel_1 <- tkframe(tf)
+  frame_rel_2 <- tkframe(tf)
+
+  # Define a scrollbar for the multi-list box of information on relationships
+  scr1 <- tkscrollbar(frame_rel_1, repeatinterval = 5, command = function(...) tkyview(mlb_rel, ...))
+
+  # Define a multi-list box of information on relationships
+  mlb_rel <- tk2mclistbox(frame_rel_1, width = 100, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+  tk2column(mlb_rel, "add", label = "Name of relationship", width = 40)
+  tk2column(mlb_rel, "add", label = "Degree", width = 20)
+  tk2column(mlb_rel, "add", label = "Paternal lineage", width = 20)
+  tk2column(mlb_rel, "add", label = "Maternal lineage", width = 20)
+  tk2insert.multi(mlb_rel, "end",  rel_display)
+
+  # Define widgets in frame_rel_2
+  butt_tree <- tkbutton(frame_rel_2, text = "    Family tree    ", cursor = "hand2", command = function() draw_tree())
+  butt_edit <- tkbutton(frame_rel_2, text = "    Edit    ", cursor = "hand2", command = function() edit_rel())
+  butt_add <- tkbutton(frame_rel_2, text = "    Add    ", cursor = "hand2", command = function() add_rel())
+  butt_delete <- tkbutton(frame_rel_2, text = "    Delete    ", cursor = "hand2", command = function() delete_rel())
+  butt_reset <- tkbutton(frame_rel_2, text = "    Reset    ", cursor = "hand2", command = function() reset_rel())
+
+  # Grid widgets
+  tkgrid(mlb_rel, scr1)
+  tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
+  tkgrid(butt_tree, butt_edit, butt_add, butt_delete, butt_reset, padx = 10, pady = 5)
+  tkgrid(frame_rel_1)
+  tkgrid(frame_rel_2)
+
+  # Assign widgets to the environment "env_rel"
+  assign("mlb_rel", mlb_rel, envir = env_rel)
+
+  # Assign data to the environment "env_rel"
+  assign("rel_data", rel_data, envir = env_rel)
 }
 
 # Set IBD probabilities for autosomal STR
