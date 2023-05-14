@@ -136,17 +136,24 @@ set_criteria <- function(env_proj, env_gui){
 # Set mutation rates for autosomal STR
 set_myu <- function(env_proj, env_gui){
   edit_myu_1 <- function(){
+
+    # Get the multi-list box from the environment "env_myu"
     mlb_myu <- get("mlb_myu", pos = env_myu)
+
+    # If the user does not select one locus
     if(tclvalue(tkcurselection(mlb_myu)) == ""){
       tkmessageBox(message = "Select one locus!", icon = "error", type = "ok")
+
+    # If the user selects one locus
     }else{
+
       # Get the selected mutation rate
       pos_select <- as.numeric(tclvalue(tkcurselection(mlb_myu))) + 1
       myu_all <- get("myu_all", pos = env_myu)
       myu_select <- myu_all[pos_select]
       myu_select_var <- tclVar(myu_select)
 
-      # Make a top frame
+      # Create a top frame
       tf <- tktoplevel()
       tkwm.title(tf, "Edit a mutation rate")
 
@@ -168,6 +175,8 @@ set_myu <- function(env_proj, env_gui){
       tkgrid(label_title_1, label_title_2, padx = 10, pady = 5)
       tkgrid(label_locus, entry_myu, padx = 10, pady = 5)
       tkgrid(butt_save, pady = 10)
+
+      # Grid frames
       tkgrid(frame_edit_1, padx = 20)
       tkgrid(frame_edit_2)
     }
@@ -332,6 +341,19 @@ set_myu <- function(env_proj, env_gui){
     }
   }
 
+  save_myu <- function(tf){
+
+    # Get the end sign of the autosomal STR analysis from the environment "env_proj"
+    fin_auto <- get("fin_auto", pos = env_proj)
+
+    # Check whether all results are deleted or not
+    if(fin_auto){
+      sign_ok <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
+    }else{
+      sign_ok <- "ok"
+    }
+  }
+
   # Get the package path
   path_pack <- get("path_pack", pos = env_gui)
 
@@ -343,20 +365,25 @@ set_myu <- function(env_proj, env_gui){
 
     # Load the file "myu.csv"
     myu_data <- read.csv(paste0(path_pack, "/extdata/parameters/myu.csv"), header = TRUE)
-    myu_data <- as.matrix(myu_data)
-    locus_myu <- myu_data[, colnames(myu_data) == "Marker"]
-    myu_all <- as.numeric(myu_data[, colnames(myu_data) == "Myu"])
+
+    # Extract mutation rates
+    locus_myu <- myu_data[, "Marker"]
+    myu_all <- as.numeric(myu_data[, "Myu"])
     names(myu_all) <- locus_myu
+
+  # If the file "myu.csv" is missing
   }else{
+
+    # Get default values from the environment "env_proj"
     myu_all <- get("myu_all_default", pos = env_proj)
-    locus_myu <- names(myu_all)
-    myu_save <- cbind(locus_myu, myu_all)
-    colnames(myu_save) <- c("Marker", "Myu")
-    write.csv(myu_save, paste0(path_pack, "/extdata/parameters/myu.csv"), row.names = FALSE)
+
+    # Make the file "myu.csv"
+    myu_data <- data.frame(Markers = names(myu_all), Myu = myu_all)
+    write.csv(myu_data, paste0(path_pack, "/extdata/parameters/myu.csv"), row.names = FALSE)
   }
 
+  # Make an environment
   env_myu <- new.env(parent = globalenv())
-  assign("myu_all", myu_all, envir = env_myu)
 
   # Make a top frame
   tf <- tktoplevel()
@@ -366,10 +393,10 @@ set_myu <- function(env_proj, env_gui){
   frame_myu_1 <- tkframe(tf)
   frame_myu_2 <- tkframe(tf)
 
-  # Define a scrollbar for a multi-list box (mlb_myu)
+  # Define a scrollbar for the multi-list box for mutation rates
   scr1 <- tkscrollbar(frame_myu_1, repeatinterval = 5, command = function(...) tkyview(mlb_myu, ...))
 
-  # Define a multi-list box (mlb_myu)
+  # Define a multi-list box for mutation rates
   mlb_myu <- tk2mclistbox(frame_myu_1, width = 30, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
   tk2column(mlb_myu, "add", label = "Locus", width = 15)
   tk2column(mlb_myu, "add", label = "Mutation rate", width = 15)
@@ -384,12 +411,16 @@ set_myu <- function(env_proj, env_gui){
   tkgrid(mlb_myu, scr1)
   tkgrid.configure(scr1, rowspan = 30, sticky = "nsw")
   tkgrid(butt_edit, butt_add, butt_delete, padx = 20, pady = 5)
+
+  # Grid frames
   tkgrid(frame_myu_1)
   tkgrid(frame_myu_2)
 
   # Assign widgets to environment variable (env_myu)
   assign("mlb_myu", mlb_myu, envir = env_myu)
   assign("scr1", scr1, envir = env_myu)
+
+  assign("myu_all", myu_all, envir = env_myu)
 }
 
 # Set relationships
@@ -404,8 +435,11 @@ set_rel <- function(env_proj, env_gui){
     # Get the multi-list box from the environment "env_rel"
     mlb_rel <- get("mlb_rel", pos = env_rel)
 
+    # If the user does not select one relationship
     if(tclvalue(tkcurselection(mlb_rel)) == ""){
       tkmessageBox(message = "Select one relationship!", icon = "error", type = "ok")
+
+    # If the user selects one relationship
     }else{
 
       # Get relationship data from the environment "env_rel"
