@@ -68,26 +68,48 @@ set_env_proj_mt <- function(env_proj, bool_new){
 
 # Set objects of env_proj for default criteria and parameters
 set_env_proj_default <- function(env_proj){
+
   # Set default criteria
-  assign("min_lr_auto_default", 100, envir = env_proj)
-  assign("max_mismatch_y_default", 2, envir = env_proj)
-  assign("max_ignore_y_default", 10, envir = env_proj)
-  assign("max_mustep_y_default", 2, envir = env_proj)
-  assign("min_share_mt_default", 300, envir = env_proj)
-  assign("max_mismatch_mt_default", 1, envir = env_proj)
+  criteria_default <- data.frame(Criteria = c("min_lr_auto", "max_mismatch_y", "max_ignore_y", "max_mustep_y", "min_share_mt", "max_mismatch_mt"),
+                                 Value = c(100, 2, 10, 2, 300, 1))
+  assign("criteria_default", criteria_default, envir = env_proj)
 
   # Set default mutation rates
-  myu_all <- c(0.001474647, 0.002858327, 0.001479789, 0.002240583, 0.000227000,
-               0.001433812, 0.001130039, 0.001588339,
-               0.001521043, 0.001069792, 0.000092200, 0.002602109,
-               0.001521043, 0.001848550, 0.001574558, 0.001179836, 0.001521043,
-               0.001521043, 0.001521043, 0.001521043, 0.001130039)
-  names(myu_all) <- c("D3S1358", "vWA", "D16S539", "CSF1PO", "TPOX",
-                      "D8S1179", "D21S11", "D18S51",
-                      "D2S441", "D19S433", "TH01", "FGA",
-                      "D22S1045", "D5S818", "D13S317", "D7S820", "SE33",
-                      "D10S1248", "D1S1656", "D12S391", "D2S1338")
-  assign("myu_all_default", myu_all, envir = env_proj)
+  myu_all_default <- c(0.001474647, 0.002858327, 0.001479789, 0.002240583, 0.000227000,
+                       0.001433812, 0.001130039, 0.001588339,
+                       0.001521043, 0.001069792, 0.000092200, 0.002602109,
+                       0.001521043, 0.001848550, 0.001574558, 0.001179836, 0.001521043,
+                       0.001521043, 0.001521043, 0.001521043, 0.001130039)
+  names(myu_all_default) <- c("D3S1358", "vWA", "D16S539", "CSF1PO", "TPOX",
+                              "D8S1179", "D21S11", "D18S51",
+                              "D2S441", "D19S433", "TH01", "FGA",
+                              "D22S1045", "D5S818", "D13S317", "D7S820", "SE33",
+                              "D10S1248", "D1S1656", "D12S391", "D2S1338")
+  assign("myu_all_default", myu_all_default, envir = env_proj)
+
+  # Set default relationship
+  name_rel <- c("parent_child_p", "pareent_child_m",
+                "sibling_pm", "sibling_m",
+                "grandparent_grandchild_p", "grandparent_grandchild_m", "grandparent_grandchild",
+                "uncle(aunt)_nephew(niece)_p", "uncle(aunt)_nephew(niece)_m", "uncle(aunt)_nephew(niece)",
+                "cousin_p", "cousin_m", "cousin")
+  degree <- c("1st_pc", "1st_pc",
+              "1st_sib", "1st_sib",
+              "2nd", "2nd", "2nd",
+              "2nd", "2nd", "2nd",
+              "3rd", "3rd", "3rd")
+  paternal <- c(TRUE, FALSE,
+                TRUE, FALSE,
+                TRUE, FALSE, FALSE,
+                TRUE, FALSE, FALSE,
+                TRUE, FALSE, FALSE)
+  maternal <- c(FALSE, TRUE,
+                TRUE, TRUE,
+                FALSE, TRUE, FALSE,
+                FALSE, TRUE, FALSE,
+                FALSE, TRUE, FALSE)
+  rel_data_default <- data.frame(Name_relationship = name_rel, Degree = degree, Paternal_lineage = paternal, Maternal_lineage = maternal)
+  assign("rel_data_default", rel_data_default, envir = env_proj)
 
   # Set default IBD probabilities
   pibd_all <- matrix(0, 5, 3)
