@@ -1,14 +1,14 @@
-Name_relationship,Degree,Paternal_lineage,Maternal_lineage,Family_id,Family_fid,Family_mid,Family_sex,Family_hatched
-parent_child_p,1st_pc,TRUE,FALSE,"1, 2, 3","0, 0, 1","0, 0, 2","1, 2, 1","1, 3"
-parent_child_m,1st_pc,FALSE,TRUE,"1, 2, 3","0, 0, 1","0, 0, 2","1, 2, 0","2, 3"
-sibling_pm,1st_sib,TRUE,TRUE,"1, 2, 3, 4","0, 0, 1, 1","0, 0, 2, 2","1, 2, 1, 1","3, 4"
-sibling_m,1st_sib,FALSE,TRUE,"1, 2, 3, 4","0, 0, 1, 1","0, 0, 2, 2","1, 2, 0, 0","3, 4"
-grandparent_grandchild_p,2nd,TRUE,FALSE,"1, 2, 3, 4, 5","0, 0, 1, 0, 3","0, 0, 2, 0, 4","1, 2, 1, 2, 1","1, 5"
-grandparent_grandchild_m,2nd,FALSE,TRUE,"1, 2, 3, 4, 5","0, 0, 1, 0, 4","0, 0, 2, 0, 3","1, 2, 2, 1, 0","2, 5"
-grandparent_grandchild,2nd,FALSE,FALSE,"1, 2, 3, 4, 5","0, 0, 1, 0, 3","0, 0, 2, 0, 4","0, 0, 0, 0, 0","1, 5"
-uncle(aunt)_nephew(niece)_p,2nd,TRUE,FALSE,"1, 2, 3, 4, 5, 6","0, 0, 1, 1, 0, 4","0, 0, 2, 2, 0, 5","1, 2, 1, 1, 2, 1","3, 6"
-uncle(aunt)_nephew(niece)_m,2nd,FALSE,TRUE,"1, 2, 3, 4, 5, 6","0, 0, 1, 1, 0, 5","0, 0, 2, 2, 0, 4","1, 2, 0, 2, 1, 0","3, 6"
-uncle(aunt)_nephew(niece),2nd,FALSE,FALSE,"1, 2, 3, 4, 5, 6",,,,
-cousin_p,3rd,TRUE,FALSE,,,,,
-cousin_m,3rd,FALSE,TRUE,,,,,
-cousin,3rd,FALSE,FALSE,,,,,
+Name_relationship,Degree,Paternal_lineage,Maternal_lineage,Pr_IBD2,Pr_IBD1,Pr_IBD0
+parent_child_p,1st_pc,TRUE,FALSE,0,1,0
+parent_child_m,1st_pc,FALSE,TRUE,0,1,0
+sibling_pm,1st_sib,TRUE,TRUE,0.25,0.5,0.25
+sibling_m,1st_sib,FALSE,TRUE,0.25,0.5,0.25
+grandparent_grandchild_p,2nd,TRUE,FALSE,0,0.5,0.5
+grandparent_grandchild_m,2nd,FALSE,TRUE,0,0.5,0.5
+grandparent_grandchild,2nd,FALSE,FALSE,0,0.5,0.5
+uncle(aunt)_nephew(niece)_p,2nd,TRUE,FALSE,0,0.5,0.5
+uncle(aunt)_nephew(niece)_m,2nd,FALSE,TRUE,0,0.5,0.5
+uncle(aunt)_nephew(niece),2nd,FALSE,FALSE,0,0.5,0.5
+cousin_p,3rd,TRUE,FALSE,0,0.25,0.75
+cousin_m,3rd,FALSE,TRUE,0,0.25,0.75
+cousin,3rd,FALSE,FALSE,0,0.25,0.75

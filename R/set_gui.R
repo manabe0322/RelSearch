@@ -732,7 +732,312 @@ set_rel <- function(env_proj, env_gui){
     }
   }
 
-  add_rel <- function(){
+  add_rel_1 <- function(){
+
+    add_person <- function(){
+
+      # Get candidates of the father and the mother
+      fm_candidate <- get("fm_candidate", pos = env_rel)
+
+      # Get tcl variables from the environment "env_rel"
+      sex_unk_vars <- get("sex_unk_vars", pos = env_rel)
+      father_unk_vars <- get("father_unk_vars", pos = env_rel)
+      mother_unk_vars <- get("mother_unk_vars", pos = env_rel)
+      founder_unk_vars <- get("founder_unk_vars", pos = env_rel)
+
+      # Get widgets from the environment "env_rel"
+      labels_name_unk <- get("labels_name_unk", pos = env_rel)
+      combos_sex_unk <- get("combos_sex_unk", pos = env_rel)
+      combos_father_unk <- get("combos_father_unk", pos = env_rel)
+      combos_mother_unk <- get("combos_mother_unk", pos = env_rel)
+      checks_founder_unk <- get("checks_founder_unk", pos = env_rel)
+
+      pos_add <- length(sex_unk_vars) + 1
+
+      name_add <- paste0("Unk ", pos_add)
+
+      fm_candidate <- c(fm_candidate, name_add)
+
+      tkconfigure(combo_father_p1, values = fm_candidate)
+      tkconfigure(combo_mother_p1, values = fm_candidate)
+      tkconfigure(combo_father_p2, values = fm_candidate)
+      tkconfigure(combo_mother_p2, values = fm_candidate)
+
+      if(pos_add > 1){
+        for(i in 1:(pos_add - 1)){
+          tkconfigure(combos_father_unk[[i]], values = fm_candidate)
+          tkconfigure(combos_mother_unk[[i]], values = fm_candidate)
+        }
+      }
+
+      sex_unk_vars[[pos_add]] <- tclVar("")
+      father_unk_vars[[pos_add]] <- tclVar("")
+      mother_unk_vars[[pos_add]] <- tclVar("")
+      founder_unk_vars[[pos_add]] <- tclVar("0")
+
+      labels_name_unk[[pos_add]] <- tklabel(frame_add_2, text = name_add)
+      combos_sex_unk[[pos_add]] <- ttkcombobox(frame_add_2, values = sex_candidate, textvariable = sex_unk_vars[[pos_add]], width = 20, state = "readonly")
+      combos_father_unk[[pos_add]] <- ttkcombobox(frame_add_2, values = fm_candidate, textvariable = father_unk_vars[[pos_add]], width = 20, state = "readonly")
+      combos_mother_unk[[pos_add]] <- ttkcombobox(frame_add_2, values = fm_candidate, textvariable = mother_unk_vars[[pos_add]], width = 20, state = "readonly")
+      checks_founder_unk[[pos_add]] <- tkcheckbutton(frame_add_2, variable = founder_unk_vars[[pos_add]], width = 5, cursor = "hand2", command = function() change_founder("unk", pos_add))
+
+      # Grid widgets for the unknown person
+      tkgrid(labels_name_unk[[pos_add]], row = pos_add + 2, column = 0, padx = 5, pady = 5, sticky = "w")
+      tkgrid(combos_sex_unk[[pos_add]], row = pos_add + 2, column = 1, padx = 5, pady = 5, sticky = "w")
+      tkgrid(combos_father_unk[[pos_add]], row = pos_add + 2, column = 2, padx = 5, pady = 5, sticky = "w")
+      tkgrid(combos_mother_unk[[pos_add]], row = pos_add + 2, column = 3, padx = 5, pady = 5, sticky = "w")
+      tkgrid(checks_founder_unk[[pos_add]], row = pos_add + 2, column = 4, padx = 5, pady = 5, sticky = "w")
+
+      # Assign candidates of the father and the mother
+      assign("fm_candidate", fm_candidate, envir = env_rel)
+
+      # Assign tcl variables to the environment "env_rel"
+      assign("sex_unk_vars", sex_unk_vars, envir = env_rel)
+      assign("father_unk_vars", father_unk_vars, envir = env_rel)
+      assign("mother_unk_vars", mother_unk_vars, envir = env_rel)
+      assign("founder_unk_vars", founder_unk_vars, envir = env_rel)
+
+      # Assign widgets to the environment "env_rel"
+      assign("labels_name_unk", labels_name_unk, envir = env_rel)
+      assign("combos_sex_unk", combos_sex_unk, envir = env_rel)
+      assign("combos_father_unk", combos_father_unk, envir = env_rel)
+      assign("combos_mother_unk", combos_mother_unk, envir = env_rel)
+      assign("checks_founder_unk", checks_founder_unk, envir = env_rel)
+    }
+
+    delete_person <- function(){
+
+      # Get candidates of the father and the mother
+      fm_candidate <- get("fm_candidate", pos = env_rel)
+
+      # Get tcl variables from the environment "env_rel"
+      sex_unk_vars <- get("sex_unk_vars", pos = env_rel)
+      father_unk_vars <- get("father_unk_vars", pos = env_rel)
+      mother_unk_vars <- get("mother_unk_vars", pos = env_rel)
+      founder_unk_vars <- get("founder_unk_vars", pos = env_rel)
+
+      # Get widgets from the environment "env_rel"
+      labels_name_unk <- get("labels_name_unk", pos = env_rel)
+      combos_sex_unk <- get("combos_sex_unk", pos = env_rel)
+      combos_father_unk <- get("combos_father_unk", pos = env_rel)
+      combos_mother_unk <- get("combos_mother_unk", pos = env_rel)
+      checks_founder_unk <- get("checks_founder_unk", pos = env_rel)
+
+      pos_del <- length(sex_unk_vars)
+
+      if(pos_del > 0){
+        tkdestroy(labels_name_unk[[pos_del]])
+        tkdestroy(combos_sex_unk[[pos_del]])
+        tkdestroy(combos_father_unk[[pos_del]])
+        tkdestroy(combos_mother_unk[[pos_del]])
+        tkdestroy(checks_founder_unk[[pos_del]])
+
+        fm_candidate <- fm_candidate[1:(length(fm_candidate) - 1)]
+
+        tkconfigure(combo_father_p1, values = fm_candidate)
+        tkconfigure(combo_mother_p1, values = fm_candidate)
+        tkconfigure(combo_father_p2, values = fm_candidate)
+        tkconfigure(combo_mother_p2, values = fm_candidate)
+
+        if(pos_del > 1){
+          for(i in 1:(pos_del - 1)){
+            tkconfigure(combos_father_unk[[i]], values = fm_candidate)
+            tkconfigure(combos_mother_unk[[i]], values = fm_candidate)
+          }
+        }
+
+        sex_unk_vars[[pos_del]] <- NULL
+        father_unk_vars[[pos_del]] <- NULL
+        mother_unk_vars[[pos_del]] <- NULL
+        founder_unk_vars[[pos_del]] <- NULL
+
+        labels_name_unk[[pos_del]] <- NULL
+        combos_sex_unk[[pos_del]] <- NULL
+        combos_father_unk[[pos_del]] <- NULL
+        combos_mother_unk[[pos_del]] <- NULL
+        checks_founder_unk[[pos_del]] <- NULL
+
+        # Assign candidates of the father and the mother
+        assign("fm_candidate", fm_candidate, envir = env_rel)
+
+        # Assign tcl variables to the environment "env_rel"
+        assign("sex_unk_vars", sex_unk_vars, envir = env_rel)
+        assign("father_unk_vars", father_unk_vars, envir = env_rel)
+        assign("mother_unk_vars", mother_unk_vars, envir = env_rel)
+        assign("founder_unk_vars", founder_unk_vars, envir = env_rel)
+
+        # Assign widgets to the environment "env_rel"
+        assign("labels_name_unk", labels_name_unk, envir = env_rel)
+        assign("combos_sex_unk", combos_sex_unk, envir = env_rel)
+        assign("combos_father_unk", combos_father_unk, envir = env_rel)
+        assign("combos_mother_unk", combos_mother_unk, envir = env_rel)
+        assign("checks_founder_unk", checks_founder_unk, envir = env_rel)
+      }
+    }
+
+    view_tree <- function(){
+
+    }
+
+    change_founder <- function(who, pos = numeric(0)){
+
+      if(who == "p1"){
+
+        if(tclvalue(founder_p1_var) == "0"){
+          tkconfigure(combo_father_p1, state = "readonly")
+          tkconfigure(combo_mother_p1, state = "readonly")
+        }else{
+          tclvalue(father_p1_var) <- ""
+          tclvalue(mother_p1_var) <- ""
+          tkconfigure(combo_father_p1, textvariable = father_p1_var, state = "disable")
+          tkconfigure(combo_mother_p1, textvariable = mother_p1_var, state = "disable")
+        }
+
+
+      }else if(who == "p2"){
+
+        if(tclvalue(founder_p2_var) == "0"){
+          tkconfigure(combo_father_p2, state = "readonly")
+          tkconfigure(combo_mother_p2, state = "readonly")
+        }else{
+          tclvalue(father_p2_var) <- ""
+          tclvalue(mother_p2_var) <- ""
+          tkconfigure(combo_father_p2, textvariable = father_p2_var, state = "disable")
+          tkconfigure(combo_mother_p2, textvariable = mother_p2_var, state = "disable")
+        }
+
+      }else{
+
+        # Get tcl variables from the environment "env_rel"
+        father_unk_vars <- get("father_unk_vars", pos = env_rel)
+        mother_unk_vars <- get("mother_unk_vars", pos = env_rel)
+        founder_unk_vars <- get("founder_unk_vars", pos = env_rel)
+
+        # Get widgets from the environment "env_rel"
+        combos_father_unk <- get("combos_father_unk", pos = env_rel)
+        combos_mother_unk <- get("combos_mother_unk", pos = env_rel)
+
+        if(tclvalue(founder_unk_vars[[pos]]) == "0"){
+          tkconfigure(combos_father_unk[[pos]], state = "readonly")
+          tkconfigure(combos_mother_unk[[pos]], state = "readonly")
+        }else{
+          tclvalue(father_unk_vars[[pos]]) <- ""
+          tclvalue(mother_unk_vars[[pos]]) <- ""
+          tkconfigure(combos_father_unk[[pos]], textvariable = father_unk_vars[[pos]], state = "disable")
+          tkconfigure(combos_mother_unk[[pos]], textvariable = mother_unk_vars[[pos]], state = "disable")
+        }
+
+        # Assign tcl variables to the environment "env_rel"
+        assign("father_unk_vars", father_unk_vars, envir = env_rel)
+        assign("mother_unk_vars", mother_unk_vars, envir = env_rel)
+
+        # Assign widgets to the environment "env_rel"
+        assign("combos_father_unk", combos_father_unk, envir = env_rel)
+        assign("combos_mother_unk", combos_mother_unk, envir = env_rel)
+      }
+    }
+
+    sex_candidate <- c("Male", "Female")
+    fm_candidate <- c("Person 1", "Person 2")
+
+    # Define tcl variables
+    sex_p1_var <- tclVar("")
+    father_p1_var <- tclVar("")
+    mother_p1_var <- tclVar("")
+    founder_p1_var <- tclVar("0")
+    sex_p2_var <- tclVar("")
+    father_p2_var <- tclVar("")
+    mother_p2_var <- tclVar("")
+    founder_p2_var <- tclVar("0")
+
+    sex_unk_vars <- list()
+    father_unk_vars <- list()
+    mother_unk_vars <- list()
+    founder_unk_vars <- list()
+
+    labels_name_unk <- list()
+    combos_sex_unk <- list()
+    combos_father_unk <- list()
+    combos_mother_unk <- list()
+    checks_founder_unk <- list()
+
+    # Make a top frame
+    tf <- tktoplevel()
+    tkwm.title(tf, "Add a relationship")
+
+    # Define frames
+    frame_add_1 <- tkframe(tf)
+    frame_add_2 <- tkframe(tf)
+
+    # Define widgets in frame_add_1
+    butt_add <- tkbutton(frame_add_1, text = "    Add    ", cursor = "hand2", command = function() add_person())
+    butt_delete <- tkbutton(frame_add_1, text = "    Delete    ", cursor = "hand2", command = function() delete_person())
+    butt_veiw <- tkbutton(frame_add_1, text = "    View family tree    ", cursor = "hand2", command = function() view_tree())
+
+    # Define title labels in frame_add_2
+    label_name <- tklabel(frame_add_2, text = "Name")
+    label_sex <- tklabel(frame_add_2, text = "Sex")
+    label_father <- tklabel(frame_add_2, text = "Father")
+    label_mother <- tklabel(frame_add_2, text = "Mother")
+    label_founder <- tklabel(frame_add_2, text = "Founder")
+
+    # Define widgets for person 1
+    label_name_p1 <- tklabel(frame_add_2, text = "Person 1")
+    combo_sex_p1 <- ttkcombobox(frame_add_2, values = sex_candidate, textvariable = sex_p1_var, width = 20, state = "readonly")
+    combo_father_p1 <- ttkcombobox(frame_add_2, values = fm_candidate, textvariable = father_p1_var, width = 20, state = "readonly")
+    combo_mother_p1 <- ttkcombobox(frame_add_2, values = fm_candidate, textvariable = mother_p1_var, width = 20, state = "readonly")
+    check_founder_p1 <- tkcheckbutton(frame_add_2, variable = founder_p1_var, width = 5, cursor = "hand2", command = function() change_founder("p1"))
+
+    # Define widgets for person 2
+    label_name_p2 <- tklabel(frame_add_2, text = "Person 2")
+    combo_sex_p2 <- ttkcombobox(frame_add_2, values = sex_candidate, textvariable = sex_p2_var, width = 20, state = "readonly")
+    combo_father_p2 <- ttkcombobox(frame_add_2, values = fm_candidate, textvariable = father_p2_var, width = 20, state = "readonly")
+    combo_mother_p2 <- ttkcombobox(frame_add_2, values = fm_candidate, textvariable = mother_p2_var, width = 20, state = "readonly")
+    check_founder_p2 <- tkcheckbutton(frame_add_2, variable = founder_p2_var, width = 5, cursor = "hand2", command = function() change_founder("p2"))
+
+    # Grid widgets in frame_add_1
+    tkgrid(butt_add, butt_delete, butt_veiw, padx = 5, pady = 5, sticky = "w")
+
+    # Grid title labels in frame_add_2
+    tkgrid(label_name, row = 0, column = 0, padx = 5, pady = 5, sticky = "w")
+    tkgrid(label_sex, row = 0, column = 1, padx = 5, pady = 5, sticky = "w")
+    tkgrid(label_father, row = 0, column = 2, padx = 5, pady = 5, sticky = "w")
+    tkgrid(label_mother, row = 0, column = 3, padx = 5, pady = 5, sticky = "w")
+    tkgrid(label_founder, row = 0, column = 4, padx = 5, pady = 5, sticky = "w")
+
+    # Grid widgets for person 1
+    tkgrid(label_name_p1, row = 1, column = 0, padx = 5, pady = 5, sticky = "w")
+    tkgrid(combo_sex_p1, row = 1, column = 1, padx = 5, pady = 5, sticky = "w")
+    tkgrid(combo_father_p1, row = 1, column = 2, padx = 5, pady = 5, sticky = "w")
+    tkgrid(combo_mother_p1, row = 1, column = 3, padx = 5, pady = 5, sticky = "w")
+    tkgrid(check_founder_p1, row = 1, column = 4, padx = 5, pady = 5, sticky = "w")
+
+    # Grid widgets for person 2
+    tkgrid(label_name_p2, row = 2, column = 0, padx = 5, pady = 5, sticky = "w")
+    tkgrid(combo_sex_p2, row = 2, column = 1, padx = 5, pady = 5, sticky = "w")
+    tkgrid(combo_father_p2, row = 2, column = 2, padx = 5, pady = 5, sticky = "w")
+    tkgrid(combo_mother_p2, row = 2, column = 3, padx = 5, pady = 5, sticky = "w")
+    tkgrid(check_founder_p2, row = 2, column = 4, padx = 5, pady = 5, sticky = "w")
+
+    # Grid frames
+    tkgrid(frame_add_1)
+    tkgrid(frame_add_2)
+
+    # Assign candidates of the father and the mother
+    assign("fm_candidate", fm_candidate, envir = env_rel)
+
+    # Assign tcl variables to the environment "env_rel"
+    assign("sex_unk_vars", sex_unk_vars, envir = env_rel)
+    assign("father_unk_vars", father_unk_vars, envir = env_rel)
+    assign("mother_unk_vars", mother_unk_vars, envir = env_rel)
+    assign("founder_unk_vars", founder_unk_vars, envir = env_rel)
+
+    # Assign widgets to the environment "env_rel"
+    assign("labels_name_unk", labels_name_unk, envir = env_rel)
+    assign("combos_sex_unk", combos_sex_unk, envir = env_rel)
+    assign("combos_father_unk", combos_father_unk, envir = env_rel)
+    assign("combos_mother_unk", combos_mother_unk, envir = env_rel)
+    assign("checks_founder_unk", checks_founder_unk, envir = env_rel)
 
   }
 
