@@ -478,42 +478,154 @@ set_myu <- function(env_proj, env_gui){
   assign("myu_all", myu_all, envir = env_myu)
 }
 
+# The function to judge paternal lineage
+judge_paternal <- function(p1, p2, id, fid, sex){
+
+  # Search paternal founder
+  search_paternal_founder <- function(pos_start, pos_another){
+
+    id_target <- pos_start
+
+    bool_founder <- FALSE
+
+    while(!bool_founder){
+      father <- fid[id_target]
+
+      # Lineal relationship
+      if(father == id[pos_another]){
+        bool_founder <- TRUE
+        result <- "lineal"
+
+      # Reach a founder
+      }else if(father == 0){
+        bool_founder <- TRUE
+        result <- id[id_target]
+
+      }else{
+        id_target <- which(id == father)
+      }
+    }
+
+    return(result)
+  }
+
+  # Investigate positions of p1 and p2
+  pos_p1 <- match(p1, id)
+  pos_p2 <- match(p2, id)
+
+  # If both p1 and p2 are males
+  if((sex[pos_p1] == 1) && (sex[pos_p2] == 1)){
+
+    if((fid[pos_p1] == 0) && (fid[pos_p2] == 0)){
+      result <- "not paternal"
+    }else{
+
+      # Search the paternal founder of p1
+      founder_p1 <- search_paternal_founder(pos_p1, pos_p2)
+
+      # Search the paternal founder of p2
+      founder_p2 <- search_paternal_founder(pos_p2, pos_p1)
+
+      if((founder_p1 == "lineal") || (founder_p2 == "lineal")){
+        result <- "lineal"
+      }else if(founder_p1 == founder_p2){
+        result <- "collateral"
+      }else{
+        result <- "not paternal"
+      }
+    }
+
+  }else{
+    result <- "not paternal"
+  }
+
+  return(result)
+}
+
+# The function to judge maternal lineage
+judge_maternal <- function(p1, p2, id, mid){
+
+  # Search maternal founder
+  search_maternal_founder <- function(pos_start, pos_another){
+
+    id_target <- pos_start
+
+    bool_founder <- FALSE
+
+    while(!bool_founder){
+      mother <- mid[id_target]
+
+      # Lineal relationship
+      if(mother == id[pos_another]){
+        bool_founder <- TRUE
+        result <- "lineal"
+
+      # Reach a founder
+      }else if(mother == 0){
+        bool_founder <- TRUE
+        result <- id[id_target]
+
+      }else{
+        id_target <- which(id == mother)
+      }
+    }
+
+    return(result)
+  }
+
+  # Investigate positions of p1 and p2
+  pos_p1 <- match(p1, id)
+  pos_p2 <- match(p2, id)
+
+  if((mid[pos_p1] == 0) && (mid[pos_p2] == 0)){
+    result <- "not maternal"
+  }else{
+
+    # Search the maternal founder of p1
+    founder_p1 <- search_maternal_founder(pos_p1, pos_p2)
+
+    # Search the maternal founder of p2
+    founder_p2 <- search_maternal_founder(pos_p2, pos_p1)
+
+    if((founder_p1 == "lineal") || (founder_p2 == "lineal")){
+      result <- "lineal"
+    }else if(founder_p1 == founder_p2){
+      result <- "collateral"
+    }else{
+      result <- "not maternal"
+    }
+  }
+
+  return(result)
+}
+
 # Set relationships
 set_rel <- function(env_proj, env_gui){
 
+  # The function to create the file "rel.csv"
   create_rel_csv <- function(rel_data){
     write.csv(rel_data, paste0(path_pack, "/extdata/parameters/rel.csv"), row.names = FALSE)
   }
 
-  draw_tree <- function(){
+  # Create displayed data
+  create_rel_display <- function(rel_data){
 
-    # Get the multi-list box from the environment "env_rel"
-    mlb_rel <- get("mlb_rel", pos = env_rel)
+    # Extract displayed data
+    rel_display <- rel_data[, c("Name_relationship", "Degree", "Paternal_lineage", "Maternal_lineage")]
 
-    # If the user does not select one relationship
-    if(tclvalue(tkcurselection(mlb_rel)) == ""){
-      tkmessageBox(message = "Select one relationship!", icon = "error", type = "ok")
+    # Change signs of paternal lineage
+    pos_true_p <- which(rel_display[, "Paternal_lineage"] == TRUE)
+    pos_false_p <- which(rel_display[, "Paternal_lineage"] == FALSE)
+    rel_display[pos_true_p, "Paternal_lineage"] <- "\U2713"
+    rel_display[pos_false_p, "Paternal_lineage"] <- ""
 
-      # If the user selects one relationship
-    }else{
+    # Change signs of maternal lineage
+    pos_true_m <- which(rel_display[, "Maternal_lineage"] == TRUE)
+    pos_false_m <- which(rel_display[, "Maternal_lineage"] == FALSE)
+    rel_display[pos_true_m, "Maternal_lineage"] <- "\U2713"
+    rel_display[pos_false_m, "Maternal_lineage"] <- ""
 
-      # Get relationship data from the environment "env_rel"
-      rel_data <- get("rel_data", pos = env_rel)
-
-      # Get data of the selected relationship
-      pos_select <- as.numeric(tclvalue(tkcurselection(mlb_rel))) + 1
-      id_select <- as.numeric(strsplit(rel_data[pos_select, "Family_id"], ", ")[[1]])
-      fid_select <- as.numeric(strsplit(rel_data[pos_select, "Family_fid"], ", ")[[1]])
-      mid_select <- as.numeric(strsplit(rel_data[pos_select, "Family_mid"], ", ")[[1]])
-      sex_select <- as.numeric(strsplit(rel_data[pos_select, "Family_sex"], ", ")[[1]])
-      hatched_select <- as.numeric(strsplit(rel_data[pos_select, "Family_hatched"], ", ")[[1]])
-
-      # Define a family
-      family_select <- ped(id = id_select, fid = fid_select, mid = mid_select, sex = sex_select)
-
-      # Plot a family
-      plot(family_select, hatched = hatched_select)
-    }
+    return(rel_display)
   }
 
   # The function to edit the name of a relationship
@@ -572,8 +684,8 @@ set_rel <- function(env_proj, env_gui){
       # Update the file "rel.csv"
       create_rel_csv(rel_data)
 
-      # Extract displayed data
-      rel_display <- rel_data[, 1:4]
+      # Create displayed data
+      rel_display <- create_rel_display(rel_data)
 
       # Get widgets from the environment "env_rel"
       scr1 <- get("scr1", pos = env_rel)
@@ -629,21 +741,74 @@ set_rel <- function(env_proj, env_gui){
     # Get the multi-list box from the environment "env_rel"
     mlb_rel <- get("mlb_rel", pos = env_rel)
 
+    # If the user does not select one relationship
     if(tclvalue(tkcurselection(mlb_myu)) == ""){
       tkmessageBox(message = "Select one relationship!", icon = "error", type = "ok")
+
+    # If the user selects one relationship
     }else{
 
-      # Get relationship data from the environment "env_rel"
-      rel_data <- get("rel_data", pos = env_rel)
+      # Check whether all results are deleted or not
+      sign_ok <- check_delete_all(env_proj)
 
-      # Get a row index deleted
-      pos_select <- as.numeric(tclvalue(tkcurselection(mlb_rel))) + 1
+      # If all results are deleted
+      if(sign_ok == "ok"){
 
-      #
-      rel_data <- rel_data[-pos_select, ]
+        # Get relationship data from the environment "env_rel"
+        rel_data <- get("rel_data", pos = env_rel)
 
-      #
-      assign("rel_data", rel_data, envir = env_rel)
+        # Get a row index deleted
+        pos_select <- as.numeric(tclvalue(tkcurselection(mlb_rel))) + 1
+
+        # Delete a selected relationship
+        rel_data <- rel_data[-pos_select, ]
+
+        # Update the file "rel.csv"
+        create_rel_csv(rel_data)
+
+        # Create displayed data
+        rel_display <- create_rel_display(rel_data)
+
+        # Get widgets from the environment "env_rel"
+        scr1 <- get("scr1", pos = env_rel)
+        mlb_rel <- get("mlb_rel", pos = env_rel)
+
+        # Destroy widgets
+        tkdestroy(scr1)
+        tkdestroy(mlb_rel)
+
+        # Define a scrollbar for the multi-list box of information on relationships
+        scr1 <- tkscrollbar(frame_rel_1, repeatinterval = 5, command = function(...) tkyview(mlb_rel, ...))
+
+        # Define a multi-list box of information on relationships
+        mlb_rel <- tk2mclistbox(frame_rel_1, width = 100, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+        tk2column(mlb_rel, "add", label = "Name of relationship", width = 40)
+        tk2column(mlb_rel, "add", label = "Degree", width = 20)
+        tk2column(mlb_rel, "add", label = "Paternal lineage", width = 20)
+        tk2column(mlb_rel, "add", label = "Maternal lineage", width = 20)
+        tk2insert.multi(mlb_rel, "end",  rel_display)
+
+        # Grid widgets
+        tkgrid(mlb_rel, scr1)
+        tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
+
+        # Assign widgets to the environment "env_rel"
+        assign("scr1", scr1, envir = env_rel)
+        assign("mlb_rel", mlb_rel, envir = env_rel)
+
+        # Assign data to the environment "env_rel"
+        assign("rel_data", rel_data, envir = env_rel)
+
+        # Assign end signs
+        assign("fin_auto", FALSE, envir = env_proj)
+        assign("fin_y", FALSE, envir = env_proj)
+        assign("fin_mt", FALSE, envir = env_proj)
+
+        # Reset tab2, tab4, and tab6
+        make_tab2(env_proj, env_gui)
+        make_tab4(env_proj, env_gui)
+        make_tab6(env_proj, env_gui)
+      }
     }
   }
 
@@ -657,13 +822,15 @@ set_rel <- function(env_proj, env_gui){
   # Get file names in the folder "parameters"
   fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
 
+  # Define "rel_data"
   if(is.element("rel.csv", fn_par)){
     rel_data <- read.csv(paste0(path_pack, "/extdata/parameters/rel.csv"), header = TRUE)
-    rel_display <- rel_data[, 1:4]
   }else{
     rel_data <- get("rel_data_default", pos = env_proj)
-    rel_display <- rel_data[, 1:4]
   }
+
+  # Create displayed data
+  rel_display <- create_rel_display(rel_data)
 
   # Make an environment
   env_rel <- new.env(parent = globalenv())
@@ -688,7 +855,6 @@ set_rel <- function(env_proj, env_gui){
   tk2insert.multi(mlb_rel, "end",  rel_display)
 
   # Define widgets in frame_rel_2
-  butt_tree <- tkbutton(frame_rel_2, text = "    Family tree    ", cursor = "hand2", command = function() draw_tree())
   butt_edit <- tkbutton(frame_rel_2, text = "    Edit    ", cursor = "hand2", command = function() edit_rel_1())
   butt_add <- tkbutton(frame_rel_2, text = "    Add    ", cursor = "hand2", command = function() add_rel_1())
   butt_delete <- tkbutton(frame_rel_2, text = "    Delete    ", cursor = "hand2", command = function() delete_rel())
@@ -697,7 +863,9 @@ set_rel <- function(env_proj, env_gui){
   # Grid widgets
   tkgrid(mlb_rel, scr1)
   tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
-  tkgrid(butt_tree, butt_edit, butt_add, butt_delete, butt_reset, padx = 10, pady = 5)
+  tkgrid(butt_edit, butt_add, butt_delete, butt_reset, padx = 10, pady = 5)
+
+  # Grid frames
   tkgrid(frame_rel_1)
   tkgrid(frame_rel_2)
 
