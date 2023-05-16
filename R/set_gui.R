@@ -775,11 +775,11 @@ set_rel <- function(env_proj, env_gui){
       mother_unk_vars[[pos_add]] <- tclVar("")
       founder_unk_vars[[pos_add]] <- tclVar("0")
 
-      labels_name_unk[[pos_add]] <- tklabel(frame_add_2, text = name_add)
-      combos_sex_unk[[pos_add]] <- ttkcombobox(frame_add_2, values = sex_candidate, textvariable = sex_unk_vars[[pos_add]], width = 20, state = "readonly")
-      combos_father_unk[[pos_add]] <- ttkcombobox(frame_add_2, values = fm_candidate, textvariable = father_unk_vars[[pos_add]], width = 20, state = "readonly")
-      combos_mother_unk[[pos_add]] <- ttkcombobox(frame_add_2, values = fm_candidate, textvariable = mother_unk_vars[[pos_add]], width = 20, state = "readonly")
-      checks_founder_unk[[pos_add]] <- tkcheckbutton(frame_add_2, variable = founder_unk_vars[[pos_add]], width = 5, cursor = "hand2", command = function() change_founder("unk", pos_add))
+      labels_name_unk[[pos_add]] <- tklabel(frame_family, text = name_add)
+      combos_sex_unk[[pos_add]] <- ttkcombobox(frame_family, values = sex_candidate, textvariable = sex_unk_vars[[pos_add]], width = 10, state = "readonly")
+      combos_father_unk[[pos_add]] <- ttkcombobox(frame_family, values = fm_candidate, textvariable = father_unk_vars[[pos_add]], width = 20, state = "readonly")
+      combos_mother_unk[[pos_add]] <- ttkcombobox(frame_family, values = fm_candidate, textvariable = mother_unk_vars[[pos_add]], width = 20, state = "readonly")
+      checks_founder_unk[[pos_add]] <- tkcheckbutton(frame_family, variable = founder_unk_vars[[pos_add]], width = 5, cursor = "hand2", command = function() change_founder("unk", pos_add))
 
       # Grid widgets for the unknown person
       tkgrid(labels_name_unk[[pos_add]], row = pos_add + 2, column = 0, padx = 5, pady = 5, sticky = "w")
@@ -787,6 +787,9 @@ set_rel <- function(env_proj, env_gui){
       tkgrid(combos_father_unk[[pos_add]], row = pos_add + 2, column = 2, padx = 5, pady = 5, sticky = "w")
       tkgrid(combos_mother_unk[[pos_add]], row = pos_add + 2, column = 3, padx = 5, pady = 5, sticky = "w")
       tkgrid(checks_founder_unk[[pos_add]], row = pos_add + 2, column = 4, padx = 5, pady = 5, sticky = "w")
+
+      # Update the scrollbar
+      tkconfigure(canvas_family, scrollregion = c(0, 0, 1000, 36 * (pos_add + 2)))
 
       # Assign candidates of the father and the mother
       assign("fm_candidate", fm_candidate, envir = env_rel)
@@ -846,6 +849,9 @@ set_rel <- function(env_proj, env_gui){
           }
         }
 
+        # Update the scrollbar
+        tkconfigure(canvas_family, scrollregion = c(0, 0, 1000, 36 * (pos_del + 1)))
+
         sex_unk_vars[[pos_del]] <- NULL
         father_unk_vars[[pos_del]] <- NULL
         mother_unk_vars[[pos_del]] <- NULL
@@ -877,6 +883,67 @@ set_rel <- function(env_proj, env_gui){
 
     view_tree <- function(){
 
+      # Get tcl variables from the environment "env_rel"
+      sex_unk_vars <- get("sex_unk_vars", pos = env_rel)
+      father_unk_vars <- get("father_unk_vars", pos = env_rel)
+      mother_unk_vars <- get("mother_unk_vars", pos = env_rel)
+
+      # Extract values from tcl variables for unknowns
+      sex_unk <- sapply(sex_unk_vars, tclvalue)
+      sex_unk[which(sex_unk == "Male")] <- 1
+      sex_unk[which(sex_unk == "Female")] <- 2
+      father_unk <- sapply(father_unk_vars, tclvalue)
+      father_unk[which(father_unk == "")] <- 0
+      mother_unk <- sapply(mother_unk_vars, tclvalue)
+      mother_unk[which(mother_unk == "")] <- 0
+
+      # Extract values from tcl variables for p1
+      sex_p1 <- tclvalue(sex_p1_var)
+      if(sex_p1 == "Male"){
+        sex_p1 <- 1
+      }else if(sex_p1 == "Female"){
+        sex_p1 <- 2
+      }
+      father_p1 <- tclvalue(father_p1_var)
+      if(father_p1 == ""){
+        father_p1 <- 0
+      }
+      mother_p1 <- tclvalue(mother_p1_var)
+      if(mother_p1 == ""){
+        mother_p1 <- 0
+      }
+
+      # Extract values from tcl variables for p2
+      sex_p2 <- tclvalue(sex_p2_var)
+      if(sex_p2 == "Male"){
+        sex_p2 <- 1
+      }else if(sex_p2 == "Female"){
+        sex_p2 <- 2
+      }
+      father_p2 <- tclvalue(father_p2_var)
+      if(father_p2 == ""){
+        father_p2 <- 0
+      }
+      mother_p2 <- tclvalue(mother_p2_var)
+      if(mother_p2 == ""){
+        mother_p2 <- 0
+      }
+
+      # Define a family tree
+      tree <- try(ped(id = c("Person 1", "Person 2", paste0("Unk ", 1:length(sex_unk))),
+                      fid = c(father_p1, father_p2, father_unk),
+                      mid = c(mother_p1, mother_p2, mother_unk),
+                      sex = c(sex_p1, sex_p2, sex_unk)),
+                  silent = TRUE)
+
+      # Check whether the family tree is appropriate or not
+      if(class(tree) == "try-error"){
+        tkmessageBox(message = "Incorrect setting of the family tree", icon = "error", type = "ok")
+      }else{
+
+        # Plot the family tree
+        plot(tree, hatched = c("Person 1", "Person 2"))
+      }
     }
 
     change_founder <- function(who, pos = numeric(0)){
@@ -974,31 +1041,36 @@ set_rel <- function(env_proj, env_gui){
     butt_delete <- tkbutton(frame_add_1, text = "    Delete    ", cursor = "hand2", command = function() delete_person())
     butt_veiw <- tkbutton(frame_add_1, text = "    View family tree    ", cursor = "hand2", command = function() view_tree())
 
-    # Define title labels in frame_add_2
-    label_name <- tklabel(frame_add_2, text = "Name")
-    label_sex <- tklabel(frame_add_2, text = "Sex")
-    label_father <- tklabel(frame_add_2, text = "Father")
-    label_mother <- tklabel(frame_add_2, text = "Mother")
-    label_founder <- tklabel(frame_add_2, text = "Founder")
+    # Define a scrollbar in frame_add_2
+    scr_family <- tkscrollbar(frame_add_2, repeatinterval = 5, command = function(...) tkyview(canvas_family, ...))
+    canvas_family <- tkcanvas(frame_add_2, width = 550, height = 300, scrollregion = c(0, 0, 1000, 72), yscrollcommand = function(...) tkset(scr_family, ...))
+    frame_family <- tkframe(canvas_family)
+
+    # Define title labels in frame_family
+    label_name <- tklabel(frame_family, text = "Name")
+    label_sex <- tklabel(frame_family, text = "Sex")
+    label_father <- tklabel(frame_family, text = "Father")
+    label_mother <- tklabel(frame_family, text = "Mother")
+    label_founder <- tklabel(frame_family, text = "Founder")
 
     # Define widgets for person 1
-    label_name_p1 <- tklabel(frame_add_2, text = "Person 1")
-    combo_sex_p1 <- ttkcombobox(frame_add_2, values = sex_candidate, textvariable = sex_p1_var, width = 20, state = "readonly")
-    combo_father_p1 <- ttkcombobox(frame_add_2, values = fm_candidate, textvariable = father_p1_var, width = 20, state = "readonly")
-    combo_mother_p1 <- ttkcombobox(frame_add_2, values = fm_candidate, textvariable = mother_p1_var, width = 20, state = "readonly")
-    check_founder_p1 <- tkcheckbutton(frame_add_2, variable = founder_p1_var, width = 5, cursor = "hand2", command = function() change_founder("p1"))
+    label_name_p1 <- tklabel(frame_family, text = "Person 1")
+    combo_sex_p1 <- ttkcombobox(frame_family, values = sex_candidate, textvariable = sex_p1_var, width = 10, state = "readonly")
+    combo_father_p1 <- ttkcombobox(frame_family, values = fm_candidate, textvariable = father_p1_var, width = 20, state = "readonly")
+    combo_mother_p1 <- ttkcombobox(frame_family, values = fm_candidate, textvariable = mother_p1_var, width = 20, state = "readonly")
+    check_founder_p1 <- tkcheckbutton(frame_family, variable = founder_p1_var, width = 5, cursor = "hand2", command = function() change_founder("p1"))
 
     # Define widgets for person 2
-    label_name_p2 <- tklabel(frame_add_2, text = "Person 2")
-    combo_sex_p2 <- ttkcombobox(frame_add_2, values = sex_candidate, textvariable = sex_p2_var, width = 20, state = "readonly")
-    combo_father_p2 <- ttkcombobox(frame_add_2, values = fm_candidate, textvariable = father_p2_var, width = 20, state = "readonly")
-    combo_mother_p2 <- ttkcombobox(frame_add_2, values = fm_candidate, textvariable = mother_p2_var, width = 20, state = "readonly")
-    check_founder_p2 <- tkcheckbutton(frame_add_2, variable = founder_p2_var, width = 5, cursor = "hand2", command = function() change_founder("p2"))
+    label_name_p2 <- tklabel(frame_family, text = "Person 2")
+    combo_sex_p2 <- ttkcombobox(frame_family, values = sex_candidate, textvariable = sex_p2_var, width = 10, state = "readonly")
+    combo_father_p2 <- ttkcombobox(frame_family, values = fm_candidate, textvariable = father_p2_var, width = 20, state = "readonly")
+    combo_mother_p2 <- ttkcombobox(frame_family, values = fm_candidate, textvariable = mother_p2_var, width = 20, state = "readonly")
+    check_founder_p2 <- tkcheckbutton(frame_family, variable = founder_p2_var, width = 5, cursor = "hand2", command = function() change_founder("p2"))
 
     # Grid widgets in frame_add_1
     tkgrid(butt_add, butt_delete, butt_veiw, padx = 5, pady = 5, sticky = "w")
 
-    # Grid title labels in frame_add_2
+    # Grid title labels in frame_family
     tkgrid(label_name, row = 0, column = 0, padx = 5, pady = 5, sticky = "w")
     tkgrid(label_sex, row = 0, column = 1, padx = 5, pady = 5, sticky = "w")
     tkgrid(label_father, row = 0, column = 2, padx = 5, pady = 5, sticky = "w")
@@ -1018,6 +1090,14 @@ set_rel <- function(env_proj, env_gui){
     tkgrid(combo_father_p2, row = 2, column = 2, padx = 5, pady = 5, sticky = "w")
     tkgrid(combo_mother_p2, row = 2, column = 3, padx = 5, pady = 5, sticky = "w")
     tkgrid(check_founder_p2, row = 2, column = 4, padx = 5, pady = 5, sticky = "w")
+
+    # Grid "frame_family"
+    tkgrid(frame_family)
+
+    # Grid the scrollbar
+    tkgrid(canvas_family, scr_family)
+    tkgrid.configure(scr_family, rowspan = 10, sticky = "nsw")
+    tkcreate(canvas_family, "window", 0, 0, anchor = "nw", window = frame_family)
 
     # Grid frames
     tkgrid(frame_add_1)
