@@ -1008,6 +1008,7 @@ set_rel <- function(env_proj, env_gui){
     fm_candidate <- c("Person 1", "Person 2")
 
     # Define tcl variables
+    name_rel_var <- tclVar("")
     sex_p1_var <- tclVar("")
     father_p1_var <- tclVar("")
     mother_p1_var <- tclVar("")
@@ -1032,14 +1033,20 @@ set_rel <- function(env_proj, env_gui){
     tf <- tktoplevel()
     tkwm.title(tf, "Add a relationship")
 
-    # Define frames
-    frame_add_1 <- tkframe(tf)
-    frame_add_2 <- tkframe(tf)
+    # Define main frames
+    frame_add_1 <- tkframe(tf, relief = "groove", borderwidth = 2)
+    frame_add_2 <- tkframe(tf, relief = "groove", borderwidth = 2)
 
     # Define widgets in frame_add_1
-    butt_add <- tkbutton(frame_add_1, text = "    Add    ", cursor = "hand2", command = function() add_person())
-    butt_delete <- tkbutton(frame_add_1, text = "    Delete    ", cursor = "hand2", command = function() delete_person())
-    butt_veiw <- tkbutton(frame_add_1, text = "    View family tree    ", cursor = "hand2", command = function() view_tree())
+    label_title_name_rel <- tklabel(frame_add_1, text = "Name of relationship", font = "Helvetica 10 bold")
+    entry_name_rel <- tkentry(frame_add_1, textvariable = name_rel_var, width = 40, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+
+    # Define buttons to set family tree in frame_add_2
+    label_title_family <- tklabel(frame_add_2, text = "Set family tree", font = "Helvetica 10 bold")
+    frame_add_2_1 <- tkframe(frame_add_2)
+    butt_add <- tkbutton(frame_add_2_1, text = "    Add    ", cursor = "hand2", command = function() add_person())
+    butt_delete <- tkbutton(frame_add_2_1, text = "    Delete    ", cursor = "hand2", command = function() delete_person())
+    butt_veiw <- tkbutton(frame_add_2_1, text = "    View family tree    ", cursor = "hand2", command = function() view_tree())
 
     # Define a scrollbar in frame_add_2
     scr_family <- tkscrollbar(frame_add_2, repeatinterval = 5, command = function(...) tkyview(canvas_family, ...))
@@ -1047,11 +1054,12 @@ set_rel <- function(env_proj, env_gui){
     frame_family <- tkframe(canvas_family)
 
     # Define title labels in frame_family
-    label_name <- tklabel(frame_family, text = "Name")
-    label_sex <- tklabel(frame_family, text = "Sex")
-    label_father <- tklabel(frame_family, text = "Father")
-    label_mother <- tklabel(frame_family, text = "Mother")
-    label_founder <- tklabel(frame_family, text = "Founder")
+    frame_add_2_2 <- tkframe(frame_add_2)
+    label_name <- tklabel(frame_add_2_2, text = "Name")
+    label_sex <- tklabel(frame_add_2_2, text = "Sex")
+    label_father <- tklabel(frame_add_2_2, text = "Father")
+    label_mother <- tklabel(frame_add_2_2, text = "Mother")
+    label_founder <- tklabel(frame_add_2_2, text = "Founder")
 
     # Define widgets for person 1
     label_name_p1 <- tklabel(frame_family, text = "Person 1")
@@ -1068,6 +1076,12 @@ set_rel <- function(env_proj, env_gui){
     check_founder_p2 <- tkcheckbutton(frame_family, variable = founder_p2_var, width = 5, cursor = "hand2", command = function() change_founder("p2"))
 
     # Grid widgets in frame_add_1
+    tkgrid(label_title_name_rel, padx = 5, pady = 5, sticky = "w")
+    tkgrid(entry_name_rel, padx = 25, pady = 5, sticky = "w")
+
+    # Grid buttons in frame_add_2
+    tkgrid(label_title_family, padx = 5, pady = 5, sticky = "w")
+    tkgrid(frame_add_2_1, padx = 25, pady = 5, sticky = "w")
     tkgrid(butt_add, butt_delete, butt_veiw, padx = 5, pady = 5, sticky = "w")
 
     # Grid title labels in frame_family
@@ -1091,17 +1105,18 @@ set_rel <- function(env_proj, env_gui){
     tkgrid(combo_mother_p2, row = 2, column = 3, padx = 5, pady = 5, sticky = "w")
     tkgrid(check_founder_p2, row = 2, column = 4, padx = 5, pady = 5, sticky = "w")
 
-    # Grid "frame_family"
-    tkgrid(frame_family)
+    # Grid "frame_add_2_2" and "frame_family"
+    tkpack(frame_add_2_2)
+    tkpack(frame_family)
 
     # Grid the scrollbar
     tkgrid(canvas_family, scr_family)
     tkgrid.configure(scr_family, rowspan = 10, sticky = "nsw")
     tkcreate(canvas_family, "window", 0, 0, anchor = "nw", window = frame_family)
 
-    # Grid frames
-    tkgrid(frame_add_1)
-    tkgrid(frame_add_2)
+    # Grid main frames
+    tkgrid(frame_add_1, padx = 10, pady = 10, sticky = "w")
+    tkgrid(frame_add_2, padx = 10, pady = 10, sticky = "w")
 
     # Assign candidates of the father and the mother
     assign("fm_candidate", fm_candidate, envir = env_rel)
