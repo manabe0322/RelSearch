@@ -881,7 +881,7 @@ set_rel <- function(env_proj, env_gui){
       }
     }
 
-    view_tree <- function(){
+    check_tree <- function(){
 
       # Get tcl variables from the environment "env_rel"
       sex_unk_vars <- get("sex_unk_vars", pos = env_rel)
@@ -936,6 +936,14 @@ set_rel <- function(env_proj, env_gui){
                       sex = c(sex_p1, sex_p2, sex_unk)),
                   silent = TRUE)
 
+      return(tree)
+    }
+
+    view_tree <- function(){
+
+      # Check the family tree
+      tree <- check_tree()
+
       # Check whether the family tree is appropriate or not
       if(class(tree) == "try-error"){
         tkmessageBox(message = "Incorrect setting of the family tree", icon = "error", type = "ok")
@@ -943,6 +951,19 @@ set_rel <- function(env_proj, env_gui){
 
         # Plot the family tree
         plot(tree, hatched = c("Person 1", "Person 2"))
+      }
+    }
+
+    save_tree <- function(){
+
+      # Check the family tree
+      tree <- check_tree()
+
+      # Check whether the family tree is appropriate or not
+      if(class(tree) == "try-error"){
+        tkmessageBox(message = "Incorrect setting of the family tree", icon = "error", type = "ok")
+      }else{
+
       }
     }
 
@@ -1036,6 +1057,7 @@ set_rel <- function(env_proj, env_gui){
     # Define main frames
     frame_add_1 <- tkframe(tf, relief = "groove", borderwidth = 2)
     frame_add_2 <- tkframe(tf, relief = "groove", borderwidth = 2)
+    frame_add_3 <- tkframe(tf)
 
     # Define widgets in frame_add_1
     label_title_name_rel <- tklabel(frame_add_1, text = "Name of relationship", font = "Helvetica 10 bold")
@@ -1054,12 +1076,11 @@ set_rel <- function(env_proj, env_gui){
     frame_family <- tkframe(canvas_family)
 
     # Define title labels in frame_family
-    frame_add_2_2 <- tkframe(frame_add_2)
-    label_name <- tklabel(frame_add_2_2, text = "Name")
-    label_sex <- tklabel(frame_add_2_2, text = "Sex")
-    label_father <- tklabel(frame_add_2_2, text = "Father")
-    label_mother <- tklabel(frame_add_2_2, text = "Mother")
-    label_founder <- tklabel(frame_add_2_2, text = "Founder")
+    label_name <- tklabel(frame_family, text = "Name")
+    label_sex <- tklabel(frame_family, text = "Sex")
+    label_father <- tklabel(frame_family, text = "Father")
+    label_mother <- tklabel(frame_family, text = "Mother")
+    label_founder <- tklabel(frame_family, text = "Founder")
 
     # Define widgets for person 1
     label_name_p1 <- tklabel(frame_family, text = "Person 1")
@@ -1074,6 +1095,9 @@ set_rel <- function(env_proj, env_gui){
     combo_father_p2 <- ttkcombobox(frame_family, values = fm_candidate, textvariable = father_p2_var, width = 20, state = "readonly")
     combo_mother_p2 <- ttkcombobox(frame_family, values = fm_candidate, textvariable = mother_p2_var, width = 20, state = "readonly")
     check_founder_p2 <- tkcheckbutton(frame_family, variable = founder_p2_var, width = 5, cursor = "hand2", command = function() change_founder("p2"))
+
+    # Define a save button in frame_add_3
+    butt_save <- tkbutton(frame_add_3, text = "    Save    ", cursor = "hand2", command = function() save_tree())
 
     # Grid widgets in frame_add_1
     tkgrid(label_title_name_rel, padx = 5, pady = 5, sticky = "w")
@@ -1106,17 +1130,20 @@ set_rel <- function(env_proj, env_gui){
     tkgrid(check_founder_p2, row = 2, column = 4, padx = 5, pady = 5, sticky = "w")
 
     # Grid "frame_add_2_2" and "frame_family"
-    tkpack(frame_add_2_2)
-    tkpack(frame_family)
+    tkgrid(frame_family)
 
     # Grid the scrollbar
     tkgrid(canvas_family, scr_family)
     tkgrid.configure(scr_family, rowspan = 10, sticky = "nsw")
     tkcreate(canvas_family, "window", 0, 0, anchor = "nw", window = frame_family)
 
+    # Grid the save button
+    tkgrid(butt_save)
+
     # Grid main frames
     tkgrid(frame_add_1, padx = 10, pady = 10, sticky = "w")
     tkgrid(frame_add_2, padx = 10, pady = 10, sticky = "w")
+    tkgrid(butt_save, padx = 10, pady = 10)
 
     # Assign candidates of the father and the mother
     assign("fm_candidate", fm_candidate, envir = env_rel)
@@ -1133,6 +1160,10 @@ set_rel <- function(env_proj, env_gui){
     assign("combos_father_unk", combos_father_unk, envir = env_rel)
     assign("combos_mother_unk", combos_mother_unk, envir = env_rel)
     assign("checks_founder_unk", checks_founder_unk, envir = env_rel)
+
+  }
+
+  add_rel_2 <- function(){
 
   }
 
