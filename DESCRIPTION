@@ -1,7 +1,7 @@
 Package: relsearch
 Type: Package
 Title: Open-source software for screening relatives between query and reference databases
-Version: 0.5.2
+Version: 0.5.3
 Author: Sho Manabe <manabesh@hirakata.kmu.ac.jp>
 Maintainer: Sho Manabe <manabesh@hirakata.kmu.ac.jp>
 Description: relsearch is open-source software for screening relatives between query and reference databases. The software is graphical-user-interface written in R language (>= 4.2.0) with GNU General Public License v3.0. It can be applied to autosomal short tandem repeat (STR) markers, Y-STR markers, and mitochondrial DNA sequences commonly used in forensic genetics. For autosomal STR markers, likelihood ratios (LRs) of each query-reference pair are calculated considering mutation and drop-out. For Y-STR markers and mitochondrial DNA sequences, the software investigates the number of inconsistencies between query and reference haplotypes.

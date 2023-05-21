@@ -954,16 +954,47 @@ set_rel <- function(env_proj, env_gui){
       }
     }
 
-    save_tree <- function(){
+    save_tree <- function(name_rel){
 
-      # Check the family tree
-      tree <- check_tree()
-
-      # Check whether the family tree is appropriate or not
-      if(class(tree) == "try-error"){
-        tkmessageBox(message = "Incorrect setting of the family tree", icon = "error", type = "ok")
+      if(name_rel == ""){
+        tkmessageBox(message = "Enter the name of the relationshiop!", icon = "error", type = "ok")
       }else{
 
+        # Check the family tree
+        tree <- check_tree()
+
+        # Check whether the family tree is appropriate or not
+        if(class(tree) == "try-error"){
+          tkmessageBox(message = "Incorrect setting of the family tree!", icon = "error", type = "ok")
+        }else{
+
+          # Make the coefficient table
+          coeff_tree <- coeffTable(tree)
+
+          # Extract k0, k1, and k2
+          pos_row <- intersect(which(coeff_tree[, "id1"] == "Person 1"), which(coeff_tree[, "id2"] == "Person 2"))
+          pibd <- coeff_tree[pos_row, c("k0", "k1", "k2")]
+
+          if(any(is.na(pibd))){
+            tkmessageBox(message = "Person 1 and 2 are inbred individuals!", icon = "error", type = "ok")
+          }else{
+
+            # Extract tree data
+            tree_list <- unclass(tree)
+            id <- tree_list$ID
+            fid <- tree_list$FIDX
+            fid[fid != 0] <- id[fid[fid != 0]]
+            mid <- tree_list$MIDX
+            mid[mid != 0] <- id[mid[mid != 0]]
+            sex <- tree_list$SEX
+
+            # Judge paternal lineage
+            judge_paternal("Person 1", "Person 2", id, fid, sex)
+
+            # Judge maternal lineage
+            judge_maternal("Person 1", "Person 2", id, mid)
+          }
+        }
       }
     }
 
@@ -1097,7 +1128,7 @@ set_rel <- function(env_proj, env_gui){
     check_founder_p2 <- tkcheckbutton(frame_family, variable = founder_p2_var, width = 5, cursor = "hand2", command = function() change_founder("p2"))
 
     # Define a save button in frame_add_3
-    butt_save <- tkbutton(frame_add_3, text = "    Save    ", cursor = "hand2", command = function() save_tree())
+    butt_save <- tkbutton(frame_add_3, text = "    Save    ", cursor = "hand2", command = function() save_tree(tclvalue(name_rel_var)))
 
     # Grid widgets in frame_add_1
     tkgrid(label_title_name_rel, padx = 5, pady = 5, sticky = "w")
