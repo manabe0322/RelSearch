@@ -599,6 +599,28 @@ judge_maternal <- function(p1, p2, id, mid){
   return(result)
 }
 
+# The function to make a displayed degree
+make_deg_display <- function(deg, k1 = -1){
+  if(is.na(deg)){
+    deg_display <- "unr"
+  }else if(deg == 1 && k1 == 1){
+    deg_display <- "1st_pc"
+  }else if(deg == 1 && k1 == 0.5){
+    deg_display <- "1st_sib"
+  }else if(is.element(deg, c(11, 12, 13))){
+    deg_display <- paste0(deg, "th")
+  }else if(deg %% 10 == 1){
+    deg_display <- paste0(deg, "st")
+  }else if(deg %% 10 == 2){
+    deg_display <- paste0(deg, "nd")
+  }else if(deg %% 10 == 3){
+    deg_display <- paste0(deg, "rd")
+  }else{
+    deg_display <- paste0(deg, "th")
+  }
+  return(deg_display)
+}
+
 # Set relationships
 set_rel <- function(env_proj, env_gui){
 
@@ -974,10 +996,14 @@ set_rel <- function(env_proj, env_gui){
           # Extract k0, k1, and k2
           pos_row <- intersect(which(coeff_tree[, "id1"] == "Person 1"), which(coeff_tree[, "id2"] == "Person 2"))
           pibd <- coeff_tree[pos_row, c("k0", "k1", "k2")]
+          deg <- coeff_tree[pos_row, "deg"]
 
           if(any(is.na(pibd))){
             tkmessageBox(message = "Person 1 and 2 are inbred individuals!", icon = "error", type = "ok")
           }else{
+
+            # Make a displayed degree
+            deg_display <- make_deg_display(deg, pibd[2])
 
             # Extract tree data
             tree_list <- unclass(tree)
@@ -989,10 +1015,18 @@ set_rel <- function(env_proj, env_gui){
             sex <- tree_list$SEX
 
             # Judge paternal lineage
-            judge_paternal("Person 1", "Person 2", id, fid, sex)
+            rel_paternal <- judge_paternal("Person 1", "Person 2", id, fid, sex)
+
+            if(is.element(rel_paternal, c("lineal", "collateral"))){
+
+            }
 
             # Judge maternal lineage
-            judge_maternal("Person 1", "Person 2", id, mid)
+            rel_maternal <- judge_maternal("Person 1", "Person 2", id, mid)
+
+            if(is.element(rel_maternal, c("lineal", "collateral"))){
+
+            }
           }
         }
       }
