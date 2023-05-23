@@ -77,6 +77,43 @@ set_criteria <- function(env_proj, env_gui){
     }
   }
 
+  # The function to reset criteria
+  reset_criteria <- function(){
+
+    # Check whether all results are deleted or not
+    sign_ok <- check_delete_all(env_proj)
+
+    # If all results are deleted
+    if(sign_ok == "ok"){
+
+      # Get default values from the environment "env_proj"
+      criteria <- get("criteria_default", pos = env_proj)
+
+      # Reset tcl variables
+      tclvalue(min_lr_auto_var) <- criteria$Value[criteria$Criteria == "min_lr_auto"]
+      tclvalue(max_mismatch_y_var) <- criteria$Value[criteria$Criteria == "max_mismatch_y"]
+      tclvalue(max_ignore_y_var) <- criteria$Value[criteria$Criteria == "max_ignore_y"]
+      tclvalue(max_mustep_y_var) <- criteria$Value[criteria$Criteria == "max_mustep_y"]
+      tclvalue(min_share_mt_var) <- criteria$Value[criteria$Criteria == "min_share_mt"]
+      tclvalue(max_mismatch_mt_var) <- criteria$Value[criteria$Criteria == "max_mismatch_mt"]
+
+      # Create the file "criteria.csv"
+      create_criteria_csv(tclvalue(min_lr_auto_var),
+                          tclvalue(max_mismatch_y_var), tclvalue(max_ignore_y_var), tclvalue(max_mustep_y_var),
+                          tclvalue(min_share_mt_var), tclvalue(max_mismatch_mt_var))
+
+      # Assign end signs
+      assign("fin_auto", FALSE, envir = env_proj)
+      assign("fin_y", FALSE, envir = env_proj)
+      assign("fin_mt", FALSE, envir = env_proj)
+
+      # Reset tab2, tab4, and tab6
+      make_tab2(env_proj, env_gui)
+      make_tab4(env_proj, env_gui)
+      make_tab6(env_proj, env_gui)
+    }
+  }
+
   # Get the package path
   path_pack <- get("path_pack", pos = env_gui)
 
@@ -125,25 +162,32 @@ set_criteria <- function(env_proj, env_gui){
   tf <- tktoplevel()
   tkwm.title(tf, "Set criteria")
 
-  # Define widgets
-  label_title_auto <- tklabel(tf, text = "Autosomal STR")
-  label_min_lr_auto <- tklabel(tf, text = "    Minimum LR")
-  entry_min_lr_auto <- tkentry(tf, textvariable = min_lr_auto_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-  label_title_y <- tklabel(tf, text = "Y-STR")
-  label_max_mismatch_y <- tklabel(tf, text = "    Maximum number of mismatched loci")
-  entry_max_mismatch_y <- tkentry(tf, textvariable = max_mismatch_y_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-  label_max_ignore_y <- tklabel(tf, text = "    Maximum number of ignored loci")
-  entry_max_ignore_y <- tkentry(tf, textvariable = max_ignore_y_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-  label_max_mustep_y <- tklabel(tf, text = "    Maximum mutational steps")
-  entry_max_mustep_y <- tkentry(tf, textvariable = max_mustep_y_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-  label_title_mt <- tklabel(tf, text = "mtDNA")
-  label_min_share_mt <- tklabel(tf, text = "    Minimum shared length")
-  entry_min_share_mt <- tkentry(tf, textvariable = min_share_mt_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-  label_max_mismatch_mt <- tklabel(tf, text = "    Maximum number of inconsistency")
-  entry_max_mismatch_mt <- tkentry(tf, textvariable = max_mismatch_mt_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-  butt_save <- tkbutton(tf, text = "    Save    ", cursor = "hand2", command = function() save_criteria())
+  # Define frames
+  frame_criteria_1 <- tkframe(tf)
+  frame_criteria_2 <- tkframe(tf)
 
-  # Grid widgets
+  # Define widgets in frame_criteria_1
+  label_title_auto <- tklabel(frame_criteria_1, text = "Autosomal STR")
+  label_min_lr_auto <- tklabel(frame_criteria_1, text = "    Minimum LR")
+  entry_min_lr_auto <- tkentry(frame_criteria_1, textvariable = min_lr_auto_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+  label_title_y <- tklabel(frame_criteria_1, text = "Y-STR")
+  label_max_mismatch_y <- tklabel(frame_criteria_1, text = "    Maximum number of mismatched loci")
+  entry_max_mismatch_y <- tkentry(frame_criteria_1, textvariable = max_mismatch_y_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+  label_max_ignore_y <- tklabel(frame_criteria_1, text = "    Maximum number of ignored loci")
+  entry_max_ignore_y <- tkentry(frame_criteria_1, textvariable = max_ignore_y_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+  label_max_mustep_y <- tklabel(frame_criteria_1, text = "    Maximum mutational steps")
+  entry_max_mustep_y <- tkentry(frame_criteria_1, textvariable = max_mustep_y_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+  label_title_mt <- tklabel(frame_criteria_1, text = "mtDNA")
+  label_min_share_mt <- tklabel(frame_criteria_1, text = "    Minimum shared length")
+  entry_min_share_mt <- tkentry(frame_criteria_1, textvariable = min_share_mt_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+  label_max_mismatch_mt <- tklabel(frame_criteria_1, text = "    Maximum number of inconsistency")
+  entry_max_mismatch_mt <- tkentry(frame_criteria_1, textvariable = max_mismatch_mt_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+
+  # Define widgets in frame_criteria_2
+  butt_save <- tkbutton(frame_criteria_2, text = "    Save    ", cursor = "hand2", command = function() save_criteria())
+  butt_reset <- tkbutton(frame_criteria_2, text = "    Reset    ", cursor = "hand2", command = function() reset_criteria())
+
+  # Grid widgets in frame_criteria_1
   tkgrid(label_title_auto, padx = 10, pady = 5, sticky = "w")
   tkgrid(label_min_lr_auto, entry_min_lr_auto, padx = 10, pady = 5, sticky = "w")
   tkgrid(label_title_y, padx = 10, pady = 5, sticky = "w")
@@ -153,7 +197,13 @@ set_criteria <- function(env_proj, env_gui){
   tkgrid(label_title_mt, padx = 10, pady = 5, sticky = "w")
   tkgrid(label_min_share_mt, entry_min_share_mt, padx = 10, pady = 5, sticky = "w")
   tkgrid(label_max_mismatch_mt, entry_max_mismatch_mt, padx = 10, pady = 5, sticky = "w")
-  tkgrid(butt_save, padx = 10, pady = 5, sticky = "w")
+
+  # Grid widgets in frame_criteria_2
+  tkgrid(butt_save, butt_reset, padx = 10, pady = 5, sticky = "w")
+
+  # Grid frames
+  tkgrid(frame_criteria_1, sticky = "w")
+  tkgrid(frame_criteria_2, sticky = "w")
 }
 
 # Set mutation rates for autosomal STR
