@@ -108,7 +108,23 @@ set_env_proj_default <- function(env_proj){
                 FALSE, TRUE, FALSE,
                 FALSE, TRUE, FALSE,
                 FALSE, TRUE, FALSE)
-  rel_data_default <- data.frame(Name_relationship = name_rel, Degree = degree, Paternal_lineage = paternal, Maternal_lineage = maternal)
+  pibd2 <- c(0, 0,
+             0.25, 0.25,
+             0, 0, 0,
+             0, 0, 0,
+             0, 0, 0)
+  pibd1 <- c(1, 1,
+             0.5, 0.5,
+             0.5, 0.5, 0.5,
+             0.5, 0.5, 0.5,
+             0.25, 0.25, 0.25)
+  pibd0 <- c(0, 0,
+             0.25, 0.25,
+             0.5, 0.5, 0.5,
+             0.5, 0.5, 0.5,
+             0.75, 0.75, 0.75)
+  rel_data_default <- data.frame(Name_relationship = name_rel, Degree = degree, Paternal_lineage = paternal, Maternal_lineage = maternal,
+                                 Pr_IBD2 = pibd2, Pr_IBD1 = pibd1, Pr_IBD0 = pibd0)
   assign("rel_data_default", rel_data_default, envir = env_proj)
 
   # Set default IBD probabilities
@@ -288,7 +304,6 @@ relsearch <- function(){
   tkadd(tools_menu, "command", label = "Set criteria", command = function() set_criteria(env_proj, env_gui))
   tkadd(tools_menu, "command", label = "Set relationships", command = function() set_rel(env_proj, env_gui))
   tkadd(tools_menu, "command", label = "Set mutation rates for autosomal STR", command = function() set_myu(env_proj, env_gui))
-  tkadd(tools_menu, "command", label = "Set IBD probabilities for autosomal STR", command = function() set_pibd(env_proj, env_gui))
   tkadd(tools_menu, "command", label = "Set analysis methods for autosomal STR", command = function() set_auto(env_proj, env_gui))
 
   # Make help menu

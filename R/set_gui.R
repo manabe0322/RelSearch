@@ -650,6 +650,11 @@ set_rel <- function(env_proj, env_gui){
     return(rel_display)
   }
 
+  # Remake a multi-list box of information on relationships
+  remake_mlb_rel <- function(){
+
+  }
+
   # The function to edit the name of a relationship
   edit_rel_1 <- function(){
 
@@ -698,7 +703,7 @@ set_rel <- function(env_proj, env_gui){
     if(sign_ok == "ok"){
 
       # Get the current relationship data from the environment "env_rel"
-      rel_data <- get("rel_data", pos = env_proj)
+      rel_data <- get("rel_data", pos = env_rel)
 
       # Update the name of the selected relationship
       rel_data[pos_select, "Name_relationship"] <- rel_select
@@ -752,6 +757,72 @@ set_rel <- function(env_proj, env_gui){
       # Destroy the top frame
       tkdestroy(tf)
     }
+  }
+
+  check_tree <- function(){
+
+    # Get tcl variables from the environment "env_rel"
+    sex_p1_var <- get("sex_p1_var", pos = env_rel)
+    father_p1_var <- get("father_p1_var", pos = env_rel)
+    mother_p1_var <- get("mother_p1_var", pos = env_rel)
+    sex_p2_var <- get("sex_p2_var", pos = env_rel)
+    father_p2_var <- get("father_p2_var", pos = env_rel)
+    mother_p2_var <- get("mother_p2_var", pos = env_rel)
+
+    # Get lists for tcl variables from the environment "env_rel"
+    sex_unk_vars <- get("sex_unk_vars", pos = env_rel)
+    father_unk_vars <- get("father_unk_vars", pos = env_rel)
+    mother_unk_vars <- get("mother_unk_vars", pos = env_rel)
+
+    # Extract values from tcl variables for unknowns
+    sex_unk <- sapply(sex_unk_vars, tclvalue)
+    sex_unk[which(sex_unk == "Male")] <- 1
+    sex_unk[which(sex_unk == "Female")] <- 2
+    father_unk <- sapply(father_unk_vars, tclvalue)
+    father_unk[which(father_unk == "")] <- 0
+    mother_unk <- sapply(mother_unk_vars, tclvalue)
+    mother_unk[which(mother_unk == "")] <- 0
+
+    # Extract values from tcl variables for p1
+    sex_p1 <- tclvalue(sex_p1_var)
+    if(sex_p1 == "Male"){
+      sex_p1 <- 1
+    }else if(sex_p1 == "Female"){
+      sex_p1 <- 2
+    }
+    father_p1 <- tclvalue(father_p1_var)
+    if(father_p1 == ""){
+      father_p1 <- 0
+    }
+    mother_p1 <- tclvalue(mother_p1_var)
+    if(mother_p1 == ""){
+      mother_p1 <- 0
+    }
+
+    # Extract values from tcl variables for p2
+    sex_p2 <- tclvalue(sex_p2_var)
+    if(sex_p2 == "Male"){
+      sex_p2 <- 1
+    }else if(sex_p2 == "Female"){
+      sex_p2 <- 2
+    }
+    father_p2 <- tclvalue(father_p2_var)
+    if(father_p2 == ""){
+      father_p2 <- 0
+    }
+    mother_p2 <- tclvalue(mother_p2_var)
+    if(mother_p2 == ""){
+      mother_p2 <- 0
+    }
+
+    # Define a family tree
+    tree <- try(ped(id = c(paste0("Unk ", 1:length(sex_unk)), "Person 1", "Person 2"),
+                    fid = c(father_unk, father_p1, father_p2),
+                    mid = c(mother_unk, mother_p1, mother_p2),
+                    sex = c(sex_unk, sex_p1, sex_p2)),
+                silent = TRUE)
+
+    return(tree)
   }
 
   add_rel_1 <- function(){
@@ -903,64 +974,6 @@ set_rel <- function(env_proj, env_gui){
       }
     }
 
-    check_tree <- function(){
-
-      # Get tcl variables from the environment "env_rel"
-      sex_unk_vars <- get("sex_unk_vars", pos = env_rel)
-      father_unk_vars <- get("father_unk_vars", pos = env_rel)
-      mother_unk_vars <- get("mother_unk_vars", pos = env_rel)
-
-      # Extract values from tcl variables for unknowns
-      sex_unk <- sapply(sex_unk_vars, tclvalue)
-      sex_unk[which(sex_unk == "Male")] <- 1
-      sex_unk[which(sex_unk == "Female")] <- 2
-      father_unk <- sapply(father_unk_vars, tclvalue)
-      father_unk[which(father_unk == "")] <- 0
-      mother_unk <- sapply(mother_unk_vars, tclvalue)
-      mother_unk[which(mother_unk == "")] <- 0
-
-      # Extract values from tcl variables for p1
-      sex_p1 <- tclvalue(sex_p1_var)
-      if(sex_p1 == "Male"){
-        sex_p1 <- 1
-      }else if(sex_p1 == "Female"){
-        sex_p1 <- 2
-      }
-      father_p1 <- tclvalue(father_p1_var)
-      if(father_p1 == ""){
-        father_p1 <- 0
-      }
-      mother_p1 <- tclvalue(mother_p1_var)
-      if(mother_p1 == ""){
-        mother_p1 <- 0
-      }
-
-      # Extract values from tcl variables for p2
-      sex_p2 <- tclvalue(sex_p2_var)
-      if(sex_p2 == "Male"){
-        sex_p2 <- 1
-      }else if(sex_p2 == "Female"){
-        sex_p2 <- 2
-      }
-      father_p2 <- tclvalue(father_p2_var)
-      if(father_p2 == ""){
-        father_p2 <- 0
-      }
-      mother_p2 <- tclvalue(mother_p2_var)
-      if(mother_p2 == ""){
-        mother_p2 <- 0
-      }
-
-      # Define a family tree
-      tree <- try(ped(id = c("Person 1", "Person 2", paste0("Unk ", 1:length(sex_unk))),
-                      fid = c(father_p1, father_p2, father_unk),
-                      mid = c(mother_p1, mother_p2, mother_unk),
-                      sex = c(sex_p1, sex_p2, sex_unk)),
-                  silent = TRUE)
-
-      return(tree)
-    }
-
     view_tree <- function(){
 
       # Check the family tree
@@ -973,62 +986,6 @@ set_rel <- function(env_proj, env_gui){
 
         # Plot the family tree
         plot(tree, hatched = c("Person 1", "Person 2"))
-      }
-    }
-
-    save_tree <- function(name_rel){
-
-      if(name_rel == ""){
-        tkmessageBox(message = "Enter the name of the relationshiop!", icon = "error", type = "ok")
-      }else{
-
-        # Check the family tree
-        tree <- check_tree()
-
-        # Check whether the family tree is appropriate or not
-        if(class(tree) == "try-error"){
-          tkmessageBox(message = "Incorrect setting of the family tree!", icon = "error", type = "ok")
-        }else{
-
-          # Make the coefficient table
-          coeff_tree <- coeffTable(tree)
-
-          # Extract k0, k1, and k2
-          pos_row <- intersect(which(coeff_tree[, "id1"] == "Person 1"), which(coeff_tree[, "id2"] == "Person 2"))
-          pibd <- coeff_tree[pos_row, c("k0", "k1", "k2")]
-          deg <- coeff_tree[pos_row, "deg"]
-
-          if(any(is.na(pibd))){
-            tkmessageBox(message = "Person 1 and 2 are inbred individuals!", icon = "error", type = "ok")
-          }else{
-
-            # Make a displayed degree
-            deg_display <- make_deg_display(deg, pibd[2])
-
-            # Extract tree data
-            tree_list <- unclass(tree)
-            id <- tree_list$ID
-            fid <- tree_list$FIDX
-            fid[fid != 0] <- id[fid[fid != 0]]
-            mid <- tree_list$MIDX
-            mid[mid != 0] <- id[mid[mid != 0]]
-            sex <- tree_list$SEX
-
-            # Judge paternal lineage
-            rel_paternal <- judge_paternal("Person 1", "Person 2", id, fid, sex)
-
-            if(is.element(rel_paternal, c("lineal", "collateral"))){
-
-            }
-
-            # Judge maternal lineage
-            rel_maternal <- judge_maternal("Person 1", "Person 2", id, mid)
-
-            if(is.element(rel_maternal, c("lineal", "collateral"))){
-
-            }
-          }
-        }
       }
     }
 
@@ -1104,11 +1061,13 @@ set_rel <- function(env_proj, env_gui){
     mother_p2_var <- tclVar("")
     founder_p2_var <- tclVar("0")
 
+    # Define lists for tcl variables
     sex_unk_vars <- list()
     father_unk_vars <- list()
     mother_unk_vars <- list()
     founder_unk_vars <- list()
 
+    # Define lists for widgets
     labels_name_unk <- list()
     combos_sex_unk <- list()
     combos_father_unk <- list()
@@ -1162,7 +1121,7 @@ set_rel <- function(env_proj, env_gui){
     check_founder_p2 <- tkcheckbutton(frame_family, variable = founder_p2_var, width = 5, cursor = "hand2", command = function() change_founder("p2"))
 
     # Define a save button in frame_add_3
-    butt_save <- tkbutton(frame_add_3, text = "    Save    ", cursor = "hand2", command = function() save_tree(tclvalue(name_rel_var)))
+    butt_save <- tkbutton(frame_add_3, text = "    Save    ", cursor = "hand2", command = function() add_rel_2(tf))
 
     # Grid widgets in frame_add_1
     tkgrid(label_title_name_rel, padx = 5, pady = 5, sticky = "w")
@@ -1208,18 +1167,29 @@ set_rel <- function(env_proj, env_gui){
     # Grid main frames
     tkgrid(frame_add_1, padx = 10, pady = 10, sticky = "w")
     tkgrid(frame_add_2, padx = 10, pady = 10, sticky = "w")
-    tkgrid(butt_save, padx = 10, pady = 10)
+    tkgrid(frame_add_3, padx = 10, pady = 10)
 
     # Assign candidates of the father and the mother
     assign("fm_candidate", fm_candidate, envir = env_rel)
 
     # Assign tcl variables to the environment "env_rel"
+    assign("name_rel_var", name_rel_var, envir = env_rel)
+    assign("sex_p1_var", sex_p1_var, envir = env_rel)
+    assign("father_p1_var", father_p1_var, envir = env_rel)
+    assign("mother_p1_var", mother_p1_var, envir = env_rel)
+    assign("founder_p1_var", founder_p1_var, envir = env_rel)
+    assign("sex_p2_var", sex_p2_var, envir = env_rel)
+    assign("father_p2_var", father_p2_var, envir = env_rel)
+    assign("mother_p2_var", mother_p2_var, envir = env_rel)
+    assign("founder_p2_var", founder_p2_var, envir = env_rel)
+
+    # Assign lists for tcl variables to the environment "env_rel"
     assign("sex_unk_vars", sex_unk_vars, envir = env_rel)
     assign("father_unk_vars", father_unk_vars, envir = env_rel)
     assign("mother_unk_vars", mother_unk_vars, envir = env_rel)
     assign("founder_unk_vars", founder_unk_vars, envir = env_rel)
 
-    # Assign widgets to the environment "env_rel"
+    # Assign lists for widgets to the environment "env_rel"
     assign("labels_name_unk", labels_name_unk, envir = env_rel)
     assign("combos_sex_unk", combos_sex_unk, envir = env_rel)
     assign("combos_father_unk", combos_father_unk, envir = env_rel)
@@ -1228,8 +1198,130 @@ set_rel <- function(env_proj, env_gui){
 
   }
 
-  add_rel_2 <- function(){
+  add_rel_2 <- function(tf){
 
+    # Get a new relationship name from the environment "env_rel"
+    name_rel <- tclvalue(get("name_rel_var", pos = env_rel))
+
+    if(name_rel == ""){
+      tkmessageBox(message = "Enter the name of the relationshiop!", icon = "error", type = "ok")
+    }else{
+
+      # Check the family tree
+      tree <- check_tree()
+
+      # Check whether the family tree is appropriate or not
+      if(class(tree) == "try-error"){
+        tkmessageBox(message = "Incorrect setting of the family tree!", icon = "error", type = "ok")
+      }else{
+
+        # Check whether all results are deleted or not
+        sign_ok <- check_delete_all(env_proj)
+
+        # If all results are deleted
+        if(sign_ok == "ok"){
+
+          # Make the coefficient table
+          coeff_tree <- coeffTable(tree)
+
+          # Extract k2, k1, and k0
+          pos_row <- intersect(which(is.element(coeff_tree[, "id1"], c("Person 1", "Person 2")) == TRUE),
+                               which(is.element(coeff_tree[, "id2"], c("Person 1", "Person 2")) == TRUE))
+          pibd <- as.numeric(coeff_tree[pos_row, c("k2", "k1", "k0")])
+          deg <- as.numeric(coeff_tree[pos_row, "deg"])
+
+          if(any(is.na(pibd))){
+            tkmessageBox(message = "Person 1 and 2 are inbred individuals!", icon = "error", type = "ok")
+          }else{
+
+            # Get relationship data from the environment "env_rel"
+            rel_data <- get("rel_data", pos = env_rel)
+
+            # Make a displayed degree
+            deg_display <- make_deg_display(deg, pibd[2])
+
+            # Extract tree data
+            tree_list <- unclass(tree)
+            id <- tree_list$ID
+            fid <- tree_list$FIDX
+            fid[fid != 0] <- id[fid[fid != 0]]
+            mid <- tree_list$MIDX
+            mid[mid != 0] <- id[mid[mid != 0]]
+            sex <- tree_list$SEX
+
+            # Judge paternal lineage
+            rel_paternal <- judge_paternal("Person 1", "Person 2", id, fid, sex)
+
+            if(is.element(rel_paternal, c("lineal", "collateral"))){
+              bool_paternal <- TRUE
+            }else{
+              bool_paternal <- FALSE
+            }
+
+            # Judge maternal lineage
+            rel_maternal <- judge_maternal("Person 1", "Person 2", id, mid)
+
+            if(is.element(rel_maternal, c("lineal", "collateral"))){
+              bool_maternal <- TRUE
+            }else{
+              bool_maternal <- FALSE
+            }
+
+            # Update the relationship data
+            rel_data <- rbind(rel_data, c(name_rel, deg_display, bool_paternal, bool_maternal, pibd))
+
+            # Update the file "rel.csv"
+            create_rel_csv(rel_data)
+
+            # Create displayed data
+            rel_display <- create_rel_display(rel_data)
+
+            # Get widgets from the environment "env_rel"
+            scr1 <- get("scr1", pos = env_rel)
+            mlb_rel <- get("mlb_rel", pos = env_rel)
+
+            # Destroy widgets
+            tkdestroy(scr1)
+            tkdestroy(mlb_rel)
+
+            # Define a scrollbar for the multi-list box of information on relationships
+            scr1 <- tkscrollbar(frame_rel_1, repeatinterval = 5, command = function(...) tkyview(mlb_rel, ...))
+
+            # Define a multi-list box of information on relationships
+            mlb_rel <- tk2mclistbox(frame_rel_1, width = 100, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+            tk2column(mlb_rel, "add", label = "Name of relationship", width = 40)
+            tk2column(mlb_rel, "add", label = "Degree", width = 20)
+            tk2column(mlb_rel, "add", label = "Paternal lineage", width = 20)
+            tk2column(mlb_rel, "add", label = "Maternal lineage", width = 20)
+            tk2insert.multi(mlb_rel, "end",  rel_display)
+
+            # Grid widgets
+            tkgrid(mlb_rel, scr1)
+            tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
+
+            # Assign widgets to the environment "env_rel"
+            assign("scr1", scr1, envir = env_rel)
+            assign("mlb_rel", mlb_rel, envir = env_rel)
+
+            # Assign data to the environment "env_rel"
+            assign("rel_data", rel_data, envir = env_rel)
+
+            # Assign end signs
+            assign("fin_auto", FALSE, envir = env_proj)
+            assign("fin_y", FALSE, envir = env_proj)
+            assign("fin_mt", FALSE, envir = env_proj)
+
+            # Reset tab2, tab4, and tab6
+            make_tab2(env_proj, env_gui)
+            make_tab4(env_proj, env_gui)
+            make_tab6(env_proj, env_gui)
+
+            # Destroy the top frame
+            tkdestroy(tf)
+          }
+        }
+      }
+    }
   }
 
   delete_rel <- function(){
@@ -1238,7 +1330,7 @@ set_rel <- function(env_proj, env_gui){
     mlb_rel <- get("mlb_rel", pos = env_rel)
 
     # If the user does not select one relationship
-    if(tclvalue(tkcurselection(mlb_myu)) == ""){
+    if(tclvalue(tkcurselection(mlb_rel)) == ""){
       tkmessageBox(message = "Select one relationship!", icon = "error", type = "ok")
 
     # If the user selects one relationship
@@ -1310,6 +1402,61 @@ set_rel <- function(env_proj, env_gui){
 
   reset_rel <- function(){
 
+    # Check whether all results are deleted or not
+    sign_ok <- check_delete_all(env_proj)
+
+    # If all results are deleted
+    if(sign_ok == "ok"){
+
+      # Get default relationship data from the environment "env_proj"
+      rel_data <- get("rel_data_default", pos = env_proj)
+
+      # Update the file "rel.csv"
+      create_rel_csv(rel_data)
+
+      # Create displayed data
+      rel_display <- create_rel_display(rel_data)
+
+      # Get widgets from the environment "env_rel"
+      scr1 <- get("scr1", pos = env_rel)
+      mlb_rel <- get("mlb_rel", pos = env_rel)
+
+      # Destroy widgets
+      tkdestroy(scr1)
+      tkdestroy(mlb_rel)
+
+      # Define a scrollbar for the multi-list box of information on relationships
+      scr1 <- tkscrollbar(frame_rel_1, repeatinterval = 5, command = function(...) tkyview(mlb_rel, ...))
+
+      # Define a multi-list box of information on relationships
+      mlb_rel <- tk2mclistbox(frame_rel_1, width = 100, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+      tk2column(mlb_rel, "add", label = "Name of relationship", width = 40)
+      tk2column(mlb_rel, "add", label = "Degree", width = 20)
+      tk2column(mlb_rel, "add", label = "Paternal lineage", width = 20)
+      tk2column(mlb_rel, "add", label = "Maternal lineage", width = 20)
+      tk2insert.multi(mlb_rel, "end",  rel_display)
+
+      # Grid widgets
+      tkgrid(mlb_rel, scr1)
+      tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
+
+      # Assign widgets to the environment "env_rel"
+      assign("scr1", scr1, envir = env_rel)
+      assign("mlb_rel", mlb_rel, envir = env_rel)
+
+      # Assign data to the environment "env_rel"
+      assign("rel_data", rel_data, envir = env_rel)
+
+      # Assign end signs
+      assign("fin_auto", FALSE, envir = env_proj)
+      assign("fin_y", FALSE, envir = env_proj)
+      assign("fin_mt", FALSE, envir = env_proj)
+
+      # Reset tab2, tab4, and tab6
+      make_tab2(env_proj, env_gui)
+      make_tab4(env_proj, env_gui)
+      make_tab6(env_proj, env_gui)
+    }
   }
 
   # Get the package path
@@ -1371,268 +1518,6 @@ set_rel <- function(env_proj, env_gui){
 
   # Assign data to the environment "env_rel"
   assign("rel_data", rel_data, envir = env_rel)
-}
-
-# Set IBD probabilities for autosomal STR
-set_pibd <- function(env_proj, env_gui){
-  edit_pibd_1 <- function(){
-    mlb_pibd <- get("mlb_pibd", pos = env_pibd)
-    if(tclvalue(tkcurselection(mlb_pibd)) == ""){
-      tkmessageBox(message = "Select one relationship!", icon = "error", type = "ok")
-    }else{
-      # Get the selected IBD probabilities
-      pos_select <- as.numeric(tclvalue(tkcurselection(mlb_pibd))) + 1
-      pibd_all <- get("pibd_all", pos = env_pibd)
-      pibd_select <- pibd_all[pos_select, ]
-      rel_select <- rownames(pibd_all)[pos_select]
-
-      # Define tclvalue
-      pibd2_select_var <- tclVar(pibd_select[1])
-      pibd1_select_var <- tclVar(pibd_select[2])
-      pibd0_select_var <- tclVar(pibd_select[3])
-
-      # Make a top frame
-      tf <- tktoplevel()
-      tkwm.title(tf, "Edit IBD probabilities")
-
-      # Define frames
-      frame_edit_1 <- tkframe(tf)
-      frame_edit_2 <- tkframe(tf)
-
-      # Define widgets in frame_edit_1
-      label_title_1 <- tklabel(frame_edit_1, text = "Relationship")
-      label_title_2 <- tklabel(frame_edit_1, text = "Pr (IBD = 2)")
-      label_title_3 <- tklabel(frame_edit_1, text = "Pr (IBD = 1)")
-      label_title_4 <- tklabel(frame_edit_1, text = "Pr (IBD = 0)")
-      label_rel <- tklabel(frame_edit_1, text = rel_select)
-      entry_pibd2 <- tkentry(frame_edit_1, textvariable = pibd2_select_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-      entry_pibd1 <- tkentry(frame_edit_1, textvariable = pibd1_select_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-      entry_pibd0 <- tkentry(frame_edit_1, textvariable = pibd0_select_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-
-      # Define widgets in frame_edit_2
-      butt_save <- tkbutton(frame_edit_2, text = "    Save    ", cursor = "hand2",
-                            command = function() edit_pibd_2(tf, mlb_pibd, pos_select, as.numeric(tclvalue(pibd2_select_var)), as.numeric(tclvalue(pibd1_select_var)), as.numeric(tclvalue(pibd0_select_var))))
-
-      # Grid widgets
-      tkgrid(label_title_1, label_title_2, label_title_3, label_title_4, padx = 10, pady = 5)
-      tkgrid(label_rel, entry_pibd2, entry_pibd1, entry_pibd0, padx = 10, pady = 5)
-      tkgrid(butt_save, pady = 10)
-      tkgrid(frame_edit_1)
-      tkgrid(frame_edit_2)
-    }
-  }
-
-  edit_pibd_2 <- function(tf, mlb_pibd, pos_select, pibd2_select, pibd1_select, pibd0_select){
-    sign_ok <- "ok"
-    fin_auto <- get("fin_auto", pos = env_proj)
-    if(fin_auto){
-      sign_ok <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
-    }
-    if(sign_ok == "ok"){
-      assign("fin_auto", FALSE, envir = env_proj)
-      make_tab2(env_proj, env_gui)
-
-      pibd_all <- get("pibd_all", pos = env_pibd)
-      pibd_rel <- rownames(pibd_all)
-      pibd_all[pos_select, ] <- c(pibd2_select, pibd1_select, pibd0_select)
-      assign("pibd_all", pibd_all, envir = env_pibd)
-      write.csv(pibd_all, paste0(path_pack, "/extdata/parameters/pibd.csv"))
-
-      # Get widgets from environment variable (env_pibd)
-      mlb_pibd <- get("mlb_pibd", pos = env_pibd)
-      scr1 <- get("scr1", pos = env_pibd)
-
-      # Destroy the scrollbar (scr1)
-      tkdestroy(scr1)
-
-      # Destroy the multi-list box (mlb_myu)
-      tkdestroy(mlb_pibd)
-
-      # Define a scrollbar for a multi-list box (mlb_pibd)
-      scr1 <- tkscrollbar(frame_pibd_1, repeatinterval = 5, command = function(...) tkyview(mlb_pibd, ...))
-
-      # Define a multi-list box (mlb_pibd)
-      mlb_pibd <- tk2mclistbox(frame_pibd_1, width = 60, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
-      tk2column(mlb_pibd, "add", label = "Relationship", width = 15)
-      tk2column(mlb_pibd, "add", label = "Pr (IBD = 2)", width = 15)
-      tk2column(mlb_pibd, "add", label = "Pr (IBD = 1)", width = 15)
-      tk2column(mlb_pibd, "add", label = "Pr (IBD = 0)", width = 15)
-      tk2insert.multi(mlb_pibd, "end", cbind(pibd_rel, pibd_all))
-
-      # Grid widgets
-      tkgrid(mlb_pibd, scr1)
-      tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
-
-      # Assign widgets to environment variable (env_pibd)
-      assign("mlb_pibd", mlb_pibd, envir = env_pibd)
-      assign("scr1", scr1, envir = env_pibd)
-
-      # Destroy the top frame
-      tkdestroy(tf)
-    }
-  }
-
-  add_pibd_1 <- function(){
-    # Define tclvalue
-    rel_add_var <- tclVar("")
-    pibd2_add_var <- tclVar("")
-    pibd1_add_var <- tclVar("")
-    pibd0_add_var <- tclVar("")
-
-    # Make a top frame
-    tf <- tktoplevel()
-    tkwm.title(tf, "Add IBD probabilities")
-
-    # Define frames
-    frame_add_1 <- tkframe(tf)
-    frame_add_2 <- tkframe(tf)
-
-    # Define widgets in frame_add_1
-    label_title_1 <- tklabel(frame_add_1, text = "Relationship")
-    label_title_2 <- tklabel(frame_add_1, text = "Pr (IBD = 2)")
-    label_title_3 <- tklabel(frame_add_1, text = "Pr (IBD = 1)")
-    label_title_4 <- tklabel(frame_add_1, text = "Pr (IBD = 0)")
-    entry_rel <- tkentry(frame_add_1, textvariable = rel_add_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-    entry_pibd2 <- tkentry(frame_add_1, textvariable = pibd2_add_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-    entry_pibd1 <- tkentry(frame_add_1, textvariable = pibd1_add_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-    entry_pibd0 <- tkentry(frame_add_1, textvariable = pibd0_add_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
-
-    # Define widgets in frame_add_2
-    butt_save <- tkbutton(frame_add_2, text = "    Save    ", cursor = "hand2",
-                          command = function() add_pibd_2(tf, tclvalue(rel_add_var), as.numeric(tclvalue(pibd2_add_var)), as.numeric(tclvalue(pibd1_add_var)), as.numeric(tclvalue(pibd0_add_var))))
-
-    # Grid widgets
-    tkgrid(label_title_1, label_title_2, label_title_3, label_title_4, padx = 10, pady = 5)
-    tkgrid(entry_rel, entry_pibd2, entry_pibd1, entry_pibd0, padx = 10, pady = 5)
-    tkgrid(butt_save, pady = 10)
-    tkgrid(frame_add_1)
-    tkgrid(frame_add_2)
-  }
-
-  add_pibd_2 <- function(tf, rel_add, pibd2_add, pibd1_add, pibd0_add){
-    sign_ok <- "ok"
-    fin_auto <- get("fin_auto", pos = env_proj)
-    if(fin_auto){
-      sign_ok <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
-    }
-    if(sign_ok == "ok"){
-      assign("fin_auto", FALSE, envir = env_proj)
-      make_tab2(env_proj, env_gui)
-
-      pibd_all <- get("pibd_all", pos = env_pibd)
-      pibd_rel <- rownames(pibd_all)
-      pibd_all <- rbind(pibd_all, c(pibd2_add, pibd1_add, pibd0_add))
-      rownames(pibd_all) <- c(pibd_rel, rel_add)
-      assign("pibd_all", pibd_all, envir = env_pibd)
-      write.csv(pibd_all, paste0(path_pack, "/extdata/parameters/pibd.csv"))
-
-      mlb_pibd <- get("mlb_pibd", pos = env_pibd)
-      tk2insert.multi(mlb_pibd, "end", c(rel_add, pibd2_add, pibd1_add, pibd0_add))
-      assign("mlb_pibd", mlb_pibd, envir = env_pibd)
-      tkdestroy(tf)
-    }
-  }
-
-  delete_pibd <- function(){
-    # Get the multi-list box (mlb_pibd) from environment variable (env_pibd)
-    mlb_pibd <- get("mlb_pibd", pos = env_pibd)
-    if(tclvalue(tkcurselection(mlb_pibd)) == ""){
-      tkmessageBox(message = "Select one relationship!", icon = "error", type = "ok")
-    }else{
-      sign_ok <- "ok"
-      fin_auto <- get("fin_auto", pos = env_proj)
-      if(fin_auto){
-        sign_ok <- tclvalue(tkmessageBox(message = "STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
-      }
-      if(sign_ok == "ok"){
-        assign("fin_auto", FALSE, envir = env_proj)
-        make_tab2(env_proj, env_gui)
-
-        pibd_all <- get("pibd_all", pos = env_pibd)
-        pos_select <- as.numeric(tclvalue(tkcurselection(mlb_pibd))) + 1
-        pibd_all <- pibd_all[-pos_select, , drop = FALSE]
-        pibd_rel <- rownames(pibd_all)
-        assign("pibd_all", pibd_all, envir = env_pibd)
-        write.csv(pibd_all, paste0(path_pack, "/extdata/parameters/pibd.csv"))
-
-        # Get the scrollbar (scr1) from environment variable (env_pibd)
-        scr1 <- get("scr1", pos = env_pibd)
-
-        # Destroy the scrollbar (scr1)
-        tkdestroy(scr1)
-
-        # Destroy the multi-list box (mlb_myu)
-        tkdestroy(mlb_pibd)
-
-        # Define a scrollbar for a multi-list box (mlb_pibd)
-        scr1 <- tkscrollbar(frame_pibd_1, repeatinterval = 5, command = function(...) tkyview(mlb_pibd, ...))
-
-        # Define a multi-list box (mlb_pibd)
-        mlb_pibd <- tk2mclistbox(frame_pibd_1, width = 60, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
-        tk2column(mlb_pibd, "add", label = "Relationship", width = 15)
-        tk2column(mlb_pibd, "add", label = "Pr (IBD = 2)", width = 15)
-        tk2column(mlb_pibd, "add", label = "Pr (IBD = 1)", width = 15)
-        tk2column(mlb_pibd, "add", label = "Pr (IBD = 0)", width = 15)
-        tk2insert.multi(mlb_pibd, "end", cbind(pibd_rel, pibd_all))
-
-        # Grid widgets
-        tkgrid(mlb_pibd, scr1)
-        tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
-
-        # Assign widgets to environment variable (env_pibd)
-        assign("mlb_pibd", mlb_pibd, envir = env_pibd)
-        assign("scr1", scr1, envir = env_pibd)
-      }
-    }
-  }
-
-  path_pack <- get("path_pack", pos = env_gui)
-  fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
-  if(is.element("pibd.csv", fn_par)){
-    pibd_all <- read.csv(paste0(path_pack, "/extdata/parameters/pibd.csv"), header = TRUE, row.names = 1)
-    pibd_all <- as.matrix(pibd_all)
-  }else{
-    pibd_all <- get("pibd_all_default", pos = env_proj)
-    write.csv(pibd_all, paste0(path_pack, "/extdata/parameters/pibd.csv"))
-  }
-  env_pibd <- new.env(parent = globalenv())
-  assign("pibd_all", pibd_all, envir = env_pibd)
-  pibd_rel <- rownames(pibd_all)
-
-  # Make a top frame
-  tf <- tktoplevel()
-  tkwm.title(tf, "Set IBD probabilities")
-
-  # Define frames
-  frame_pibd_1 <- tkframe(tf)
-  frame_pibd_2 <- tkframe(tf)
-
-  # Define a scrollbar for a multi-list box (mlb_pibd)
-  scr1 <- tkscrollbar(frame_pibd_1, repeatinterval = 5, command = function(...) tkyview(mlb_pibd, ...))
-
-  # Define a multi-list box (mlb_pibd)
-  mlb_pibd <- tk2mclistbox(frame_pibd_1, width = 60, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
-  tk2column(mlb_pibd, "add", label = "Relationship", width = 15)
-  tk2column(mlb_pibd, "add", label = "Pr (IBD = 2)", width = 15)
-  tk2column(mlb_pibd, "add", label = "Pr (IBD = 1)", width = 15)
-  tk2column(mlb_pibd, "add", label = "Pr (IBD = 0)", width = 15)
-  tk2insert.multi(mlb_pibd, "end", cbind(pibd_rel, pibd_all))
-
-  # Define widgets in frame_pibd_2
-  butt_edit <- tkbutton(frame_pibd_2, text = "    Edit    ", cursor = "hand2", command = function() edit_pibd_1())
-  butt_add <- tkbutton(frame_pibd_2, text = "    Add    ", cursor = "hand2", command = function() add_pibd_1())
-  butt_delete <- tkbutton(frame_pibd_2, text = "    Delete    ", cursor = "hand2", command = function() delete_pibd())
-
-  # Grid widgets
-  tkgrid(mlb_pibd, scr1)
-  tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
-  tkgrid(butt_edit, butt_add, butt_delete, padx = 10, pady = 5)
-  tkgrid(frame_pibd_1)
-  tkgrid(frame_pibd_2)
-
-  # Assign widgets to environment variable (env_pibd)
-  assign("mlb_pibd", mlb_pibd, envir = env_pibd)
-  assign("scr1", scr1, envir = env_pibd)
 }
 
 # Set analysis method for autosomal STR

@@ -174,288 +174,279 @@ search_auto <- function(env_proj, env_gui){
     # List up file names in 'extdata > parameters'.
     fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
 
-    # If the file 'criteria.csv' is found
-    if(is.element("criteria.csv", fn_par)){
-
-      # If the file 'myu.csv' is found
-      if(is.element("myu.csv", fn_par)){
-
-        # If the file 'pibd.csv' is found
-        if(is.element("pibd.csv", fn_par)){
-
-          # If the file 'par_auto.csv' is found
-          if(is.element("par_auto.csv", fn_par)){
-
-            # Load criteria
-            criteria <- read.csv(paste0(path_pack, "/extdata/parameters/criteria.csv"), header = TRUE)
-            min_lr_auto <- criteria$Value[criteria$Criteria == "min_lr_auto"]
-
-            # Load mutation rates
-            myu_all <- read.csv(paste0(path_pack, "/extdata/parameters/myu.csv"), header = TRUE)
-            myu_all <- as.matrix(myu_all)
-            locus_myu <- myu_all[, colnames(myu_all) == "Marker"]
-            myu_all <- as.numeric(myu_all[, colnames(myu_all) == "Myu"])
-            names(myu_all) <- locus_myu
-
-            # Load IBD probabilities
-            pibd_all <- read.csv(paste0(path_pack, "/extdata/parameters/pibd.csv"), header = TRUE, row.names = 1)
-            pibd_all <- as.matrix(pibd_all)
-
-            # Load analysis methods
-            par_auto <- read.csv(paste0(path_pack, "/extdata/parameters/par_auto.csv"), header = TRUE)
-            maf <- par_auto$Value[par_auto$Parameter == "maf"]
-            meth_d <- par_auto$Value[par_auto$Parameter == "meth_d"]
-            pd <- par_auto$Value[par_auto$Parameter == "pd"]
-
-            # Extract sample names, genotypes, and loci from the query database
-            pos_sn_q <- intersect(grep("Sample", colnames(data_auto_q)), grep("Name", colnames(data_auto_q)))
-            pos_rel_q <- grep("Relationship", colnames(data_auto_q))
-            sn_auto_q <- data_auto_q[, pos_sn_q]
-            gt_auto_q <- data_auto_q[, -c(pos_sn_q, pos_rel_q), drop = FALSE]
-            locus_q <- colnames(gt_auto_q)[which(1:ncol(gt_auto_q) %% 2 == 1)]
-
-            # Extract sample names, relationships, genotypes, and loci from the reference database
-            pos_sn_r <- intersect(grep("Sample", colnames(data_auto_r)), grep("Name", colnames(data_auto_r)))
-            pos_rel_r <- grep("Relationship", colnames(data_auto_r))
-            sn_auto_r <- data_auto_r[, pos_sn_r]
-            rel_auto_r <- data_auto_r[, pos_rel_r]
-            gt_auto_r <- data_auto_r[, -c(pos_sn_r, pos_rel_r), drop = FALSE]
-            locus_r <- colnames(gt_auto_r)[which(1:ncol(gt_auto_r) %% 2 == 1)]
+    # If all required csv files are located in 'extdata > parameters'.
+    if(all(is.element(c("criteria.csv", "myu.csv", "rel.csv", "par_auto.csv"), fn_par))){
+
+      # Load criteria
+      criteria <- read.csv(paste0(path_pack, "/extdata/parameters/criteria.csv"), header = TRUE)
+      min_lr_auto <- criteria$Value[criteria$Criteria == "min_lr_auto"]
+
+      # Load mutation rates
+      myu_all <- read.csv(paste0(path_pack, "/extdata/parameters/myu.csv"), header = TRUE)
+      myu_all <- as.matrix(myu_all)
+      locus_myu <- myu_all[, colnames(myu_all) == "Marker"]
+      myu_all <- as.numeric(myu_all[, colnames(myu_all) == "Myu"])
+      names(myu_all) <- locus_myu
+
+      # Load IBD probabilities
+      rel_data <- read.csv(paste0(path_pack, "/extdata/parameters/rel.csv"), header = TRUE)
+
+
+      # Load analysis methods
+      par_auto <- read.csv(paste0(path_pack, "/extdata/parameters/par_auto.csv"), header = TRUE)
+      maf <- par_auto$Value[par_auto$Parameter == "maf"]
+      meth_d <- par_auto$Value[par_auto$Parameter == "meth_d"]
+      pd <- par_auto$Value[par_auto$Parameter == "pd"]
+
+      # Extract sample names, genotypes, and loci from the query database
+      pos_sn_q <- intersect(grep("Sample", colnames(data_auto_q)), grep("Name", colnames(data_auto_q)))
+      pos_rel_q <- grep("Relationship", colnames(data_auto_q))
+      sn_auto_q <- data_auto_q[, pos_sn_q]
+      gt_auto_q <- data_auto_q[, -c(pos_sn_q, pos_rel_q), drop = FALSE]
+      locus_q <- colnames(gt_auto_q)[which(1:ncol(gt_auto_q) %% 2 == 1)]
+
+      # Extract sample names, relationships, genotypes, and loci from the reference database
+      pos_sn_r <- intersect(grep("Sample", colnames(data_auto_r)), grep("Name", colnames(data_auto_r)))
+      pos_rel_r <- grep("Relationship", colnames(data_auto_r))
+      sn_auto_r <- data_auto_r[, pos_sn_r]
+      rel_auto_r <- data_auto_r[, pos_rel_r]
+      gt_auto_r <- data_auto_r[, -c(pos_sn_r, pos_rel_r), drop = FALSE]
+      locus_r <- colnames(gt_auto_r)[which(1:ncol(gt_auto_r) %% 2 == 1)]
 
-            # Locus names of the allele frequencies
-            locus_af <- colnames(data_auto_af)[-1]
+      # Locus names of the allele frequencies
+      locus_af <- colnames(data_auto_af)[-1]
 
-            # Whether the locus set of the query database is the same as that of the reference database or not
-            bool_locus_1 <- all(mapply(setequal, locus_q, locus_r))
+      # Whether the locus set of the query database is the same as that of the reference database or not
+      bool_locus_1 <- all(mapply(setequal, locus_q, locus_r))
 
-            # Whether the locus set of the query database is the same as that of the allele frequencies or not
-            bool_locus_2 <- all(mapply(setequal, locus_q, locus_af))
+      # Whether the locus set of the query database is the same as that of the allele frequencies or not
+      bool_locus_2 <- all(mapply(setequal, locus_q, locus_af))
 
-            # Whether all loci of the query database is included in the locus set of the mutation rates or not
-            bool_locus_3 <- all(is.element(locus_q, locus_myu))
+      # Whether all loci of the query database is included in the locus set of the mutation rates or not
+      bool_locus_3 <- all(is.element(locus_q, locus_myu))
 
-            # Whether all relationships of the reference database is included in the relationships of the IBD probabilities or not
-            bool_rel_1 <- all(is.element(setdiff(rel_auto_r, ""), rownames(pibd_all)))
+      # Whether all relationships of the reference database is included in the relationships of the IBD probabilities or not
+      bool_rel_1 <- all(is.element(setdiff(rel_auto_r, ""), rel_data[, "Name_relationship"]))
 
-            # If above 4 conditions are satisfied
-            if(all(c(bool_locus_1, bool_locus_2, bool_locus_3, bool_rel_1))){
+      # If above 4 conditions are satisfied
+      if(all(c(bool_locus_1, bool_locus_2, bool_locus_3, bool_rel_1))){
 
-              # Make progress bars
-              # tf <- tktoplevel()
-              # label_pb1 <- tk2label(tf)
-              # pb1 <- tk2progress(tf, length = 300)
-              # tkconfigure(pb1, value = 0, maximum = 100)
-              # tkgrid(label_pb1)
-              # tkgrid(pb1)
-              pb <- tkProgressBar("Searching", "0% done", 0, 100, 0)
+        # Make progress bars
+        # tf <- tktoplevel()
+        # label_pb1 <- tk2label(tf)
+        # pb1 <- tk2progress(tf, length = 300)
+        # tkconfigure(pb1, value = 0, maximum = 100)
+        # tkgrid(label_pb1)
+        # tkgrid(pb1)
+        pb <- tkProgressBar("Searching", "0% done", 0, 100, 0)
 
-              # Set allele frequencies
-              tmp <- set_af(gt_auto_q, gt_auto_r, data_auto_af, maf)
-              af_list <- tmp[[1]]
-              af_al_list <- tmp[[2]]
+        # Set allele frequencies
+        tmp <- set_af(gt_auto_q, gt_auto_r, data_auto_af, maf)
+        af_list <- tmp[[1]]
+        af_al_list <- tmp[[2]]
 
-              # The numbers of samples
-              n_q <- nrow(gt_auto_q)
-              n_r <- nrow(gt_auto_r)
+        # The numbers of samples
+        n_q <- nrow(gt_auto_q)
+        n_r <- nrow(gt_auto_r)
 
-              # The number of empty cells in the "Relationship" column of the reference database
-              n_emp_rel <- length(which(rel_auto_r == ""))
+        # The number of empty cells in the "Relationship" column of the reference database
+        n_emp_rel <- length(which(rel_auto_r == ""))
 
-              # The number of loci
-              n_l <- length(locus_q)
+        # The number of loci
+        n_l <- length(locus_q)
 
-              # Extract mutation rates
-              myus <- rep(0, n_l)
-              for(i in 1:n_l){
-                myus[i] <- myu_all[which(locus_myu == locus_q[i])]
-              }
-              names(myus) <- locus_q
+        # Extract mutation rates
+        myus <- rep(0, n_l)
+        for(i in 1:n_l){
+          myus[i] <- myu_all[which(locus_myu == locus_q[i])]
+        }
+        names(myus) <- locus_q
 
-              # The number of relationships for the IBD probabilities
-              n_pibd_rel <- nrow(pibd_all)
+        # The number of relationships for the IBD probabilities
+        n_pibd_rel <- nrow(rel_data)
 
-              # Set consideration of mutations for each relationship
-              bool_cons_mu_all <- rep(FALSE, n_pibd_rel)
-              bool_cons_mu_all[rownames(pibd_all) == "parent-child"] <- TRUE
+        # Set consideration of mutations for each relationship
+        bool_cons_mu_all <- rep(FALSE, n_pibd_rel)
+        bool_cons_mu_all[rel_data[, "Degree"] == "1st_pc"] <- TRUE
 
-              # Calculate average probabilities of exclusion
-              apes <- rep(0, n_l)
-              for(i in 1:n_l){
-                apes[i] <- calc_ape(af_list[[i]])
-              }
-              names(apes) <- locus_q
+        # Calculate average probabilities of exclusion
+        apes <- rep(0, n_l)
+        for(i in 1:n_l){
+          apes[i] <- calc_ape(af_list[[i]])
+        }
+        names(apes) <- locus_q
 
-              # Define an array to save information on the likelihoods of the numerator hypotheses
-              like_h1_all <- array(0, dim = c(n_q, n_r + (n_pibd_rel - 1) * n_emp_rel, n_l + 1))
+        # Define an array to save information on the likelihoods of the numerator hypotheses
+        like_h1_all <- array(0, dim = c(n_q, n_r + (n_pibd_rel - 1) * n_emp_rel, n_l + 1))
 
-              # Define an array to save information on the likelihoods of the denominator hypotheses
-              like_h2_all <- like_h1_all
+        # Define an array to save information on the likelihoods of the denominator hypotheses
+        like_h2_all <- like_h1_all
 
-              # Define an array to save information on the likelihood ratio
-              lr_all <- like_h1_all
+        # Define an array to save information on the likelihood ratio
+        lr_all <- like_h1_all
 
-              # Define a matrix to save information on the reference genotypes (per comparison)
-              gt_auto_r_new <- matrix(0, n_r + (n_pibd_rel - 1) * n_emp_rel, ncol(gt_auto_r))
+        # Define a matrix to save information on the reference genotypes (per comparison)
+        gt_auto_r_new <- matrix(0, n_r + (n_pibd_rel - 1) * n_emp_rel, ncol(gt_auto_r))
 
-              # Define a vector to save information on the reference sample names (per comparison)
-              sn_auto_r_new <- rep(0, n_r + (n_pibd_rel - 1) * n_emp_rel)
+        # Define a vector to save information on the reference sample names (per comparison)
+        sn_auto_r_new <- rep(0, n_r + (n_pibd_rel - 1) * n_emp_rel)
 
-              # Define a vector to save information on the relationships (per comparison)
-              rel_auto_r_new <- sn_auto_r_new
+        # Define a vector to save information on the relationships (per comparison)
+        rel_auto_r_new <- sn_auto_r_new
 
-              # Set the initial number of counts for references
-              count <- 1
+        # Set the initial number of counts for references
+        count <- 1
 
-              # Repetitive execution for each reference genotype
-              for(i in 1:n_r){
+        # Repetitive execution for each reference genotype
+        for(i in 1:n_r){
 
-                # Extract a reference genotype
-                ref <- as.numeric(gt_auto_r[i, ])
+          # Extract a reference genotype
+          ref <- as.numeric(gt_auto_r[i, ])
 
-                # The NA is replaced to -99 to deal with the C++ program
-                ref[is.na(ref)] <- -99
+          # The NA is replaced to -99 to deal with the C++ program
+          ref[is.na(ref)] <- -99
 
-                # If the relationship of the current reference is not defined
-                if(rel_auto_r[i] == ""){
+          # If the relationship of the current reference is not defined
+          if(rel_auto_r[i] == ""){
 
-                  # Set the IBD probabilities
-                  pibds <- pibd_all
+            # Set the IBD probabilities
+            pibd_all <- rel_data[, c("Pr_IBD2", "Pr_IBD1", "Pr_IBD0")]
 
-                  # Sample names for the result object
-                  sn_auto_r_new[count:(count + n_pibd_rel - 1)] <- sn_auto_r[i]
+            # Sample names for the result object
+            sn_auto_r_new[count:(count + n_pibd_rel - 1)] <- sn_auto_r[i]
 
-                  # Relationships for the result object
-                  rel_auto_r_new[count:(count + n_pibd_rel - 1)] <- rownames(pibd_all)
+            # Relationships for the result object
+            rel_auto_r_new[count:(count + n_pibd_rel - 1)] <- rel_data[, "Name_relationship"]
 
-                  # Set consideration of mutations
-                  bool_cons_mu <- bool_cons_mu_all
+            # Set consideration of mutations
+            bool_cons_mu <- bool_cons_mu_all
 
-                # If the relationship of the current reference is defined
-                }else{
-
-                  # Extract the IBD probabilities
-                  pibds <- pibd_all[rownames(pibd_all) == rel_auto_r[i], , drop = FALSE]
-
-                  # A sample name for the result
-                  sn_auto_r_new[count] <- sn_auto_r[i]
-
-                  # A relationship for the result
-                  rel_auto_r_new[count] <- rel_auto_r[i]
-
-                  # Set consideration of mutations
-                  if(rel_auto_r[i] == "parent-child"){
-                    bool_cons_mu <- TRUE
-                  }else{
-                    bool_cons_mu <- FALSE
-                  }
-                }
-
-                # Repetitive execution for each relationship
-                for(j in 1:nrow(pibds)){
-
-                  # Genotypes for the result object
-                  gt_auto_r_new[count, ] <- ref
-
-                  # Repetitive execution for each query genotype
-                  for(k in 1:n_q){
-
-                    # Extract a query genotype
-                    query <- as.numeric(gt_auto_q[k, ])
-
-                    # The NA is replaced to -99 to deal with the C++ program
-                    query[is.na(query)] <- -99
-
-                    # Calculate a likelihood ratio
-                    tmp <- calc_kin_lr(query, ref, af_list, af_al_list, pibds[j, ], bool_cons_mu[j], myus, apes, meth_d, pd)
-                    like_h1_all[k, count, ] <- tmp[[1]]
-                    like_h2_all[k, count, ] <- tmp[[2]]
-                    lr_all[k, count, ] <- tmp[[3]]
-
-                    # Update the progress bar
-                    # tkconfigure(label_pb1, text = paste())
-                    #tkconfigure(pb1, value = (n_q * (count - 1) + k) * 100 / (n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel)))
-                    info <- sprintf("%d%% done", round((n_q * (count - 1) + k) * 100 / (n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel))))
-                    setTkProgressBar(pb, (n_q * (count - 1) + k) * 100 / (n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel)), sprintf("Searching"), info)
-                  }
-
-                  # Update the number of counts for references
-                  count <- count + 1
-                }
-              }
-
-              # Update sample names
-              set_env_proj_sn(env_proj, FALSE, sn_auto_q, sn_auto_r)
-
-              # Assign data to the environment "env_proj"
-              assign("gt_auto_q", gt_auto_q, envir = env_proj)
-              assign("gt_auto_r_new", gt_auto_r_new, envir = env_proj)
-              assign("sn_auto_q", sn_auto_q, envir = env_proj)
-              assign("sn_auto_r_new", sn_auto_r_new, envir = env_proj)
-              assign("rel_auto_r_new", rel_auto_r_new, envir = env_proj)
-              assign("like_h1_all", like_h1_all, envir = env_proj)
-              assign("like_h2_all", like_h2_all, envir = env_proj)
-              assign("lr_all", lr_all, envir = env_proj)
-
-              # Assign parameters to the environment "env_proj"
-              assign("min_lr_auto", min_lr_auto, envir = env_proj)
-              assign("myu_all", myu_all, envir = env_proj)
-              assign("pibd_all", pibd_all, envir = env_proj)
-              assign("maf", maf, envir = env_proj)
-              assign("meth_d", meth_d, envir = env_proj)
-              assign("pd", pd, envir = env_proj)
-
-              # Assign mutation rates to the environment "env_proj"
-              assign("myus", myus, envir = env_proj)
-
-              # Assign the average probability of exclusion to the environment "env_proj"
-              assign("apes", apes, envir = env_proj)
-
-              # Assign the end sign to the environment "env_proj"
-              assign("fin_auto", TRUE, envir = env_proj)
-
-              # Make tabs
-              make_tab2(env_proj, env_gui)
-              make_tab7(env_proj, env_gui)
-
-              # Close the progress bar
-              # tkdestroy(tf)
-              close(pb)
-
-            # If the locus set of the query database is not the same as that of the reference database
-            }else if(!bool_locus_1){
-              tkmessageBox(message = "Locus set is not the same between query data and reference data!", icon = "error", type = "ok")
-
-            # If the locus set of the query database is not the same as that of the allele frequencies
-            }else if(!bool_locus_2){
-              tkmessageBox(message = "Locus set is not the same between query data and allele frequencies!", icon = "error", type = "ok")
-
-            # If some loci of the query database is not included in the locus set of the mutation rates
-            }else if(!bool_locus_3){
-              tkmessageBox(message = "There are some loci without mutation rates!", icon = "error", type = "ok")
-
-            # If some relationships of the reference database is not included in the relationships of the IBD probabilities
-            }else if(!bool_rel_1){
-              tkmessageBox(message = "There are some relationships without IBD probabilities!", icon = "error", type = "ok")
-            }
-
-          # If the file 'par_auto.csv' is not found
+          # If the relationship of the current reference is defined
           }else{
-            tkmessageBox(message = paste0("The file 'par_auto.csv' is not found in '", path_pack, "/extdata/parameters'. Set analysis methods via 'Tools > Set analysis method for autosomal STR.'"), icon = "error", type = "ok")
+
+            # Extract the IBD probabilities
+            pibd_all <- rel_data[rel_data[, "Name_relationship"] == rel_auto_r[i], c("Pr_IBD2", "Pr_IBD1", "Pr_IBD0")]
+
+            # A sample name for the result
+            sn_auto_r_new[count] <- sn_auto_r[i]
+
+            # A relationship for the result
+            rel_auto_r_new[count] <- rel_auto_r[i]
+
+            # Set consideration of mutations
+            if(rel_auto_r[i] == "parent-child"){
+              bool_cons_mu <- TRUE
+            }else{
+              bool_cons_mu <- FALSE
+            }
           }
 
-        # If the file 'pibd.csv' is not found
-        }else{
-          tkmessageBox(message = paste0("The file 'pibd.csv' is not found in '", path_pack, "/extdata/parameters'. Set IBD probabilities via 'Tools > Set IBD probabilities for autosomal STR.'"), icon = "error", type = "ok")
+          # Repetitive execution for each relationship
+          for(j in 1:nrow(pibd_all)){
+
+            # Genotypes for the result object
+            gt_auto_r_new[count, ] <- ref
+
+            # Extract k2, k1, and k0 of one relationship
+            pibds <- as.numeric(pibd_all[j, ])
+
+            # Repetitive execution for each query genotype
+            for(k in 1:n_q){
+
+              # Extract a query genotype
+              query <- as.numeric(gt_auto_q[k, ])
+
+              # The NA is replaced to -99 to deal with the C++ program
+              query[is.na(query)] <- -99
+
+              # Calculate a likelihood ratio
+              tmp <- calc_kin_lr(query, ref, af_list, af_al_list, pibds, bool_cons_mu[j], myus, apes, meth_d, pd)
+              like_h1_all[k, count, ] <- tmp[[1]]
+              like_h2_all[k, count, ] <- tmp[[2]]
+              lr_all[k, count, ] <- tmp[[3]]
+
+              # Update the progress bar
+              # tkconfigure(label_pb1, text = paste())
+              #tkconfigure(pb1, value = (n_q * (count - 1) + k) * 100 / (n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel)))
+              info <- sprintf("%d%% done", round((n_q * (count - 1) + k) * 100 / (n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel))))
+              setTkProgressBar(pb, (n_q * (count - 1) + k) * 100 / (n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel)), sprintf("Searching"), info)
+            }
+
+            # Update the number of counts for references
+            count <- count + 1
+          }
         }
 
-      # If the file 'myu.csv' is not found
-      }else{
-        tkmessageBox(message = paste0("The file 'myu.csv' is not found in '", path_pack, "/extdata/parameters'. Set mutation rates via 'Tools > Set mutation rates for autosomal STR.'"), icon = "error", type = "ok")
+        # Update sample names
+        set_env_proj_sn(env_proj, FALSE, sn_auto_q, sn_auto_r)
+
+        # Assign data to the environment "env_proj"
+        assign("gt_auto_q", gt_auto_q, envir = env_proj)
+        assign("gt_auto_r_new", gt_auto_r_new, envir = env_proj)
+        assign("sn_auto_q", sn_auto_q, envir = env_proj)
+        assign("sn_auto_r_new", sn_auto_r_new, envir = env_proj)
+        assign("rel_auto_r_new", rel_auto_r_new, envir = env_proj)
+        assign("like_h1_all", like_h1_all, envir = env_proj)
+        assign("like_h2_all", like_h2_all, envir = env_proj)
+        assign("lr_all", lr_all, envir = env_proj)
+
+        # Assign parameters to the environment "env_proj"
+        assign("min_lr_auto", min_lr_auto, envir = env_proj)
+        assign("myu_all", myu_all, envir = env_proj)
+        assign("pibd_all", pibd_all, envir = env_proj)
+        assign("maf", maf, envir = env_proj)
+        assign("meth_d", meth_d, envir = env_proj)
+        assign("pd", pd, envir = env_proj)
+
+        # Assign mutation rates to the environment "env_proj"
+        assign("myus", myus, envir = env_proj)
+
+        # Assign the average probability of exclusion to the environment "env_proj"
+        assign("apes", apes, envir = env_proj)
+
+        # Assign the end sign to the environment "env_proj"
+        assign("fin_auto", TRUE, envir = env_proj)
+
+        # Make tabs
+        make_tab2(env_proj, env_gui)
+        make_tab7(env_proj, env_gui)
+
+        # Close the progress bar
+        # tkdestroy(tf)
+        close(pb)
+
+        # If the locus set of the query database is not the same as that of the reference database
+      }else if(!bool_locus_1){
+        tkmessageBox(message = "Locus set is not the same between query data and reference data!", icon = "error", type = "ok")
+
+        # If the locus set of the query database is not the same as that of the allele frequencies
+      }else if(!bool_locus_2){
+        tkmessageBox(message = "Locus set is not the same between query data and allele frequencies!", icon = "error", type = "ok")
+
+        # If some loci of the query database is not included in the locus set of the mutation rates
+      }else if(!bool_locus_3){
+        tkmessageBox(message = "There are some loci without mutation rates!", icon = "error", type = "ok")
+
+        # If some relationships of the reference database is not included in the relationships of the IBD probabilities
+      }else if(!bool_rel_1){
+        tkmessageBox(message = "There are some relationships without IBD probabilities!", icon = "error", type = "ok")
       }
 
-    # If the file 'criteria.csv' is not found
-    }else{
-      tkmessageBox(message = paste0("The file 'criteria.csv' is not found in '", path_pack, "/extdata/parameters'. Set criteria via 'Tools > Set criteria.'"), icon = "error", type = "ok")
+    # If the file 'criteria.csv' is found
+    }else if(!is.element("criteria.csv", fn_par)){
+      tkmessageBox(message = paste0("Set criteria via 'Tools > Set criteria.'"), icon = "error", type = "ok")
+
+    # If the file 'myu.csv' is not found
+    }else if(!is.element("myu.csv", fn_par)){
+      tkmessageBox(message = paste0("Set mutation rates via 'Tools > Set mutation rates for autosomal STR.'"), icon = "error", type = "ok")
+
+    # If the file 'rel.csv' is not found
+    }else if(!is.element("rel.csv", fn_par)){
+      tkmessageBox(message = paste0("Set relationships via 'Tools > Set relationships.'"), icon = "error", type = "ok")
+
+    # If the file 'par_auto.csv' is not found
+    }else if(!is.element("par_auto.csv", fn_par)){
+      tkmessageBox(message = paste0("Set analysis methods via 'Tools > Set analysis method for autosomal STR.'"), icon = "error", type = "ok")
     }
   }
 }
