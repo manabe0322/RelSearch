@@ -629,7 +629,7 @@ set_rel <- function(env_proj, env_gui){
     write.csv(rel_data, paste0(path_pack, "/extdata/parameters/rel.csv"), row.names = FALSE)
   }
 
-  # Create displayed data
+  # The function to create displayed data
   create_rel_display <- function(rel_data){
 
     # Extract displayed data
@@ -650,9 +650,35 @@ set_rel <- function(env_proj, env_gui){
     return(rel_display)
   }
 
-  # Remake a multi-list box of information on relationships
-  remake_mlb_rel <- function(){
+  # The function to remake a multi-list box of information on relationships
+  remake_mlb_rel <- function(rel_display){
 
+    # Get widgets from the environment "env_rel"
+    scr1 <- get("scr1", pos = env_rel)
+    mlb_rel <- get("mlb_rel", pos = env_rel)
+
+    # Destroy widgets
+    tkdestroy(scr1)
+    tkdestroy(mlb_rel)
+
+    # Define a scrollbar for the multi-list box of information on relationships
+    scr1 <- tkscrollbar(frame_rel_1, repeatinterval = 5, command = function(...) tkyview(mlb_rel, ...))
+
+    # Define a multi-list box of information on relationships
+    mlb_rel <- tk2mclistbox(frame_rel_1, width = 100, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+    tk2column(mlb_rel, "add", label = "Name of relationship", width = 40)
+    tk2column(mlb_rel, "add", label = "Degree", width = 20)
+    tk2column(mlb_rel, "add", label = "Paternal lineage", width = 20)
+    tk2column(mlb_rel, "add", label = "Maternal lineage", width = 20)
+    tk2insert.multi(mlb_rel, "end",  rel_display)
+
+    # Grid widgets
+    tkgrid(mlb_rel, scr1)
+    tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
+
+    # Assign widgets to the environment "env_rel"
+    assign("scr1", scr1, envir = env_rel)
+    assign("mlb_rel", mlb_rel, envir = env_rel)
   }
 
   # The function to edit the name of a relationship
@@ -714,32 +740,8 @@ set_rel <- function(env_proj, env_gui){
       # Create displayed data
       rel_display <- create_rel_display(rel_data)
 
-      # Get widgets from the environment "env_rel"
-      scr1 <- get("scr1", pos = env_rel)
-      mlb_rel <- get("mlb_rel", pos = env_rel)
-
-      # Destroy widgets
-      tkdestroy(scr1)
-      tkdestroy(mlb_rel)
-
-      # Define a scrollbar for the multi-list box of information on relationships
-      scr1 <- tkscrollbar(frame_rel_1, repeatinterval = 5, command = function(...) tkyview(mlb_rel, ...))
-
-      # Define a multi-list box of information on relationships
-      mlb_rel <- tk2mclistbox(frame_rel_1, width = 100, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
-      tk2column(mlb_rel, "add", label = "Name of relationship", width = 40)
-      tk2column(mlb_rel, "add", label = "Degree", width = 20)
-      tk2column(mlb_rel, "add", label = "Paternal lineage", width = 20)
-      tk2column(mlb_rel, "add", label = "Maternal lineage", width = 20)
-      tk2insert.multi(mlb_rel, "end",  rel_display)
-
-      # Grid widgets
-      tkgrid(mlb_rel, scr1)
-      tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
-
-      # Assign widgets to the environment "env_rel"
-      assign("scr1", scr1, envir = env_rel)
-      assign("mlb_rel", mlb_rel, envir = env_rel)
+      # Remake a multi-list box of information on relationships
+      remake_mlb_rel(rel_display)
 
       # Assign data to the environment "env_rel"
       assign("rel_data", rel_data, envir = env_rel)
@@ -1276,32 +1278,8 @@ set_rel <- function(env_proj, env_gui){
             # Create displayed data
             rel_display <- create_rel_display(rel_data)
 
-            # Get widgets from the environment "env_rel"
-            scr1 <- get("scr1", pos = env_rel)
-            mlb_rel <- get("mlb_rel", pos = env_rel)
-
-            # Destroy widgets
-            tkdestroy(scr1)
-            tkdestroy(mlb_rel)
-
-            # Define a scrollbar for the multi-list box of information on relationships
-            scr1 <- tkscrollbar(frame_rel_1, repeatinterval = 5, command = function(...) tkyview(mlb_rel, ...))
-
-            # Define a multi-list box of information on relationships
-            mlb_rel <- tk2mclistbox(frame_rel_1, width = 100, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
-            tk2column(mlb_rel, "add", label = "Name of relationship", width = 40)
-            tk2column(mlb_rel, "add", label = "Degree", width = 20)
-            tk2column(mlb_rel, "add", label = "Paternal lineage", width = 20)
-            tk2column(mlb_rel, "add", label = "Maternal lineage", width = 20)
-            tk2insert.multi(mlb_rel, "end",  rel_display)
-
-            # Grid widgets
-            tkgrid(mlb_rel, scr1)
-            tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
-
-            # Assign widgets to the environment "env_rel"
-            assign("scr1", scr1, envir = env_rel)
-            assign("mlb_rel", mlb_rel, envir = env_rel)
+            # Remake a multi-list box of information on relationships
+            remake_mlb_rel(rel_display)
 
             # Assign data to the environment "env_rel"
             assign("rel_data", rel_data, envir = env_rel)
@@ -1357,32 +1335,8 @@ set_rel <- function(env_proj, env_gui){
         # Create displayed data
         rel_display <- create_rel_display(rel_data)
 
-        # Get widgets from the environment "env_rel"
-        scr1 <- get("scr1", pos = env_rel)
-        mlb_rel <- get("mlb_rel", pos = env_rel)
-
-        # Destroy widgets
-        tkdestroy(scr1)
-        tkdestroy(mlb_rel)
-
-        # Define a scrollbar for the multi-list box of information on relationships
-        scr1 <- tkscrollbar(frame_rel_1, repeatinterval = 5, command = function(...) tkyview(mlb_rel, ...))
-
-        # Define a multi-list box of information on relationships
-        mlb_rel <- tk2mclistbox(frame_rel_1, width = 100, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
-        tk2column(mlb_rel, "add", label = "Name of relationship", width = 40)
-        tk2column(mlb_rel, "add", label = "Degree", width = 20)
-        tk2column(mlb_rel, "add", label = "Paternal lineage", width = 20)
-        tk2column(mlb_rel, "add", label = "Maternal lineage", width = 20)
-        tk2insert.multi(mlb_rel, "end",  rel_display)
-
-        # Grid widgets
-        tkgrid(mlb_rel, scr1)
-        tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
-
-        # Assign widgets to the environment "env_rel"
-        assign("scr1", scr1, envir = env_rel)
-        assign("mlb_rel", mlb_rel, envir = env_rel)
+        # Remake a multi-list box of information on relationships
+        remake_mlb_rel(rel_display)
 
         # Assign data to the environment "env_rel"
         assign("rel_data", rel_data, envir = env_rel)
@@ -1417,32 +1371,8 @@ set_rel <- function(env_proj, env_gui){
       # Create displayed data
       rel_display <- create_rel_display(rel_data)
 
-      # Get widgets from the environment "env_rel"
-      scr1 <- get("scr1", pos = env_rel)
-      mlb_rel <- get("mlb_rel", pos = env_rel)
-
-      # Destroy widgets
-      tkdestroy(scr1)
-      tkdestroy(mlb_rel)
-
-      # Define a scrollbar for the multi-list box of information on relationships
-      scr1 <- tkscrollbar(frame_rel_1, repeatinterval = 5, command = function(...) tkyview(mlb_rel, ...))
-
-      # Define a multi-list box of information on relationships
-      mlb_rel <- tk2mclistbox(frame_rel_1, width = 100, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
-      tk2column(mlb_rel, "add", label = "Name of relationship", width = 40)
-      tk2column(mlb_rel, "add", label = "Degree", width = 20)
-      tk2column(mlb_rel, "add", label = "Paternal lineage", width = 20)
-      tk2column(mlb_rel, "add", label = "Maternal lineage", width = 20)
-      tk2insert.multi(mlb_rel, "end",  rel_display)
-
-      # Grid widgets
-      tkgrid(mlb_rel, scr1)
-      tkgrid.configure(scr1, rowspan = 20, sticky = "nsw")
-
-      # Assign widgets to the environment "env_rel"
-      assign("scr1", scr1, envir = env_rel)
-      assign("mlb_rel", mlb_rel, envir = env_rel)
+      # Remake a multi-list box of information on relationships
+      remake_mlb_rel(rel_display)
 
       # Assign data to the environment "env_rel"
       assign("rel_data", rel_data, envir = env_rel)
