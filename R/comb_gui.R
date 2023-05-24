@@ -10,15 +10,15 @@ make_data_comb <- function(env_proj){
   sn_q_all <- get("sn_q_all", pos = env_proj)
   sn_r_all <- get("sn_r_all", pos = env_proj)
 
-  # The number of samples in each database
+  # The number of samples in all database
   n_q <- length(sn_q_all)
   n_r <- length(sn_r_all)
 
   # Define data_comb
   data_comb <- matrix("", n_q * n_r, 10)
   colnames(data_comb) <- c("Query", "Reference", "Assumed relationship", "Estimated relationship", "Paternal lineage", "Maternal lineage", "All H1", "All LR", "Data Y", "Data mt")
-  data_comb[, 1] <- rep(sn_q_all, n_r)
-  data_comb[, 2] <- as.vector(sapply(sn_r_all, rep, n_q))
+  data_comb[, 1] <- as.vector(sapply(sn_q_all, rep, n_r))
+  data_comb[, 2] <- rep(sn_r_all, n_q)
 
   if(fin_auto){
     min_lr_auto <- get("min_lr_auto", pos = env_proj)
@@ -41,7 +41,7 @@ make_data_comb <- function(env_proj){
               data_comb[n_r * (i - 1) + j, 7] <- rel_1
               data_comb[n_r * (i - 1) + j, 8] <- clr_1
             }else{
-              data_comb[n_r * (i - 1) + j, 3] <- "N/A"
+              data_comb[n_r * (i - 1) + j, 3] <- "No assumption"
               data_comb[n_r * (i - 1) + j, 7] <- paste(rel_1, collapse = ", ")
               data_comb[n_r * (i - 1) + j, 8] <- paste(clr_1, collapse = ", ")
             }
@@ -49,20 +49,22 @@ make_data_comb <- function(env_proj){
               data_comb[n_r * (i - 1) + j, 4] <- "Multiple candidates"
             }else if(length(pos_meet) == 1){
               data_comb[n_r * (i - 1) + j, 4] <- rel_1[pos_meet]
+            }else{
+              data_comb[n_r * (i - 1) + j, 4] <- "No candidate"
             }
           }else{
-            data_comb[n_r * (i - 1) + j, 3] <- "N/A"
-            data_comb[n_r * (i - 1) + j, 4] <- "N/A"
+            data_comb[n_r * (i - 1) + j, 3] <- "-"
+            data_comb[n_r * (i - 1) + j, 4] <- "-"
           }
         }
       }else{
-        data_comb[n_r * (i - 1) + j, 3] <- "N/A"
-        data_comb[n_r * (i - 1) + j, 4] <- "N/A"
+        data_comb[n_r * (i - 1) + j, 3] <- "-"
+        data_comb[n_r * (i - 1) + j, 4] <- "-"
       }
     }
   }else{
-    data_comb[, 3] <- "N/A"
-    data_comb[, 4] <- "N/A"
+    data_comb[, 3] <- "-"
+    data_comb[, 4] <- "-"
   }
 
   if(fin_y){
@@ -105,20 +107,20 @@ make_data_comb <- function(env_proj){
             bool_total_ignore <- total_ignore_y_one <= max_ignore_y
             bool_total_mustep <- total_mustep_y_one <= max_mustep_y && total_mustep_y_one %% 1 == 0
             if(all(c(bool_total_mismatch, bool_total_ignore, bool_total_mustep))){
-              data_comb[n_r * (i - 1) + j, 5] <- "\U2713"
+              data_comb[n_r * (i - 1) + j, 5] <- "Support"
             }else{
-              data_comb[n_r * (i - 1) + j, 5] <- ""
+              data_comb[n_r * (i - 1) + j, 5] <- "Not support"
             }
           }else{
-            data_comb[n_r * (i - 1) + j, 5] <- "N/A"
+            data_comb[n_r * (i - 1) + j, 5] <- "-"
           }
         }
       }else{
-        data_comb[n_r * (i - 1) + j, 5] <- "N/A"
+        data_comb[n_r * (i - 1) + j, 5] <- "-"
       }
     }
   }else{
-    data_comb[, 5] <- "N/A"
+    data_comb[, 5] <- "-"
   }
 
   if(fin_mt){
@@ -151,20 +153,20 @@ make_data_comb <- function(env_proj){
             bool_share <- share_len_mt_one >= min_share_mt
             bool_mismatch <- mismatch_mt_one <= max_mismatch_mt
             if(all(c(bool_share, bool_mismatch))){
-              data_comb[n_r * (i - 1) + j, 6] <- "\U2713"
+              data_comb[n_r * (i - 1) + j, 6] <- "Support"
             }else{
-              data_comb[n_r * (i - 1) + j, 6] <- ""
+              data_comb[n_r * (i - 1) + j, 6] <- "Not support"
             }
           }else{
-            data_comb[n_r * (i - 1) + j, 6] <- "N/A"
+            data_comb[n_r * (i - 1) + j, 6] <- "-"
           }
         }
       }else{
-        data_comb[n_r * (i - 1) + j, 6] <- "N/A"
+        data_comb[n_r * (i - 1) + j, 6] <- "-"
       }
     }
   }else{
-    data_comb[, 6] <- "N/A"
+    data_comb[, 6] <- "-"
   }
 
   return(data_comb)
@@ -198,15 +200,30 @@ make_tab7 <- function(env_proj, env_gui){
         sn_q_select <- data_display[pos_select, "Query"]
         sn_r_select <- data_display[pos_select, "Reference"]
         rel_estimated_select <- data_display[pos_select, "Estimated relationship"]
-        paternal_select <- data_display[pos_select, "Paternal lineage"]
-        maternal_select <- data_display[pos_select, "Maternal lineage"]
+        if(rel_estimated_select == "-"){
+          rel_estimated_select <- "No data"
+        }
 
-        # Extract the result of Y-STRs
-        paternal_lineage_select <- data_display[pos_select, 5]
-        if(paternal_lineage_select == "\U2713"){
-          paternal_lineage_select <- "Paternal lineage"
-        }else if(paternal_lineage_select == ""){
-          paternal_lineage_select <- "Not paternal lineage"
+        # Extract the result of paternal lineage
+        paternal_select <- data_display[pos_select, "Paternal lineage"]
+        if(paternal_select == "-"){
+          paternal_select <- "No data"
+          y_satisfy <- "-"
+        }else if(paternal_select == "Support"){
+          y_satisfy <- "Yes"
+        }else{
+          y_satisfy <- "No"
+        }
+
+        # Extract the result of maternal lineage
+        maternal_select <- data_display[pos_select, "Maternal lineage"]
+        if(maternal_select == "-"){
+          maternal_select <- "No data"
+          mt_satisfy <- "-"
+        }else if(maternal_select == "Support"){
+          mt_satisfy <- "Yes"
+        }else{
+          mt_satisfy <- "No"
         }
 
         # Make a top frame
@@ -214,29 +231,41 @@ make_tab7 <- function(env_proj, env_gui){
         tkwm.title(tf_detail, "Combined results in detail")
 
         # Define frames
-        frame_detail_1 <- tkframe(tf_detail)
-        frame_detail_2 <- tkframe(tf_detail)
-        frame_detail_auto <- tkframe(frame_detail_1)
-        frame_detail_y <- tkframe(frame_detail_1)
-        frame_detail_mt <- tkframe(frame_detail_1)
+        frame_detail_sn <- tkframe(tf_detail)
+        frame_detail_summary <- tkframe(tf_detail)
+        frame_detail_auto <- tkframe(tf_detail)
+        frame_detail_y <- tkframe(tf_detail)
+        frame_detail_mt <- tkframe(tf_detail)
+
+        # Define sub frames
+        frame_detail_auto_sub <- tkframe(frame_detail_auto)
+        frame_detail_y_sub <- tkframe(frame_detail_y)
+        frame_detail_mt_sub <- tkframe(frame_detail_mt)
 
         # Define widgets for sample names
-        label_title_sn <- tklabel(frame_detail_1, text = "Sample name")
-        label_sn_q <- tklabel(frame_detail_1, text = paste0("    Query     : ", sn_q_select))
-        label_sn_r <- tklabel(frame_detail_1, text = paste0("    Reference : ", sn_r_select))
+        label_title_sn <- tklabel(frame_detail_sn, text = "Sample name", font = "Helvetica 10 bold")
+        label_sn_q_1 <- tklabel(frame_detail_sn, text = "    Query")
+        label_sn_q_2 <- tklabel(frame_detail_sn, text = paste0(": ", sn_q_select))
+        label_sn_r_1 <- tklabel(frame_detail_sn, text = "    Reference ")
+        label_sn_r_2 <- tklabel(frame_detail_sn, text = paste0(": ", sn_r_select))
 
-        # Define widgets for the estimated relationship
-        label_title_rel <- tklabel(frame_detail_1, text = "Estimated relationship")
-        label_result_rel <- tklabel(frame_detail_1, text = rel_estimated_select)
+        # Define widgets for summary
+        label_title_summary <- tklabel(frame_detail_summary, text = "Summary", font = "Helvetica 10 bold")
+        label_summary_rel_1 <- tklabel(frame_detail_summary, text = "    Estimated relationship")
+        label_summary_rel_2 <- tklabel(frame_detail_summary, text = paste0(": ", rel_estimated_select))
+        label_summary_pat_1 <- tklabel(frame_detail_summary, text = "    Paternal lineage")
+        label_summary_pat_2 <- tklabel(frame_detail_summary, text = paste0(": ", paternal_select))
+        label_summary_mat_1 <- tklabel(frame_detail_summary, text = "    Maternal lineage")
+        label_summary_mat_2 <- tklabel(frame_detail_summary, text = paste0(": ", maternal_select))
 
         # Define widgets for the result of autosomal STRs
-        label_title_auto <- tklabel(frame_detail_1, text = "STR")
+        label_title_auto <- tklabel(frame_detail_auto, text = "STR", font = "Helvetica 10 bold")
 
         # No result of the autosomal STRs
-        if(data_display[pos_select, 4] == "N/A"){
+        if(data_display[pos_select, 4] == "-"){
 
           # Define a label that indicates "No data"
-          label_result_auto <- tklabel(frame_detail_auto, text = "No data")
+          label_result_auto <- tklabel(frame_detail_auto_sub, text = "No data")
 
           # Grid the label
           tkgrid(label_result_auto, padx = 10, pady = 5)
@@ -259,13 +288,14 @@ make_tab7 <- function(env_proj, env_gui){
           lr_display[, 1] <- h1_select
           lr_display[, 2] <- "Unrelated"
           lr_display[, 3] <- sprintf('%.2e', lr_select)
-          lr_display[which(lr_select >= min_lr_auto), 4] <- "\U2713"
+          lr_display[, 4] <- "No"
+          lr_display[which(lr_select >= min_lr_auto), 4] <- "Yes"
 
           # Define a scrollbar for the multi-list box for LRs
-          scr_lr <- tkscrollbar(frame_detail_auto, repeatinterval = 5, command = function(...) tkyview(mlb_lr, ...))
+          scr_lr <- tkscrollbar(frame_detail_auto_sub, repeatinterval = 5, command = function(...) tkyview(mlb_lr, ...))
 
           # Define a multi-list box for LRs
-          mlb_lr <- tk2mclistbox(frame_detail_auto, width = 110, height = 5, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr_lr, ...))
+          mlb_lr <- tk2mclistbox(frame_detail_auto_sub, width = 110, height = 5, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr_lr, ...))
           tk2column(mlb_lr, "add", label = "Numerator hypothesis", width = 30)
           tk2column(mlb_lr, "add", label = "Denominator hypothesis", width = 30)
           tk2column(mlb_lr, "add", label = "LR", width = 30)
@@ -278,13 +308,13 @@ make_tab7 <- function(env_proj, env_gui){
         }
 
         # Define widgets for the result of the Y-STRs
-        label_title_y <- tklabel(frame_detail_1, text = "Y-STR")
+        label_title_y <- tklabel(frame_detail_y, text = "Y-STR", font = "Helvetica 10 bold")
 
         # No result of the Y-STRs
-        if(data_display[pos_select, 5] == "N/A"){
+        if(data_display[pos_select, 5] == "-"){
 
           # Define a label that indicates "No data"
-          label_result_y <- tklabel(frame_detail_y, text = "No data")
+          label_result_y <- tklabel(frame_detail_y_sub, text = "No data")
 
           # Grid the label
           tkgrid(label_result_y)
@@ -307,10 +337,10 @@ make_tab7 <- function(env_proj, env_gui){
           y_display[1, 1] <- y_data_select[1]
           y_display[1, 2] <- y_data_select[2]
           y_display[1, 3] <- y_data_select[3]
-          y_display[1, 4] <- paternal_select
+          y_display[1, 4] <- y_satisfy
 
           # Define a multi-list box for Y-STR results
-          mlb_y <- tk2mclistbox(frame_detail_y, width = 110, height = 1, resizablecolumns = TRUE, selectmode = "single")
+          mlb_y <- tk2mclistbox(frame_detail_y_sub, width = 110, height = 1, resizablecolumns = TRUE, selectmode = "single")
           tk2column(mlb_y, "add", label = "Number of mismatched loci", width = 30)
           tk2column(mlb_y, "add", label = "Number of ignored loci", width = 30)
           tk2column(mlb_y, "add", label = "Maximum mutational step", width = 30)
@@ -322,13 +352,13 @@ make_tab7 <- function(env_proj, env_gui){
         }
 
         # Define widgets for the result of the mtDNA
-        label_title_mt <- tklabel(frame_detail_1, text = "mtDNA")
+        label_title_mt <- tklabel(frame_detail_mt, text = "mtDNA", font = "Helvetica 10 bold")
 
         # No result of the mtDNA
-        if(data_display[pos_select, 6] == "N/A"){
+        if(data_display[pos_select, 6] == "-"){
 
           # Define a label that indicates "No data"
-          label_result_mt <- tklabel(frame_detail_mt, text = "No data")
+          label_result_mt <- tklabel(frame_detail_mt_sub, text = "No data")
 
           # Grid the label
           tkgrid(label_result_mt)
@@ -349,10 +379,10 @@ make_tab7 <- function(env_proj, env_gui){
           mt_display <- matrix("", 1, 3)
           mt_display[1, 1] <- mt_data_select[1]
           mt_display[1, 2] <- mt_data_select[2]
-          mt_display[1, 3] <- maternal_select
+          mt_display[1, 3] <- mt_satisfy
 
           # Define a multi-list box for Y-STR results
-          mlb_mt <- tk2mclistbox(frame_detail_mt, width = 110, height = 1, resizablecolumns = TRUE, selectmode = "single")
+          mlb_mt <- tk2mclistbox(frame_detail_mt_sub, width = 110, height = 1, resizablecolumns = TRUE, selectmode = "single")
           tk2column(mlb_mt, "add", label = "Shared length", width = 40)
           tk2column(mlb_mt, "add", label = "Number of mismatch", width = 40)
           tk2column(mlb_mt, "add", label = "Satisfy criteria", width = 30)
@@ -363,22 +393,41 @@ make_tab7 <- function(env_proj, env_gui){
         }
 
         # Define widgets for the warning message
-        label_title_warning <- tklabel(frame_detail_1, text = "Warning")
+        #label_title_warning <- tklabel(frame_detail_, text = "Warning")
 
-        # Grid widgets and some frames
-        tkgrid(label_title_rel, padx = 10, pady = 5, sticky = "w")
-        tkgrid(label_result_rel, padx = 10, pady = 5, sticky = "w")
+        # Grid widgets for sample names
+        tkgrid(label_title_sn, padx = 10, pady = 5, sticky = "w")
+        tkgrid(label_sn_q_1, label_sn_q_2, padx = 10, pady = 5, sticky = "w")
+        tkgrid(label_sn_r_1, label_sn_r_2, padx = 10, pady = 5, sticky = "w")
+
+        # Grid widgets for summary
+        tkgrid(label_title_summary, padx = 10, pady = 5, sticky = "w")
+        tkgrid(label_summary_rel_1, label_summary_rel_2, padx = 10, pady = 5, sticky = "w")
+        tkgrid(label_summary_pat_1, label_summary_pat_2, padx = 10, pady = 5, sticky = "w")
+        tkgrid(label_summary_mat_1, label_summary_mat_2, padx = 10, pady = 5, sticky = "w")
+
+        # Grid widgets for the autosomal STR
         tkgrid(label_title_auto, padx = 10, pady = 5, sticky = "w")
-        tkgrid(frame_detail_auto, padx = 10, pady = 5, sticky = "w")
+
+        # Grid widgets for the Y-STR
         tkgrid(label_title_y, padx = 10, pady = 5, sticky = "w")
-        tkgrid(frame_detail_y, padx = 10, pady = 5, sticky = "w")
+
+        # Grid widgets for the mtDNA
         tkgrid(label_title_mt, padx = 10, pady = 5, sticky = "w")
-        tkgrid(frame_detail_mt, padx = 10, pady = 5, sticky = "w")
-        tkgrid(label_title_warning, padx = 10, pady = 5, sticky = "w")
+
+        # tkgrid(label_title_warning, padx = 10, pady = 5, sticky = "w")
+
+        # Grid sub frames
+        tkgrid(frame_detail_auto_sub, padx = 20, pady = 5, sticky = "w")
+        tkgrid(frame_detail_y_sub, padx = 20, pady = 5, sticky = "w")
+        tkgrid(frame_detail_mt_sub, padx = 20, pady = 5, sticky = "w")
 
         # Grid frames
-        tkgrid(frame_detail_1, padx = 10, pady = 5, sticky = "w")
-        tkgrid(frame_detail_2, padx = 10, pady = 5, sticky = "w")
+        tkgrid(frame_detail_sn, padx = 10, pady = 5, sticky = "w")
+        tkgrid(frame_detail_summary, padx = 10, pady = 5, sticky = "w")
+        tkgrid(frame_detail_auto, padx = 10, pady = 5, sticky = "w")
+        tkgrid(frame_detail_y, padx = 10, pady = 5, sticky = "w")
+        tkgrid(frame_detail_mt, padx = 10, pady = 5, sticky = "w")
       }
 
     }
@@ -390,7 +439,13 @@ make_tab7 <- function(env_proj, env_gui){
     data_comb <- make_data_comb(env_proj)
 
     # Extract displayed data
-    data_display <- data_comb[sort(unique(c(which(data_comb[, 4] != ""), which(data_comb[, 5] != ""), which(data_comb[, 6] != "")))), , drop = FALSE]
+    data_display <- data_comb[sort(unique(c(which(is.element(data_comb[, 4], c("-", "No candidate")) == FALSE),
+                                            which(is.element(data_comb[, 5], c("-", "Not support")) == FALSE),
+                                            which(is.element(data_comb[, 6], c("-", "Not support")) == FALSE)
+                                            )
+                                          )
+                                   )
+                              , , drop = FALSE]
 
     # Reset frame_tab7
     tabs <- get("tabs", pos = env_gui)

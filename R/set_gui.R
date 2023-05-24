@@ -679,29 +679,8 @@ set_rel <- function(env_proj, env_gui){
     write.csv(rel_data, paste0(path_pack, "/extdata/parameters/rel.csv"), row.names = FALSE)
   }
 
-  # The function to create displayed data
-  create_rel_display <- function(rel_data){
-
-    # Extract displayed data
-    rel_display <- rel_data[, c("Name_relationship", "Degree", "Paternal_lineage", "Maternal_lineage")]
-
-    # Change signs of paternal lineage
-    pos_true_p <- which(rel_display[, "Paternal_lineage"] == TRUE)
-    pos_false_p <- which(rel_display[, "Paternal_lineage"] == FALSE)
-    rel_display[pos_true_p, "Paternal_lineage"] <- "\U2713"
-    rel_display[pos_false_p, "Paternal_lineage"] <- ""
-
-    # Change signs of maternal lineage
-    pos_true_m <- which(rel_display[, "Maternal_lineage"] == TRUE)
-    pos_false_m <- which(rel_display[, "Maternal_lineage"] == FALSE)
-    rel_display[pos_true_m, "Maternal_lineage"] <- "\U2713"
-    rel_display[pos_false_m, "Maternal_lineage"] <- ""
-
-    return(rel_display)
-  }
-
   # The function to remake a multi-list box of information on relationships
-  remake_mlb_rel <- function(rel_display){
+  remake_mlb_rel <- function(rel_data){
 
     # Get widgets from the environment "env_rel"
     scr1 <- get("scr1", pos = env_rel)
@@ -715,12 +694,13 @@ set_rel <- function(env_proj, env_gui){
     scr1 <- tkscrollbar(frame_rel_1, repeatinterval = 5, command = function(...) tkyview(mlb_rel, ...))
 
     # Define a multi-list box of information on relationships
-    mlb_rel <- tk2mclistbox(frame_rel_1, width = 100, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+    mlb_rel <- tk2mclistbox(frame_rel_1, width = 120, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
     tk2column(mlb_rel, "add", label = "Name of relationship", width = 40)
     tk2column(mlb_rel, "add", label = "Degree", width = 20)
-    tk2column(mlb_rel, "add", label = "Paternal lineage", width = 20)
-    tk2column(mlb_rel, "add", label = "Maternal lineage", width = 20)
-    tk2insert.multi(mlb_rel, "end",  rel_display)
+    tk2column(mlb_rel, "add", label = "Pr (IBD = 2)", width = 20)
+    tk2column(mlb_rel, "add", label = "Pr (IBD = 1)", width = 20)
+    tk2column(mlb_rel, "add", label = "Pr (IBD = 0)", width = 20)
+    tk2insert.multi(mlb_rel, "end",  rel_data)
 
     # Grid widgets
     tkgrid(mlb_rel, scr1)
@@ -787,11 +767,8 @@ set_rel <- function(env_proj, env_gui){
       # Update the file "rel.csv"
       create_rel_csv(rel_data)
 
-      # Create displayed data
-      rel_display <- create_rel_display(rel_data)
-
       # Remake a multi-list box of information on relationships
-      remake_mlb_rel(rel_display)
+      remake_mlb_rel(rel_data)
 
       # Assign data to the environment "env_rel"
       assign("rel_data", rel_data, envir = env_rel)
@@ -1292,44 +1269,14 @@ set_rel <- function(env_proj, env_gui){
             # Make a displayed degree
             deg_display <- make_deg_display(deg, pibd[2])
 
-            # Extract tree data
-            tree_list <- unclass(tree)
-            id <- tree_list$ID
-            fid <- tree_list$FIDX
-            fid[fid != 0] <- id[fid[fid != 0]]
-            mid <- tree_list$MIDX
-            mid[mid != 0] <- id[mid[mid != 0]]
-            sex <- tree_list$SEX
-
-            # Judge paternal lineage
-            rel_paternal <- judge_paternal("Person 1", "Person 2", id, fid, sex)
-
-            if(is.element(rel_paternal, c("lineal", "collateral"))){
-              bool_paternal <- TRUE
-            }else{
-              bool_paternal <- FALSE
-            }
-
-            # Judge maternal lineage
-            rel_maternal <- judge_maternal("Person 1", "Person 2", id, mid)
-
-            if(is.element(rel_maternal, c("lineal", "collateral"))){
-              bool_maternal <- TRUE
-            }else{
-              bool_maternal <- FALSE
-            }
-
             # Update the relationship data
-            rel_data <- rbind(rel_data, c(name_rel, deg_display, bool_paternal, bool_maternal, pibd))
+            rel_data <- rbind(rel_data, c(name_rel, deg_display, pibd))
 
             # Update the file "rel.csv"
             create_rel_csv(rel_data)
 
-            # Create displayed data
-            rel_display <- create_rel_display(rel_data)
-
             # Remake a multi-list box of information on relationships
-            remake_mlb_rel(rel_display)
+            remake_mlb_rel(rel_data)
 
             # Assign data to the environment "env_rel"
             assign("rel_data", rel_data, envir = env_rel)
@@ -1382,11 +1329,8 @@ set_rel <- function(env_proj, env_gui){
         # Update the file "rel.csv"
         create_rel_csv(rel_data)
 
-        # Create displayed data
-        rel_display <- create_rel_display(rel_data)
-
         # Remake a multi-list box of information on relationships
-        remake_mlb_rel(rel_display)
+        remake_mlb_rel(rel_data)
 
         # Assign data to the environment "env_rel"
         assign("rel_data", rel_data, envir = env_rel)
@@ -1418,11 +1362,8 @@ set_rel <- function(env_proj, env_gui){
       # Update the file "rel.csv"
       create_rel_csv(rel_data)
 
-      # Create displayed data
-      rel_display <- create_rel_display(rel_data)
-
       # Remake a multi-list box of information on relationships
-      remake_mlb_rel(rel_display)
+      remake_mlb_rel(rel_data)
 
       # Assign data to the environment "env_rel"
       assign("rel_data", rel_data, envir = env_rel)
@@ -1452,9 +1393,6 @@ set_rel <- function(env_proj, env_gui){
     rel_data <- get("rel_data_default", pos = env_proj)
   }
 
-  # Create displayed data
-  rel_display <- create_rel_display(rel_data)
-
   # Make an environment
   env_rel <- new.env(parent = globalenv())
 
@@ -1470,12 +1408,13 @@ set_rel <- function(env_proj, env_gui){
   scr1 <- tkscrollbar(frame_rel_1, repeatinterval = 5, command = function(...) tkyview(mlb_rel, ...))
 
   # Define a multi-list box of information on relationships
-  mlb_rel <- tk2mclistbox(frame_rel_1, width = 100, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+  mlb_rel <- tk2mclistbox(frame_rel_1, width = 120, height = 20, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
   tk2column(mlb_rel, "add", label = "Name of relationship", width = 40)
   tk2column(mlb_rel, "add", label = "Degree", width = 20)
-  tk2column(mlb_rel, "add", label = "Paternal lineage", width = 20)
-  tk2column(mlb_rel, "add", label = "Maternal lineage", width = 20)
-  tk2insert.multi(mlb_rel, "end",  rel_display)
+  tk2column(mlb_rel, "add", label = "Pr (IBD = 2)", width = 20)
+  tk2column(mlb_rel, "add", label = "Pr (IBD = 1)", width = 20)
+  tk2column(mlb_rel, "add", label = "Pr (IBD = 0)", width = 20)
+  tk2insert.multi(mlb_rel, "end",  rel_data)
 
   # Define widgets in frame_rel_2
   butt_edit <- tkbutton(frame_rel_2, text = "    Edit    ", cursor = "hand2", command = function() edit_rel_1())

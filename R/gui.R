@@ -88,55 +88,13 @@ set_env_proj_default <- function(env_proj){
   assign("myu_all_default", myu_all_default, envir = env_proj)
 
   # Set default relationship
-  name_rel <- c("parent_child_p", "pareent_child_m",
-                "sibling_pm", "sibling_m",
-                "grandparent_grandchild_p", "grandparent_grandchild_m", "grandparent_grandchild",
-                "uncle(aunt)_nephew(niece)_p", "uncle(aunt)_nephew(niece)_m", "uncle(aunt)_nephew(niece)",
-                "cousin_p", "cousin_m", "cousin")
-  degree <- c("1st_pc", "1st_pc",
-              "1st_sib", "1st_sib",
-              "2nd", "2nd", "2nd",
-              "2nd", "2nd", "2nd",
-              "3rd", "3rd", "3rd")
-  paternal <- c(TRUE, FALSE,
-                TRUE, FALSE,
-                TRUE, FALSE, FALSE,
-                TRUE, FALSE, FALSE,
-                TRUE, FALSE, FALSE)
-  maternal <- c(FALSE, TRUE,
-                TRUE, TRUE,
-                FALSE, TRUE, FALSE,
-                FALSE, TRUE, FALSE,
-                FALSE, TRUE, FALSE)
-  pibd2 <- c(0, 0,
-             0.25, 0.25,
-             0, 0, 0,
-             0, 0, 0,
-             0, 0, 0)
-  pibd1 <- c(1, 1,
-             0.5, 0.5,
-             0.5, 0.5, 0.5,
-             0.5, 0.5, 0.5,
-             0.25, 0.25, 0.25)
-  pibd0 <- c(0, 0,
-             0.25, 0.25,
-             0.5, 0.5, 0.5,
-             0.5, 0.5, 0.5,
-             0.75, 0.75, 0.75)
-  rel_data_default <- data.frame(Name_relationship = name_rel, Degree = degree, Paternal_lineage = paternal, Maternal_lineage = maternal,
-                                 Pr_IBD2 = pibd2, Pr_IBD1 = pibd1, Pr_IBD0 = pibd0)
+  name_rel <- c("parent_child", "sibling", "grandparent_grandchild", "uncle_nephew", "cousin")
+  degree <- c("1st_pc", "1st_sib", "2nd", "2nd", "3rd")
+  pibd2 <- c(0, 0.25, 0, 0, 0)
+  pibd1 <- c(1, 0.5, 0.5, 0.5, 0.25)
+  pibd0 <- c(0, 0.25, 0.5, 0.5, 0.75)
+  rel_data_default <- data.frame(Name_relationship = name_rel, Degree = degree, Pr_IBD2 = pibd2, Pr_IBD1 = pibd1, Pr_IBD0 = pibd0)
   assign("rel_data_default", rel_data_default, envir = env_proj)
-
-  # Set default IBD probabilities
-  pibd_all <- matrix(0, 5, 3)
-  pibd_all[1, ] <- c(1, 0, 0)
-  pibd_all[2, ] <- c(0, 1, 0)
-  pibd_all[3, ] <- c(0.25, 0.5, 0.25)
-  pibd_all[4, ] <- c(0, 0.5, 0.5)
-  pibd_all[5, ] <- c(0, 0.25, 0.75)
-  rownames(pibd_all) <- c("direct match", "parent-child", "sibling", "2nd-degree", "3rd-degree")
-  colnames(pibd_all) <- c("Pr_IBD2", "Pr_IBD1", "Pr_IBD0")
-  assign("pibd_all_default", pibd_all, envir = env_proj)
 
   # Set default parameters for autosomal STR
   assign("maf_default", 0.001, envir = env_proj)

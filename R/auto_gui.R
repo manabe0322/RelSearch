@@ -191,6 +191,8 @@ search_auto <- function(env_proj, env_gui){
       # Load IBD probabilities
       rel_data <- read.csv(paste0(path_pack, "/extdata/parameters/rel.csv"), header = TRUE)
 
+      # Extract relationship names from rel_data
+      rel_pibd <- rel_data[, "Name_relationship"]
 
       # Load analysis methods
       par_auto <- read.csv(paste0(path_pack, "/extdata/parameters/par_auto.csv"), header = TRUE)
@@ -226,7 +228,7 @@ search_auto <- function(env_proj, env_gui){
       bool_locus_3 <- all(is.element(locus_q, locus_myu))
 
       # Whether all relationships of the reference database is included in the relationships of the IBD probabilities or not
-      bool_rel_1 <- all(is.element(setdiff(rel_auto_r, ""), rel_data[, "Name_relationship"]))
+      bool_rel_1 <- all(is.element(setdiff(rel_auto_r, ""), rel_pibd))
 
       # If above 4 conditions are satisfied
       if(all(c(bool_locus_1, bool_locus_2, bool_locus_3, bool_rel_1))){
@@ -264,6 +266,9 @@ search_auto <- function(env_proj, env_gui){
 
         # The number of relationships for the IBD probabilities
         n_pibd_rel <- nrow(rel_data)
+
+        # Extract the IBD probabilities
+        pibd_base <- rel_data[, c("Pr_IBD2", "Pr_IBD1", "Pr_IBD0")]
 
         # Set consideration of mutations for each relationship
         bool_cons_mu_all <- rep(FALSE, n_pibd_rel)
@@ -310,13 +315,13 @@ search_auto <- function(env_proj, env_gui){
           if(rel_auto_r[i] == ""){
 
             # Set the IBD probabilities
-            pibd_all <- rel_data[, c("Pr_IBD2", "Pr_IBD1", "Pr_IBD0")]
+            pibd_all <- pibd_base
 
             # Sample names for the result object
             sn_auto_r_new[count:(count + n_pibd_rel - 1)] <- sn_auto_r[i]
 
             # Relationships for the result object
-            rel_auto_r_new[count:(count + n_pibd_rel - 1)] <- rel_data[, "Name_relationship"]
+            rel_auto_r_new[count:(count + n_pibd_rel - 1)] <- rel_pibd
 
             # Set consideration of mutations
             bool_cons_mu <- bool_cons_mu_all
@@ -325,7 +330,7 @@ search_auto <- function(env_proj, env_gui){
           }else{
 
             # Extract the IBD probabilities
-            pibd_all <- rel_data[rel_data[, "Name_relationship"] == rel_auto_r[i], c("Pr_IBD2", "Pr_IBD1", "Pr_IBD0")]
+            pibd_all <- pibd_base[rel_pibd == rel_auto_r[i], , drop = FALSE]
 
             # A sample name for the result
             sn_auto_r_new[count] <- sn_auto_r[i]
@@ -570,10 +575,10 @@ make_tab2 <- function(env_proj, env_gui){
         scr1 <- tkscrollbar(frame_result_1, repeatinterval = 5, command = function(...) tkyview(mlb_result, ...))
 
         # Define the multi-list box for displayed data
-        mlb_result <- tk2mclistbox(frame_result_1, width = 60, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+        mlb_result <- tk2mclistbox(frame_result_1, width = 85, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
         tk2column(mlb_result, "add", label = "Query", width = 15)
         tk2column(mlb_result, "add", label = "Reference", width = 15)
-        tk2column(mlb_result, "add", label = "Relationship", width = 15)
+        tk2column(mlb_result, "add", label = "Relationship", width = 40)
         tk2column(mlb_result, "add", label = "LR", width = 15)
 
         # Extract displayed data
@@ -765,10 +770,10 @@ make_tab2 <- function(env_proj, env_gui){
     scr1 <- tkscrollbar(frame_result_1, repeatinterval = 5, command = function(...) tkyview(mlb_result, ...))
 
     # Define a multi-list box of the displayed data
-    mlb_result <- tk2mclistbox(frame_result_1, width = 60, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+    mlb_result <- tk2mclistbox(frame_result_1, width = 85, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
     tk2column(mlb_result, "add", label = "Query", width = 15)
     tk2column(mlb_result, "add", label = "Reference", width = 15)
-    tk2column(mlb_result, "add", label = "Relationship", width = 15)
+    tk2column(mlb_result, "add", label = "Assumed relationship", width = 40)
     tk2column(mlb_result, "add", label = "LR", width = 15)
     tk2insert.multi(mlb_result, "end", data_display)
 
