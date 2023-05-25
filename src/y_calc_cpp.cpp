@@ -93,39 +93,43 @@ std::vector<std::vector<int>> match_y(std::vector<std::string> query, std::vecto
 
     int q_al_size = q_al.size();
     int r_al_size = r_al.size();
-    bool same_qr = true;
-    if(q_al_size == r_al_size){
-      for(int i = 0; i < q_al_size; ++i){
-        bool same_al = q_al[i] == r_al[i];
-        if(!same_al){
-          same_qr = false;
-          break;
-        }
-      }
+
+    /*ignore*/
+    if(q_al_size == 0 || r_al_size == 0){
+      ans.at(1).at(i) = 1;
+      sum_l_1 += 1;
     }else{
-      same_qr = false;
-    }
-
-    /*mismatch or not*/
-    if(same_qr == false){
-      /*ignore*/
-      std::vector<double> qr_al;
-      std::set_union(q_al.begin(), q_al.end(), r_al.begin(), r_al.end(), inserter(qr_al, qr_al.end()));
-
-      std::vector<double> only_r_al;
-      std::set_difference(r_al.begin(), r_al.end(), qr_al.begin(), qr_al.end(), inserter(only_r_al, only_r_al.end()));
-
-      if(only_r_al.size() == 0){
-        ans.at(1).at(i) = 1;
-        sum_l_1 = sum_l_1 + 1;
-      /*not ignore*/
+      bool same_qr = true;
+      if(q_al_size == r_al_size){
+        for(int j = 0; j < q_al_size; ++j){
+          bool same_al = q_al[j] == r_al[j];
+          if(!same_al){
+            same_qr = false;
+            break;
+          }
+        }
       }else{
-        ans.at(0).at(i) = 1;
-        sum_l_0 = sum_l_0 + 1;
-        int mu_step = calc_mu_step(q_al, r_al);
-        ans.at(2).at(i) = mu_step;
-        if(max_mu_step < mu_step){
-          max_mu_step = mu_step;
+        same_qr = false;
+      }
+
+      if(same_qr == false){
+        std::vector<double> only_q_al;
+        std::set_difference(q_al.begin(), q_al.end(), r_al.begin(), r_al.end(), inserter(only_q_al, only_q_al.end()));
+
+        /*ignore*/
+        if(only_q_al.size() == 0){
+          ans.at(1).at(i) = 1;
+          sum_l_1 += 1;
+
+          /*not ignore*/
+        }else{
+          ans.at(0).at(i) = 1;
+          sum_l_0 += 1;
+          int mu_step = calc_mu_step(q_al, r_al);
+          ans.at(2).at(i) = mu_step;
+          if(max_mu_step < mu_step){
+            max_mu_step = mu_step;
+          }
         }
       }
     }

@@ -291,13 +291,13 @@ make_tab4 <- function(env_proj, env_gui){
       # Define widgets in frame_display_1
       label_title_1 <- tklabel(frame_display_1, text = "Query")
       label_title_2 <- tklabel(frame_display_1, text = "Reference")
-      label_title_3 <- tklabel(frame_display_1, text = "Number of mismatched loci")
-      label_title_4 <- tklabel(frame_display_1, text = "Number of ignored loci")
+      label_title_3 <- tklabel(frame_display_1, text = "Number of ignored loci")
+      label_title_4 <- tklabel(frame_display_1, text = "Number of mismatched loci")
       label_title_5 <- tklabel(frame_display_1, text = "Maximum mutational step")
       combo_q <- ttkcombobox(frame_display_1, values = cand_q, textvariable = select_q_var, state = "readonly")
       combo_r <- ttkcombobox(frame_display_1, values = cand_r, textvariable = select_r_var, state = "readonly")
-      entry_total_mismatch <- tkentry(frame_display_1, textvariable = select_total_mismatch_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
       entry_total_ignore <- tkentry(frame_display_1, textvariable = select_total_ignore_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+      entry_total_mismatch <- tkentry(frame_display_1, textvariable = select_total_mismatch_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
       entry_total_mustep <- tkentry(frame_display_1, textvariable = select_total_mustep_var, width = 20, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
 
       # Define widgets in frame_display_2
@@ -307,7 +307,7 @@ make_tab4 <- function(env_proj, env_gui){
 
       # Grid widgets
       tkgrid(label_title_1, label_title_2, label_title_3, label_title_4, label_title_5, padx = 10, pady = 5)
-      tkgrid(combo_q, combo_r, entry_total_mismatch, entry_total_ignore, entry_total_mustep, padx = 10, pady = 5)
+      tkgrid(combo_q, combo_r, entry_total_ignore, entry_total_mismatch, entry_total_mustep, padx = 10, pady = 5)
       tkgrid(butt_set, padx = 10, pady = 5)
 
       # Grid frames
@@ -326,8 +326,8 @@ make_tab4 <- function(env_proj, env_gui){
       if(select_r != "All"){
         select_mat[, 2] <- sn_y_r_vec == select_r
       }
-      select_mat[, 3] <- total_mismatch_vec <= select_total_mismatch
-      select_mat[, 4] <- total_ignore_vec <= select_total_ignore
+      select_mat[, 3] <- total_ignore_vec <= select_total_ignore
+      select_mat[, 4] <- total_mismatch_vec <= select_total_mismatch
       select_mat[, 5] <- total_mustep_vec <= select_total_mustep
       pos_extract <- which(apply(select_mat, 1, all) == TRUE)
 
@@ -349,15 +349,15 @@ make_tab4 <- function(env_proj, env_gui){
         mlb_result <- tk2mclistbox(frame_result_1, width = 120, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
         tk2column(mlb_result, "add", label = "Query", width = 15)
         tk2column(mlb_result, "add", label = "Reference", width = 15)
-        tk2column(mlb_result, "add", label = "Number of mismatched loci", width = 30)
         tk2column(mlb_result, "add", label = "Number of ignored loci", width = 30)
+        tk2column(mlb_result, "add", label = "Number of mismatched loci", width = 30)
         tk2column(mlb_result, "add", label = "Maximum mutational step", width = 30)
 
         # Extract displayed data
         data_display <- data_all[pos_extract, , drop = FALSE]
         data_display <- data_display[order(as.numeric(data_display[, 5])), , drop = FALSE]
-        data_display <- data_display[order(as.numeric(data_display[, 4])), , drop = FALSE]
         data_display <- data_display[order(as.numeric(data_display[, 3])), , drop = FALSE]
+        data_display <- data_display[order(as.numeric(data_display[, 4])), , drop = FALSE]
         data_display[which(as.numeric(data_display[, 5]) == 99), 5] <- "Not integer"
         tk2insert.multi(mlb_result, "end", data_display)
 
@@ -409,8 +409,8 @@ make_tab4 <- function(env_proj, env_gui){
         colnames(data_detail) <- c("Locus",
                                   paste0("Query (", select_q_name, ")"),
                                   paste0("Reference (", select_r_name, ")"),
-                                  "mismatched loci",
                                   "Ignored loci",
+                                  "mismatched loci",
                                   "Mutational step")
 
         # 1st column for detailed data
@@ -423,16 +423,16 @@ make_tab4 <- function(env_proj, env_gui){
         data_detail[1:n_l, 3] <- hap_y_r[pos_select_r, ]
 
         # 4th column for detailed data
-        mismatch_y_ext <- mismatch_y[pos_select_q, pos_select_r, ]
-        mismatch_y_ext2 <- mismatch_y_ext[1:n_l]
-        mismatch_y_ext2[which(mismatch_y_ext2 == 0)] <- ""
-        data_detail[, 4] <- c(mismatch_y_ext2, mismatch_y_ext[n_l + 1])
-
-        # 5th column for detailed data
         ignore_y_ext <- ignore_y[pos_select_q, pos_select_r, ]
         ignore_y_ext2 <- ignore_y_ext[1:n_l]
         ignore_y_ext2[which(ignore_y_ext2 == 0)] <- ""
-        data_detail[, 5] <- c(ignore_y_ext2, ignore_y_ext[n_l + 1])
+        data_detail[, 4] <- c(ignore_y_ext2, ignore_y_ext[n_l + 1])
+
+        # 5th column for detailed data
+        mismatch_y_ext <- mismatch_y[pos_select_q, pos_select_r, ]
+        mismatch_y_ext2 <- mismatch_y_ext[1:n_l]
+        mismatch_y_ext2[which(mismatch_y_ext2 == 0)] <- ""
+        data_detail[, 5] <- c(mismatch_y_ext2, mismatch_y_ext[n_l + 1])
 
         # 6th column for detailed data
         mustep_y_ext <- mustep_y[pos_select_q, pos_select_r, ]
@@ -456,8 +456,8 @@ make_tab4 <- function(env_proj, env_gui){
         tk2column(mlb_detail, "add", label = "locus", width = 20)
         tk2column(mlb_detail, "add", label = paste0("Query (", select_q_name, ")"), width = 20)
         tk2column(mlb_detail, "add", label = paste0("Reference (", select_r_name, ")"), width = 20)
-        tk2column(mlb_detail, "add", label = "Mismatched loci", width = 20)
         tk2column(mlb_detail, "add", label = "Ignored loci", width = 20)
+        tk2column(mlb_detail, "add", label = "Mismatched loci", width = 20)
         tk2column(mlb_detail, "add", label = "Mutational step", width = 20)
         tk2insert.multi(mlb_detail, "end", data_detail)
 
@@ -526,19 +526,20 @@ make_tab4 <- function(env_proj, env_gui){
 
     # Define a matrix for all data
     data_all <- matrix(0, n_data, 5)
-    colnames(data_all) <- c("Query", "Reference", "Number of mismatched loci", "Number of ignored loci", "Maximum mutational step")
+    colnames(data_all) <- c("Query", "Reference", "Number of ignored loci", "Number of mismatched loci", "Maximum mutational step")
     data_all[, 1] <- sn_y_q_vec
     data_all[, 2] <- sn_y_r_vec
-    data_all[, 3] <- total_mismatch_vec
-    data_all[, 4] <- total_ignore_vec
+    data_all[, 3] <- total_ignore_vec
+    data_all[, 4] <- total_mismatch_vec
     data_all[, 5] <- total_mustep_vec
 
     # Define a matrix for the displayed data
-    data_display <- data_all[which(as.numeric(data_all[, 3]) <= max_mismatch_y), , drop = FALSE]
-    data_display <- data_display[which(as.numeric(data_display[, 4]) <= max_ignore_y), , drop = FALSE]
+    data_display <- data_all[which(as.numeric(data_all[, 4]) <= max_mismatch_y), , drop = FALSE]
+    data_display <- data_display[which(as.numeric(data_display[, 3]) <= max_ignore_y), , drop = FALSE]
     data_display <- data_display[which(as.numeric(data_display[, 5]) <= max_mustep_y), , drop = FALSE]
-    data_display <- data_display[order(as.numeric(data_display[, 4])), , drop = FALSE]
+    data_display <- data_all
     data_display <- data_display[order(as.numeric(data_display[, 3])), , drop = FALSE]
+    data_display <- data_display[order(as.numeric(data_display[, 4])), , drop = FALSE]
 
     # Reset frame_tab4
     tabs <- get("tabs", pos = env_gui)
@@ -558,8 +559,8 @@ make_tab4 <- function(env_proj, env_gui){
     mlb_result <- tk2mclistbox(frame_result_1, width = 120, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
     tk2column(mlb_result, "add", label = "Query", width = 15)
     tk2column(mlb_result, "add", label = "Reference", width = 15)
-    tk2column(mlb_result, "add", label = "Number of mismatched loci", width = 30)
     tk2column(mlb_result, "add", label = "Number of ignored loci", width = 30)
+    tk2column(mlb_result, "add", label = "Number of mismatched loci", width = 30)
     tk2column(mlb_result, "add", label = "Maximum mutational step", width = 30)
     tk2insert.multi(mlb_result, "end", data_display)
 
