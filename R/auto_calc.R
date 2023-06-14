@@ -1,28 +1,33 @@
 # Setting allele frequencies
-set_af <- function(qData, rData, afInput, maf){
-  nL <- ncol(afInput) - 1
-  nameAl <- afInput[, 1]
-  nameL <- colnames(afInput)[-1]
-  afList <- afAlList <- list()
-  for(i in 1:nL){
-    alleleQ <- unique(as.numeric(qData[, c(2 * i - 1, 2 * i)]))
-    alleleR <- unique(as.numeric(rData[, c(2 * i - 1, 2 * i)]))
-    alleleObs <- sort(unique(c(alleleQ, alleleR)))
-    af <- afInput[, i + 1]
-    posAl <- !is.na(af)
-    af <- af[posAl]
-    afAl <- nameAl[posAl]
-    posUnobs <- which(is.element(alleleObs, afAl) == FALSE)
-    if(length(posUnobs) > 0){
-      afAl <- c(afAl, alleleObs[posUnobs])
-      af <- c(af, rep(maf, length(posUnobs)))
+set_af <- function(qgt_dt, rgt_dt, af_dt, maf){
+  n_l <- ncol(af_dt) - 1
+  name_al <- af_dt[, Allele]
+  name_l <- setdiff(names(af_dt), "Allele")
+  af_list <- af_al_list <- list()
+  for(i in 1:n_l){
+
+    # Observed alleles in query or reference database
+    obsal <- unique(c(qgt_dt[[2 * i - 1]], qgt_dt[[2 * i]], rgt_dt[[2 * i - 1]], rgt_dt[[2 * i]]))
+    obsal <- obsal[!is.na(obsal)]
+
+    # Extract allele frequencies in one locus
+    af <- af_dt[[i + 1]]
+    pos_al <- !is.na(af)
+    af <- af[pos_al]
+    af_al <- name_al[pos_al]
+
+    # Add unobserved allele frequencies
+    pos_unobs <- which(is.element(obsal, af_al) == FALSE)
+    if(length(pos_unobs) > 0){
+      af_al <- c(af_al, obsal[pos_unobs])
+      af <- c(af, rep(maf, length(pos_unobs)))
     }
-    afList[[i]] <- af
-    afAlList[[i]] <- afAl
+    af_list[[i]] <- af
+    af_al_list[[i]] <- af_al
   }
-  names(afList) <- nameL
-  names(afAlList) <- nameL
-  return(list(afList, afAlList))
+  names(af_list) <- name_l
+  names(af_al_list) <- name_l
+  return(list(af_list, af_al_list))
 }
 
 # Calculation of the average probability of exclusion (testthat)
