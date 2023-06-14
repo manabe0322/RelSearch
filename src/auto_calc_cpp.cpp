@@ -234,23 +234,23 @@ std::vector<double> calc_kin_like_drop(std::vector<double> qgt, std::vector<doub
 /*Calculation of likelihood ratio for kinship analysis*/
 //' @export
 // [[Rcpp::export]]
-std::vector<std::vector<double>> calc_kin_lr(std::vector<double> query, std::vector<double> ref,
+std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_query, std::vector<double> prof_ref,
                                              std::vector<std::vector<double>> af_list, std::vector<std::vector<double>> af_al_list,
                                              std::vector<double> pibd, bool cons_mu, std::vector<double> myus, std::vector<double> apes,
                                              int meth_d, double pd){
-  int n_l = query.size() / 2;
+  int n_l = prof_query.size() / 2;
   std::vector<std::vector<double>> ans(3, std::vector<double>(n_l + 1));
   double cl_h1 = 1;
   double cl_h2 = 1;
   for(int i = 0; i < n_l; ++i){
     std::vector<double> qgt(2);
-    qgt[0] = query[2 * i];
-    qgt[1] = query[2 * i + 1];
+    qgt[0] = prof_query[2 * i];
+    qgt[1] = prof_query[2 * i + 1];
     auto qgt_end = std::remove(qgt.begin(), qgt.end(), -99);
     qgt.erase(qgt_end, qgt.cend());
     std::vector<double> rgt(2);
-    rgt[0] = ref[2 * i];
-    rgt[1] = ref[2 * i + 1];
+    rgt[0] = prof_ref[2 * i];
+    rgt[1] = prof_ref[2 * i + 1];
     auto rgt_end = std::remove(rgt.begin(), rgt.end(), -99);
     qgt.erase(rgt_end, rgt.cend());
     std::vector<double> af = af_list[i];
