@@ -289,14 +289,28 @@ search_auto <- function(env_proj, env_gui){
         }
         names(apes) <- locus_q
 
+        # Number of comparisons
+        n_data <- n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel)
+
         # Define an data table to save information on the likelihoods of the numerator hypotheses
-        like_h1_all <- data.table(matrix(nrow = n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel), ncol = n_l + 4))
+        like_h1_all <- data.frame(matrix(0, nrow = n_data, ncol = n_l + 4))
         names(like_h1_all) <- c("Query", "Reference", "AssumedRelationship", locus_q, "Total")
+        like_h1_all$Query <- as.character(like_h1_all$Query)
+        like_h1_all$Reference <- as.character(like_h1_all$Reference)
+        like_h1_all$AssumedRelationship <- as.character(like_h1_all$AssumedRelationship)
+
+        #like_h1_all <- data.table(matrix(0, nrow = n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel), ncol = n_l + 4))
+        #names(like_h1_all) <- c("Query", "Reference", "AssumedRelationship", locus_q, "Total")
+        #like_h1_all <- mutate(like_h1_all, Query = as.character(Query))
+        #like_h1_all <- mutate(like_h1_all, Reference = as.character(Reference))
+        #like_h1_all <- mutate(like_h1_all, AssumedRelationship = as.character(AssumedRelationship))
 
         # Define an data table to save information on the likelihoods of the denominator hypotheses
+        #like_h2_all <- copy(like_h1_all)
         like_h2_all <- like_h1_all
 
         # Define an data table to save information on the likelihood ratio
+        #lr_all <- copy(like_h1_all)
         lr_all <- like_h1_all
 
         # Set the initial number of counts for rows
@@ -360,6 +374,11 @@ search_auto <- function(env_proj, env_gui){
               # Calculate a likelihood ratio
               tmp <- calc_kin_lr(prof_query, prof_ref, af_list, af_al_list, pibds, bool_cons_mu[j], myus, apes, meth_d, pd)
 
+              #like_h1_all[count, Query := sn_query]
+              #like_h1_all[count, Reference := sn_ref]
+              #like_h1_all[count, AssumedRelationship := rel[j]]
+              #like_h1_all[count, 4:(n_l + 4) := tmp[[1]]]
+
               like_h1_all[count, 1] <- sn_query
               like_h1_all[count, 2] <- sn_ref
               like_h1_all[count, 3] <- rel[j]
@@ -381,19 +400,24 @@ search_auto <- function(env_proj, env_gui){
               # Update the progress bar
               # tkconfigure(label_pb1, text = paste())
               #tkconfigure(pb1, value = (n_q * (count - 1) + k) * 100 / (n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel)))
-              info <- sprintf("%d%% done", round((n_q * (count - 1) + k) * 100 / (n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel))))
-              setTkProgressBar(pb, (n_q * (count - 1) + k) * 100 / (n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel)), sprintf("Searching"), info)
+              info <- sprintf("%d%% done", round(count * 100 / n_data))
+              setTkProgressBar(pb, count * 100 / n_data, sprintf("Searching"), info)
             }
           }
         }
 
         # Update sample names
-        set_env_proj_sn(env_proj, FALSE, sn_auto_q, sn_auto_r)
+        set_env_proj_sn(env_proj, FALSE, data_auto_q[, SampleName], data_auto_r[, SampleName])
 
         # Assign updated input data (ordered loci)
         assign("data_auto_q", data_auto_q, envir = env_proj)
         assign("data_auto_r", data_auto_r, envir = env_proj)
         assign("data_auto_af", data_auto_af, envir = env_proj)
+
+        # Convert matrix to data.table
+        setDT(like_h1_all)
+        setDT(like_h2_all)
+        setDT(lr_all)
 
         # Assign results to the environment "env_proj"
         assign("like_h1_all", like_h1_all, envir = env_proj)
