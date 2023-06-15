@@ -315,24 +315,10 @@ search_auto <- function(env_proj, env_gui){
         like_h1_all <- matrix(0, nrow = n_data, ncol = n_l + 1)
         colnames(like_h1_all) <- c(locus_q, "Total")
 
-        #like_h1_all <- data.frame(matrix(0, nrow = n_data, ncol = n_l + 4))
-        #names(like_h1_all) <- c("Query", "Reference", "AssumedRelationship", locus_q, "Total")
-        #like_h1_all$Query <- as.character(like_h1_all$Query)
-        #like_h1_all$Reference <- as.character(like_h1_all$Reference)
-        #like_h1_all$AssumedRelationship <- as.character(like_h1_all$AssumedRelationship)
-
-        #like_h1_all <- data.table(matrix(0, nrow = n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel), ncol = n_l + 4))
-        #names(like_h1_all) <- c("Query", "Reference", "AssumedRelationship", locus_q, "Total")
-        #like_h1_all <- mutate(like_h1_all, Query = as.character(Query))
-        #like_h1_all <- mutate(like_h1_all, Reference = as.character(Reference))
-        #like_h1_all <- mutate(like_h1_all, AssumedRelationship = as.character(AssumedRelationship))
-
         # Define an data table to save information on the likelihoods of the denominator hypotheses
-        #like_h2_all <- copy(like_h1_all)
         like_h2_all <- like_h1_all
 
         # Define an data table to save information on the likelihood ratio
-        #lr_all <- copy(like_h1_all)
         lr_all <- like_h1_all
 
         # Set the initial number of counts for rows
@@ -393,11 +379,6 @@ search_auto <- function(env_proj, env_gui){
 
               # Calculate a likelihood ratio
               tmp <- calc_kin_lr(prof_query, prof_ref, af_list, af_al_list, pibds, bool_cons_mu[j], myus, apes, meth_d, pd)
-
-              #like_h1_all[count, Query := sn_query]
-              #like_h1_all[count, Reference := sn_ref]
-              #like_h1_all[count, AssumedRelationship := rel[j]]
-              #like_h1_all[count, 4:(n_l + 4) := tmp[[1]]]
 
               query_all[count] <- sn_query
               reference_all[count] <- sn_ref
