@@ -217,10 +217,24 @@ search_auto <- function(env_proj, env_gui){
       bool_locus_3 <- all(is.element(locus_q, locus_myu))
 
       # Whether all relationships of the reference database is included in the relationships of the IBD probabilities or not
-      bool_rel_1 <- all(is.element(setdiff(data_auto_r[, Relationship], ""), rel_pibd))
+      reltype <- setdiff(data_auto_r[, Relationship], NA)
+      if(length(reltype) == 0){
+        bool_rel_1 <- TRUE
+      }else{
+        bool_rel_1 <- all(is.element(reltype, rel_pibd))
+      }
 
       # If above 4 conditions are satisfied
       if(all(c(bool_locus_1, bool_locus_2, bool_locus_3, bool_rel_1))){
+
+        # Make progress bars
+        # tf <- tktoplevel()
+        # label_pb1 <- tk2label(tf)
+        # pb1 <- tk2progress(tf, length = 300)
+        # tkconfigure(pb1, value = 0, maximum = 100)
+        # tkgrid(label_pb1)
+        # tkgrid(pb1)
+        pb <- tkProgressBar("Searching", "0% done", 0, 100, 0)
 
         # The number of loci
         n_l <- length(locus_q)
@@ -243,15 +257,6 @@ search_auto <- function(env_proj, env_gui){
         data_auto_q <- data_auto_q[, pos_q, with = FALSE]
         data_auto_r <- data_auto_r[, pos_r, with = FALSE]
         data_auto_af <- data_auto_af[, pos_af, with = FALSE]
-
-        # Make progress bars
-        # tf <- tktoplevel()
-        # label_pb1 <- tk2label(tf)
-        # pb1 <- tk2progress(tf, length = 300)
-        # tkconfigure(pb1, value = 0, maximum = 100)
-        # tkgrid(label_pb1)
-        # tkgrid(pb1)
-        pb <- tkProgressBar("Searching", "0% done", 0, 100, 0)
 
         # Set allele frequencies
         tmp <- set_af(data_auto_q, data_auto_r, data_auto_af, maf)
@@ -292,12 +297,19 @@ search_auto <- function(env_proj, env_gui){
         # Number of comparisons
         n_data <- n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel)
 
+        query_all <- rep("", n_data)
+        reference_all <- rep("", n_data)
+        assumedrel_all <- rep("", n_data)
+
         # Define an data table to save information on the likelihoods of the numerator hypotheses
-        like_h1_all <- data.frame(matrix(0, nrow = n_data, ncol = n_l + 4))
-        names(like_h1_all) <- c("Query", "Reference", "AssumedRelationship", locus_q, "Total")
-        like_h1_all$Query <- as.character(like_h1_all$Query)
-        like_h1_all$Reference <- as.character(like_h1_all$Reference)
-        like_h1_all$AssumedRelationship <- as.character(like_h1_all$AssumedRelationship)
+        like_h1_all <- matrix(0, nrow = n_data, ncol = n_l + 1)
+        colnames(like_h1_all) <- c(locus_q, "Total")
+
+        #like_h1_all <- data.frame(matrix(0, nrow = n_data, ncol = n_l + 4))
+        #names(like_h1_all) <- c("Query", "Reference", "AssumedRelationship", locus_q, "Total")
+        #like_h1_all$Query <- as.character(like_h1_all$Query)
+        #like_h1_all$Reference <- as.character(like_h1_all$Reference)
+        #like_h1_all$AssumedRelationship <- as.character(like_h1_all$AssumedRelationship)
 
         #like_h1_all <- data.table(matrix(0, nrow = n_q * (n_r + (n_pibd_rel - 1) * n_emp_rel), ncol = n_l + 4))
         #names(like_h1_all) <- c("Query", "Reference", "AssumedRelationship", locus_q, "Total")
@@ -313,6 +325,16 @@ search_auto <- function(env_proj, env_gui){
         #lr_all <- copy(like_h1_all)
         lr_all <- like_h1_all
 
+        # Extract required data from query database
+        sn_auto_q <- data_auto_q[, SampleName]
+        gt_auto_q <- as.matrix(data_auto_q[, -"SampleName"])
+
+        # Extract required data from reference database
+        sn_auto_r <- data_auto_r[, SampleName]
+        rel_auto_r <- data_auto_r[, Relationship]
+        rel_auto_r[is.na(rel_auto_r)] <- ""
+        gt_auto_r <- as.matrix(data_auto_r[, -c("SampleName", "Relationship")])
+
         # Set the initial number of counts for rows
         count <- 1
 
@@ -320,10 +342,9 @@ search_auto <- function(env_proj, env_gui){
         for(i in 1:n_r){
 
           # Extract a reference data
-          ref <- data_auto_r[i, ]
-          sn_ref <- ref[, SampleName]
-          rel <- ref[, Relationship]
-          prof_ref <- as.numeric(ref[, -c("SampleName", "Relationship"), with = FALSE])
+          sn_ref <- sn_auto_r[i]
+          rel <- rel_auto_r[i]
+          prof_ref <- gt_auto_r[i, ]
 
           # The NA is replaced to -99 to deal with the C++ program
           prof_ref[is.na(prof_ref)] <- -99
@@ -364,9 +385,8 @@ search_auto <- function(env_proj, env_gui){
             for(k in 1:n_q){
 
               # Extract a query data
-              query <- data_auto_q[k, ]
-              sn_query <- query[, SampleName]
-              prof_query <- as.numeric(query[, -"SampleName", with = FALSE])
+              sn_query <- sn_auto_q[k]
+              prof_query <- gt_auto_q[k, ]
 
               # The NA is replaced to -99 to deal with the C++ program
               prof_query[is.na(prof_query)] <- -99
@@ -379,20 +399,12 @@ search_auto <- function(env_proj, env_gui){
               #like_h1_all[count, AssumedRelationship := rel[j]]
               #like_h1_all[count, 4:(n_l + 4) := tmp[[1]]]
 
-              like_h1_all[count, 1] <- sn_query
-              like_h1_all[count, 2] <- sn_ref
-              like_h1_all[count, 3] <- rel[j]
-              like_h1_all[count, 4:(n_l + 4)] <- tmp[[1]]
-
-              like_h2_all[count, 1] <- sn_query
-              like_h2_all[count, 2] <- sn_ref
-              like_h2_all[count, 3] <- rel[j]
-              like_h2_all[count, 4:(n_l + 4)] <- tmp[[2]]
-
-              lr_all[count, 1] <- sn_query
-              lr_all[count, 2] <- sn_ref
-              lr_all[count, 3] <- rel[j]
-              lr_all[count, 4:(n_l + 4)] <- tmp[[3]]
+              query_all[count] <- sn_query
+              reference_all[count] <- sn_ref
+              assumedrel_all[count] <- rel[j]
+              like_h1_all[count, ] <- tmp[[1]]
+              like_h2_all[count, ] <- tmp[[2]]
+              lr_all[count, ] <- tmp[[3]]
 
               # Update the number of counts for rows
               count <- count + 1
@@ -407,17 +419,27 @@ search_auto <- function(env_proj, env_gui){
         }
 
         # Update sample names
-        set_env_proj_sn(env_proj, FALSE, data_auto_q[, SampleName], data_auto_r[, SampleName])
+        set_env_proj_sn(env_proj, FALSE, sn_auto_q, sn_auto_r)
 
         # Assign updated input data (ordered loci)
         assign("data_auto_q", data_auto_q, envir = env_proj)
         assign("data_auto_r", data_auto_r, envir = env_proj)
         assign("data_auto_af", data_auto_af, envir = env_proj)
 
-        # Convert matrix to data.table
+        # Create data.table for results
+        tmp <- data.table(Query = query_all, Reference = reference_all, AssumedRelationship = assumedrel_all)
+
+        like_h1_all <- as.data.frame(like_h1_all)
         setDT(like_h1_all)
+        like_h1_all <- cbind(tmp, like_h1_all)
+
+        like_h2_all <- as.data.frame(like_h2_all)
         setDT(like_h2_all)
+        like_h2_all <- cbind(tmp, like_h2_all)
+
+        lr_all <- as.data.frame(lr_all)
         setDT(lr_all)
+        lr_all <- cbind(tmp, lr_all)
 
         # Assign results to the environment "env_proj"
         assign("like_h1_all", like_h1_all, envir = env_proj)
