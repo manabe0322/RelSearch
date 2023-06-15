@@ -1,6 +1,6 @@
 Name_relationship,Degree,Pr_IBD2,Pr_IBD1,Pr_IBD0
-parent_child,1st_pc,0,1,0
+parent-child,1st_pc,0,1,0
 sibling,1st_sib,0.25,0.5,0.25
-grandparent_grandchild,2nd,0,0.5,0.5
-uncle_nephew,2nd,0,0.5,0.5
+grandparent-grandchild,2nd,0,0.5,0.5
+uncle-nephew,2nd,0,0.5,0.5
 cousin,3rd,0,0.25,0.75
