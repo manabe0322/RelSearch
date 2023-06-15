@@ -206,16 +206,18 @@ search_auto <- function(env_proj, env_gui){
       locus_af <- setdiff(names(data_auto_af), "Allele")
 
       # Whether the locus set of the query database is the same as that of the reference database or not
-      bool_locus_1 <- all(mapply(setequal, locus_q, locus_r))
+      #bool_locus_1 <- all(mapply(setequal, locus_q, locus_r))
+      bool_locus_1 <- setequal(locus_q, locus_r)
 
       # Whether the locus set of the query database is the same as that of the allele frequencies or not
-      bool_locus_2 <- all(mapply(setequal, locus_q, locus_af))
+      #bool_locus_2 <- all(mapply(setequal, locus_q, locus_af))
+      bool_locus_2 <- setequal(locus_q, locus_af)
 
       # Whether all loci of the query database is included in the locus set of the mutation rates or not
       bool_locus_3 <- all(is.element(locus_q, locus_myu))
 
       # Whether all relationships of the reference database is included in the relationships of the IBD probabilities or not
-      bool_rel_1 <- all(is.element(setdiff(rel_auto_r, ""), rel_pibd))
+      bool_rel_1 <- all(is.element(setdiff(data_auto_r[, Relationship], ""), rel_pibd))
 
       # If above 4 conditions are satisfied
       if(all(c(bool_locus_1, bool_locus_2, bool_locus_3, bool_rel_1))){
@@ -258,7 +260,7 @@ search_auto <- function(env_proj, env_gui){
         n_r <- nrow(data_auto_r)
 
         # The number of empty cells in the "Relationship" column of the reference database
-        n_emp_rel <- length(which(rel_auto_r == ""))
+        n_emp_rel <- length(which(data_auto_r[, Relationship] == ""))
 
         # The number of loci
         n_l <- length(locus_q)
@@ -417,7 +419,7 @@ search_auto <- function(env_proj, env_gui){
 
         # Make tabs
         make_tab2(env_proj, env_gui)
-        make_tab7(env_proj, env_gui)
+        #make_tab7(env_proj, env_gui)
 
         # Close the progress bar
         # tkdestroy(tf)
