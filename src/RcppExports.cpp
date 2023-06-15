@@ -73,13 +73,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // calc_kin_lr
-std::vector<std::vector<double>> calc_kin_lr(std::vector<double> query, std::vector<double> ref, std::vector<std::vector<double>> af_list, std::vector<std::vector<double>> af_al_list, std::vector<double> pibd, bool cons_mu, std::vector<double> myus, std::vector<double> apes, int meth_d, double pd);
-RcppExport SEXP _relsearch_calc_kin_lr(SEXP querySEXP, SEXP refSEXP, SEXP af_listSEXP, SEXP af_al_listSEXP, SEXP pibdSEXP, SEXP cons_muSEXP, SEXP myusSEXP, SEXP apesSEXP, SEXP meth_dSEXP, SEXP pdSEXP) {
+std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_query, std::vector<double> prof_ref, std::vector<std::vector<double>> af_list, std::vector<std::vector<double>> af_al_list, std::vector<double> pibd, bool cons_mu, std::vector<double> myus, std::vector<double> apes, int meth_d, double pd);
+RcppExport SEXP _relsearch_calc_kin_lr(SEXP prof_querySEXP, SEXP prof_refSEXP, SEXP af_listSEXP, SEXP af_al_listSEXP, SEXP pibdSEXP, SEXP cons_muSEXP, SEXP myusSEXP, SEXP apesSEXP, SEXP meth_dSEXP, SEXP pdSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector<double> >::type query(querySEXP);
-    Rcpp::traits::input_parameter< std::vector<double> >::type ref(refSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type prof_query(prof_querySEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type prof_ref(prof_refSEXP);
     Rcpp::traits::input_parameter< std::vector<std::vector<double>> >::type af_list(af_listSEXP);
     Rcpp::traits::input_parameter< std::vector<std::vector<double>> >::type af_al_list(af_al_listSEXP);
     Rcpp::traits::input_parameter< std::vector<double> >::type pibd(pibdSEXP);
@@ -88,7 +88,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::vector<double> >::type apes(apesSEXP);
     Rcpp::traits::input_parameter< int >::type meth_d(meth_dSEXP);
     Rcpp::traits::input_parameter< double >::type pd(pdSEXP);
-    rcpp_result_gen = Rcpp::wrap(calc_kin_lr(query, ref, af_list, af_al_list, pibd, cons_mu, myus, apes, meth_d, pd));
+    rcpp_result_gen = Rcpp::wrap(calc_kin_lr(prof_query, prof_ref, af_list, af_al_list, pibd, cons_mu, myus, apes, meth_d, pd));
     return rcpp_result_gen;
 END_RCPP
 }

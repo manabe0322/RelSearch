@@ -18,8 +18,8 @@ calc_kin_like_drop <- function(qgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd)
 }
 
 #' @export
-calc_kin_lr <- function(query, ref, af_list, af_al_list, pibd, cons_mu, myus, apes, meth_d, pd) {
-    .Call(`_relsearch_calc_kin_lr`, query, ref, af_list, af_al_list, pibd, cons_mu, myus, apes, meth_d, pd)
+calc_kin_lr <- function(prof_query, prof_ref, af_list, af_al_list, pibd, cons_mu, myus, apes, meth_d, pd) {
+    .Call(`_relsearch_calc_kin_lr`, prof_query, prof_ref, af_list, af_al_list, pibd, cons_mu, myus, apes, meth_d, pd)
 }
 
 split <- function(str, del) {
