@@ -2,7 +2,7 @@
 set_af <- function(data_auto_q, data_auto_r, data_auto_af, maf){
   n_l <- ncol(data_auto_af) - 1
   name_al <- data_auto_af[, Allele]
-  name_l <- setdiff(names(data_auto_q), c("Sample Name", "Relationship"))
+  name_l <- setdiff(names(data_auto_q), c("SampleName", "Relationship"))
   af_list <- af_al_list <- list()
   for(i in 1:n_l){
 
