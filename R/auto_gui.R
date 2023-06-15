@@ -258,6 +258,16 @@ search_auto <- function(env_proj, env_gui){
         data_auto_r <- data_auto_r[, pos_r, with = FALSE]
         data_auto_af <- data_auto_af[, pos_af, with = FALSE]
 
+        # Extract required data from query database
+        sn_auto_q <- data_auto_q[, SampleName]
+        gt_auto_q <- as.matrix(data_auto_q[, -"SampleName"])
+
+        # Extract required data from reference database
+        sn_auto_r <- data_auto_r[, SampleName]
+        rel_auto_r <- data_auto_r[, Relationship]
+        rel_auto_r[is.na(rel_auto_r)] <- ""
+        gt_auto_r <- as.matrix(data_auto_r[, -c("SampleName", "Relationship")])
+
         # Set allele frequencies
         tmp <- set_af(data_auto_q, data_auto_r, data_auto_af, maf)
         af_list <- tmp[[1]]
@@ -268,7 +278,7 @@ search_auto <- function(env_proj, env_gui){
         n_r <- nrow(data_auto_r)
 
         # The number of empty cells in the "Relationship" column of the reference database
-        n_emp_rel <- length(which(data_auto_r[, Relationship] == ""))
+        n_emp_rel <- length(which(rel_auto_r == ""))
 
         # Extract mutation rates
         myus <- rep(0, n_l)
@@ -324,16 +334,6 @@ search_auto <- function(env_proj, env_gui){
         # Define an data table to save information on the likelihood ratio
         #lr_all <- copy(like_h1_all)
         lr_all <- like_h1_all
-
-        # Extract required data from query database
-        sn_auto_q <- data_auto_q[, SampleName]
-        gt_auto_q <- as.matrix(data_auto_q[, -"SampleName"])
-
-        # Extract required data from reference database
-        sn_auto_r <- data_auto_r[, SampleName]
-        rel_auto_r <- data_auto_r[, Relationship]
-        rel_auto_r[is.na(rel_auto_r)] <- ""
-        gt_auto_r <- as.matrix(data_auto_r[, -c("SampleName", "Relationship")])
 
         # Set the initial number of counts for rows
         count <- 1
