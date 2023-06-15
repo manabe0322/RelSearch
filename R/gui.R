@@ -88,7 +88,7 @@ set_env_proj_default <- function(env_proj){
   assign("myu_all_default", myu_all_default, envir = env_proj)
 
   # Set default relationship
-  name_rel <- c("parent_child", "sibling", "grandparent_grandchild", "uncle_nephew", "cousin")
+  name_rel <- c("parent-child", "sibling", "grandparent-grandchild", "uncle-nephew", "cousin")
   degree <- c("1st_pc", "1st_sib", "2nd", "2nd", "3rd")
   pibd2 <- c(0, 0.25, 0, 0, 0)
   pibd1 <- c(1, 0.5, 0.5, 0.5, 0.25)
