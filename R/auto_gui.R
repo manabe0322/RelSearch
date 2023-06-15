@@ -222,6 +222,9 @@ search_auto <- function(env_proj, env_gui){
       # If above 4 conditions are satisfied
       if(all(c(bool_locus_1, bool_locus_2, bool_locus_3, bool_rel_1))){
 
+        # The number of loci
+        n_l <- length(locus_q)
+
         # Order loci of each database
         pos_q <- rep(0, 2 * n_l + 1)
         pos_r <- rep(0, 2 * n_l + 2)
@@ -261,9 +264,6 @@ search_auto <- function(env_proj, env_gui){
 
         # The number of empty cells in the "Relationship" column of the reference database
         n_emp_rel <- length(which(data_auto_r[, Relationship] == ""))
-
-        # The number of loci
-        n_l <- length(locus_q)
 
         # Extract mutation rates
         myus <- rep(0, n_l)
