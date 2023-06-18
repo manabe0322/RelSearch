@@ -217,7 +217,7 @@ search_auto <- function(env_proj, env_gui){
       bool_locus_3 <- all(is.element(locus_q, locus_myu))
 
       # Whether all relationships of the reference database is included in the relationships of the IBD probabilities or not
-      reltype <- setdiff(data_auto_r[, Relationship], NA)
+      reltype <- setdiff(data_auto_r[, Relationship], c("", NA))
       if(length(reltype) == 0){
         bool_rel_1 <- TRUE
       }else{
