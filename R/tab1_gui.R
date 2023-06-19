@@ -362,6 +362,9 @@ search_rel <- function(env_proj, env_gui){
     # If the file 'criteria.csv' is found
     }else{
 
+      # Load criteria
+      criteria <- fread(paste0(path_pack, "/extdata/parameters/criteria.csv"))
+
       # All required data for the autosomal STR is loaded
       if(bool_check_auto){
 
@@ -376,6 +379,8 @@ search_rel <- function(env_proj, env_gui){
           # Load information on relationship
           data_rel <- fread(paste0(path_pack, "/extdata/parameters/rel.csv"))
           name_rel <- data_rel[, Name_relationship]
+          degree_rel <- data_rel[, Degree]
+          pibd_rel <- as.matrix(data_rel[, list(Pr_IBD2, Pr_IBD1, Pr_IBD0)])
 
           # Load analysis methods
           data_par_auto <- fread(paste0(path_pack, "/extdata/parameters/par_auto.csv"))
@@ -398,12 +403,7 @@ search_rel <- function(env_proj, env_gui){
           bool_locus_3 <- all(is.element(locus_v_auto, locus_myu))
 
           # Whether all relationships of the reference database is included in the relationships of the IBD probabilities or not
-          reltype <- setdiff(data_auto_r[, Relationship], c("", NA))
-          if(length(reltype) == 0){
-            bool_rel_1 <- TRUE
-          }else{
-            bool_rel_1 <- all(is.element(reltype, name_rel))
-          }
+          bool_rel_1 <- all(is.element(unique(data_r_auto[, Relationship]), name_rel))
 
           # If the locus set of the query database is not the same as that of the reference database
           if(!bool_locus_1){
@@ -439,6 +439,17 @@ search_rel <- function(env_proj, env_gui){
       # All required data for the Y-STR is loaded
       if(error_message == "" && bool_check_y){
 
+        # Extract loci from each database
+        locus_v_y <- setdiff(names(data_v_y), c("SampleName", "Relationship"))
+        locus_r_y <- setdiff(names(data_r_y), c("SampleName", "Relationship"))
+
+        # Whether the locus set of the query database is the same as that of the reference database or not
+        bool_locus_1 <- setequal(locus_q, locus_r)
+
+        # If the locus set of the query database is not the same as that of the reference database
+        if(!bool_locus_1){
+          error_message <- "Locus set is not the same between query data and reference data!"
+        }
       }
 
       # All required data for the mtDNA is loaded
@@ -479,6 +490,140 @@ search_rel <- function(env_proj, env_gui){
       data_v_auto <- data_v_auto[, pos_v, with = FALSE]
       data_r_auto <- data_r_auto[, pos_r, with = FALSE]
       data_af <- data_af[, pos_af, with = FALSE]
+
+      # Extract required data from query database
+      sn_v_auto <- data_v_auto[, SampleName]
+      gt_v_auto <- as.matrix(data_v_auto[, -"SampleName"])
+
+      # Extract required data from reference database
+      sn_r_auto <- data_r_auto[, SampleName]
+      assumed_rel_all <- data_r_auto[, Relationship]
+      gt_r_auto <- as.matrix(data_r_auto[, -c("SampleName", "Relationship")])
+
+      # Set allele frequencies
+      tmp <- set_af(data_v_auto, data_r_auto, data_af_auto, maf)
+      af_list <- tmp[[1]]
+      af_al_list <- tmp[[2]]
+
+      # The numbers of samples
+      n_q <- nrow(data_v_auto)
+      n_r <- nrow(data_r_auto)
+
+      # Extract mutation rates
+      myus <- rep(0, n_l)
+      for(i in 1:n_l){
+        myus[i] <- myu_all[which(locus_myu == locus_v_auto[i])]
+      }
+      names(myus) <- locus_v_auto
+
+      # Set consideration of mutations for each relationship
+      bool_cons_mu_all <- rep(FALSE, nrow(data_rel))
+      bool_cons_mu_all[degree_rel == "1st_pc"] <- TRUE
+
+      # Calculate average probabilities of exclusion
+      apes <- rep(0, n_l)
+      for(i in 1:n_l){
+        apes[i] <- calc_ape(af_list[[i]])
+      }
+      names(apes) <- locus_v_auto
+
+      # Define objects for saving results
+      result_name_v <- rep("", n_q * n_r)
+      result_name_r <- result_name_v
+      result_assumed_rel <- result_name_v
+      like_h1_all <- matrix(0, nrow = n_q * n_r, ncol = n_l + 1)
+      colnames(like_h1_all) <- c(locus_q, "Total")
+      like_h2_all <- like_h1_all
+      lr_all <- like_h1_all
+
+      # Set the initial number of counts for rows
+      count <- 1
+
+      # Repetitive execution for each reference genotype
+      for(i in 1:n_r){
+
+        # Extract a reference data
+        sn_ref <- sn_r_auto[i]
+        assumed_rel <- assumed_rel_all[i]
+        prof_ref <- gt_r_auto[i, ]
+
+        # The NA is replaced to -99 to deal with the C++ program
+        prof_ref[is.na(prof_ref)] <- -99
+
+        # Extract the IBD probabilities
+        pibds <- pibd_rel[name_rel == assumed_rel, ]
+
+        # Set consideration of mutations
+        bool_cons_mu <- bool_cons_mu_all[name_rel == assumed_rel]
+
+        # Repetitive execution for each victim genotype
+        for(j in 1:n_q){
+
+          # Extract a victim data
+          sn_victim <- sn_v_auto[j]
+          prof_victim <- gt_v_auto[j, ]
+
+          # The NA is replaced to -99 to deal with the C++ program
+          prof_victim[is.na(prof_victim)] <- -99
+
+          # Calculate a likelihood ratio
+          tmp <- calc_kin_lr(prof_victim, prof_ref, af_list, af_al_list, pibds, bool_cons_mu[j], myus, apes, meth_d, pd)
+
+          query_all[count] <- sn_query
+          reference_all[count] <- sn_ref
+          assumedrel_all[count] <- assumed_rel
+          like_h1_all[count, ] <- tmp[[1]]
+          like_h2_all[count, ] <- tmp[[2]]
+          lr_all[count, ] <- tmp[[3]]
+
+          # Update the number of counts for rows
+          count <- count + 1
+        }
+      }
+
+      # Update sample names
+      set_env_proj_sn(env_proj, FALSE, sn_v_auto, sn_r_auto)
+
+      # Assign updated input data (ordered loci)
+      assign("data_v_auto", data_v_auto, envir = env_proj)
+      assign("data_r_auto", data_r_auto, envir = env_proj)
+      assign("data_af", data_af, envir = env_proj)
+
+      # Create data.table for results
+      tmp <- data.table(Query = query_all, Reference = reference_all, AssumedRelationship = assumedrel_all)
+
+      like_h1_all <- as.data.frame(like_h1_all)
+      setDT(like_h1_all)
+      like_h1_all <- cbind(tmp, like_h1_all)
+
+      like_h2_all <- as.data.frame(like_h2_all)
+      setDT(like_h2_all)
+      like_h2_all <- cbind(tmp, like_h2_all)
+
+      lr_all <- as.data.frame(lr_all)
+      setDT(lr_all)
+      lr_all <- cbind(tmp, lr_all)
+
+      # Assign results to the environment "env_proj"
+      assign("like_h1_all", like_h1_all, envir = env_proj)
+      assign("like_h2_all", like_h2_all, envir = env_proj)
+      assign("lr_all", lr_all, envir = env_proj)
+
+      # Assign parameters to the environment "env_proj"
+      assign("myu_all", myu_all, envir = env_proj)
+      assign("pibd_rel", pibd_rel, envir = env_proj)
+      assign("maf", maf, envir = env_proj)
+      assign("meth_d", meth_d, envir = env_proj)
+      assign("pd", pd, envir = env_proj)
+
+      # Assign mutation rates to the environment "env_proj"
+      assign("myus", myus, envir = env_proj)
+
+      # Assign the average probability of exclusion to the environment "env_proj"
+      assign("apes", apes, envir = env_proj)
+
+      # Assign the end sign to the environment "env_proj"
+      assign("fin_auto", TRUE, envir = env_proj)
     }
 
     #########################
@@ -486,6 +631,20 @@ search_rel <- function(env_proj, env_gui){
     #########################
 
     if(bool_check_y){
+
+      # Order loci of each database
+      pos_v <- rep(0, n_l + 1)
+      pos_r <- rep(0, n_l + 1)
+
+      pos_v[1] <- which(is.element(names(data_v_y), "SampleName"))
+      pos_r[1] <- which(is.element(names(data_r_y), "SampleName"))
+      for(i in 1:n_l){
+        pos_v[i + 1] <- which(is.element(names(data_v_y), locus_v_y[i]))
+        pos_r[i + 1] <- which(is.element(names(data_r_y), locus_v_y[i]))
+      }
+
+      data_v_y <- data_v_y[, pos_v, with = FALSE]
+      data_r_y <- data_r_y[, pos_r, with = FALSE]
 
     }
 
@@ -496,6 +655,21 @@ search_rel <- function(env_proj, env_gui){
     if(bool_check_mt){
 
     }
+
+    ###########################
+    # Create combined results #
+    ###########################
+
+    # Extract criteria
+    min_lr_auto <- criteria$Value[criteria$Criteria == "min_lr_auto"]
+    max_mismatch_y <- criteria$Value[criteria$Criteria == "max_mismatch_y"]
+    max_ignore_y <- criteria$Value[criteria$Criteria == "max_ignore_y"]
+    max_mustep_y <- criteria$Value[criteria$Criteria == "max_mustep_y"]
+    min_share_mt <- criteria$Value[criteria$Criteria == "min_share_mt"]
+    max_mismatch_mt <- criteria$Value[criteria$Criteria == "max_mismatch_mt"]
+
+    # Assign criteria
+    assign("min_lr_auto", min_lr_auto, envir = env_proj)
   }
   # dt["a"] # キー列による行の検索（高速）
 }
