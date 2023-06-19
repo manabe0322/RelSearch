@@ -792,7 +792,7 @@ make_tab2 <- function(env_proj, env_gui){
     # Define a matrix for the displayed data
     data_display <- lr_all[, list(Query, Reference, AssumedRelationship, Total)]
     data_display <- data_display[data_display$Total >= min_lr_auto, , drop = FALSE]
-    data_display <- data_display[order(data_display$Total, decreasing = TRUE), , drop = FALSE]
+    setorder(data_display, -Total)
 
     # Reset frame_tab2
     tabs <- get("tabs", pos = env_gui)

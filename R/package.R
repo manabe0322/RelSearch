@@ -1,6 +1,6 @@
 #' relsearch: Open-source software for screening relatives between query and reference databases
 #'
-#' @importFrom data.table data.table fread setDT
+#' @importFrom data.table data.table fread setDT setorder
 #' @importFrom readr parse_number
 "_PACKAGE"
 
