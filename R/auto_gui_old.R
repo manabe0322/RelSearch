@@ -1,5 +1,5 @@
 # The function to make tab1
-make_tab1 <- function(env_proj, env_gui){
+make_tab1_DNU <- function(env_proj, env_gui){
 
   # The function to load required files for the autosomal STR analysis
   open_file <- function(type){
