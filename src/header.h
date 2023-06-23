@@ -6,6 +6,7 @@
 #include <vector>
 #include <numeric>
 #include <algorithm>
+#include <regex>
 using namespace Rcpp;
 
 std::vector<std::string> split(std::string str, const char* del);
@@ -14,3 +15,5 @@ std::string int_to_str(int num);
 std::vector<int> tousa(int start, int end, int interval);
 int search_pos_double(std::vector<double> vec, double target);
 int search_pos_int(std::vector<int> vec, int target);
+int search_pos_string(std::vector<std::string> vec, std::string target);
+int extract_integer(std::string target);

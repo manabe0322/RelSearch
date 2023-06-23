@@ -32,38 +32,38 @@ bool is_integer(double x){
   return(std::floor(x) == x);
 }
 
-/*Calculate mutational step between query alleles and reference alleles (testthat)*/
+/*Calculate mutational step between victim alleles and reference alleles (testthat)*/
 // [[Rcpp::export]]
-int calc_mu_step(std::vector<double> q_al, std::vector<double> r_al){
+int calc_mu_step(std::vector<double> v_al, std::vector<double> r_al){
   int mu_step = 0;
 
-  int q_al_size = q_al.size();
+  int v_al_size = v_al.size();
   int r_al_size = r_al.size();
-  bool same_qr = true;
-  if(q_al_size == r_al_size){
-    for(int i = 0; i < q_al_size; ++i){
-      bool same_al = q_al[i] == r_al[i];
+  bool same_vr = true;
+  if(v_al_size == r_al_size){
+    for(int i = 0; i < v_al_size; ++i){
+      bool same_al = v_al[i] == r_al[i];
       if(!same_al){
-        same_qr = false;
+        same_vr = false;
         break;
       }
     }
   }else{
-    same_qr = false;
+    same_vr = false;
   }
 
-  if(same_qr == false){
-    std::vector<int> diff(q_al_size * r_al_size, 99);
+  if(same_vr == false){
+    std::vector<int> diff(v_al_size * r_al_size, 99);
     int pos = 0;
-    for(int i = 0; i < q_al_size; ++i){
-      double q1 = q_al[i];
+    for(int i = 0; i < v_al_size; ++i){
+      double v1 = v_al[i];
       for(int j = 0; j < r_al_size; ++j){
         double r1 = r_al[j];
         double d = 99;
-        if(q1 > r1){
-          d = q1 - r1;
-        }else if(q1 < r1){
-          d = r1 - q1;
+        if(v1 > r1){
+          d = v1 - r1;
+        }else if(v1 < r1){
+          d = r1 - v1;
         }
         if(is_integer(d)){
           diff[pos] = (int)d;
@@ -76,48 +76,48 @@ int calc_mu_step(std::vector<double> q_al, std::vector<double> r_al){
   return(mu_step);
 }
 
-/*Matching query and reference Y haplotypes (testthat)*/
+/*Matching victim and reference Y haplotypes (testthat)*/
 //' @export
 // [[Rcpp::export]]
-std::vector<std::vector<int>> match_y(std::vector<std::string> query, std::vector<std::string> ref){
-  int n_l = query.size();
+std::vector<std::vector<int>> match_y(std::vector<std::string> victim, std::vector<std::string> ref){
+  int n_l = victim.size();
   std::vector<std::vector<int>> ans(3, std::vector<int>(n_l + 1));
   int sum_l_0 = 0;
   int sum_l_1 = 0;
   int max_mu_step = 0;
   for(int i = 0; i < n_l; ++i){
-    std::string q_al_pre = query[i];
-    std::vector<double> q_al = obtain_al(q_al_pre);
+    std::string v_al_pre = victim[i];
+    std::vector<double> v_al = obtain_al(v_al_pre);
     std::string r_al_pre = ref[i];
     std::vector<double> r_al = obtain_al(r_al_pre);
 
-    int q_al_size = q_al.size();
+    int v_al_size = v_al.size();
     int r_al_size = r_al.size();
 
     /*ignore*/
-    if(q_al_size == 0 || r_al_size == 0){
+    if(v_al_size == 0 || r_al_size == 0){
       ans.at(1).at(i) = 1;
       sum_l_1 += 1;
     }else{
-      bool same_qr = true;
-      if(q_al_size == r_al_size){
-        for(int j = 0; j < q_al_size; ++j){
-          bool same_al = q_al[j] == r_al[j];
+      bool same_vr = true;
+      if(v_al_size == r_al_size){
+        for(int j = 0; j < v_al_size; ++j){
+          bool same_al = v_al[j] == r_al[j];
           if(!same_al){
-            same_qr = false;
+            same_vr = false;
             break;
           }
         }
       }else{
-        same_qr = false;
+        same_vr = false;
       }
 
-      if(same_qr == false){
-        std::vector<double> only_q_al;
-        std::set_difference(q_al.begin(), q_al.end(), r_al.begin(), r_al.end(), inserter(only_q_al, only_q_al.end()));
+      if(same_vr == false){
+        std::vector<double> only_v_al;
+        std::set_difference(v_al.begin(), v_al.end(), r_al.begin(), r_al.end(), inserter(only_v_al, only_v_al.end()));
 
         /*ignore*/
-        if(only_q_al.size() == 0){
+        if(only_v_al.size() == 0){
           ans.at(1).at(i) = 1;
           sum_l_1 += 1;
 
@@ -125,7 +125,7 @@ std::vector<std::vector<int>> match_y(std::vector<std::string> query, std::vecto
         }else{
           ans.at(0).at(i) = 1;
           sum_l_0 += 1;
-          int mu_step = calc_mu_step(q_al, r_al);
+          int mu_step = calc_mu_step(v_al, r_al);
           ans.at(2).at(i) = mu_step;
           if(max_mu_step < mu_step){
             max_mu_step = mu_step;
@@ -138,5 +138,32 @@ std::vector<std::vector<int>> match_y(std::vector<std::string> query, std::vecto
   ans.at(1).at(n_l) = sum_l_1;
   ans.at(2).at(n_l) = max_mu_step;
   return(ans);
+}
+
+//' @export
+// [[Rcpp::export]]
+std::vector<std::vector<std::vector<int>>> match_y_all(std::vector<std::vector<std::string>> hap_v_y,
+                                                       std::vector<std::vector<std::string>> hap_r_y){
+  int n_v = hap_v_y.size();
+  int n_r = hap_r_y.size();
+
+  std::vector<std::vector<std::vector<int>>> results_y;
+
+  int count = 0;
+  for(int i = 0; i < n_r; ++i){
+    std::vector<std::string> prof_ref = hap_r_y.at(i);
+    for(int j = 0; j < n_v; ++j){
+      std::vector<std::string> prof_victim = hap_v_y.at(i);
+      std::vector<std::vector<int>> tmp = match_y(prof_victim, prof_ref);
+
+      results_y.at(count).at(0) = tmp.at(0);
+      results_y.at(count).at(1) = tmp.at(1);
+      results_y.at(count).at(2) = tmp.at(2);
+
+      /*Update the number of counts for rows*/
+      count += 1;
+    }
+  }
+  return(results_y);
 }
 
