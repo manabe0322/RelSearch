@@ -506,7 +506,7 @@ search_rel <- function(env_proj, env_gui){
       af_al_list <- tmp[[2]]
 
       # The numbers of samples
-      n_q <- nrow(data_v_auto)
+      n_v <- nrow(data_v_auto)
       n_r <- nrow(data_r_auto)
 
       # Extract mutation rates
@@ -528,10 +528,10 @@ search_rel <- function(env_proj, env_gui){
       names(apes) <- locus_v_auto
 
       # Define objects for saving results
-      result_name_v <- rep("", n_q * n_r)
+      result_name_v <- rep("", n_v * n_r)
       result_name_r <- result_name_v
       result_assumed_rel <- result_name_v
-      like_h1_all <- matrix(0, nrow = n_q * n_r, ncol = n_l + 1)
+      like_h1_all <- matrix(0, nrow = n_v * n_r, ncol = n_l + 1)
       colnames(like_h1_all) <- c(locus_q, "Total")
       like_h2_all <- like_h1_all
       lr_all <- like_h1_all
@@ -557,7 +557,7 @@ search_rel <- function(env_proj, env_gui){
         bool_cons_mu <- bool_cons_mu_all[name_rel == assumed_rel]
 
         # Repetitive execution for each victim genotype
-        for(j in 1:n_q){
+        for(j in 1:n_v){
 
           # Extract a victim data
           sn_victim <- sn_v_auto[j]
@@ -569,9 +569,9 @@ search_rel <- function(env_proj, env_gui){
           # Calculate a likelihood ratio
           tmp <- calc_kin_lr(prof_victim, prof_ref, af_list, af_al_list, pibds, bool_cons_mu[j], myus, apes, meth_d, pd)
 
-          query_all[count] <- sn_query
-          reference_all[count] <- sn_ref
-          assumedrel_all[count] <- assumed_rel
+          result_name_v[count] <- sn_victim
+          result_name_r[count] <- sn_ref
+          result_assumed_rel[count] <- assumed_rel
           like_h1_all[count, ] <- tmp[[1]]
           like_h2_all[count, ] <- tmp[[2]]
           lr_all[count, ] <- tmp[[3]]
@@ -590,7 +590,7 @@ search_rel <- function(env_proj, env_gui){
       assign("data_af", data_af, envir = env_proj)
 
       # Create data.table for results
-      tmp <- data.table(Query = query_all, Reference = reference_all, AssumedRelationship = assumedrel_all)
+      tmp <- data.table(Victim = result_name_v, Reference = result_name_r, AssumedRelationship = result_assumed_rel)
 
       like_h1_all <- as.data.frame(like_h1_all)
       setDT(like_h1_all)
