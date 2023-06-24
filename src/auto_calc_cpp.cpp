@@ -339,10 +339,10 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
                                                               double pd){
   int n_v = gt_v_auto.size();
   int n_r = gt_r_auto.size();
+  int n_l = gt_r_auto.at(0).size();
 
-  std::vector<std::vector<std::vector<double>>> results_auto;
+  std::vector<std::vector<std::vector<double>>> results_auto(n_v * n_r, std::vector<std::vector<double>>(3, std::vector<double>(n_l + 1)));
 
-  int count = 0;
   for(int i = 0; i < n_r; ++i){
     std::string assumed_rel = assumed_rel_all[i];
     std::vector<double> prof_ref = gt_r_auto.at(i);
@@ -361,14 +361,12 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
     for(int j = 0; j < n_v; ++j){
       std::vector<double> prof_victim = gt_v_auto.at(j);
 
-      std::vector<std::vector<double>> tmp = calc_kin_lr(prof_victim, prof_ref, af_list, af_al_list, pibd, cons_mu, myus, apes, meth_d, pd);
+      std::vector<std::vector<double>> ans = calc_kin_lr(prof_victim, prof_ref, af_list, af_al_list, pibd, cons_mu, myus, apes, meth_d, pd);
 
-      results_auto.at(count).at(0) = tmp.at(0);
-      results_auto.at(count).at(1) = tmp.at(1);
-      results_auto.at(count).at(2) = tmp.at(2);
-
-      /*Update the number of counts for rows*/
-      count += 1;
+      int pos = n_v * i + j;
+      results_auto.at(pos).at(0) = ans.at(0);
+      results_auto.at(pos).at(1) = ans.at(1);
+      results_auto.at(pos).at(2) = ans.at(2);
     }
   }
   return(results_auto);

@@ -200,7 +200,7 @@ make_tab1 <- function(env_proj, env_gui){
   label_af_title <- tklabel(frame_af_title, text = "Allele frequencies for autosomal STR", font = "Helvetica 10 bold")
 
   # Allele frequencies
-  butt_af_load <- tkbutton(frame_af_file, text = "    Load    ", cursor = "hand2", command = function() open_file(fp_af, fn_af, label_af_fn, "data_af", "fp_af", "fn_af"))
+  butt_af_load <- tkbutton(frame_af_file, text = "    Load    ", cursor = "hand2", command = function() open_file("auto", fp_af, fn_af, label_af_fn, "data_af", "fp_af", "fn_af"))
   label_af_fn <- tklabel(frame_af_file, textvariable = fn_af_var, width = 30, highlightthickness = 1, relief = "groove", justify = "center", background = "white")
 
   ###############################
@@ -445,7 +445,7 @@ search_rel <- function(env_proj, env_gui){
         locus_r_y <- setdiff(names(data_r_y), c("SampleName", "Relationship"))
 
         # Whether the locus set of the query database is the same as that of the reference database or not
-        bool_locus_1 <- setequal(locus_q, locus_r)
+        bool_locus_1 <- setequal(locus_v_y, locus_r_y)
 
         # If the locus set of the query database is not the same as that of the reference database
         if(!bool_locus_1){
@@ -510,7 +510,7 @@ search_rel <- function(env_proj, env_gui){
       gt_r_auto <- asplit(gt_r_auto, 1)
 
       # Set allele frequencies
-      tmp <- set_af(data_v_auto, data_r_auto, data_af_auto, maf)
+      tmp <- set_af(data_v_auto, data_r_auto, data_af, maf)
       af_list <- tmp[[1]]
       af_al_list <- tmp[[2]]
 
@@ -546,60 +546,6 @@ search_rel <- function(env_proj, env_gui){
       tmp <- data.table(Victim = result_name_v, Reference = result_name_r, AssumedRelationship = result_assumed_rel)
       dt_auto <- cbind(tmp, results_auto)
 
-#      # Define objects for saving results
-#      result_name_v <- rep("", n_v * n_r)
-#      result_name_r <- result_name_v
-#      result_assumed_rel <- result_name_v
-#      like_h1_all <- matrix(0, nrow = n_v * n_r, ncol = n_l + 1)
-#      colnames(like_h1_all) <- c(locus_q, "Total")
-#      like_h2_all <- like_h1_all
-#      lr_all <- like_h1_all
-#
-#      # Set the initial number of counts for rows
-#      count <- 1
-#
-#      # Repetitive execution for each reference genotype
-#      for(i in 1:n_r){
-#
-#        # Extract a reference data
-#        sn_ref <- sn_r_auto[i]
-#        assumed_rel <- assumed_rel_all[i]
-#        prof_ref <- gt_r_auto[i, ]
-#
-#        # The NA is replaced to -99 to deal with the C++ program
-#        prof_ref[is.na(prof_ref)] <- -99
-#
-#        # Extract the IBD probabilities
-#        pibds <- pibds_rel[names_rel == assumed_rel, ]
-#
-#        # Set consideration of mutations
-#        bool_cons_mu <- bool_cons_mu_all[names_rel == assumed_rel]
-#
-#        # Repetitive execution for each victim genotype
-#        for(j in 1:n_v){
-#
-#          # Extract a victim data
-#          sn_victim <- sn_v_auto[j]
-#          prof_victim <- gt_v_auto[j, ]
-#
-#          # The NA is replaced to -99 to deal with the C++ program
-#          prof_victim[is.na(prof_victim)] <- -99
-#
-#          # Calculate a likelihood ratio
-#          tmp <- calc_kin_lr(prof_victim, prof_ref, af_list, af_al_list, pibds, bool_cons_mu[j], myus, apes, meth_d, pd)
-#
-#          result_name_v[count] <- sn_victim
-#          result_name_r[count] <- sn_ref
-#          result_assumed_rel[count] <- assumed_rel
-#          like_h1_all[count, ] <- tmp[[1]]
-#          like_h2_all[count, ] <- tmp[[2]]
-#          lr_all[count, ] <- tmp[[3]]
-#
-#          # Update the number of counts for rows
-#          count <- count + 1
-#        }
-#      }
-
       # Update sample names
       set_env_proj_sn(env_proj, FALSE, sn_v_auto, sn_r_auto)
 
@@ -610,26 +556,6 @@ search_rel <- function(env_proj, env_gui){
 
       # Assign results to the environment "env_proj"
       assign("dt_auto", dt_auto, envir = env_proj)
-
-#      # Create data.table for results
-#      tmp <- data.table(Victim = result_name_v, Reference = result_name_r, AssumedRelationship = result_assumed_rel)
-#
-#      like_h1_all <- as.data.frame(like_h1_all)
-#      setDT(like_h1_all)
-#      like_h1_all <- cbind(tmp, like_h1_all)
-#
-#      like_h2_all <- as.data.frame(like_h2_all)
-#      setDT(like_h2_all)
-#      like_h2_all <- cbind(tmp, like_h2_all)
-#
-#      lr_all <- as.data.frame(lr_all)
-#      setDT(lr_all)
-#      lr_all <- cbind(tmp, lr_all)
-#
-#      # Assign results to the environment "env_proj"
-#      assign("like_h1_all", like_h1_all, envir = env_proj)
-#      assign("like_h2_all", like_h2_all, envir = env_proj)
-#      assign("lr_all", lr_all, envir = env_proj)
 
       # Assign parameters to the environment "env_proj"
       assign("myu_all", myu_all, envir = env_proj)
@@ -655,7 +581,7 @@ search_rel <- function(env_proj, env_gui){
     if(bool_check_y){
 
       # Order loci of each database
-      data_r_y <- data_r_y[, match(c("SampleName", locus_v_y), c("SampleName", locus_r_y))]
+      data_r_y <- data_r_y[, match(c("SampleName", locus_v_y), c("SampleName", locus_r_y)), with = FALSE]
 
       # Change from numeric to character
       change_columns <- names(data_v_y)
@@ -670,6 +596,10 @@ search_rel <- function(env_proj, env_gui){
       # Extract required data from reference database
       sn_r_y <- data_r_y[, SampleName]
       hap_r_y <- as.matrix(data_r_y[, -"SampleName"])
+
+      # The NA in genotypes is replaced to "" to deal with the C++ program
+      hap_v_y[which(is.na(hap_v_y) == TRUE, arr.ind = TRUE)] <- ""
+      hap_r_y[which(is.na(hap_r_y) == TRUE, arr.ind = TRUE)] <- ""
 
       # Change matrix to list for haplotypes
       hap_v_y <- asplit(hap_v_y, 1)

@@ -79,16 +79,16 @@ int calc_mu_step(std::vector<double> v_al, std::vector<double> r_al){
 /*Matching victim and reference Y haplotypes (testthat)*/
 //' @export
 // [[Rcpp::export]]
-std::vector<std::vector<int>> match_y(std::vector<std::string> victim, std::vector<std::string> ref){
-  int n_l = victim.size();
+std::vector<std::vector<int>> match_y(std::vector<std::string> prof_victim, std::vector<std::string> prof_ref){
+  int n_l = prof_victim.size();
   std::vector<std::vector<int>> ans(3, std::vector<int>(n_l + 1));
   int sum_l_0 = 0;
   int sum_l_1 = 0;
   int max_mu_step = 0;
   for(int i = 0; i < n_l; ++i){
-    std::string v_al_pre = victim[i];
+    std::string v_al_pre = prof_victim[i];
     std::vector<double> v_al = obtain_al(v_al_pre);
-    std::string r_al_pre = ref[i];
+    std::string r_al_pre = prof_ref[i];
     std::vector<double> r_al = obtain_al(r_al_pre);
 
     int v_al_size = v_al.size();
@@ -146,22 +146,20 @@ std::vector<std::vector<std::vector<int>>> match_y_all(std::vector<std::vector<s
                                                        std::vector<std::vector<std::string>> hap_r_y){
   int n_v = hap_v_y.size();
   int n_r = hap_r_y.size();
+  int n_l = hap_r_y.at(0).size();
 
-  std::vector<std::vector<std::vector<int>>> results_y;
+  std::vector<std::vector<std::vector<int>>> results_y(n_v * n_r, std::vector<std::vector<int>>(3, std::vector<int>(n_l + 1)));
 
-  int count = 0;
   for(int i = 0; i < n_r; ++i){
     std::vector<std::string> prof_ref = hap_r_y.at(i);
     for(int j = 0; j < n_v; ++j){
-      std::vector<std::string> prof_victim = hap_v_y.at(i);
-      std::vector<std::vector<int>> tmp = match_y(prof_victim, prof_ref);
+      std::vector<std::string> prof_victim = hap_v_y.at(j);
+      std::vector<std::vector<int>> ans = match_y(prof_victim, prof_ref);
 
-      results_y.at(count).at(0) = tmp.at(0);
-      results_y.at(count).at(1) = tmp.at(1);
-      results_y.at(count).at(2) = tmp.at(2);
-
-      /*Update the number of counts for rows*/
-      count += 1;
+      int pos = n_v * i + j;
+      results_y.at(pos).at(0) = ans.at(0);
+      results_y.at(pos).at(1) = ans.at(1);
+      results_y.at(pos).at(2) = ans.at(2);
     }
   }
   return(results_y);
