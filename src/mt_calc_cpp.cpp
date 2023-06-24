@@ -85,23 +85,19 @@ std::vector<std::string> match_mt(std::vector<std::string> profile_victim, std::
 
     int n_type_v = profile_victim.size();
     std::vector<std::string> v_type_new;
-    int count_v = 0;
     for(int i = 0; i < n_type_v; ++i){
       int pos_type_v = extract_integer(profile_victim[i]);
       if(std::count(pos_mt_vr.begin(), pos_mt_vr.end(), pos_type_v)){
-        v_type_new[count_v] = profile_victim[i];
-        count_v += 1;
+        v_type_new.push_back(profile_victim[i]);
       }
     }
 
     int n_type_r = profile_ref.size();
     std::vector<std::string> r_type_new;
-    int count_r = 0;
     for(int i = 0; i < n_type_r; ++i){
       int pos_type_r = extract_integer(profile_ref[i]);
       if(std::count(pos_mt_vr.begin(), pos_mt_vr.end(), pos_type_r)){
-        r_type_new[count_r] = profile_ref[i];
-        count_r += 1;
+        r_type_new.push_back(profile_ref[i]);
       }
     }
 
@@ -120,7 +116,7 @@ std::vector<std::string> match_mt(std::vector<std::string> profile_victim, std::
   }
   std::string share_len_str = int_to_str(share_len);
 
-  std::vector<std::string> ans;
+  std::vector<std::string> ans(3);
   ans[0] = n_mismatch_str;
   ans[1] = share_range;
   ans[2] = share_len_str;
