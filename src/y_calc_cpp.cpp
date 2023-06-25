@@ -148,7 +148,7 @@ std::vector<std::vector<std::vector<int>>> match_y_all(std::vector<std::vector<s
   int n_r = hap_r_y.size();
   int n_l = hap_r_y.at(0).size();
 
-  std::vector<std::vector<std::vector<int>>> results_y(n_v * n_r, std::vector<std::vector<int>>(3, std::vector<int>(n_l + 1)));
+  std::vector<std::vector<std::vector<int>>> result_y(n_v * n_r, std::vector<std::vector<int>>(3, std::vector<int>(n_l + 1)));
 
   for(int i = 0; i < n_r; ++i){
     std::vector<std::string> prof_ref = hap_r_y.at(i);
@@ -157,11 +157,11 @@ std::vector<std::vector<std::vector<int>>> match_y_all(std::vector<std::vector<s
       std::vector<std::vector<int>> ans = match_y(prof_victim, prof_ref);
 
       int pos = n_v * i + j;
-      results_y.at(pos).at(0) = ans.at(0);
-      results_y.at(pos).at(1) = ans.at(1);
-      results_y.at(pos).at(2) = ans.at(2);
+      result_y.at(pos).at(0) = ans.at(0);
+      result_y.at(pos).at(1) = ans.at(1);
+      result_y.at(pos).at(2) = ans.at(2);
     }
   }
-  return(results_y);
+  return(result_y);
 }
 

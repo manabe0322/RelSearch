@@ -114,6 +114,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// search_pos_sn_comb
+std::vector<int> search_pos_sn_comb(std::vector<std::string> sn_v_all, std::vector<std::string> sn_r_all, std::vector<std::string> sn_v_target, std::vector<std::string> sn_r_target);
+RcppExport SEXP _relsearch_search_pos_sn_comb(SEXP sn_v_allSEXP, SEXP sn_r_allSEXP, SEXP sn_v_targetSEXP, SEXP sn_r_targetSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type sn_v_all(sn_v_allSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type sn_r_all(sn_r_allSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type sn_v_target(sn_v_targetSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type sn_r_target(sn_r_targetSEXP);
+    rcpp_result_gen = Rcpp::wrap(search_pos_sn_comb(sn_v_all, sn_r_all, sn_v_target, sn_r_target));
+    return rcpp_result_gen;
+END_RCPP
+}
 // split
 std::vector<std::string> split(std::string str, const char* del);
 RcppExport SEXP _relsearch_split(SEXP strSEXP, SEXP delSEXP) {
@@ -194,6 +208,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::vector<std::string> >::type vec(vecSEXP);
     Rcpp::traits::input_parameter< std::string >::type target(targetSEXP);
     rcpp_result_gen = Rcpp::wrap(search_pos_string(vec, target));
+    return rcpp_result_gen;
+END_RCPP
+}
+// search_pos_string_all
+std::vector<int> search_pos_string_all(std::vector<std::string> vec, std::string target);
+RcppExport SEXP _relsearch_search_pos_string_all(SEXP vecSEXP, SEXP targetSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type vec(vecSEXP);
+    Rcpp::traits::input_parameter< std::string >::type target(targetSEXP);
+    rcpp_result_gen = Rcpp::wrap(search_pos_string_all(vec, target));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -336,6 +362,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_relsearch_calc_kin_like_drop", (DL_FUNC) &_relsearch_calc_kin_like_drop, 9},
     {"_relsearch_calc_kin_lr", (DL_FUNC) &_relsearch_calc_kin_lr, 10},
     {"_relsearch_calc_kin_lr_all", (DL_FUNC) &_relsearch_calc_kin_lr_all, 12},
+    {"_relsearch_search_pos_sn_comb", (DL_FUNC) &_relsearch_search_pos_sn_comb, 4},
     {"_relsearch_split", (DL_FUNC) &_relsearch_split, 2},
     {"_relsearch_str_to_int", (DL_FUNC) &_relsearch_str_to_int, 1},
     {"_relsearch_int_to_str", (DL_FUNC) &_relsearch_int_to_str, 1},
@@ -343,6 +370,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_relsearch_search_pos_double", (DL_FUNC) &_relsearch_search_pos_double, 2},
     {"_relsearch_search_pos_int", (DL_FUNC) &_relsearch_search_pos_int, 2},
     {"_relsearch_search_pos_string", (DL_FUNC) &_relsearch_search_pos_string, 2},
+    {"_relsearch_search_pos_string_all", (DL_FUNC) &_relsearch_search_pos_string_all, 2},
     {"_relsearch_extract_integer", (DL_FUNC) &_relsearch_extract_integer, 1},
     {"_relsearch_extract_pos_mt", (DL_FUNC) &_relsearch_extract_pos_mt, 1},
     {"_relsearch_extract_pos_mt_vr", (DL_FUNC) &_relsearch_extract_pos_mt_vr, 2},

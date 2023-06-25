@@ -84,6 +84,18 @@ int search_pos_string(std::vector<std::string> vec, std::string target){
 }
 
 // [[Rcpp::export]]
+std::vector<int> search_pos_string_all(std::vector<std::string> vec, std::string target){
+  int len = vec.size();
+  std::vector<int> pos_all;
+  for(int i = 0; i < len; ++i){
+    if(vec[i] == target){
+      pos_all.push_back(i);
+    }
+  }
+  return(pos_all);
+}
+
+// [[Rcpp::export]]
 int extract_integer(std::string target){
   const std::regex re("^0123456789.");
   std::string target_new = std::regex_replace(target, re, "");

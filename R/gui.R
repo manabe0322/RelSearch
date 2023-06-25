@@ -188,14 +188,14 @@ save_proj <- function(env_proj){
 # Set environment variables for sample names #
 ##############################################
 
-set_env_proj_sn <- function(env_proj, bool_new, sn_q_new = character(0), sn_r_new = character(0)){
+set_env_proj_sn <- function(env_proj, bool_new, sn_v_new = character(0), sn_r_new = character(0)){
   if(bool_new){
-    assign("sn_q_all", character(0), envir = env_proj)
+    assign("sn_v_all", character(0), envir = env_proj)
     assign("sn_r_all", character(0), envir = env_proj)
   }else{
-    sn_q_all <- get("sn_q_all", pos = env_proj)
+    sn_v_all <- get("sn_v_all", pos = env_proj)
     sn_r_all <- get("sn_r_all", pos = env_proj)
-    assign("sn_q_all", union(sn_q_all, sn_q_new), envir = env_proj)
+    assign("sn_v_all", union(sn_v_all, sn_v_new), envir = env_proj)
     assign("sn_r_all", union(sn_r_all, sn_r_new), envir = env_proj)
   }
 }

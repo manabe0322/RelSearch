@@ -132,7 +132,7 @@ std::vector<std::vector<std::string>> match_mt_all(std::vector<std::vector<std::
   int n_v = hap_v_mt.size();
   int n_r = hap_r_mt.size();
 
-  std::vector<std::vector<std::string>> results_mt(std::vector<std::vector<std::string>>(n_v * n_r, std::vector<std::string>(3)));
+  std::vector<std::vector<std::string>> result_mt(std::vector<std::vector<std::string>>(n_v * n_r, std::vector<std::string>(3)));
 
   for(int i = 0; i < n_r; ++i){
     std::vector<std::string> profile_ref = hap_r_mt.at(i);
@@ -143,9 +143,9 @@ std::vector<std::vector<std::string>> match_mt_all(std::vector<std::vector<std::
       std::vector<std::string> ans = match_mt(profile_victim, range_victim, profile_ref, range_ref);
 
       int pos = n_v * i + j;
-      results_mt.at(pos) = ans;
+      result_mt.at(pos) = ans;
     }
   }
-  return(results_mt);
+  return(result_mt);
 }
 

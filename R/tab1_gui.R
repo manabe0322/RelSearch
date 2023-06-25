@@ -528,23 +528,28 @@ search_rel <- function(env_proj, env_gui){
       }
       names(apes) <- locus_v_auto
 
-      # The numbers of samples
-      n_v <- nrow(data_v_auto)
-      n_r <- nrow(data_r_auto)
-
       # Define objects for saving results
-      result_name_v <- rep(sn_v_auto, n_r)
-      result_name_r <- as.character(sapply(sn_r_auto, rep, n_v))
-      result_assumed_rel <- as.character(sapply(assumed_rel_all, rep, n_v))
+      #result_sn_v_auto <- rep(sn_v_auto, nrow(data_r_auto))
+      #result_sn_r_auto <- as.character(sapply(sn_r_auto, rep, nrow(data_v_auto)))
+      result_assumed_rel <- as.character(sapply(assumed_rel_all, rep, nrow(data_v_auto)))
 
-      results_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus, apes, meth_d, pd)
-      results_auto <- as.data.frame(t(data.frame(lapply(results_auto, unlist))))
-      setDT(results_auto)
-      names(results_auto) <- c(paste0("LikeH1_", c(locus_v_auto, "Total")), paste0("LikeH2_", c(locus_v_auto, "Total")), paste0("LR_", c(locus_v_auto, "Total")))
+      result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus, apes, meth_d, pd)
+      result_auto <- t(data.frame(lapply(result_auto, unlist)))
+      rownames(result_auto) <- NULL
+      #results_auto <- as.data.frame(t(data.frame(lapply(results_auto, unlist))))
+      #setDT(results_auto)
+      #names(results_auto) <- c(paste0("LikeH1_", c(locus_v_auto, "Total")), paste0("LikeH2_", c(locus_v_auto, "Total")), paste0("LR_", c(locus_v_auto, "Total")))
 
       # Create data.table for results
-      tmp <- data.table(Victim = result_name_v, Reference = result_name_r, AssumedRelationship = result_assumed_rel)
-      dt_auto <- cbind(tmp, results_auto)
+      #tmp <- data.table(Victim = result_sn_v_auto, Reference = result_sn_r_auto, AssumedRelationship = result_assumed_rel)
+      #dt_auto <- cbind(tmp, results_auto)
+
+      # Assign results to the environment "env_proj"
+      #assign("dt_auto", dt_auto, envir = env_proj)
+      assign("result_sn_v_auto", result_sn_v_auto, envir = env_proj)
+      assign("result_sn_r_auto", result_sn_r_auto, envir = env_proj)
+      assign("result_assumed_rel", result_assumed_rel, envir = env_proj)
+      assign("result_auto", result_auto, envir = env_proj)
 
       # Update sample names
       set_env_proj_sn(env_proj, FALSE, sn_v_auto, sn_r_auto)
@@ -553,9 +558,6 @@ search_rel <- function(env_proj, env_gui){
       assign("data_v_auto", data_v_auto, envir = env_proj)
       assign("data_r_auto", data_r_auto, envir = env_proj)
       assign("data_af", data_af, envir = env_proj)
-
-      # Assign results to the environment "env_proj"
-      assign("dt_auto", dt_auto, envir = env_proj)
 
       # Assign parameters to the environment "env_proj"
       assign("myu_all", myu_all, envir = env_proj)
@@ -605,28 +607,36 @@ search_rel <- function(env_proj, env_gui){
       hap_v_y <- asplit(hap_v_y, 1)
       hap_r_y <- asplit(hap_r_y, 1)
 
-      # The numbers of samples
-      n_v <- nrow(data_v_y)
-      n_r <- nrow(data_r_y)
-
       # Define objects for saving results
-      result_name_v <- rep(sn_v_y, n_r)
-      result_name_r <- as.character(sapply(sn_r_y, rep, n_v))
+      result_sn_v_y <- rep(sn_v_y, nrow(data_r_y))
+      result_sn_r_y <- as.character(sapply(sn_r_y, rep, nrow(data_v_y)))
 
-      results_y <- match_y_all(hap_v_y, hap_r_y)
-      results_y <- as.data.frame(t(data.frame(lapply(results_y, unlist))))
-      setDT(results_y)
-      names(results_y) <- c(paste0("Mismatch_", c(locus_v_auto, "Total")), paste0("Ignore_", c(locus_v_auto, "Total")), paste0("MuStep_", c(locus_v_auto, "Total")))
+      result_y <- match_y_all(hap_v_y, hap_r_y)
+      result_y <- t(data.frame(lapply(result_y, unlist)))
+      rownames(result_y) <- NULL
+      #result_y <- as.data.frame(t(data.frame(lapply(results_y, unlist))))
+      #setDT(result_y)
+      #names(result_y) <- c(paste0("Mismatch_", c(locus_v_y, "Total")), paste0("Ignore_", c(locus_v_y, "Total")), paste0("MuStep_", c(locus_v_y, "Total")))
 
       # Create data.table for results
-      tmp <- data.table(Victim = result_name_v, Reference = result_name_r)
-      dt_y <- cbind(tmp, results_y)
+      #tmp <- data.table(Victim = result_sn_v_y, Reference = result_sn_r_y)
+      #dt_y <- cbind(tmp, results_y)
 
       # Assign results to the environment "env_proj"
-      assign("dt_y", dt_y, envir = env_proj)
+      #assign("dt_y", dt_y, envir = env_proj)
+      assign("result_sn_v_y", result_sn_v_y, envir = env_proj)
+      assign("result_sn_r_y", result_sn_r_y, envir = env_proj)
+      assign("result_y", result_y, envir = env_proj)
 
       # Update sample names in the environment "env_proj"
       set_env_proj_sn(env_proj, FALSE, sn_v_y, sn_r_y)
+
+      # Assign updated input data (ordered loci)
+      assign("data_v_y", data_v_y, envir = env_proj)
+      assign("data_r_y", data_r_y, envir = env_proj)
+
+      # Assign the end sign
+      assign("fin_y", TRUE, envir = env_proj)
     }
 
     #########################
@@ -645,15 +655,28 @@ search_rel <- function(env_proj, env_gui){
       range_r_mt <- data_r_mt[, Range]
       hap_r_mt <- strsplit(data_r_mt[, Haplotype], " ")
 
-      # The numbers of samples
-      n_v <- nrow(data_v_mt)
-      n_r <- nrow(data_r_mt)
-
       # Define objects for saving results
-      result_name_v <- rep(sn_v_mt, n_r)
-      result_name_r <- as.character(sapply(sn_r_mt, rep, n_v))
+      result_sn_v_mt <- rep(sn_v_mt, nrow(data_r_mt))
+      result_sn_r_mt <- as.character(sapply(sn_r_mt, rep, nrow(data_v_mt)))
 
-      results_mt <- match_mt_all(hap_v_mt, hap_r_mt, range_v_mt, range_r_mt)
+      result_mt <- match_mt_all(hap_v_mt, hap_r_mt, range_v_mt, range_r_mt)
+      result_mt <- t(data.frame(result_mt))
+      rownames(result_mt) <- NULL
+      #dt_mt <- as.data.frame(t(data.frame(result_mt)))
+      #setDT(dt_mt)
+      #names(dt_mt) <- c("Mismatch", "Share_range", "Share_length")
+
+      # Assign results to the environment "env_proj"
+      #assign("dt_mt", dt_mt, envir = env_proj)
+      assign("result_sn_v_mt", result_sn_v_mt, envir = env_proj)
+      assign("result_sn_r_mt", result_sn_r_mt, envir = env_proj)
+      assign("result_mt", result_mt, envir = env_proj)
+
+      # Update sample names in the environment "env_proj"
+      set_env_proj_sn(env_proj, FALSE, sn_v_mt, sn_r_mt)
+
+      # Assign the end sign
+      assign("fin_mt", TRUE, envir = env_proj)
     }
 
     ###########################
@@ -667,6 +690,44 @@ search_rel <- function(env_proj, env_gui){
     max_mustep_y <- criteria$Value[criteria$Criteria == "max_mustep_y"]
     min_share_mt <- criteria$Value[criteria$Criteria == "min_share_mt"]
     max_mismatch_mt <- criteria$Value[criteria$Criteria == "max_mismatch_mt"]
+
+    # Get sample names from the environment "env_proj"
+    sn_v_all <- get("sn_v_all", pos = env_proj)
+    sn_r_all <- get("sn_r_all", pos = env_proj)
+
+    # The number of samples in all database
+    n_v_all <- length(sn_v_all)
+    n_r_all <- length(sn_r_all)
+
+    result_all <- matrix("", n_v_all * n_r_all, ncol(result_auto) + ncol(result_y) + 9)
+    cn_result_all <- c("Victim", "Reference", "AssumedRel",
+                       paste0("LikeH1_", c(locus_v_auto, "Total")), paste0("LikeH2_", c(locus_v_auto, "Total")), paste0("LR_", c(locus_v_auto, "Total")),
+                       paste0("Mismatch_", c(locus_v_y, "Total")), paste0("Ignore_", c(locus_v_y, "Total")), paste0("MuStep_", c(locus_v_y, "Total")),
+                       "MismatchMt", "ShareRangeMt", "ShareLengthMt",
+                       "EstimatedRel", "Paternal", "Maternal")
+
+    result_all[, 1] <- rep(sn_v_all, n_r_all)
+    result_all[, 2] <- as.vector(sapply(sn_r_all, rep, n_v_all))
+
+    if(fin_auto){
+      pos_sn_auto <- search_pos_sn_comb(result_all[, 1], result_all[, 2], sn_v_auto, sn_r_auto) + 1
+      result_all[pos_sn_auto, 3] <- result_assumed_rel
+      result_all[pos_sn_auto, c(grep("LikeH1_", cn_result_all), grep("LikeH2_", cn_result_all), grep("LR_", cn_result_all))] <- result_auto
+    }
+
+    if(fin_y){
+      pos_sn_y <- search_pos_sn_comb(result_all[, 1], result_all[, 2], sn_v_y, sn_r_y) + 1
+      result_all[pos_sn_y, c(grep("Mismatch_", cn_result_all), grep("Ignore_", cn_result_all), grep("MuStep_", cn_result_all))] <- result_y
+    }
+
+    if(fin_mt){
+      pos_sn_mt <- search_pos_sn_comb(result_all[, 1], result_all[, 2], sn_v_mt, sn_r_mt) + 1
+      result_all[pos_sn_mt, is.element(cn_result_all, c("MismatchMt", "ShareRangeMt", "ShareLengthMt"))] <- result_mt
+    }
+
+    dt_result <- as.data.frame(result_all)
+    setDT(dt_result)
+    names(dt_result) <- cn_result_all
 
     # Assign criteria
     assign("min_lr_auto", min_lr_auto, envir = env_proj)
