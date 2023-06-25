@@ -349,6 +349,11 @@ search_rel <- function(env_proj, env_gui){
   # All required data for at least one marker type is loaded
   }else{
 
+    # Get the end-sign of the analysis from the environment "env_proj"
+    fin_auto <- get("fin_auto", pos = env_gui)
+    fin_y <- get("fin_y", pos = env_gui)
+    fin_mt <- get("fin_mt", pos = env_gui)
+
     # Get package path from the environment "env_gui"
     path_pack <- get("path_pack", pos = env_gui)
 
@@ -366,7 +371,7 @@ search_rel <- function(env_proj, env_gui){
       criteria <- fread(paste0(path_pack, "/extdata/parameters/criteria.csv"))
 
       # All required data for the autosomal STR is loaded
-      if(bool_check_auto){
+      if(!fin_auto && bool_check_auto){
 
         # If all required csv files are located in 'extdata > parameters'.
         if(all(is.element(c("myu.csv", "rel.csv", "par_auto.csv"), fn_par))){
@@ -438,7 +443,7 @@ search_rel <- function(env_proj, env_gui){
       }
 
       # All required data for the Y-STR is loaded
-      if(error_message == "" && bool_check_y){
+      if(!fin_y && error_message == "" && bool_check_y){
 
         # Extract loci from each database
         locus_v_y <- setdiff(names(data_v_y), c("SampleName", "Relationship"))
@@ -454,7 +459,7 @@ search_rel <- function(env_proj, env_gui){
       }
 
       # All required data for the mtDNA is loaded
-      if(error_message == "" && bool_check_mt){
+      if(!fin_mt && error_message == "" && bool_check_mt){
 
       }
     }
@@ -468,7 +473,7 @@ search_rel <- function(env_proj, env_gui){
     # Analysis of the autosomal STR #
     #################################
 
-    if(bool_check_auto){
+    if(!fin_auto && bool_check_auto){
 
       # The number of loci
       n_l <- length(locus_v_auto)
@@ -529,23 +534,13 @@ search_rel <- function(env_proj, env_gui){
       names(apes) <- locus_v_auto
 
       # Define objects for saving results
-      #result_sn_v_auto <- rep(sn_v_auto, nrow(data_r_auto))
-      #result_sn_r_auto <- as.character(sapply(sn_r_auto, rep, nrow(data_v_auto)))
       result_assumed_rel <- as.character(sapply(assumed_rel_all, rep, nrow(data_v_auto)))
 
       result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus, apes, meth_d, pd)
       result_auto <- t(data.frame(lapply(result_auto, unlist)))
       rownames(result_auto) <- NULL
-      #results_auto <- as.data.frame(t(data.frame(lapply(results_auto, unlist))))
-      #setDT(results_auto)
-      #names(results_auto) <- c(paste0("LikeH1_", c(locus_v_auto, "Total")), paste0("LikeH2_", c(locus_v_auto, "Total")), paste0("LR_", c(locus_v_auto, "Total")))
-
-      # Create data.table for results
-      #tmp <- data.table(Victim = result_sn_v_auto, Reference = result_sn_r_auto, AssumedRelationship = result_assumed_rel)
-      #dt_auto <- cbind(tmp, results_auto)
 
       # Assign results to the environment "env_proj"
-      #assign("dt_auto", dt_auto, envir = env_proj)
       assign("result_sn_v_auto", result_sn_v_auto, envir = env_proj)
       assign("result_sn_r_auto", result_sn_r_auto, envir = env_proj)
       assign("result_assumed_rel", result_assumed_rel, envir = env_proj)
@@ -580,7 +575,7 @@ search_rel <- function(env_proj, env_gui){
     # Analysis of the Y-STR #
     #########################
 
-    if(bool_check_y){
+    if(!fin_y && bool_check_y){
 
       # Order loci of each database
       data_r_y <- data_r_y[, match(c("SampleName", locus_v_y), c("SampleName", locus_r_y)), with = FALSE]
@@ -614,16 +609,8 @@ search_rel <- function(env_proj, env_gui){
       result_y <- match_y_all(hap_v_y, hap_r_y)
       result_y <- t(data.frame(lapply(result_y, unlist)))
       rownames(result_y) <- NULL
-      #result_y <- as.data.frame(t(data.frame(lapply(results_y, unlist))))
-      #setDT(result_y)
-      #names(result_y) <- c(paste0("Mismatch_", c(locus_v_y, "Total")), paste0("Ignore_", c(locus_v_y, "Total")), paste0("MuStep_", c(locus_v_y, "Total")))
-
-      # Create data.table for results
-      #tmp <- data.table(Victim = result_sn_v_y, Reference = result_sn_r_y)
-      #dt_y <- cbind(tmp, results_y)
 
       # Assign results to the environment "env_proj"
-      #assign("dt_y", dt_y, envir = env_proj)
       assign("result_sn_v_y", result_sn_v_y, envir = env_proj)
       assign("result_sn_r_y", result_sn_r_y, envir = env_proj)
       assign("result_y", result_y, envir = env_proj)
@@ -643,7 +630,7 @@ search_rel <- function(env_proj, env_gui){
     # Analysis of the mtDNA #
     #########################
 
-    if(bool_check_mt){
+    if(!fin_mt && bool_check_mt){
 
       # Extract required data from victim database
       sn_v_mt <- data_v_mt[, SampleName]
@@ -662,12 +649,8 @@ search_rel <- function(env_proj, env_gui){
       result_mt <- match_mt_all(hap_v_mt, hap_r_mt, range_v_mt, range_r_mt)
       result_mt <- t(data.frame(result_mt))
       rownames(result_mt) <- NULL
-      #dt_mt <- as.data.frame(t(data.frame(result_mt)))
-      #setDT(dt_mt)
-      #names(dt_mt) <- c("Mismatch", "Share_range", "Share_length")
 
       # Assign results to the environment "env_proj"
-      #assign("dt_mt", dt_mt, envir = env_proj)
       assign("result_sn_v_mt", result_sn_v_mt, envir = env_proj)
       assign("result_sn_r_mt", result_sn_r_mt, envir = env_proj)
       assign("result_mt", result_mt, envir = env_proj)
