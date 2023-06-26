@@ -20,4 +20,4 @@ RoxygenNote: 7.2.3
 LinkingTo: 
     Rcpp
 Imports: 
-    Rcpp, data.table, readr
+    Rcpp, data.table
