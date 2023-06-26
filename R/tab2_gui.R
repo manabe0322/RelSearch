@@ -1,189 +1,20 @@
-# The function to make data_comb
-make_data_comb <- function(env_proj){
+#############################
+# The function to make tab2 #
+#############################
 
-  # Get finish signs
-  fin_auto <- get("fin_auto", pos = env_proj)
-  fin_y <- get("fin_y", pos = env_proj)
-  fin_mt <- get("fin_mt", pos = env_proj)
+make_tab2 <- function(env_proj, env_gui){
 
-  # Get sample names from the environment "env_proj"
-  sn_q_all <- get("sn_q_all", pos = env_proj)
-  sn_r_all <- get("sn_r_all", pos = env_proj)
-
-  # The number of samples in all database
-  n_q <- length(sn_q_all)
-  n_r <- length(sn_r_all)
-
-  # Define data_comb
-  data_comb <- matrix("", n_q * n_r, 10)
-  colnames(data_comb) <- c("Query", "Reference", "Assumed relationship", "Estimated relationship", "Paternal lineage", "Maternal lineage", "All H1", "All LR", "Data Y", "Data mt")
-  data_comb[, 1] <- as.vector(sapply(sn_q_all, rep, n_r))
-  data_comb[, 2] <- rep(sn_r_all, n_q)
-
-  if(fin_auto){
-    min_lr_auto <- get("min_lr_auto", pos = env_proj)
-    sn_auto_q <- get("sn_auto_q", pos = env_proj)
-    sn_auto_r_new <- get("sn_auto_r_new", pos = env_proj)
-    rel_auto_r_new <- get("rel_auto_r_new", pos = env_proj)
-    lr_all <- get("lr_all", pos = env_proj)
-    clr_all_mat <- lr_all[, , length(lr_all[1, 1, ])]
-    for(i in 1:n_q){
-      pos_q <- which(sn_auto_q == sn_q_all[i])
-      if(length(pos_q) == 1){
-        for(j in 1:n_r){
-          pos_r <- which(sn_auto_r_new == sn_r_all[j])
-          if(length(pos_r) > 0){
-            rel_1 <- rel_auto_r_new[pos_r]
-            clr_1 <- clr_all_mat[pos_q, pos_r]
-            pos_meet <- which(as.numeric(clr_1) >= min_lr_auto)
-            if(length(rel_1) == 1){
-              data_comb[n_r * (i - 1) + j, 3] <- rel_1
-              data_comb[n_r * (i - 1) + j, 7] <- rel_1
-              data_comb[n_r * (i - 1) + j, 8] <- clr_1
-            }else{
-              data_comb[n_r * (i - 1) + j, 3] <- "No assumption"
-              data_comb[n_r * (i - 1) + j, 7] <- paste(rel_1, collapse = ", ")
-              data_comb[n_r * (i - 1) + j, 8] <- paste(clr_1, collapse = ", ")
-            }
-            if(length(pos_meet) > 1){
-              data_comb[n_r * (i - 1) + j, 4] <- "Multiple candidates"
-            }else if(length(pos_meet) == 1){
-              data_comb[n_r * (i - 1) + j, 4] <- rel_1[pos_meet]
-            }else{
-              data_comb[n_r * (i - 1) + j, 4] <- "No candidate"
-            }
-          }else{
-            data_comb[n_r * (i - 1) + j, 3] <- "-"
-            data_comb[n_r * (i - 1) + j, 4] <- "-"
-          }
-        }
-      }else{
-        data_comb[n_r * (i - 1) + j, 3] <- "-"
-        data_comb[n_r * (i - 1) + j, 4] <- "-"
-      }
-    }
-  }else{
-    data_comb[, 3] <- "-"
-    data_comb[, 4] <- "-"
-  }
-
-  if(fin_y){
-
-    # Get criteria from the environment "env_proj"
-    max_mismatch_y <- get("max_mismatch_y", pos = env_proj)
-    max_ignore_y <- get("max_ignore_y", pos = env_proj)
-    max_mustep_y <- get("max_mustep_y", pos = env_proj)
-
-    # Get results from the environment "env_proj"
-    sn_y_q <- get("sn_y_q", pos = env_proj)
-    sn_y_r <- get("sn_y_r", pos = env_proj)
-    mismatch_y <- get("mismatch_y", pos = env_proj)
-    ignore_y <- get("ignore_y", pos = env_proj)
-    mustep_y <- get("mustep_y", pos = env_proj)
-
-    # Get data of all loci
-    pos_total <- length(mismatch_y[1, 1, ])
-    total_mismatch <- mismatch_y[, , pos_total]
-    total_ignore <- ignore_y[, , pos_total]
-    total_mustep <- mustep_y[, , pos_total]
-
-    for(i in 1:n_q){
-      pos_q <- which(sn_y_q == sn_q_all[i])
-      if(length(pos_q) == 1){
-        for(j in 1:n_r){
-          pos_r <- which(sn_y_r == sn_r_all[j])
-          if(length(pos_r) == 1){
-
-            # Extract data in one case
-            total_mismatch_y_one <- as.numeric(total_mismatch[pos_q, pos_r])
-            total_ignore_y_one <- as.numeric(total_ignore[pos_q, pos_r])
-            total_mustep_y_one <- as.numeric(total_mustep[pos_q, pos_r])
-
-            # Save data
-            data_comb[n_r * (i - 1) + j, 9] <- paste(c(total_mismatch_y_one, total_ignore_y_one, total_mustep_y_one), collapse = ", ")
-
-            # Whether data is satisfied with criteria or not
-            bool_total_mismatch <- total_mismatch_y_one <= max_mismatch_y
-            bool_total_ignore <- total_ignore_y_one <= max_ignore_y
-            bool_total_mustep <- total_mustep_y_one <= max_mustep_y && total_mustep_y_one %% 1 == 0
-            if(all(c(bool_total_mismatch, bool_total_ignore, bool_total_mustep))){
-              data_comb[n_r * (i - 1) + j, 5] <- "Support"
-            }else{
-              data_comb[n_r * (i - 1) + j, 5] <- "Not support"
-            }
-          }else{
-            data_comb[n_r * (i - 1) + j, 5] <- "-"
-          }
-        }
-      }else{
-        data_comb[n_r * (i - 1) + j, 5] <- "-"
-      }
-    }
-  }else{
-    data_comb[, 5] <- "-"
-  }
-
-  if(fin_mt){
-
-    # Get criteria from the environment "env_proj"
-    min_share_mt <- get("min_share_mt", envir = env_proj)
-    max_mismatch_mt <- get("max_mismatch_mt", envir = env_proj)
-
-    # Get results from the environment "env_proj"
-    sn_mt_q <- get("sn_mt_q", envir = env_proj)
-    sn_mt_r <- get("sn_mt_r", envir = env_proj)
-    share_len_mt <- get("share_len_mt", envir = env_proj)
-    mismatch_mt <- get("mismatch_mt", envir = env_proj)
-
-    for(i in 1:n_q){
-      pos_q <- which(sn_mt_q == sn_q_all[i])
-      if(length(pos_q) == 1){
-        for(j in 1:n_r){
-          pos_r <- which(sn_mt_r == sn_r_all[j])
-          if(length(pos_r) == 1){
-
-            # Extract data in one case
-            share_len_mt_one <- as.numeric(share_len_mt[pos_q, pos_r])
-            mismatch_mt_one <- as.numeric(mismatch_mt[pos_q, pos_r])
-
-            # Save data
-            data_comb[n_r * (i - 1) + j, 10] <- paste(c(share_len_mt_one, mismatch_mt_one), collapse = ", ")
-
-            # Whether data is satisfied with criteria or not
-            bool_share <- share_len_mt_one >= min_share_mt
-            bool_mismatch <- mismatch_mt_one <= max_mismatch_mt
-            if(all(c(bool_share, bool_mismatch))){
-              data_comb[n_r * (i - 1) + j, 6] <- "Support"
-            }else{
-              data_comb[n_r * (i - 1) + j, 6] <- "Not support"
-            }
-          }else{
-            data_comb[n_r * (i - 1) + j, 6] <- "-"
-          }
-        }
-      }else{
-        data_comb[n_r * (i - 1) + j, 6] <- "-"
-      }
-    }
-  }else{
-    data_comb[, 6] <- "-"
-  }
-
-  return(data_comb)
-}
-
-make_tab7 <- function(env_proj, env_gui){
+  # Get the end-sign of the analysis from the environment "env_proj"
   fin_auto <- get("fin_auto", pos = env_proj)
   fin_y <- get("fin_y", pos = env_proj)
   fin_mt <- get("fin_mt", pos = env_proj)
 
   if(any(fin_auto, fin_y, fin_mt)){
 
-    # The function to show data in detail
     show_detail <- function(){
 
-      # Get the multi-list box for displayed data from the environment "env_comb_result"
-      mlb_result <- get("mlb_result", pos = env_comb_result)
+      # Get the multi-list box for displayed data from the environment "env_result"
+      mlb_result <- get("mlb_result", pos = env_result)
 
       # If the user does not select one line
       if(tclvalue(tkcurselection(mlb_result)) == ""){
@@ -192,12 +23,12 @@ make_tab7 <- function(env_proj, env_gui){
       # If the user selects one line
       }else{
 
-        # Get displayed data from the environment "env_comb_result"
-        data_display <- get("data_display", pos = env_comb_result)
+        # Get displayed data from the environment "env_result"
+        data_display <- get("data_display", pos = env_result)
 
         # Extract selected data
         pos_select <- as.numeric(tclvalue(tkcurselection(mlb_result))) + 1
-        sn_q_select <- data_display[pos_select, "Query"]
+        sn_v_select <- data_display[pos_select, "Victim"]
         sn_r_select <- data_display[pos_select, "Reference"]
         rel_estimated_select <- data_display[pos_select, "Estimated relationship"]
         if(rel_estimated_select == "-"){
@@ -244,8 +75,8 @@ make_tab7 <- function(env_proj, env_gui){
 
         # Define widgets for sample names
         label_title_sn <- tklabel(frame_detail_sn, text = "Sample name", font = "Helvetica 10 bold")
-        label_sn_q_1 <- tklabel(frame_detail_sn, text = "    Query")
-        label_sn_q_2 <- tklabel(frame_detail_sn, text = paste0(": ", sn_q_select))
+        label_sn_v_1 <- tklabel(frame_detail_sn, text = "    Victim")
+        label_sn_v_2 <- tklabel(frame_detail_sn, text = paste0(": ", sn_v_select))
         label_sn_r_1 <- tklabel(frame_detail_sn, text = "    Reference ")
         label_sn_r_2 <- tklabel(frame_detail_sn, text = paste0(": ", sn_r_select))
 
@@ -270,7 +101,7 @@ make_tab7 <- function(env_proj, env_gui){
           # Grid the label
           tkgrid(label_result_auto, padx = 10, pady = 5)
 
-        # With result of the autosomal STRs
+          # With result of the autosomal STRs
         }else{
 
           # Extract selected data
@@ -319,7 +150,7 @@ make_tab7 <- function(env_proj, env_gui){
           # Grid the label
           tkgrid(label_result_y)
 
-        # With result of the Y-STRs
+          # With result of the Y-STRs
         }else{
 
           # Get objects from the environment "env_proj"
@@ -363,7 +194,7 @@ make_tab7 <- function(env_proj, env_gui){
           # Grid the label
           tkgrid(label_result_mt)
 
-        # With result of the Y-STRs
+          # With result of the Y-STRs
         }else{
 
           # Get objects from the environment "env_proj"
@@ -397,7 +228,7 @@ make_tab7 <- function(env_proj, env_gui){
 
         # Grid widgets for sample names
         tkgrid(label_title_sn, padx = 10, pady = 5, sticky = "w")
-        tkgrid(label_sn_q_1, label_sn_q_2, padx = 10, pady = 5, sticky = "w")
+        tkgrid(label_sn_v_1, label_sn_v_2, padx = 10, pady = 5, sticky = "w")
         tkgrid(label_sn_r_1, label_sn_r_2, padx = 10, pady = 5, sticky = "w")
 
         # Grid widgets for summary
@@ -429,43 +260,33 @@ make_tab7 <- function(env_proj, env_gui){
         tkgrid(frame_detail_y, padx = 10, pady = 5, sticky = "w")
         tkgrid(frame_detail_mt, padx = 10, pady = 5, sticky = "w")
       }
-
     }
 
-    # Define an environment variable (env_comb_result)
-    env_comb_result <- new.env(parent = globalenv())
+    # Define an environment variable (env_result)
+    env_result <- new.env(parent = globalenv())
 
-    # Make combined data
-    data_comb <- make_data_comb(env_proj)
+    # Get the data table for all results
+    dt_result <- get("dt_result", dt_result, pos = env_proj)
+    # dt["a"] # キー列による行の検索（高速）
 
-    # Extract displayed data
-    data_display <- data_comb[sort(unique(c(which(is.element(data_comb[, 4], c("-", "No candidate")) == FALSE),
-                                            which(is.element(data_comb[, 5], c("-", "Not support")) == FALSE),
-                                            which(is.element(data_comb[, 6], c("-", "Not support")) == FALSE)
-                                            )
-                                          )
-                                   )
-                              , , drop = FALSE]
-
-    # Reset frame_tab7
+    # Reset frame_tab2
     tabs <- get("tabs", pos = env_gui)
-    tab7 <- get("tab7", pos = env_gui)
-    frame_tab7 <- get("frame_tab7", pos = env_gui)
-    tkdestroy(frame_tab7)
-    frame_tab7 <- tkframe(tab7)
+    tab2 <- get("tab2", pos = env_gui)
+    frame_tab2 <- get("frame_tab2", pos = env_gui)
+    tkdestroy(frame_tab2)
+    frame_tab2 <- tkframe(tab2)
 
     # Define frames
-    frame_result_1 <- tkframe(frame_tab7)
-    frame_result_2 <- tkframe(frame_tab7)
+    frame_result_1 <- tkframe(frame_tab2)
+    frame_result_2 <- tkframe(frame_tab2)
 
     # Define a scrollbar for a multi-list box (mlb_result)
     scr1 <- tkscrollbar(frame_result_1, repeatinterval = 5, command = function(...) tkyview(mlb_result, ...))
 
     # Define a multi-list box (mlb_result)
-    mlb_result <- tk2mclistbox(frame_result_1, width = 120, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
-    tk2column(mlb_result, "add", label = "Query", width = 10)
+    mlb_result <- tk2mclistbox(frame_result_1, width = 90, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+    tk2column(mlb_result, "add", label = "Victim", width = 10)
     tk2column(mlb_result, "add", label = "Reference", width = 10)
-    tk2column(mlb_result, "add", label = "Assumed relationship", width = 30)
     tk2column(mlb_result, "add", label = "Estimated relationship", width = 30)
     tk2column(mlb_result, "add", label = "Paternal lineage", width = 20)
     tk2column(mlb_result, "add", label = "Maternal lineage", width = 20)
@@ -484,14 +305,14 @@ make_tab7 <- function(env_proj, env_gui){
     # Grid frames
     tkgrid(frame_result_1, padx = 10, pady = 5)
     tkgrid(frame_result_2)
-    tkgrid(frame_tab7)
+    tkgrid(frame_tab2)
 
-    # Assign data to the environment variable (env_comb_result)
-    assign("mlb_result", mlb_result, envir = env_comb_result)
-    assign("scr1", scr1, envir = env_comb_result)
-    assign("data_display", data_display, envir = env_comb_result)
+    # Assign data to the environment variable (env_result)
+    assign("mlb_result", mlb_result, envir = env_result)
+    assign("scr1", scr1, envir = env_result)
+    assign("data_display", data_display, envir = env_result)
 
     # Assign data to the environment variable (env_gui)
-    assign("frame_tab7", frame_tab7, envir = env_gui)
+    assign("frame_tab2", frame_tab2, envir = env_gui)
   }
 }

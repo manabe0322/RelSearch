@@ -303,43 +303,31 @@ make_tab1 <- function(env_proj, env_gui){
 }
 
 
-####################################
-# The function to search relatives #
-####################################
+#####################################
+# The function to check loaded data #
+#####################################
 
-search_rel <- function(env_proj, env_gui){
-
-  ##################################################
-  # Get input data from the environment "env_proj" #
-  ##################################################
-
-  # Autosomal STR
-  data_v_auto <- get("data_v_auto", pos = env_proj)
-  data_r_auto <- get("data_r_auto", pos = env_proj)
-  data_af <- get("data_af", pos = env_proj)
-
-  # Y-STR
-  data_v_y <- get("data_v_y", pos = env_proj)
-  data_r_y <- get("data_r_y", pos = env_proj)
-
-  # mtDNA
-  data_v_mt <- get("data_v_mt", pos = env_proj)
-  data_r_mt <- get("data_r_mt", pos = env_proj)
-
-  ####################################################
-  # Check whether all required data is loaded or not #
-  ####################################################
+check_error <- function(env_proj){
 
   # Define an object to save an error message
   error_message <- ""
 
-  # Autosomal STR
+  # Get input data for autosomal STR from the environment "env_proj"
+  data_v_auto <- get("data_v_auto", pos = env_proj)
+  data_r_auto <- get("data_r_auto", pos = env_proj)
+  data_af <- get("data_af", pos = env_proj)
+
+  # Get input data for Y-STR from the environment "env_proj"
+  data_v_y <- get("data_v_y", pos = env_proj)
+  data_r_y <- get("data_r_y", pos = env_proj)
+
+  # Get input data for mtDNA from the environment "env_proj"
+  data_v_mt <- get("data_v_mt", pos = env_proj)
+  data_r_mt <- get("data_r_mt", pos = env_proj)
+
+  # check whether all required data is loaded or not
   bool_check_auto <- all(c(length(data_v_auto) > 0, length(data_r_auto) > 0, length(data_af) > 0))
-
-  # Y-STR
   bool_check_y <- all(c(length(data_v_y) > 0, length(data_r_y) > 0))
-
-  # mtDNA
   bool_check_mt <- all(c(length(data_v_mt) > 0, length(data_r_mt) > 0))
 
   # All required data for all markers is not loaded
@@ -350,15 +338,9 @@ search_rel <- function(env_proj, env_gui){
   }else{
 
     # Get the end-sign of the analysis from the environment "env_proj"
-    fin_auto <- get("fin_auto", pos = env_gui)
-    fin_y <- get("fin_y", pos = env_gui)
-    fin_mt <- get("fin_mt", pos = env_gui)
-
-    # Get package path from the environment "env_gui"
-    path_pack <- get("path_pack", pos = env_gui)
-
-    # List up file names in 'extdata > parameters'.
-    fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
+    fin_auto <- get("fin_auto", pos = env_proj)
+    fin_y <- get("fin_y", pos = env_proj)
+    fin_mt <- get("fin_mt", pos = env_proj)
 
     # If the file 'criteria.csv' is not found
     if(!is.element("criteria.csv", fn_par)){
@@ -376,28 +358,14 @@ search_rel <- function(env_proj, env_gui){
         # If all required csv files are located in 'extdata > parameters'.
         if(all(is.element(c("myu.csv", "rel.csv", "par_auto.csv"), fn_par))){
 
-          # Load mutation rates
-          data_myu <- fread(paste0(path_pack, "/extdata/parameters/myu.csv"))
-          locus_myu <- data_myu[, Marker]
-          myu_all <- data_myu[, Myu]
-
-          # Load information on relationship
-          data_rel <- fread(paste0(path_pack, "/extdata/parameters/rel.csv"))
-          names_rel <- data_rel[, Name_relationship]
-          degrees_rel <- data_rel[, Degree]
-          pibds_rel <- as.matrix(data_rel[, list(Pr_IBD2, Pr_IBD1, Pr_IBD0)])
-          pibds_rel <- asplit(pibds_rel, 1)
-
-          # Load analysis methods
-          data_par_auto <- fread(paste0(path_pack, "/extdata/parameters/par_auto.csv"))
-          maf <- data_par_auto$Value[data_par_auto$Parameter == "maf"]
-          meth_d <- data_par_auto$Value[data_par_auto$Parameter == "meth_d"]
-          pd <- data_par_auto$Value[data_par_auto$Parameter == "pd"]
-
           # Extract loci from each database
           locus_v_auto <- setdiff(names(data_v_auto), c("SampleName", "Relationship"))
           locus_r_auto <- setdiff(names(data_r_auto), c("SampleName", "Relationship"))
           locus_af <- setdiff(names(data_af), "Allele")
+
+          # Load information on relationship
+          data_rel <- fread(paste0(path_pack, "/extdata/parameters/rel.csv"))
+          names_rel <- data_rel[, Name_relationship]
 
           # Whether the locus set of the query database is the same as that of the reference database or not
           bool_locus_1 <- setequal(locus_v_auto, locus_r_auto)
@@ -457,268 +425,410 @@ search_rel <- function(env_proj, env_gui){
           error_message <- "Locus set is not the same between query data and reference data!"
         }
       }
-
-      # All required data for the mtDNA is loaded
-      if(!fin_mt && error_message == "" && bool_check_mt){
-
-      }
     }
   }
+  return(error_message)
+}
 
+
+##################################################
+# The function to analyze data for autosomal STR #
+##################################################
+
+analyze_auto <- function(env_proj){
+
+  # Get input data from the environment "env_proj"
+  data_v_auto <- get("data_v_auto", pos = env_proj)
+  data_r_auto <- get("data_r_auto", pos = env_proj)
+  data_af <- get("data_af", pos = env_proj)
+
+  # Load mutation rates
+  data_myu <- fread(paste0(path_pack, "/extdata/parameters/myu.csv"))
+  locus_myu <- data_myu[, Marker]
+  myu_all <- data_myu[, Myu]
+
+  # Load information on relationship
+  data_rel <- fread(paste0(path_pack, "/extdata/parameters/rel.csv"))
+  names_rel <- data_rel[, Name_relationship]
+  degrees_rel <- data_rel[, Degree]
+  pibds_rel <- as.matrix(data_rel[, list(Pr_IBD2, Pr_IBD1, Pr_IBD0)])
+  pibds_rel <- asplit(pibds_rel, 1)
+
+  # Load analysis methods
+  data_par_auto <- fread(paste0(path_pack, "/extdata/parameters/par_auto.csv"))
+  maf <- data_par_auto$Value[data_par_auto$Parameter == "maf"]
+  meth_d <- data_par_auto$Value[data_par_auto$Parameter == "meth_d"]
+  pd <- data_par_auto$Value[data_par_auto$Parameter == "pd"]
+
+  # Extract loci
+  locus_auto <- setdiff(names(data_v_auto), c("SampleName", "Relationship"))
+
+  # The number of loci
+  n_l <- length(locus_auto)
+
+  # Order loci of each database
+  pos_v <- rep(0, 2 * n_l + 1)
+  pos_r <- rep(0, 2 * n_l + 2)
+  pos_af <- rep(0, n_l + 1)
+  pos_v[1] <- which(is.element(names(data_v_auto), "SampleName"))
+  pos_r[1] <- which(is.element(names(data_r_auto), "SampleName"))
+  pos_r[2] <- which(is.element(names(data_r_auto), "Relationship"))
+  pos_af[1] <- which(is.element(names(data_af), "Allele"))
+  for(i in 1:n_l){
+    pos_v[c(2 * i, 2 * i + 1)] <- which(is.element(names(data_v_auto), locus_auto[i]))
+    pos_r[c(2 * i + 1, 2 * i + 2)] <- which(is.element(names(data_r_auto), locus_auto[i]))
+    pos_af[i + 1] <- which(is.element(names(data_af), locus_auto[i]))
+  }
+  data_v_auto <- data_v_auto[, pos_v, with = FALSE]
+  data_r_auto <- data_r_auto[, pos_r, with = FALSE]
+  data_af <- data_af[, pos_af, with = FALSE]
+
+  # Extract required data from victim database
+  sn_v_auto <- data_v_auto[, SampleName]
+  gt_v_auto <- as.matrix(data_v_auto[, -"SampleName"])
+
+  # Extract required data from reference database
+  sn_r_auto <- data_r_auto[, SampleName]
+  assumed_rel_all <- data_r_auto[, Relationship]
+  gt_r_auto <- as.matrix(data_r_auto[, -c("SampleName", "Relationship")])
+
+  # The NA in genotypes is replaced to -99 to deal with the C++ program
+  gt_v_auto[which(is.na(gt_v_auto) == TRUE, arr.ind = TRUE)] <- -99
+  gt_r_auto[which(is.na(gt_r_auto) == TRUE, arr.ind = TRUE)] <- -99
+
+  # Change matrix to list for genotypes
+  gt_v_auto <- asplit(gt_v_auto, 1)
+  gt_r_auto <- asplit(gt_r_auto, 1)
+
+  # Set allele frequencies
+  tmp <- set_af(data_v_auto, data_r_auto, data_af, maf)
+  af_list <- tmp[[1]]
+  af_al_list <- tmp[[2]]
+
+  # Extract mutation rates
+  myus <- rep(0, n_l)
+  for(i in 1:n_l){
+    myus[i] <- myu_all[which(locus_myu == locus_auto[i])]
+  }
+  names(myus) <- locus_auto
+
+  # Calculate average probabilities of exclusion
+  apes <- rep(0, n_l)
+  for(i in 1:n_l){
+    apes[i] <- calc_ape(af_list[[i]])
+  }
+  names(apes) <- locus_auto
+
+  # Calculate likelihood ratios
+  result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus, apes, meth_d, pd)
+
+  # Arrange result_auto
+  result_auto <- unlist(result_auto)
+  result_auto <- matrix(result_auto, nrow = length(sn_v_auto) * length(sn_r_auto), ncol = 3 * (n_l + 1), byrow = TRUE)
+  rownames(result_auto) <- NULL
+  colnames(result_auto) <- c(paste0("LikeH1_", c(locus_auto, "Total")), paste0("LikeH2_", c(locus_auto, "Total")), paste0("LR_", c(locus_auto, "Total")))
+
+  # Assign result_auto
+  assign("result_auto", result_auto, envir = env_proj)
+
+  # Assign updated input data (ordered loci)
+  assign("data_v_auto", data_v_auto, envir = env_proj)
+  assign("data_r_auto", data_r_auto, envir = env_proj)
+  assign("data_af", data_af, envir = env_proj)
+
+  # Assign parameters to the environment "env_proj"
+  assign("data_rel", data_rel, envir = env_proj)
+  assign("data_par_auto", data_par_auto, envir = env_proj)
+  assign("myus", myus, envir = env_proj)
+  assign("apes", apes, envir = env_proj)
+
+  # Update sample names in the environment "env_proj"
+  set_env_proj_sn(env_proj, FALSE, sn_v_auto, sn_r_auto)
+
+  # Assign the end sign to the environment "env_proj"
+  assign("fin_auto", TRUE, envir = env_proj)
+}
+
+
+##########################################
+# The function to analyze data for Y-STR #
+##########################################
+
+analyze_y <- function(env_proj){
+
+  # Get input data from the environment "env_proj"
+  data_v_y <- get("data_v_y", pos = env_proj)
+  data_r_y <- get("data_r_y", pos = env_proj)
+
+  # Extract loci
+  locus_y <- setdiff(names(data_v_y), c("SampleName", "Relationship"))
+
+  # The number of loci
+  n_l <- length(locus_y)
+
+  # Order loci of reference database
+  data_r_y <- data_r_y[, match(names(data_v_y), names(data_r_y)), with = FALSE]
+
+  # Change from numeric to character
+  change_columns <- names(data_v_y)
+  data_v_y[, (change_columns) := lapply(.SD, as.character), .SDcols = change_columns]
+  change_columns <- names(data_r_y)
+  data_r_y[, (change_columns) := lapply(.SD, as.character), .SDcols = change_columns]
+
+  # Extract required data from victim database
+  sn_v_y <- data_v_y[, SampleName]
+  hap_v_y <- as.matrix(data_v_y[, -"SampleName"])
+
+  # Extract required data from reference database
+  sn_r_y <- data_r_y[, SampleName]
+  hap_r_y <- as.matrix(data_r_y[, -"SampleName"])
+
+  # The NA in genotypes is replaced to "" to deal with the C++ program
+  hap_v_y[which(is.na(hap_v_y) == TRUE, arr.ind = TRUE)] <- ""
+  hap_r_y[which(is.na(hap_r_y) == TRUE, arr.ind = TRUE)] <- ""
+
+  # Change matrix to list for haplotypes
+  hap_v_y <- asplit(hap_v_y, 1)
+  hap_r_y <- asplit(hap_r_y, 1)
+
+  # Analyze data for Y-STR
+  result_y <- match_y_all(hap_v_y, hap_r_y)
+
+  # Arrange result_y
+  result_y <- unlist(result_y)
+  result_y <- matrix(result_y, nrow = length(sn_v_y) * length(sn_r_y), ncol = 3 * (n_l + 1), byrow = TRUE)
+  rownames(result_y) <- NULL
+  colnames(result_y) <- c(paste0("Mismatch_", c(locus_y, "Total")), paste0("Ignore_", c(locus_y, "Total")), paste0("MuStep_", c(locus_y, "Total")))
+
+  # Assign result_y
+  assign("result_y", result_y, envir = env_proj)
+
+  # Assign updated input data (ordered loci)
+  assign("data_v_y", data_v_y, envir = env_proj)
+  assign("data_r_y", data_r_y, envir = env_proj)
+
+  # Update sample names in the environment "env_proj"
+  set_env_proj_sn(env_proj, FALSE, sn_v_y, sn_r_y)
+
+  # Assign the end sign
+  assign("fin_y", TRUE, envir = env_proj)
+}
+
+
+##########################################
+# The function to analyze data for mtDNA #
+##########################################
+
+analyze_mt <- function(env_proj){
+
+  # Get input data from the environment "env_proj"
+  data_v_mt <- get("data_v_mt", pos = env_proj)
+  data_r_mt <- get("data_r_mt", pos = env_proj)
+
+  # Extract required data from victim database
+  sn_v_mt <- data_v_mt[, SampleName]
+  range_v_mt <- data_v_mt[, Range]
+  hap_v_mt <- strsplit(data_v_mt[, Haplotype], " ")
+
+  # Extract required data from reference database
+  sn_r_mt <- data_r_mt[, SampleName]
+  range_r_mt <- data_r_mt[, Range]
+  hap_r_mt <- strsplit(data_r_mt[, Haplotype], " ")
+
+  # Analyze data for mtDNA
+  result_mt <- match_mt_all(hap_v_mt, hap_r_mt, range_v_mt, range_r_mt)
+
+  # Arrange result_mt
+  result_mt <- unlist(result_mt)
+  result_mt <- matrix(result_mt, nrow = length(sn_v_mt) * length(sn_r_mt), ncol = 3, byrow = TRUE)
+  rownames(result_mt) <- NULL
+  colnames(result_mt) <- c("MismatchMt", "ShareRangeMt", "ShareLengthMt")
+
+  # Assign result_mt
+  assign("result_mt", result_mt, envir = env_proj)
+
+  # Update sample names in the environment "env_proj"
+  set_env_proj_sn(env_proj, FALSE, sn_v_mt, sn_r_mt)
+
+  # Assign the end sign
+  assign("fin_mt", TRUE, envir = env_proj)
+}
+
+
+########################
+# Create combined data #
+########################
+
+create_combined_data <- function(env_proj){
+
+  # Get criteria
+  criteria <- get("criteria", pos = env_proj)
+
+  # Extract criteria
+  min_lr_auto <- criteria$Value[criteria$Criteria == "min_lr_auto"]
+  max_mismatch_y <- criteria$Value[criteria$Criteria == "max_mismatch_y"]
+  max_ignore_y <- criteria$Value[criteria$Criteria == "max_ignore_y"]
+  max_mustep_y <- criteria$Value[criteria$Criteria == "max_mustep_y"]
+  min_share_mt <- criteria$Value[criteria$Criteria == "min_share_mt"]
+  max_mismatch_mt <- criteria$Value[criteria$Criteria == "max_mismatch_mt"]
+
+  # Get all sample names from the environment "env_proj"
+  sn_v_all <- get("sn_v_all", pos = env_proj)
+  sn_r_all <- get("sn_r_all", pos = env_proj)
+
+  # The number of samples in all database
+  n_v_all <- length(sn_v_all)
+  n_r_all <- length(sn_r_all)
+
+  # Get the end-sign of the analysis from the environment "env_proj"
+  fin_auto <- get("fin_auto", pos = env_proj)
+  fin_y <- get("fin_y", pos = env_proj)
+  fin_mt <- get("fin_mt", pos = env_proj)
+
+  # Extract required data for autosomal STR
+  if(fin_auto){
+
+    # Get input data for autosomal STR from the environment "env_proj"
+    data_v_auto <- get("data_v_auto", pos = env_proj)
+    data_r_auto <- get("data_r_auto", pos = env_proj)
+
+    # Get results
+    result_auto <- get("result_auto", pos = env_proj)
+
+    # Extract locus names
+    locus_auto <- setdiff(names(data_v_auto), c("SampleName", "Relationship"))
+  }else{
+
+    # Define locus names
+    locus_auto <- character(0)
+  }
+
+  # Extract required data for Y-STR
+  if(fin_y){
+
+    # Get input data for Y-STR from the environment "env_proj"
+    data_v_y <- get("data_v_y", pos = env_proj)
+    data_r_y <- get("data_r_y", pos = env_proj)
+
+    # Get results
+    result_y <- get("result_y", pos = env_proj)
+
+    # Extract locus names
+    locus_y <- setdiff(names(data_v_y), c("SampleName", "Relationship"))
+  }else{
+
+    # Define locus names
+    locus_y <- character(0)
+  }
+
+  # Extract required data for mtDNA
+  if(fin_mt){
+
+    # Get input data for mtDNA from the environment "env_proj"
+    data_v_mt <- get("data_v_mt", pos = env_proj)
+    data_r_mt <- get("data_r_mt", pos = env_proj)
+
+    # Get results
+    result_mt <- get("result_mt", pos = env_proj)
+  }
+
+  # Define a matrix for saving all results
+  result_all <- matrix("", nrow = n_v_all * n_r_all, ncol = 3 * (length(locus_auto) + 1) + 3 * (length(locus_y) + 1) + 9)
+
+  # Define column names for result_all
+  cn_result_all <- c("Victim", "Reference", "AssumedRel",
+                     paste0("LikeH1_", c(locus_auto, "Total")), paste0("LikeH2_", c(locus_auto, "Total")), paste0("LR_", c(locus_auto, "Total")),
+                     paste0("Mismatch_", c(locus_y, "Total")), paste0("Ignore_", c(locus_y, "Total")), paste0("MuStep_", c(locus_y, "Total")),
+                     "MismatchMt", "ShareRangeMt", "ShareLengthMt",
+                     "EstimatedRel", "Paternal", "Maternal")
+
+  # Record all sample names
+  result_all[, 1] <- rep(sn_v_all, n_r_all)
+  result_all[, 2] <- as.vector(sapply(sn_r_all, rep, n_v_all))
+
+  # Record results for autosomal STR
+  if(fin_auto){
+    pos_sn_auto <- search_pos_sn_comb(result_all[, 1], result_all[, 2], data_v_auto[, SampleName], data_r_auto[, SampleName]) + 1
+    result_all[pos_sn_auto, 3] <- as.character(sapply(data_r_auto[, Relationship], rep, nrow(data_v_auto)))
+    result_all[pos_sn_auto, c(grep("LikeH1_", cn_result_all), grep("LikeH2_", cn_result_all), grep("LR_", cn_result_all))] <- result_auto
+  }
+
+  # Record results for Y-STR
+  if(fin_y){
+    pos_sn_y <- search_pos_sn_comb(result_all[, 1], result_all[, 2], data_v_y[, SampleName], data_r_y[, SampleName]) + 1
+    result_all[pos_sn_y, c(grep("Mismatch_", cn_result_all), grep("Ignore_", cn_result_all), grep("MuStep_", cn_result_all))] <- result_y
+  }
+
+  # Record results for mtDNA
+  if(fin_mt){
+    pos_sn_mt <- search_pos_sn_comb(result_all[, 1], result_all[, 2], data_v_mt[, SampleName], data_r_mt[, SampleName]) + 1
+    result_all[pos_sn_mt, is.element(cn_result_all, c("MismatchMt", "ShareRangeMt", "ShareLengthMt"))] <- result_mt
+  }
+
+  # Record estimated relationships
+  pos_meet_criteria_auto <- which(as.numeric(result_all[, "LR_Total"]) >= min_lr_auto)
+  result_all[pos_meet_criteria_auto, "EstimatedRel"] <- result_all[pos_meet_criteria_auto, "AssumedRel"]
+
+  # Record paternal relationships
+  bool_meet_criteria_y <- matrix(FALSE, nrow(result_all), 3)
+  bool_meet_criteria_y[, 1] <- as.numeric(result_all[, "Mismatch_Total"]) <= max_mismatch_y
+  bool_meet_criteria_y[, 2] <- as.numeric(result_all[, "Ignore_Total"]) <= max_ignore_y
+  bool_meet_criteria_y[, 3] <- as.numeric(result_all[, "MuStep_Total"]) <= max_mustep_y && as.numeric(result_all[, "MuStep_Total"]) %% 1 == 0
+  pos_meet_criteria_y <- which(apply(bool_meet_criteria_y, 1, all))
+  result_all[pos_meet_criteria_y, "Paternal"] <- "support"
+
+  # Record maternal relationships
+  bool_meet_criteria_mt <- matrix(FALSE, nrow(result_all), 2)
+  bool_meet_criteria_mt[, 1] <- as.numeric(result_all[, "MismatchMt"]) <= max_mismatch_mt
+  bool_meet_criteria_mt[, 2] <- as.numeric(result_all[, "ShareLengthMt"]) >= min_share_mt
+  pos_meet_criteria_mt <- which(apply(bool_meet_criteria_mt, 1, all))
+  result_all[pos_meet_criteria_mt, "Maternal"] <- "support"
+
+  # Create data.table for all results
+  dt_result <- as.data.frame(result_all)
+  setDT(dt_result)
+  names(dt_result) <- cn_result_all
+
+  # Assign data table for all results
+  assign("dt_result", dt_result, envir = env_proj)
+}
+
+
+####################################
+# The function to search relatives #
+####################################
+
+search_rel <- function(env_proj, env_gui){
+
+  # Check whether all required data is loaded or not
+  error_message <- check_error(env_proj)
   if(error_message != ""){
     tkmessageBox(message = error_message, icon = "error", type = "ok")
   }else{
 
-    #################################
-    # Analysis of the autosomal STR #
-    #################################
+    # Load criteria
+    criteria <- fread(paste0(path_pack, "/extdata/parameters/criteria.csv"))
+    assign("criteria", criteria, envir = env_proj)
 
-    if(!fin_auto && bool_check_auto){
-
-      # The number of loci
-      n_l <- length(locus_v_auto)
-
-      # Order loci of each database
-      pos_v <- rep(0, 2 * n_l + 1)
-      pos_r <- rep(0, 2 * n_l + 2)
-      pos_af <- rep(0, n_l + 1)
-
-      pos_v[1] <- which(is.element(names(data_v_auto), "SampleName"))
-      pos_r[1] <- which(is.element(names(data_r_auto), "SampleName"))
-      pos_r[2] <- which(is.element(names(data_r_auto), "Relationship"))
-      pos_af[1] <- which(is.element(names(data_af), "Allele"))
-      for(i in 1:n_l){
-        pos_v[c(2 * i, 2 * i + 1)] <- which(is.element(names(data_v_auto), locus_v_auto[i]))
-        pos_r[c(2 * i + 1, 2 * i + 2)] <- which(is.element(names(data_r_auto), locus_v_auto[i]))
-        pos_af[i + 1] <- which(is.element(names(data_af), locus_v_auto[i]))
-      }
-
-      data_v_auto <- data_v_auto[, pos_v, with = FALSE]
-      data_r_auto <- data_r_auto[, pos_r, with = FALSE]
-      data_af <- data_af[, pos_af, with = FALSE]
-
-      # Extract required data from victim database
-      sn_v_auto <- data_v_auto[, SampleName]
-      gt_v_auto <- as.matrix(data_v_auto[, -"SampleName"])
-
-      # Extract required data from reference database
-      sn_r_auto <- data_r_auto[, SampleName]
-      assumed_rel_all <- data_r_auto[, Relationship]
-      gt_r_auto <- as.matrix(data_r_auto[, -c("SampleName", "Relationship")])
-
-      # The NA in genotypes is replaced to -99 to deal with the C++ program
-      gt_v_auto[which(is.na(gt_v_auto) == TRUE, arr.ind = TRUE)] <- -99
-      gt_r_auto[which(is.na(gt_r_auto) == TRUE, arr.ind = TRUE)] <- -99
-
-      # Change matrix to list for genotypes
-      gt_v_auto <- asplit(gt_v_auto, 1)
-      gt_r_auto <- asplit(gt_r_auto, 1)
-
-      # Set allele frequencies
-      tmp <- set_af(data_v_auto, data_r_auto, data_af, maf)
-      af_list <- tmp[[1]]
-      af_al_list <- tmp[[2]]
-
-      # Extract mutation rates
-      myus <- rep(0, n_l)
-      for(i in 1:n_l){
-        myus[i] <- myu_all[which(locus_myu == locus_v_auto[i])]
-      }
-      names(myus) <- locus_v_auto
-
-      # Calculate average probabilities of exclusion
-      apes <- rep(0, n_l)
-      for(i in 1:n_l){
-        apes[i] <- calc_ape(af_list[[i]])
-      }
-      names(apes) <- locus_v_auto
-
-      # Define objects for saving results
-      result_assumed_rel <- as.character(sapply(assumed_rel_all, rep, nrow(data_v_auto)))
-
-      result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus, apes, meth_d, pd)
-      result_auto <- t(data.frame(lapply(result_auto, unlist)))
-      rownames(result_auto) <- NULL
-
-      # Assign results to the environment "env_proj"
-      assign("result_sn_v_auto", result_sn_v_auto, envir = env_proj)
-      assign("result_sn_r_auto", result_sn_r_auto, envir = env_proj)
-      assign("result_assumed_rel", result_assumed_rel, envir = env_proj)
-      assign("result_auto", result_auto, envir = env_proj)
-
-      # Update sample names
-      set_env_proj_sn(env_proj, FALSE, sn_v_auto, sn_r_auto)
-
-      # Assign updated input data (ordered loci)
-      assign("data_v_auto", data_v_auto, envir = env_proj)
-      assign("data_r_auto", data_r_auto, envir = env_proj)
-      assign("data_af", data_af, envir = env_proj)
-
-      # Assign parameters to the environment "env_proj"
-      assign("myu_all", myu_all, envir = env_proj)
-      assign("pibds_rel", pibds_rel, envir = env_proj)
-      assign("maf", maf, envir = env_proj)
-      assign("meth_d", meth_d, envir = env_proj)
-      assign("pd", pd, envir = env_proj)
-
-      # Assign mutation rates to the environment "env_proj"
-      assign("myus", myus, envir = env_proj)
-
-      # Assign the average probability of exclusion to the environment "env_proj"
-      assign("apes", apes, envir = env_proj)
-
-      # Assign the end sign to the environment "env_proj"
-      assign("fin_auto", TRUE, envir = env_proj)
+    # Analyze data for autosomal STR
+    if(!fin_auto){
+      analyze_auto(env_proj)
     }
 
-    #########################
-    # Analysis of the Y-STR #
-    #########################
-
-    if(!fin_y && bool_check_y){
-
-      # Order loci of each database
-      data_r_y <- data_r_y[, match(c("SampleName", locus_v_y), c("SampleName", locus_r_y)), with = FALSE]
-
-      # Change from numeric to character
-      change_columns <- names(data_v_y)
-      data_v_y[, (change_columns) := lapply(.SD, as.character), .SDcols = change_columns]
-      change_columns <- names(data_r_y)
-      data_r_y[, (change_columns) := lapply(.SD, as.character), .SDcols = change_columns]
-
-      # Extract required data from victim database
-      sn_v_y <- data_v_y[, SampleName]
-      hap_v_y <- as.matrix(data_v_y[, -"SampleName"])
-
-      # Extract required data from reference database
-      sn_r_y <- data_r_y[, SampleName]
-      hap_r_y <- as.matrix(data_r_y[, -"SampleName"])
-
-      # The NA in genotypes is replaced to "" to deal with the C++ program
-      hap_v_y[which(is.na(hap_v_y) == TRUE, arr.ind = TRUE)] <- ""
-      hap_r_y[which(is.na(hap_r_y) == TRUE, arr.ind = TRUE)] <- ""
-
-      # Change matrix to list for haplotypes
-      hap_v_y <- asplit(hap_v_y, 1)
-      hap_r_y <- asplit(hap_r_y, 1)
-
-      # Define objects for saving results
-      result_sn_v_y <- rep(sn_v_y, nrow(data_r_y))
-      result_sn_r_y <- as.character(sapply(sn_r_y, rep, nrow(data_v_y)))
-
-      result_y <- match_y_all(hap_v_y, hap_r_y)
-      result_y <- t(data.frame(lapply(result_y, unlist)))
-      rownames(result_y) <- NULL
-
-      # Assign results to the environment "env_proj"
-      assign("result_sn_v_y", result_sn_v_y, envir = env_proj)
-      assign("result_sn_r_y", result_sn_r_y, envir = env_proj)
-      assign("result_y", result_y, envir = env_proj)
-
-      # Update sample names in the environment "env_proj"
-      set_env_proj_sn(env_proj, FALSE, sn_v_y, sn_r_y)
-
-      # Assign updated input data (ordered loci)
-      assign("data_v_y", data_v_y, envir = env_proj)
-      assign("data_r_y", data_r_y, envir = env_proj)
-
-      # Assign the end sign
-      assign("fin_y", TRUE, envir = env_proj)
+    # Analyze data for Y-STR
+    if(!fin_y){
+      analyze_y(env_proj)
     }
 
-    #########################
-    # Analysis of the mtDNA #
-    #########################
-
-    if(!fin_mt && bool_check_mt){
-
-      # Extract required data from victim database
-      sn_v_mt <- data_v_mt[, SampleName]
-      range_v_mt <- data_v_mt[, Range]
-      hap_v_mt <- strsplit(data_v_mt[, Haplotype], " ")
-
-      # Extract required data from reference database
-      sn_r_mt <- data_r_mt[, SampleName]
-      range_r_mt <- data_r_mt[, Range]
-      hap_r_mt <- strsplit(data_r_mt[, Haplotype], " ")
-
-      # Define objects for saving results
-      result_sn_v_mt <- rep(sn_v_mt, nrow(data_r_mt))
-      result_sn_r_mt <- as.character(sapply(sn_r_mt, rep, nrow(data_v_mt)))
-
-      result_mt <- match_mt_all(hap_v_mt, hap_r_mt, range_v_mt, range_r_mt)
-      result_mt <- t(data.frame(result_mt))
-      rownames(result_mt) <- NULL
-
-      # Assign results to the environment "env_proj"
-      assign("result_sn_v_mt", result_sn_v_mt, envir = env_proj)
-      assign("result_sn_r_mt", result_sn_r_mt, envir = env_proj)
-      assign("result_mt", result_mt, envir = env_proj)
-
-      # Update sample names in the environment "env_proj"
-      set_env_proj_sn(env_proj, FALSE, sn_v_mt, sn_r_mt)
-
-      # Assign the end sign
-      assign("fin_mt", TRUE, envir = env_proj)
+    # Analyze data for mtDNA
+    if(!fin_mt){
+      analyze_mt(env_proj)
     }
 
-    ###########################
-    # Create combined results #
-    ###########################
+    # Create combined data
+    create_combined_data(env_proj)
 
-    # Extract criteria
-    min_lr_auto <- criteria$Value[criteria$Criteria == "min_lr_auto"]
-    max_mismatch_y <- criteria$Value[criteria$Criteria == "max_mismatch_y"]
-    max_ignore_y <- criteria$Value[criteria$Criteria == "max_ignore_y"]
-    max_mustep_y <- criteria$Value[criteria$Criteria == "max_mustep_y"]
-    min_share_mt <- criteria$Value[criteria$Criteria == "min_share_mt"]
-    max_mismatch_mt <- criteria$Value[criteria$Criteria == "max_mismatch_mt"]
-
-    # Get sample names from the environment "env_proj"
-    sn_v_all <- get("sn_v_all", pos = env_proj)
-    sn_r_all <- get("sn_r_all", pos = env_proj)
-
-    # The number of samples in all database
-    n_v_all <- length(sn_v_all)
-    n_r_all <- length(sn_r_all)
-
-    result_all <- matrix("", n_v_all * n_r_all, ncol(result_auto) + ncol(result_y) + 9)
-    cn_result_all <- c("Victim", "Reference", "AssumedRel",
-                       paste0("LikeH1_", c(locus_v_auto, "Total")), paste0("LikeH2_", c(locus_v_auto, "Total")), paste0("LR_", c(locus_v_auto, "Total")),
-                       paste0("Mismatch_", c(locus_v_y, "Total")), paste0("Ignore_", c(locus_v_y, "Total")), paste0("MuStep_", c(locus_v_y, "Total")),
-                       "MismatchMt", "ShareRangeMt", "ShareLengthMt",
-                       "EstimatedRel", "Paternal", "Maternal")
-
-    result_all[, 1] <- rep(sn_v_all, n_r_all)
-    result_all[, 2] <- as.vector(sapply(sn_r_all, rep, n_v_all))
-
-    if(fin_auto){
-      pos_sn_auto <- search_pos_sn_comb(result_all[, 1], result_all[, 2], sn_v_auto, sn_r_auto) + 1
-      result_all[pos_sn_auto, 3] <- result_assumed_rel
-      result_all[pos_sn_auto, c(grep("LikeH1_", cn_result_all), grep("LikeH2_", cn_result_all), grep("LR_", cn_result_all))] <- result_auto
-    }
-
-    if(fin_y){
-      pos_sn_y <- search_pos_sn_comb(result_all[, 1], result_all[, 2], sn_v_y, sn_r_y) + 1
-      result_all[pos_sn_y, c(grep("Mismatch_", cn_result_all), grep("Ignore_", cn_result_all), grep("MuStep_", cn_result_all))] <- result_y
-    }
-
-    if(fin_mt){
-      pos_sn_mt <- search_pos_sn_comb(result_all[, 1], result_all[, 2], sn_v_mt, sn_r_mt) + 1
-      result_all[pos_sn_mt, is.element(cn_result_all, c("MismatchMt", "ShareRangeMt", "ShareLengthMt"))] <- result_mt
-    }
-
-    dt_result <- as.data.frame(result_all)
-    setDT(dt_result)
-    names(dt_result) <- cn_result_all
-
-    # Assign criteria
-    assign("min_lr_auto", min_lr_auto, envir = env_proj)
-    assign("max_mismatch_y", max_mismatch_y, envir = env_proj)
-    assign("max_ignore_y", max_ignore_y, envir = env_proj)
-    assign("max_mustep_y", max_mustep_y, envir = env_proj)
-    assign("min_share_mt", min_share_mt, envir = env_proj)
-    assign("max_mismatch_mt", max_mismatch_mt, envir = env_proj)
+    # Make tab2
+    make_tab2(env_proj, env_gui)
   }
-  # dt["a"] # キー列による行の検索（高速）
 }
