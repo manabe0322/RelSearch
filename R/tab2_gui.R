@@ -267,6 +267,8 @@ make_tab2 <- function(env_proj, env_gui){
 
     # Get the data table for all results
     dt_result <- get("dt_result", dt_result, pos = env_proj)
+
+    dt_display <- dt_result[, list(Victim, Reference, EstimatedRel, Paternal, Maternal)]
     # dt["a"] # キー列による行の検索（高速）
 
     # Reset frame_tab2
