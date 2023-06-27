@@ -234,6 +234,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// is_integer
+bool is_integer(double x);
+RcppExport SEXP _relsearch_is_integer(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(is_integer(x));
+    return rcpp_result_gen;
+END_RCPP
+}
 // extract_pos_mt
 std::vector<int> extract_pos_mt(std::string range);
 RcppExport SEXP _relsearch_extract_pos_mt(SEXP rangeSEXP) {
@@ -307,17 +318,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// is_integer
-bool is_integer(double x);
-RcppExport SEXP _relsearch_is_integer(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< double >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(is_integer(x));
-    return rcpp_result_gen;
-END_RCPP
-}
 // calc_mu_step
 int calc_mu_step(std::vector<double> v_al, std::vector<double> r_al);
 RcppExport SEXP _relsearch_calc_mu_step(SEXP v_alSEXP, SEXP r_alSEXP) {
@@ -372,13 +372,13 @@ static const R_CallMethodDef CallEntries[] = {
     {"_relsearch_search_pos_string", (DL_FUNC) &_relsearch_search_pos_string, 2},
     {"_relsearch_search_pos_string_all", (DL_FUNC) &_relsearch_search_pos_string_all, 2},
     {"_relsearch_extract_integer", (DL_FUNC) &_relsearch_extract_integer, 1},
+    {"_relsearch_is_integer", (DL_FUNC) &_relsearch_is_integer, 1},
     {"_relsearch_extract_pos_mt", (DL_FUNC) &_relsearch_extract_pos_mt, 1},
     {"_relsearch_extract_pos_mt_vr", (DL_FUNC) &_relsearch_extract_pos_mt_vr, 2},
     {"_relsearch_make_share_range", (DL_FUNC) &_relsearch_make_share_range, 1},
     {"_relsearch_match_mt", (DL_FUNC) &_relsearch_match_mt, 4},
     {"_relsearch_match_mt_all", (DL_FUNC) &_relsearch_match_mt_all, 4},
     {"_relsearch_obtain_al", (DL_FUNC) &_relsearch_obtain_al, 1},
-    {"_relsearch_is_integer", (DL_FUNC) &_relsearch_is_integer, 1},
     {"_relsearch_calc_mu_step", (DL_FUNC) &_relsearch_calc_mu_step, 2},
     {"_relsearch_match_y", (DL_FUNC) &_relsearch_match_y, 2},
     {"_relsearch_match_y_all", (DL_FUNC) &_relsearch_match_y_all, 2},

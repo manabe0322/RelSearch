@@ -639,11 +639,13 @@ analyze_mt <- function(env_proj){
   sn_v_mt <- data_v_mt[, SampleName]
   range_v_mt <- data_v_mt[, Range]
   hap_v_mt <- strsplit(data_v_mt[, Haplotype], " ")
+  hap_v_mt <- lapply(hap_v_mt, setdiff, "")
 
   # Extract required data from reference database
   sn_r_mt <- data_r_mt[, SampleName]
   range_r_mt <- data_r_mt[, Range]
   hap_r_mt <- strsplit(data_r_mt[, Haplotype], " ")
+  hap_r_mt <- lapply(hap_r_mt, setdiff, "")
 
   # Analyze data for mtDNA
   result_mt <- match_mt_all(hap_v_mt, hap_r_mt, range_v_mt, range_r_mt)
@@ -838,16 +840,19 @@ search_rel <- function(env_proj, env_gui){
 
     # Analyze data for autosomal STR
     if(!fin_auto){
+      cat("Analyzing data for autosomal STR", "\n")
       analyze_auto(env_proj, env_gui)
     }
 
     # Analyze data for Y-STR
     if(!fin_y){
+      cat("Analyzing data for Y-STR", "\n")
       analyze_y(env_proj)
     }
 
     # Analyze data for mtDNA
     if(!fin_mt){
+      cat("Analyzing data for mtDNA", "\n")
       analyze_mt(env_proj)
     }
 

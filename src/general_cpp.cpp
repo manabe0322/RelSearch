@@ -102,3 +102,8 @@ int extract_integer(std::string target){
   int integer = str_to_int(target_new);
   return(integer);
 }
+
+// [[Rcpp::export]]
+bool is_integer(double x){
+  return(std::floor(x) == x);
+}

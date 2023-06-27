@@ -22,7 +22,6 @@ std::vector<int> extract_pos_mt(std::string range){
 }
 
 /*Extract shared positions between the range for victim and the range for reference (testthat)*/
-//' @export
 // [[Rcpp::export]]
 std::vector<int> extract_pos_mt_vr(std::string range_victim, std::string range_ref){
   std::vector<int> pos_mt_v = extract_pos_mt(range_victim);
@@ -35,7 +34,6 @@ std::vector<int> extract_pos_mt_vr(std::string range_victim, std::string range_r
 }
 
 /*Make shared range between query range and reference range (testthat)*/
-//' @export
 // [[Rcpp::export]]
 std::string make_share_range(std::vector<int> pos_mt_vr){
   int len = pos_mt_vr.size();
@@ -73,7 +71,6 @@ std::string make_share_range(std::vector<int> pos_mt_vr){
   return(share_range);
 }
 
-//' @export
 // [[Rcpp::export]]
 std::vector<std::string> match_mt(std::vector<std::string> profile_victim, std::string range_victim, std::vector<std::string> profile_ref, std::string range_ref){
   std::vector<int> pos_mt_vr = extract_pos_mt_vr(range_victim, range_ref);
@@ -123,7 +120,7 @@ std::vector<std::string> match_mt(std::vector<std::string> profile_victim, std::
   return(ans);
 }
 
-//' @export
+// [[Rcpp::depends(RcppProgress)]]
 // [[Rcpp::export]]
 std::vector<std::vector<std::string>> match_mt_all(std::vector<std::vector<std::string>> hap_v_mt,
                                                    std::vector<std::vector<std::string>> hap_r_mt,
@@ -132,12 +129,17 @@ std::vector<std::vector<std::string>> match_mt_all(std::vector<std::vector<std::
   int n_v = hap_v_mt.size();
   int n_r = hap_r_mt.size();
 
-  std::vector<std::vector<std::string>> result_mt(std::vector<std::vector<std::string>>(n_v * n_r, std::vector<std::string>(3)));
+  int n_vr = n_v * n_r;
+  Progress p(n_vr, true);
+
+  std::vector<std::vector<std::string>> result_mt(std::vector<std::vector<std::string>>(n_vr, std::vector<std::string>(3)));
 
   for(int i = 0; i < n_r; ++i){
     std::vector<std::string> profile_ref = hap_r_mt.at(i);
     std::string range_ref = range_r_mt[i];
     for(int j = 0; j < n_v; ++j){
+      p.increment();
+
       std::vector<std::string> profile_victim = hap_v_mt.at(j);
       std::string range_victim = range_v_mt[j];
       std::vector<std::string> ans = match_mt(profile_victim, range_victim, profile_ref, range_ref);

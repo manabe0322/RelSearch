@@ -1,3 +1,37 @@
+################################################################
+# The function to make a vector of genotypes for detailed data #
+################################################################
+
+display_gt <- function(data_gt){
+
+  # The number of loci
+  n_l <- length(data_gt) / 2
+
+  # Define a vector of genotypes for detailed data
+  gt_vec <- rep("", n_l)
+
+  # Repetitive execution for each locus
+  for(i in 1:n_l){
+
+    # Extract a genotype in one locus
+    gt <- as.numeric(data_gt[c(2 * i - 1, 2 * i)])
+
+    # Remove NA
+    gt <- gt[!is.na(gt)]
+
+    # If homozygote
+    if(length(gt) == 1){
+      gt_vec[i] <- gt
+
+      # If heterozygote
+    }else if(length(gt) == 2){
+      gt_vec[i] <- paste(gt[1], ", ", gt[2], sep = "")
+    }
+  }
+  return(gt_vec)
+}
+
+
 #############################
 # The function to make tab2 #
 #############################
@@ -11,6 +45,213 @@ make_tab2 <- function(env_proj, env_gui){
 
   if(any(fin_auto, fin_y, fin_mt)){
 
+    ###########################################################
+    # The function to create displayed data for autosomal STR #
+    ###########################################################
+
+    create_display_auto <- function(sn_v_select, sn_r_select){
+
+      if(fin_auto){
+
+        # Get input data for autosomal STR from the environment "env_proj"
+        data_v_auto <- get("data_v_auto", pos = env_proj)
+        data_r_auto <- get("data_r_auto", pos = env_proj)
+
+        # Set key for each input data
+        setkey(data_v_auto, SampleName)
+        setkey(data_r_auto, SampleName)
+
+        # Extract all results for the selected data
+        result_selected <- dt_result[.(sn_v_select, sn_r_select)]
+        cn_result <- names(result_selected)
+
+        # Extract genotypes for the selected data
+        data_v_auto_select <- data_v_auto[.(sn_v_select), nomatch = NULL]
+        data_r_auto_select <- data_r_auto[.(sn_r_select), nomatch = NULL]
+
+        # Create displayed data
+        if(nrow(data_v_auto_select) == 1 && nrow(data_r_auto_select) == 1){
+
+          # Victim profile
+          prof_v_select <- as.numeric(data_v_auto_select[, -"SampleName", with = FALSE])
+          prof_v_display <- c(display_gt(prof_v_select), "")
+
+          # Reference profile
+          prof_r_select <- as.numeric(data_r_auto_select[, -"SampleName", with = FALSE])
+          prof_r_display <- c(display_gt(prof_r_select), "")
+
+          # Locus
+          locus_display <- gsub("LikeH1_", "", cn_result[grep("LikeH1_", cn_result)])
+
+          # Likelihood of H1
+          like_h1_display <- as.numeric(result_selected[, grep("LikeH1_", cn_result), with = FALSE])
+
+          # Likelihood of H2
+          like_h2_display <- as.numeric(result_selected[, grep("LikeH2_", cn_result), with = FALSE])
+
+          # LR
+          lr_display <- as.numeric(result_selected[, grep("LR_", cn_result), with = FALSE])
+
+          # Create data table
+          dt_auto_display <- data.table(Locus = locus_display, Profile_V = prof_v_display, Profile_R = prof_r_display, LikeH1 = like_h1_display, LikeH2 = like_h2_display, LR = lr_display)
+
+        }else{
+          dt_auto_display <- NULL
+        }
+      }else{
+        dt_auto_display <- NULL
+      }
+      return(dt_auto_display)
+    }
+
+
+    ###################################################
+    # The function to create displayed data for Y-STR #
+    ###################################################
+
+    create_display_y <- function(sn_v_select, sn_r_select){
+
+      if(fin_y){
+
+        # Get input data for Y-STR from the environment "env_proj"
+        data_v_y <- get("data_v_y", pos = env_proj)
+        data_r_y <- get("data_r_y", pos = env_proj)
+
+        # Set key for each input data
+        setkey(data_v_y, SampleName)
+        setkey(data_r_y, SampleName)
+
+        # Extract all results for the selected data
+        result_selected <- dt_result[.(sn_v_select, sn_r_select)]
+        cn_result <- names(result_selected)
+
+        # Extract haplotypes for the selected data
+        data_v_y_select <- data_v_y[.(sn_v_select), nomatch = NULL]
+        data_r_y_select <- data_r_y[.(sn_r_select), nomatch = NULL]
+
+        # Create displayed data
+        if(nrow(data_v_y_select) == 1 && nrow(data_r_y_select) == 1){
+
+          # Victim profile
+          prof_v_display <- c(as.character(data_v_y_select[, -"SampleName", with = FALSE]), "")
+
+          # Reference profile
+          prof_r_display <- c(as.character(data_r_y_select[, -"SampleName", with = FALSE]), "")
+
+          # Locus
+          locus_display <- gsub("Mismatch_", "", cn_result[grep("Mismatch_", cn_result)])
+
+          # Mismatched loci
+          mismatch_y_display <- as.character(result_selected[, grep("Mismatch_", cn_result), with = FALSE])
+          mismatch_y_display[mismatch_y_display == 0] <- ""
+          if(mismatch_y_display[length(mismatch_y_display)] == ""){
+            mismatch_y_display[length(mismatch_y_display)] <- "0"
+          }
+
+          # Ignored loci
+          ignore_y_display <- as.character(result_selected[, grep("Ignore_", cn_result), with = FALSE])
+          ignore_y_display[ignore_y_display == 0] <- ""
+          if(ignore_y_display[length(ignore_y_display)] == ""){
+            ignore_y_display[length(ignore_y_display)] <- "0"
+          }
+
+          # Mutational step
+          mustep_y_display <- as.character(result_selected[, grep("MuStep_", cn_result), with = FALSE])
+
+          # Create data table
+          dt_y_display <- data.table(Locus = locus_y_display, Profile_V = prof_v_display, Profile_R = prof_r_display, Mismatch = mismatch_y_display, Ignore = ignore_y_display, MuStep = mustep_y_display)
+
+        }else{
+          dt_y_display <- NULL
+        }
+      }else{
+        dt_y_display <- NULL
+      }
+      return(dt_y_display)
+    }
+
+
+    ###################################################
+    # The function to create displayed data for mtDNA #
+    ###################################################
+
+    create_display_mt <- function(sn_v_select, sn_r_select){
+
+      if(fin_mt){
+
+        # Get input data for mtDNA from the environment "env_proj"
+        data_v_mt <- get("data_v_mt", pos = env_proj)
+        data_r_mt <- get("data_r_mt", pos = env_proj)
+
+        # Set key for each input data
+        setkey(data_v_mt, SampleName)
+        setkey(data_r_mt, SampleName)
+
+        # Extract haplotypes for the selected data
+        data_v_mt_select <- data_v_mt[.(sn_v_select), nomatch = NULL]
+        data_r_mt_select <- data_r_mt[.(sn_r_select), nomatch = NULL]
+
+        # Create displayed data
+        if(nrow(data_v_mt_select) == 1 && nrow(data_r_mt_select) == 1){
+
+          # Victim types
+          type_v <- as.character(data_v_mt_select[, -c("SampleName", "Range"), with = FALSE])
+          type_v <- strsplit(type_v, " ")[[1]]
+          type_v <- setdiff(type_v, "")
+          type_v <- type_v[order(sapply(type_v, extract_integer))]
+
+          # Reference types
+          type_r <- as.character(data_r_mt_select[, -c("SampleName", "Range"), with = FALSE])
+          type_r <- strsplit(type_r, " ")[[1]]
+          type_r <- setdiff(type_r, "")
+          type_r <- type_r[order(sapply(type_r, extract_integer))]
+
+          # Victim or Reference types
+          type_vr <- union(type_v, type_r)
+          type_vr <- type_vr[order(sapply(type_vr, extract_integer))]
+          n_type_vr <- length(type_vr)
+
+          # Common positions between victim and reference
+          pos_mt_vr <- extract_pos_mt_vr(data_v_mt_select[, Range], data_r_mt_select[, Range])
+
+          # Victim types (displayed)
+          type_v_display <- rep("", n_type_vr)
+          type_v_display[is.element(type_vr, type_v)] <- type_v
+
+          # Reference types (displayed)
+          type_r_display <- rep("", n_type_vr)
+          type_r_display[is.element(type_vr, type_r)] <- type_r
+
+          # Bool for common range
+          pos_common <- is.element(extract_integer(type_vr), pos_mt_vr)
+
+          # Out of range (displayed)
+          out_range_display <- rep("", n_type_vr)
+          out_range_display[!pos_common] <- "x"
+
+          # Bool for mismatch
+          pos_mismatch <- apply(rbind(!is.element(type_vr, type_v), !is.element(type_vr, type_r)), 2, any)
+
+          # Mismatch (displayed)
+          mismatch_mt_display <- rep("", n_type_vr)
+          mismatch_mt_display[apply(rbind(pos_common, pos_mismatch), 2, all)] <- "x"
+
+          # Create data table
+          dt_mt_display <- data.table(Type_Victim = type_v_display, Type_Reference = type_r_display, OutRange = out_range_display, Mismatch = mismatch_mt_display)
+        }else{
+          dt_mt_display <- NULL
+        }
+      }else{
+        dt_mt_display <- NULL
+      }
+      return(dt_mt_display)
+    }
+
+
+    #######################################
+    # The function to show data in detail #
+    #######################################
+
     show_detail <- function(){
 
       # Get the multi-list box for displayed data from the environment "env_result"
@@ -23,242 +264,28 @@ make_tab2 <- function(env_proj, env_gui){
       # If the user selects one line
       }else{
 
-        # Get displayed data from the environment "env_result"
-        data_display <- get("data_display", pos = env_result)
-
-        # Extract selected data
+        # Index of the selected data
         pos_select <- as.numeric(tclvalue(tkcurselection(mlb_result))) + 1
-        sn_v_select <- data_display[pos_select, "Victim"]
-        sn_r_select <- data_display[pos_select, "Reference"]
-        rel_estimated_select <- data_display[pos_select, "Estimated relationship"]
-        if(rel_estimated_select == "-"){
-          rel_estimated_select <- "No data"
-        }
 
-        # Extract the result of paternal lineage
-        paternal_select <- data_display[pos_select, "Paternal lineage"]
-        if(paternal_select == "-"){
-          paternal_select <- "No data"
-          y_satisfy <- "-"
-        }else if(paternal_select == "Support"){
-          y_satisfy <- "Yes"
-        }else{
-          y_satisfy <- "No"
-        }
+        # Get displayed data from the environment "env_result"
+        dt_display <- get("dt_display", pos = env_result)
 
-        # Extract the result of maternal lineage
-        maternal_select <- data_display[pos_select, "Maternal lineage"]
-        if(maternal_select == "-"){
-          maternal_select <- "No data"
-          mt_satisfy <- "-"
-        }else if(maternal_select == "Support"){
-          mt_satisfy <- "Yes"
-        }else{
-          mt_satisfy <- "No"
-        }
+        # Extract sample names of the selected data
+        sn_v_select <- dt_display[pos_select, Victim]
+        sn_r_select <- dt_display[pos_select, Reference]
+
+        # Create data for autosomal STR
+        dt_auto_display <- create_display_auto(sn_v_select, sn_r_select)
+
+        # Create data for Y-STR
+        dt_y_display <- create_display_y(sn_v_select, sn_r_select)
+
+        # Create data for mtDNA
+        dt_mt_display <- create_display_mt(sn_v_select, sn_r_select)
 
         # Make a top frame
         tf_detail <- tktoplevel()
-        tkwm.title(tf_detail, "Combined results in detail")
-
-        # Define frames
-        frame_detail_sn <- tkframe(tf_detail)
-        frame_detail_summary <- tkframe(tf_detail)
-        frame_detail_auto <- tkframe(tf_detail)
-        frame_detail_y <- tkframe(tf_detail)
-        frame_detail_mt <- tkframe(tf_detail)
-
-        # Define sub frames
-        frame_detail_auto_sub <- tkframe(frame_detail_auto)
-        frame_detail_y_sub <- tkframe(frame_detail_y)
-        frame_detail_mt_sub <- tkframe(frame_detail_mt)
-
-        # Define widgets for sample names
-        label_title_sn <- tklabel(frame_detail_sn, text = "Sample name", font = "Helvetica 10 bold")
-        label_sn_v_1 <- tklabel(frame_detail_sn, text = "    Victim")
-        label_sn_v_2 <- tklabel(frame_detail_sn, text = paste0(": ", sn_v_select))
-        label_sn_r_1 <- tklabel(frame_detail_sn, text = "    Reference ")
-        label_sn_r_2 <- tklabel(frame_detail_sn, text = paste0(": ", sn_r_select))
-
-        # Define widgets for summary
-        label_title_summary <- tklabel(frame_detail_summary, text = "Summary", font = "Helvetica 10 bold")
-        label_summary_rel_1 <- tklabel(frame_detail_summary, text = "    Estimated relationship")
-        label_summary_rel_2 <- tklabel(frame_detail_summary, text = paste0(": ", rel_estimated_select))
-        label_summary_pat_1 <- tklabel(frame_detail_summary, text = "    Paternal lineage")
-        label_summary_pat_2 <- tklabel(frame_detail_summary, text = paste0(": ", paternal_select))
-        label_summary_mat_1 <- tklabel(frame_detail_summary, text = "    Maternal lineage")
-        label_summary_mat_2 <- tklabel(frame_detail_summary, text = paste0(": ", maternal_select))
-
-        # Define widgets for the result of autosomal STRs
-        label_title_auto <- tklabel(frame_detail_auto, text = "STR", font = "Helvetica 10 bold")
-
-        # No result of the autosomal STRs
-        if(data_display[pos_select, 4] == "-"){
-
-          # Define a label that indicates "No data"
-          label_result_auto <- tklabel(frame_detail_auto_sub, text = "No data")
-
-          # Grid the label
-          tkgrid(label_result_auto, padx = 10, pady = 5)
-
-          # With result of the autosomal STRs
-        }else{
-
-          # Extract selected data
-          h1_select <- data_display[pos_select, "All H1"]
-          h1_select <- strsplit(h1_select, ", ")[[1]]
-          lr_select <- data_display[pos_select, "All LR"]
-          lr_select <- strsplit(lr_select, ", ")[[1]]
-          lr_select <- as.numeric(lr_select)
-
-          # Get objects from the environment "env_proj"
-          min_lr_auto <- get("min_lr_auto", pos = env_proj)
-
-          # Define a matrix for displayed LRs
-          lr_display <- matrix("", length(h1_select), 4)
-          lr_display[, 1] <- h1_select
-          lr_display[, 2] <- "Unrelated"
-          lr_display[, 3] <- sprintf('%.2e', lr_select)
-          lr_display[, 4] <- "No"
-          lr_display[which(lr_select >= min_lr_auto), 4] <- "Yes"
-
-          # Define a scrollbar for the multi-list box for LRs
-          scr_lr <- tkscrollbar(frame_detail_auto_sub, repeatinterval = 5, command = function(...) tkyview(mlb_lr, ...))
-
-          # Define a multi-list box for LRs
-          mlb_lr <- tk2mclistbox(frame_detail_auto_sub, width = 110, height = 5, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr_lr, ...))
-          tk2column(mlb_lr, "add", label = "Numerator hypothesis", width = 30)
-          tk2column(mlb_lr, "add", label = "Denominator hypothesis", width = 30)
-          tk2column(mlb_lr, "add", label = "LR", width = 30)
-          tk2column(mlb_lr, "add", label = "Satisfy criteria", width = 20)
-          tk2insert.multi(mlb_lr, "end", lr_display)
-
-          # Grid widgets
-          tkgrid(mlb_lr, scr_lr)
-          tkgrid.configure(scr_lr, rowspan = 5, sticky = "nsw")
-        }
-
-        # Define widgets for the result of the Y-STRs
-        label_title_y <- tklabel(frame_detail_y, text = "Y-STR", font = "Helvetica 10 bold")
-
-        # No result of the Y-STRs
-        if(data_display[pos_select, 5] == "-"){
-
-          # Define a label that indicates "No data"
-          label_result_y <- tklabel(frame_detail_y_sub, text = "No data")
-
-          # Grid the label
-          tkgrid(label_result_y)
-
-          # With result of the Y-STRs
-        }else{
-
-          # Get objects from the environment "env_proj"
-          max_mismatch_y <- get("max_mismatch_y", pos = env_proj)
-          max_ignore_y <- get("max_ignore_y", pos = env_proj)
-          max_mustep_y <- get("max_mustep_y", pos = env_proj)
-
-          # Extract selected data
-          y_data_select <- data_display[pos_select, "Data Y"]
-          y_data_select <- strsplit(y_data_select, ", ")[[1]]
-          y_data_select <- as.numeric(y_data_select)
-
-          # Define a matrix for displayed Y-STR results
-          y_display <- matrix("", 1, 4)
-          y_display[1, 1] <- y_data_select[1]
-          y_display[1, 2] <- y_data_select[2]
-          y_display[1, 3] <- y_data_select[3]
-          y_display[1, 4] <- y_satisfy
-
-          # Define a multi-list box for Y-STR results
-          mlb_y <- tk2mclistbox(frame_detail_y_sub, width = 110, height = 1, resizablecolumns = TRUE, selectmode = "single")
-          tk2column(mlb_y, "add", label = "Number of mismatched loci", width = 30)
-          tk2column(mlb_y, "add", label = "Number of ignored loci", width = 30)
-          tk2column(mlb_y, "add", label = "Maximum mutational step", width = 30)
-          tk2column(mlb_y, "add", label = "Satisfy criteria", width = 20)
-          tk2insert.multi(mlb_y, "end", y_display)
-
-          # Grid widgets
-          tkgrid(mlb_y)
-        }
-
-        # Define widgets for the result of the mtDNA
-        label_title_mt <- tklabel(frame_detail_mt, text = "mtDNA", font = "Helvetica 10 bold")
-
-        # No result of the mtDNA
-        if(data_display[pos_select, 6] == "-"){
-
-          # Define a label that indicates "No data"
-          label_result_mt <- tklabel(frame_detail_mt_sub, text = "No data")
-
-          # Grid the label
-          tkgrid(label_result_mt)
-
-          # With result of the Y-STRs
-        }else{
-
-          # Get objects from the environment "env_proj"
-          min_share_mt <- get("min_share_mt", envir = env_proj)
-          max_mismatch_mt <- get("max_mismatch_mt", envir = env_proj)
-
-          # Extract selected data
-          mt_data_select <- data_display[pos_select, "Data mt"]
-          mt_data_select <- strsplit(mt_data_select, ", ")[[1]]
-          mt_data_select <- as.numeric(mt_data_select)
-
-          # Define a matrix for displayed mtDNA results
-          mt_display <- matrix("", 1, 3)
-          mt_display[1, 1] <- mt_data_select[1]
-          mt_display[1, 2] <- mt_data_select[2]
-          mt_display[1, 3] <- mt_satisfy
-
-          # Define a multi-list box for Y-STR results
-          mlb_mt <- tk2mclistbox(frame_detail_mt_sub, width = 110, height = 1, resizablecolumns = TRUE, selectmode = "single")
-          tk2column(mlb_mt, "add", label = "Shared length", width = 40)
-          tk2column(mlb_mt, "add", label = "Number of mismatch", width = 40)
-          tk2column(mlb_mt, "add", label = "Satisfy criteria", width = 30)
-          tk2insert.multi(mlb_mt, "end", mt_display)
-
-          # Grid widgets
-          tkgrid(mlb_mt)
-        }
-
-        # Define widgets for the warning message
-        #label_title_warning <- tklabel(frame_detail_, text = "Warning")
-
-        # Grid widgets for sample names
-        tkgrid(label_title_sn, padx = 10, pady = 5, sticky = "w")
-        tkgrid(label_sn_v_1, label_sn_v_2, padx = 10, pady = 5, sticky = "w")
-        tkgrid(label_sn_r_1, label_sn_r_2, padx = 10, pady = 5, sticky = "w")
-
-        # Grid widgets for summary
-        tkgrid(label_title_summary, padx = 10, pady = 5, sticky = "w")
-        tkgrid(label_summary_rel_1, label_summary_rel_2, padx = 10, pady = 5, sticky = "w")
-        tkgrid(label_summary_pat_1, label_summary_pat_2, padx = 10, pady = 5, sticky = "w")
-        tkgrid(label_summary_mat_1, label_summary_mat_2, padx = 10, pady = 5, sticky = "w")
-
-        # Grid widgets for the autosomal STR
-        tkgrid(label_title_auto, padx = 10, pady = 5, sticky = "w")
-
-        # Grid widgets for the Y-STR
-        tkgrid(label_title_y, padx = 10, pady = 5, sticky = "w")
-
-        # Grid widgets for the mtDNA
-        tkgrid(label_title_mt, padx = 10, pady = 5, sticky = "w")
-
-        # tkgrid(label_title_warning, padx = 10, pady = 5, sticky = "w")
-
-        # Grid sub frames
-        tkgrid(frame_detail_auto_sub, padx = 20, pady = 5, sticky = "w")
-        tkgrid(frame_detail_y_sub, padx = 20, pady = 5, sticky = "w")
-        tkgrid(frame_detail_mt_sub, padx = 20, pady = 5, sticky = "w")
-
-        # Grid frames
-        tkgrid(frame_detail_sn, padx = 10, pady = 5, sticky = "w")
-        tkgrid(frame_detail_summary, padx = 10, pady = 5, sticky = "w")
-        tkgrid(frame_detail_auto, padx = 10, pady = 5, sticky = "w")
-        tkgrid(frame_detail_y, padx = 10, pady = 5, sticky = "w")
-        tkgrid(frame_detail_mt, padx = 10, pady = 5, sticky = "w")
+        tkwm.title(tf_detail, "Results in detail")
       }
     }
 
@@ -267,6 +294,7 @@ make_tab2 <- function(env_proj, env_gui){
 
     # Get the data table for all results
     dt_result <- get("dt_result", pos = env_proj)
+    setkey(dt_result, Victim, Reference)
 
     dt_display <- dt_result[, list(Victim, Reference, AssumedRel, LR_Total, EstimatedRel, Paternal, Maternal)]
     dt_display <- dt_display[EstimatedRel != "" | Paternal == "support" | Maternal == "support"]

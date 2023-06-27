@@ -12,12 +12,15 @@ Depends:
     R (>= 4.2.2), 
     tcltk, 
     tcltk2, 
-    ribd
+    ribd, 
+    Rcpp, 
+    RcppProgress
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 RoxygenNote: 7.2.3
 LinkingTo: 
-    Rcpp
+    Rcpp, 
+    RcppProgress
 Imports: 
-    Rcpp, data.table
+    data.table

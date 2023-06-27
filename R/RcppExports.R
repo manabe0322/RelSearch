@@ -17,12 +17,10 @@ calc_kin_like_drop <- function(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd)
     .Call(`_relsearch_calc_kin_like_drop`, vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd)
 }
 
-#' @export
 calc_kin_lr <- function(prof_victim, prof_ref, af_list, af_al_list, pibd, cons_mu, myus, apes, meth_d, pd) {
     .Call(`_relsearch_calc_kin_lr`, prof_victim, prof_ref, af_list, af_al_list, pibd, cons_mu, myus, apes, meth_d, pd)
 }
 
-#' @export
 calc_kin_lr_all <- function(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus, apes, meth_d, pd) {
     .Call(`_relsearch_calc_kin_lr_all`, gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus, apes, meth_d, pd)
 }
@@ -67,26 +65,26 @@ extract_integer <- function(target) {
     .Call(`_relsearch_extract_integer`, target)
 }
 
+is_integer <- function(x) {
+    .Call(`_relsearch_is_integer`, x)
+}
+
 extract_pos_mt <- function(range) {
     .Call(`_relsearch_extract_pos_mt`, range)
 }
 
-#' @export
 extract_pos_mt_vr <- function(range_victim, range_ref) {
     .Call(`_relsearch_extract_pos_mt_vr`, range_victim, range_ref)
 }
 
-#' @export
 make_share_range <- function(pos_mt_vr) {
     .Call(`_relsearch_make_share_range`, pos_mt_vr)
 }
 
-#' @export
 match_mt <- function(profile_victim, range_victim, profile_ref, range_ref) {
     .Call(`_relsearch_match_mt`, profile_victim, range_victim, profile_ref, range_ref)
 }
 
-#' @export
 match_mt_all <- function(hap_v_mt, hap_r_mt, range_v_mt, range_r_mt) {
     .Call(`_relsearch_match_mt_all`, hap_v_mt, hap_r_mt, range_v_mt, range_r_mt)
 }
@@ -95,20 +93,14 @@ obtain_al <- function(hap) {
     .Call(`_relsearch_obtain_al`, hap)
 }
 
-is_integer <- function(x) {
-    .Call(`_relsearch_is_integer`, x)
-}
-
 calc_mu_step <- function(v_al, r_al) {
     .Call(`_relsearch_calc_mu_step`, v_al, r_al)
 }
 
-#' @export
 match_y <- function(prof_victim, prof_ref) {
     .Call(`_relsearch_match_y`, prof_victim, prof_ref)
 }
 
-#' @export
 match_y_all <- function(hap_v_y, hap_r_y) {
     .Call(`_relsearch_match_y_all`, hap_v_y, hap_r_y)
 }

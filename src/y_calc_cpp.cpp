@@ -27,11 +27,6 @@ std::vector<double> obtain_al(std::string hap){
   }
 }
 
-// [[Rcpp::export]]
-bool is_integer(double x){
-  return(std::floor(x) == x);
-}
-
 /*Calculate mutational step between victim alleles and reference alleles (testthat)*/
 // [[Rcpp::export]]
 int calc_mu_step(std::vector<double> v_al, std::vector<double> r_al){
@@ -77,7 +72,6 @@ int calc_mu_step(std::vector<double> v_al, std::vector<double> r_al){
 }
 
 /*Matching victim and reference Y haplotypes (testthat)*/
-//' @export
 // [[Rcpp::export]]
 std::vector<std::vector<int>> match_y(std::vector<std::string> prof_victim, std::vector<std::string> prof_ref){
   int n_l = prof_victim.size();
@@ -140,7 +134,7 @@ std::vector<std::vector<int>> match_y(std::vector<std::string> prof_victim, std:
   return(ans);
 }
 
-//' @export
+// [[Rcpp::depends(RcppProgress)]]
 // [[Rcpp::export]]
 std::vector<std::vector<std::vector<int>>> match_y_all(std::vector<std::vector<std::string>> hap_v_y,
                                                        std::vector<std::vector<std::string>> hap_r_y){
@@ -148,11 +142,16 @@ std::vector<std::vector<std::vector<int>>> match_y_all(std::vector<std::vector<s
   int n_r = hap_r_y.size();
   int n_l = hap_r_y.at(0).size();
 
-  std::vector<std::vector<std::vector<int>>> result_y(n_v * n_r, std::vector<std::vector<int>>(3, std::vector<int>(n_l + 1)));
+  int n_vr = n_v * n_r;
+  Progress p(n_vr, true);
+
+  std::vector<std::vector<std::vector<int>>> result_y(n_vr, std::vector<std::vector<int>>(3, std::vector<int>(n_l + 1)));
 
   for(int i = 0; i < n_r; ++i){
     std::vector<std::string> prof_ref = hap_r_y.at(i);
     for(int j = 0; j < n_v; ++j){
+      p.increment();
+
       std::vector<std::string> prof_victim = hap_v_y.at(j);
       std::vector<std::vector<int>> ans = match_y(prof_victim, prof_ref);
 

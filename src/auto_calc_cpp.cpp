@@ -232,7 +232,6 @@ std::vector<double> calc_kin_like_drop(std::vector<double> vgt, std::vector<doub
 }
 
 /*Calculation of likelihood ratio for kinship analysis*/
-//' @export
 // [[Rcpp::export]]
 std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim, std::vector<double> prof_ref,
                                              std::vector<std::vector<double>> af_list, std::vector<std::vector<double>> af_al_list,
@@ -323,7 +322,7 @@ std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim, st
   return(ans);
 }
 
-//' @export
+// [[Rcpp::depends(RcppProgress)]]
 // [[Rcpp::export]]
 std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::vector<double>> gt_v_auto,
                                                               std::vector<std::vector<double>> gt_r_auto,
@@ -341,7 +340,10 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
   int n_r = gt_r_auto.size();
   int n_l = gt_r_auto.at(0).size();
 
-  std::vector<std::vector<std::vector<double>>> result_auto(n_v * n_r, std::vector<std::vector<double>>(3, std::vector<double>(n_l + 1)));
+  int n_vr = n_v * n_r;
+  Progress p(n_vr, true);
+
+  std::vector<std::vector<std::vector<double>>> result_auto(n_vr, std::vector<std::vector<double>>(3, std::vector<double>(n_l + 1)));
 
   for(int i = 0; i < n_r; ++i){
     std::string assumed_rel = assumed_rel_all[i];
@@ -359,6 +361,8 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
     }
 
     for(int j = 0; j < n_v; ++j){
+      p.increment();
+
       std::vector<double> prof_victim = gt_v_auto.at(j);
 
       std::vector<std::vector<double>> ans = calc_kin_lr(prof_victim, prof_ref, af_list, af_al_list, pibd, cons_mu, myus, apes, meth_d, pd);
