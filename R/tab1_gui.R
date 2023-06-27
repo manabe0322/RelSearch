@@ -789,6 +789,12 @@ create_combined_data <- function(env_proj){
   setDT(dt_result)
   names(dt_result) <- cn_result_all
 
+  # Convert column classes
+  col_change <- c(paste0("LikeH1_", c(locus_auto, "Total")), paste0("LikeH2_", c(locus_auto, "Total")), paste0("LR_", c(locus_auto, "Total")),
+                  paste0("Mismatch_", c(locus_y, "Total")), paste0("Ignore_", c(locus_y, "Total")), paste0("MuStep_", c(locus_y, "Total")),
+                  "MismatchMt", "ShareLengthMt")
+  dt_result[, (col_change) := lapply(.SD, as.numeric), .SDcols = col_change]
+
   # Assign data table for all results
   assign("dt_result", dt_result, envir = env_proj)
 }
