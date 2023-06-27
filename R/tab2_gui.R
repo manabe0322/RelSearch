@@ -266,10 +266,11 @@ make_tab2 <- function(env_proj, env_gui){
     env_result <- new.env(parent = globalenv())
 
     # Get the data table for all results
-    dt_result <- get("dt_result", dt_result, pos = env_proj)
+    dt_result <- get("dt_result", pos = env_proj)
 
-    dt_display <- dt_result[, list(Victim, Reference, EstimatedRel, Paternal, Maternal)]
-    # dt["a"] # キー列による行の検索（高速）
+    dt_display <- dt_result[, list(Victim, Reference, AssumedRel, LR_Total, EstimatedRel, Paternal, Maternal)]
+    dt_display <- dt_display[EstimatedRel != "" | Paternal == "support" | Maternal == "support"]
+    setorder(dt_display, cols = - "LR_Total", na.last = TRUE)
 
     # Reset frame_tab2
     tabs <- get("tabs", pos = env_gui)
@@ -286,13 +287,15 @@ make_tab2 <- function(env_proj, env_gui){
     scr1 <- tkscrollbar(frame_result_1, repeatinterval = 5, command = function(...) tkyview(mlb_result, ...))
 
     # Define a multi-list box (mlb_result)
-    mlb_result <- tk2mclistbox(frame_result_1, width = 90, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+    mlb_result <- tk2mclistbox(frame_result_1, width = 140, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
     tk2column(mlb_result, "add", label = "Victim", width = 10)
     tk2column(mlb_result, "add", label = "Reference", width = 10)
+    tk2column(mlb_result, "add", label = "Assumed relationship", width = 30)
+    tk2column(mlb_result, "add", label = "LR", width = 20)
     tk2column(mlb_result, "add", label = "Estimated relationship", width = 30)
     tk2column(mlb_result, "add", label = "Paternal lineage", width = 20)
     tk2column(mlb_result, "add", label = "Maternal lineage", width = 20)
-    tk2insert.multi(mlb_result, "end", data_display[, 1:6])
+    tk2insert.multi(mlb_result, "end", dt_display)
 
     # Define widgets in frame_result_2
     butt_detail <- tkbutton(frame_result_2, text = "    Show detail    ", cursor = "hand2", command = function() show_detail())
@@ -312,9 +315,12 @@ make_tab2 <- function(env_proj, env_gui){
     # Assign data to the environment variable (env_result)
     assign("mlb_result", mlb_result, envir = env_result)
     assign("scr1", scr1, envir = env_result)
-    assign("data_display", data_display, envir = env_result)
+    assign("dt_display", dt_display, envir = env_result)
 
     # Assign data to the environment variable (env_gui)
     assign("frame_tab2", frame_tab2, envir = env_gui)
+
+    # Select tab2
+    tk2notetab.select(tabs, "Results")
   }
 }

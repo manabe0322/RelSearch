@@ -238,7 +238,7 @@ make_tab1 <- function(env_proj, env_gui){
   # Frames
   tkgrid(frame_v_auto, frame_v_y, frame_v_mt, padx = 10)
   tkgrid(frame_v_title, sticky = "w")
-  tkgrid(frame_v_file, sticky = "w")
+  tkgrid(frame_v_file)
   tkgrid(frame_v, padx = 10, pady = 5, sticky = "w")
 
   #######################################
@@ -266,7 +266,7 @@ make_tab1 <- function(env_proj, env_gui){
   # Frames
   tkgrid(frame_r_auto, frame_r_y, frame_r_mt, padx = 10)
   tkgrid(frame_r_title, sticky = "w")
-  tkgrid(frame_r_file, sticky = "w")
+  tkgrid(frame_r_file)
   tkgrid(frame_r, padx = 10, pady = 5, sticky = "w")
 
   #######################################
@@ -277,12 +277,12 @@ make_tab1 <- function(env_proj, env_gui){
   tkgrid(label_af_title)
 
   # Allele frequencies
-  tkgrid(butt_af_load, pady = 5)
-  tkgrid(label_af_fn, pady = 5)
+  tkgrid(butt_af_load, pady = 5, padx = 10)
+  tkgrid(label_af_fn, pady = 5, padx = 10)
 
   # Frames
   tkgrid(frame_af_title, sticky = "w")
-  tkgrid(frame_af_file, sticky = "w")
+  tkgrid(frame_af_file)
   tkgrid(frame_af, padx = 10, pady = 5, sticky = "w")
 
   #############################
@@ -307,7 +307,7 @@ make_tab1 <- function(env_proj, env_gui){
 # The function to check loaded data #
 #####################################
 
-check_error <- function(env_proj){
+check_error <- function(env_proj, env_gui){
 
   # Define an object to save an error message
   error_message <- ""
@@ -337,10 +337,11 @@ check_error <- function(env_proj){
   # All required data for at least one marker type is loaded
   }else{
 
-    # Get the end-sign of the analysis from the environment "env_proj"
-    fin_auto <- get("fin_auto", pos = env_proj)
-    fin_y <- get("fin_y", pos = env_proj)
-    fin_mt <- get("fin_mt", pos = env_proj)
+    # Get the package path
+    path_pack <- get("path_pack", pos = env_gui)
+
+    # Get file names in the folder "parameters"
+    fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
 
     # If the file 'criteria.csv' is not found
     if(!is.element("criteria.csv", fn_par)){
@@ -349,8 +350,10 @@ check_error <- function(env_proj){
     # If the file 'criteria.csv' is found
     }else{
 
-      # Load criteria
-      criteria <- fread(paste0(path_pack, "/extdata/parameters/criteria.csv"))
+      # Get the end-sign of the analysis from the environment "env_proj"
+      fin_auto <- get("fin_auto", pos = env_proj)
+      fin_y <- get("fin_y", pos = env_proj)
+      fin_mt <- get("fin_mt", pos = env_proj)
 
       # All required data for the autosomal STR is loaded
       if(!fin_auto && bool_check_auto){
@@ -362,6 +365,10 @@ check_error <- function(env_proj){
           locus_v_auto <- setdiff(names(data_v_auto), c("SampleName", "Relationship"))
           locus_r_auto <- setdiff(names(data_r_auto), c("SampleName", "Relationship"))
           locus_af <- setdiff(names(data_af), "Allele")
+
+          # Load mutation rates
+          data_myu <- fread(paste0(path_pack, "/extdata/parameters/myu.csv"))
+          locus_myu <- data_myu[, Marker]
 
           # Load information on relationship
           data_rel <- fread(paste0(path_pack, "/extdata/parameters/rel.csv"))
@@ -435,12 +442,15 @@ check_error <- function(env_proj){
 # The function to analyze data for autosomal STR #
 ##################################################
 
-analyze_auto <- function(env_proj){
+analyze_auto <- function(env_proj, env_gui){
 
   # Get input data from the environment "env_proj"
   data_v_auto <- get("data_v_auto", pos = env_proj)
   data_r_auto <- get("data_r_auto", pos = env_proj)
   data_af <- get("data_af", pos = env_proj)
+
+  # Get the package path
+  path_pack <- get("path_pack", pos = env_gui)
 
   # Load mutation rates
   data_myu <- fread(paste0(path_pack, "/extdata/parameters/myu.csv"))
@@ -741,6 +751,7 @@ create_combined_data <- function(env_proj){
                      paste0("Mismatch_", c(locus_y, "Total")), paste0("Ignore_", c(locus_y, "Total")), paste0("MuStep_", c(locus_y, "Total")),
                      "MismatchMt", "ShareRangeMt", "ShareLengthMt",
                      "EstimatedRel", "Paternal", "Maternal")
+  colnames(result_all) <- cn_result_all
 
   # Record all sample names
   result_all[, 1] <- rep(sn_v_all, n_r_all)
@@ -770,10 +781,11 @@ create_combined_data <- function(env_proj){
   result_all[pos_meet_criteria_auto, "EstimatedRel"] <- result_all[pos_meet_criteria_auto, "AssumedRel"]
 
   # Record paternal relationships
-  bool_meet_criteria_y <- matrix(FALSE, nrow(result_all), 3)
+  bool_meet_criteria_y <- matrix(FALSE, nrow(result_all), 4)
   bool_meet_criteria_y[, 1] <- as.numeric(result_all[, "Mismatch_Total"]) <= max_mismatch_y
   bool_meet_criteria_y[, 2] <- as.numeric(result_all[, "Ignore_Total"]) <= max_ignore_y
-  bool_meet_criteria_y[, 3] <- as.numeric(result_all[, "MuStep_Total"]) <= max_mustep_y && as.numeric(result_all[, "MuStep_Total"]) %% 1 == 0
+  bool_meet_criteria_y[, 3] <- as.numeric(result_all[, "MuStep_Total"]) <= max_mustep_y
+  bool_meet_criteria_y[, 4] <- as.numeric(result_all[, "MuStep_Total"]) %% 1 == 0
   pos_meet_criteria_y <- which(apply(bool_meet_criteria_y, 1, all))
   result_all[pos_meet_criteria_y, "Paternal"] <- "support"
 
@@ -807,18 +819,26 @@ create_combined_data <- function(env_proj){
 search_rel <- function(env_proj, env_gui){
 
   # Check whether all required data is loaded or not
-  error_message <- check_error(env_proj)
+  error_message <- check_error(env_proj, env_gui)
   if(error_message != ""){
     tkmessageBox(message = error_message, icon = "error", type = "ok")
   }else{
+
+    # Get the package path
+    path_pack <- get("path_pack", pos = env_gui)
 
     # Load criteria
     criteria <- fread(paste0(path_pack, "/extdata/parameters/criteria.csv"))
     assign("criteria", criteria, envir = env_proj)
 
+    # Get the end-sign of the analysis from the environment "env_proj"
+    fin_auto <- get("fin_auto", pos = env_proj)
+    fin_y <- get("fin_y", pos = env_proj)
+    fin_mt <- get("fin_mt", pos = env_proj)
+
     # Analyze data for autosomal STR
     if(!fin_auto){
-      analyze_auto(env_proj)
+      analyze_auto(env_proj, env_gui)
     }
 
     # Analyze data for Y-STR

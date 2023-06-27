@@ -295,13 +295,13 @@ relsearch <- function(){
   # Grid tabs
   tkpack(tabs, fill = "both", expand = 1)
 
-  # Make tab1
-  make_tab1(env_proj, env_gui)
-
   # Assign gui objects to the environment "env_gui"
   assign("tabs", tabs, envir = env_gui)
   assign("tab1", tab1, envir = env_gui)
   assign("tab2", tab2, envir = env_gui)
   assign("frame_tab1", frame_tab1, envir = env_gui)
   assign("frame_tab2", frame_tab2, envir = env_gui)
+
+  # Make tab1
+  make_tab1(env_proj, env_gui)
 }
