@@ -493,14 +493,18 @@ analyze_auto <- function(env_proj, env_gui){
   data_r_auto <- data_r_auto[, pos_r, with = FALSE]
   data_af <- data_af[, pos_af, with = FALSE]
 
-  # Extract required data from victim database
+  # Extract sample names
   sn_v_auto <- data_v_auto[, SampleName]
-  gt_v_auto <- as.matrix(data_v_auto[, -"SampleName"])
-
-  # Extract required data from reference database
   sn_r_auto <- data_r_auto[, SampleName]
-  assumed_rel_all <- data_r_auto[, Relationship]
+
+  # Extract genotypes
+  options(warn = -1)
+  gt_v_auto <- as.matrix(data_v_auto[, -c("SampleName", "Relationship")])
   gt_r_auto <- as.matrix(data_r_auto[, -c("SampleName", "Relationship")])
+  options(warn = 0)
+
+  # Extract assumed relationships
+  assumed_rel_all <- data_r_auto[, Relationship]
 
   # The NA in genotypes is replaced to -99 to deal with the C++ program
   gt_v_auto[which(is.na(gt_v_auto) == TRUE, arr.ind = TRUE)] <- -99

@@ -72,25 +72,27 @@ make_tab2 <- function(env_proj, env_gui){
         # Create displayed data
         if(nrow(data_v_auto_select) == 1 && nrow(data_r_auto_select) == 1){
 
-          # Victim profile
-          prof_v_select <- as.numeric(data_v_auto_select[, -"SampleName", with = FALSE])
-          prof_v_display <- c(display_gt(prof_v_select), "")
+          # Extract profiles
+          options(warn = -1)
+          prof_v_select <- as.numeric(data_v_auto_select[, -c("SampleName", "Relationship"), with = FALSE])
+          prof_r_select <- as.numeric(data_r_auto_select[, -c("SampleName", "Relationship"), with = FALSE])
+          options(warn = 0)
 
-          # Reference profile
-          prof_r_select <- as.numeric(data_r_auto_select[, -"SampleName", with = FALSE])
+          # Create displayed genotypes
+          prof_v_display <- c(display_gt(prof_v_select), "")
           prof_r_display <- c(display_gt(prof_r_select), "")
 
           # Locus
           locus_display <- gsub("LikeH1_", "", cn_result[grep("LikeH1_", cn_result)])
 
           # Likelihood of H1
-          like_h1_display <- as.numeric(result_selected[, grep("LikeH1_", cn_result), with = FALSE])
+          like_h1_display <- signif(as.numeric(result_selected[, grep("LikeH1_", cn_result), with = FALSE]), 3)
 
           # Likelihood of H2
-          like_h2_display <- as.numeric(result_selected[, grep("LikeH2_", cn_result), with = FALSE])
+          like_h2_display <- signif(as.numeric(result_selected[, grep("LikeH2_", cn_result), with = FALSE]), 3)
 
           # LR
-          lr_display <- as.numeric(result_selected[, grep("LR_", cn_result), with = FALSE])
+          lr_display <- signif(as.numeric(result_selected[, grep("LR_", cn_result), with = FALSE]), 3)
 
           # Create data table
           dt_auto_display <- data.table(Locus = locus_display, Profile_V = prof_v_display, Profile_R = prof_r_display, LikeH1 = like_h1_display, LikeH2 = like_h2_display, LR = lr_display)
@@ -159,7 +161,7 @@ make_tab2 <- function(env_proj, env_gui){
           mustep_y_display <- as.character(result_selected[, grep("MuStep_", cn_result), with = FALSE])
 
           # Create data table
-          dt_y_display <- data.table(Locus = locus_y_display, Profile_V = prof_v_display, Profile_R = prof_r_display, Mismatch = mismatch_y_display, Ignore = ignore_y_display, MuStep = mustep_y_display)
+          dt_y_display <- data.table(Locus = locus_display, Profile_V = prof_v_display, Profile_R = prof_r_display, Mismatch = mismatch_y_display, Ignore = ignore_y_display, MuStep = mustep_y_display)
 
         }else{
           dt_y_display <- NULL
@@ -223,7 +225,7 @@ make_tab2 <- function(env_proj, env_gui){
           type_r_display[is.element(type_vr, type_r)] <- type_r
 
           # Bool for common range
-          pos_common <- is.element(extract_integer(type_vr), pos_mt_vr)
+          pos_common <- is.element(sapply(type_vr, extract_integer), pos_mt_vr)
 
           # Out of range (displayed)
           out_range_display <- rep("", n_type_vr)
@@ -283,9 +285,153 @@ make_tab2 <- function(env_proj, env_gui){
         # Create data for mtDNA
         dt_mt_display <- create_display_mt(sn_v_select, sn_r_select)
 
+        # Define displayed shared range for mtDNA
+        share_range_display <- ""
+        if(nrow(dt_mt_display) > 0){
+          result_selected <- dt_result[.(sn_v_select, sn_r_select)]
+          share_range_display <- result_selected[, ShareRangeMt]
+        }
+
+        # Create data.table for other candidates
+        dt_other_candidate <- dt_display[Victim == sn_v_select | Reference == sn_r_select]
+        dt_other_candidate <- dt_other_candidate[Victim != sn_v_select | Reference != sn_r_select]
+        dt_other_candidate$LR_Total <- signif(dt_other_candidate$LR_Total, 3)
+
         # Make a top frame
         tf_detail <- tktoplevel()
         tkwm.title(tf_detail, "Results in detail")
+
+        # Define frames
+        frame_row1 <- tkframe(tf_detail)
+        frame_row2 <- tkframe(tf_detail)
+        frame_row3 <- tkframe(tf_detail)
+        frame_sn <- tkframe(frame_row1, relief = "groove", borderwidth = 2)
+        frame_criteria <- tkframe(frame_row1, relief = "groove", borderwidth = 2)
+        frame_auto <- tkframe(frame_row2, relief = "groove", borderwidth = 2)
+        frame_y <- tkframe(frame_row2, relief = "groove", borderwidth = 2)
+        frame_mt <- tkframe(frame_row2, relief = "groove", borderwidth = 2)
+        frame_other <- tkframe(frame_row3, relief = "groove", borderwidth = 2)
+
+        # Define and grid widgets for sample names
+        tkgrid(tklabel(frame_sn, text = "Sample names", font = "Helvetica 10 bold"), padx = 10, pady = 5, sticky = "w")
+        tkgrid(tklabel(frame_sn, text = "    Victim"), tklabel(frame_sn, text = sn_v_select), padx = 10, pady = 5, sticky = "w")
+        tkgrid(tklabel(frame_sn, text = "    Reference"), tklabel(frame_sn, text = sn_r_select), padx = 10, pady = 5, sticky = "w")
+
+        # Define and grid widgets for criteria
+
+        # Define and grid widgets for autosomal STR
+        tkgrid(tklabel(frame_auto, text = "Autosomal STR", font = "Helvetica 10 bold"), padx = 10, pady = 5, sticky = "w")
+        if(length(dt_auto_display) == 0){
+
+          # Grid a label for no-data
+          tkgrid(tklabel(frame_auto, text = "    No data"), padx = 10, pady = 5, sticky = "w")
+        }else{
+
+          # Define a scrollbar for a multi-list box (mlb_auto)
+          scr_auto <- tkscrollbar(frame_auto, repeatinterval = 5, command = function(...) tkyview(mlb_auto, ...))
+
+          # Define a multi-list box (mlb_auto)
+          mlb_auto <- tk2mclistbox(frame_auto, width = 60, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr_auto, ...))
+          tk2column(mlb_auto, "add", label = "Locus", width = 10)
+          tk2column(mlb_auto, "add", label = "Victim", width = 10)
+          tk2column(mlb_auto, "add", label = "Reference", width = 10)
+          tk2column(mlb_auto, "add", label = "L1", width = 10)
+          tk2column(mlb_auto, "add", label = "L2", width = 10)
+          tk2column(mlb_auto, "add", label = "LR (L1/L2)", width = 10)
+          tk2insert.multi(mlb_auto, "end", dt_auto_display)
+
+          # Grid widgets
+          tkgrid(mlb_auto, scr_auto)
+          tkgrid.configure(scr_auto, rowspan = 30, sticky = "nsw")
+        }
+
+        # Define and grid widgets for Y-STR
+        tkgrid(tklabel(frame_y, text = "Y-STR", font = "Helvetica 10 bold"), padx = 10, pady = 5, sticky = "w")
+        if(length(dt_y_display) == 0){
+
+          # Grid a label for no-data
+          tkgrid(tklabel(frame_y, text = "    No data"), padx = 10, pady = 5, sticky = "w")
+        }else{
+
+          # Define a scrollbar for a multi-list box (mlb_y)
+          scr_y <- tkscrollbar(frame_y, repeatinterval = 5, command = function(...) tkyview(mlb_y, ...))
+
+          # Define a multi-list box (mlb_y)
+          mlb_y <- tk2mclistbox(frame_y, width = 75, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr_y, ...))
+          tk2column(mlb_y, "add", label = "Locus", width = 10)
+          tk2column(mlb_y, "add", label = "Victim", width = 10)
+          tk2column(mlb_y, "add", label = "Reference", width = 10)
+          tk2column(mlb_y, "add", label = "Ignored loci", width = 15)
+          tk2column(mlb_y, "add", label = "Mismatched loci", width = 15)
+          tk2column(mlb_y, "add", label = "Mutational step", width = 15)
+          tk2insert.multi(mlb_y, "end", dt_y_display)
+
+          # Grid widgets
+          tkgrid(mlb_y, scr_y)
+          tkgrid.configure(scr_y, rowspan = 30, sticky = "nsw")
+        }
+
+        # Define and grid widgets for mtDNA
+        tkgrid(tklabel(frame_mt, text = "mtDNA", font = "Helvetica 10 bold"), padx = 10, pady = 5, sticky = "w")
+        if(length(dt_mt_display) == 0){
+
+          # Grid a label for no-data
+          tkgrid(tklabel(frame_mt, text = "    No data"), padx = 10, pady = 5, sticky = "w")
+        }else{
+
+          # Grid a label for shared range
+          tkgrid(tklabel(frame_mt, text = paste0("    Shared range : ", share_range_display)), padx = 10, pady = 5, sticky = "w")
+
+          # Define a scrollbar for a multi-list box (mlb_mt)
+          scr_mt <- tkscrollbar(frame_mt, repeatinterval = 5, command = function(...) tkyview(mlb_mt, ...))
+
+          # Define a multi-list box (mlb_mt)
+          mlb_mt <- tk2mclistbox(frame_mt, width = 50, height = 25, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr_mt, ...))
+          tk2column(mlb_mt, "add", label = "Victim", width = 10)
+          tk2column(mlb_mt, "add", label = "Reference", width = 10)
+          tk2column(mlb_mt, "add", label = "Out of shared range", width = 20)
+          tk2column(mlb_mt, "add", label = "Mismatch", width = 10)
+          tk2insert.multi(mlb_mt, "end", dt_mt_display)
+
+          # Grid widgets
+          tkgrid(mlb_mt, scr_mt)
+          tkgrid.configure(scr_mt, rowspan = 25, sticky = "nsw")
+        }
+
+        # Define and grid widgets for other candidates
+        tkgrid(tklabel(frame_other, text = "Other candidates", font = "Helvetica 10 bold"), padx = 10, pady = 5, sticky = "w")
+        if(nrow(dt_other_candidate) == 0){
+
+          # Grid a label for no-candidate
+          tkgrid(tklabel(frame_other, text = "No candidate"))
+        }else{
+
+          # Define a scrollbar for a multi-list box (mlb_other)
+          scr_other <- tkscrollbar(frame_other, repeatinterval = 5, command = function(...) tkyview(mlb_other, ...))
+
+          # Define a multi-list box (mlb_mt)
+          mlb_other <- tk2mclistbox(frame_other, width = 100, height = 10, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr_other, ...))
+          tk2column(mlb_other, "add", label = "Victim", width = 10)
+          tk2column(mlb_other, "add", label = "Reference", width = 10)
+          tk2column(mlb_other, "add", label = "Assumed relationship", width = 20)
+          tk2column(mlb_other, "add", label = "LR", width = 10)
+          tk2column(mlb_other, "add", label = "Estimated relationship", width = 20)
+          tk2column(mlb_other, "add", label = "Paternal lineage", width = 15)
+          tk2column(mlb_other, "add", label = "Maternal lineage", width = 15)
+          tk2insert.multi(mlb_other, "end", dt_other_candidate)
+
+          # Grid widgets
+          tkgrid(mlb_other, scr_other)
+          tkgrid.configure(scr_other, rowspan = 10, sticky = "nsw")
+        }
+
+        # Grid frames
+        tkgrid(frame_sn, frame_criteria, padx = 10, pady = 5, sticky = "w")
+        tkgrid(frame_auto, frame_y, frame_mt, padx = 10, pady = 5, sticky = "nw")
+        tkgrid(frame_other, padx = 10, pady = 5, sticky = "w")
+        tkgrid(frame_row1, padx = 10, pady = 5, sticky = "w")
+        tkgrid(frame_row2, padx = 10, pady = 5, sticky = "w")
+        tkgrid(frame_row3, padx = 10, pady = 5, sticky = "w")
       }
     }
 
@@ -299,6 +445,7 @@ make_tab2 <- function(env_proj, env_gui){
     dt_display <- dt_result[, list(Victim, Reference, AssumedRel, LR_Total, EstimatedRel, Paternal, Maternal)]
     dt_display <- dt_display[EstimatedRel != "" | Paternal == "support" | Maternal == "support"]
     setorder(dt_display, cols = - "LR_Total", na.last = TRUE)
+    dt_display$LR_Total <- signif(dt_display$LR_Total, 3)
 
     # Reset frame_tab2
     tabs <- get("tabs", pos = env_gui)
@@ -315,14 +462,14 @@ make_tab2 <- function(env_proj, env_gui){
     scr1 <- tkscrollbar(frame_result_1, repeatinterval = 5, command = function(...) tkyview(mlb_result, ...))
 
     # Define a multi-list box (mlb_result)
-    mlb_result <- tk2mclistbox(frame_result_1, width = 140, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+    mlb_result <- tk2mclistbox(frame_result_1, width = 100, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
     tk2column(mlb_result, "add", label = "Victim", width = 10)
     tk2column(mlb_result, "add", label = "Reference", width = 10)
-    tk2column(mlb_result, "add", label = "Assumed relationship", width = 30)
-    tk2column(mlb_result, "add", label = "LR", width = 20)
-    tk2column(mlb_result, "add", label = "Estimated relationship", width = 30)
-    tk2column(mlb_result, "add", label = "Paternal lineage", width = 20)
-    tk2column(mlb_result, "add", label = "Maternal lineage", width = 20)
+    tk2column(mlb_result, "add", label = "Assumed relationship", width = 20)
+    tk2column(mlb_result, "add", label = "LR", width = 10)
+    tk2column(mlb_result, "add", label = "Estimated relationship", width = 20)
+    tk2column(mlb_result, "add", label = "Paternal lineage", width = 15)
+    tk2column(mlb_result, "add", label = "Maternal lineage", width = 15)
     tk2insert.multi(mlb_result, "end", dt_display)
 
     # Define widgets in frame_result_2
