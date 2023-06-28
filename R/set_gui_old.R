@@ -35,13 +35,13 @@ check_delete_auto <- function(env_proj){
 set_criteria <- function(env_proj, env_gui){
 
   # The function to create the file "criteria.csv"
-  create_criteria_csv <- function(min_lr_auto, max_mismatch_y, max_ignore_y, max_mustep_y, min_share_mt, max_mismatch_mt){
+  create_criteria_csv <- function(min_lr_auto, max_mismatch_y, max_ignore_y, max_mustep_y, max_mismatch_mt, min_share_mt){
 
     # Define a data.frame for criteria
     names_criteria <- c("min_lr_auto",
                         "max_mismatch_y", "max_ignore_y", "max_mustep_y",
-                        "min_share_mt", "max_mismatch_mt")
-    values_criteria <- c(min_lr_auto, max_mismatch_y, max_ignore_y, max_mustep_y, min_share_mt, max_mismatch_mt)
+                        "max_mismatch_mt", "min_share_mt")
+    values_criteria <- c(min_lr_auto, max_mismatch_y, max_ignore_y, max_mustep_y, max_mismatch_mt, min_share_mt)
     criteria_data <- data.frame(Criteria = names_criteria, Value = values_criteria)
 
     # Save the file "criteria.csv"
@@ -60,7 +60,7 @@ set_criteria <- function(env_proj, env_gui){
       # Create the file "criteria.csv"
       create_criteria_csv(tclvalue(min_lr_auto_var),
                           tclvalue(max_mismatch_y_var), tclvalue(max_ignore_y_var), tclvalue(max_mustep_y_var),
-                          tclvalue(min_share_mt_var), tclvalue(max_mismatch_mt_var))
+                          tclvalue(max_mismatch_mt_var), tclvalue(min_share_mt_var))
 
       # Assign end signs
       assign("fin_auto", FALSE, envir = env_proj)
@@ -94,13 +94,13 @@ set_criteria <- function(env_proj, env_gui){
       tclvalue(max_mismatch_y_var) <- criteria$Value[criteria$Criteria == "max_mismatch_y"]
       tclvalue(max_ignore_y_var) <- criteria$Value[criteria$Criteria == "max_ignore_y"]
       tclvalue(max_mustep_y_var) <- criteria$Value[criteria$Criteria == "max_mustep_y"]
-      tclvalue(min_share_mt_var) <- criteria$Value[criteria$Criteria == "min_share_mt"]
       tclvalue(max_mismatch_mt_var) <- criteria$Value[criteria$Criteria == "max_mismatch_mt"]
+      tclvalue(min_share_mt_var) <- criteria$Value[criteria$Criteria == "min_share_mt"]
 
       # Create the file "criteria.csv"
       create_criteria_csv(tclvalue(min_lr_auto_var),
                           tclvalue(max_mismatch_y_var), tclvalue(max_ignore_y_var), tclvalue(max_mustep_y_var),
-                          tclvalue(min_share_mt_var), tclvalue(max_mismatch_mt_var))
+                          tclvalue(max_mismatch_mt_var), tclvalue(min_share_mt_var))
 
       # Assign end signs
       assign("fin_auto", FALSE, envir = env_proj)
@@ -131,8 +131,8 @@ set_criteria <- function(env_proj, env_gui){
     max_mismatch_y <- criteria$Value[criteria$Criteria == "max_mismatch_y"]
     max_ignore_y <- criteria$Value[criteria$Criteria == "max_ignore_y"]
     max_mustep_y <- criteria$Value[criteria$Criteria == "max_mustep_y"]
-    min_share_mt <- criteria$Value[criteria$Criteria == "min_share_mt"]
     max_mismatch_mt <- criteria$Value[criteria$Criteria == "max_mismatch_mt"]
+    min_share_mt <- criteria$Value[criteria$Criteria == "min_share_mt"]
 
   # If the file "criteria.csv" is missing
   }else{
@@ -143,11 +143,11 @@ set_criteria <- function(env_proj, env_gui){
     max_mismatch_y <- criteria$Value[criteria$Criteria == "max_mismatch_y"]
     max_ignore_y <- criteria$Value[criteria$Criteria == "max_ignore_y"]
     max_mustep_y <- criteria$Value[criteria$Criteria == "max_mustep_y"]
-    min_share_mt <- criteria$Value[criteria$Criteria == "min_share_mt"]
     max_mismatch_mt <- criteria$Value[criteria$Criteria == "max_mismatch_mt"]
+    min_share_mt <- criteria$Value[criteria$Criteria == "min_share_mt"]
 
     # Create the file "criteria.csv"
-    create_criteria_csv(min_lr_auto, max_mismatch_y, max_ignore_y, max_mustep_y, min_share_mt, max_mismatch_mt)
+    create_criteria_csv(min_lr_auto, max_mismatch_y, max_ignore_y, max_mustep_y, max_mismatch_mt, min_share_mt)
   }
 
   # Define tcl variables
@@ -155,8 +155,8 @@ set_criteria <- function(env_proj, env_gui){
   max_mismatch_y_var <- tclVar(max_mismatch_y)
   max_ignore_y_var <- tclVar(max_ignore_y)
   max_mustep_y_var <- tclVar(max_mustep_y)
-  min_share_mt_var <- tclVar(min_share_mt)
   max_mismatch_mt_var <- tclVar(max_mismatch_mt)
+  min_share_mt_var <- tclVar(min_share_mt)
 
   # Create a top frame
   tf <- tktoplevel()
@@ -178,10 +178,10 @@ set_criteria <- function(env_proj, env_gui){
   label_max_mustep_y <- tklabel(frame_criteria_1, text = "    Maximum mutational steps")
   entry_max_mustep_y <- tkentry(frame_criteria_1, textvariable = max_mustep_y_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
   label_title_mt <- tklabel(frame_criteria_1, text = "mtDNA")
-  label_min_share_mt <- tklabel(frame_criteria_1, text = "    Minimum shared length")
-  entry_min_share_mt <- tkentry(frame_criteria_1, textvariable = min_share_mt_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
   label_max_mismatch_mt <- tklabel(frame_criteria_1, text = "    Maximum number of inconsistency")
   entry_max_mismatch_mt <- tkentry(frame_criteria_1, textvariable = max_mismatch_mt_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
+  label_min_share_mt <- tklabel(frame_criteria_1, text = "    Minimum shared length")
+  entry_min_share_mt <- tkentry(frame_criteria_1, textvariable = min_share_mt_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
 
   # Define widgets in frame_criteria_2
   butt_save <- tkbutton(frame_criteria_2, text = "    Save    ", cursor = "hand2", command = function() save_criteria())
@@ -195,8 +195,8 @@ set_criteria <- function(env_proj, env_gui){
   tkgrid(label_max_ignore_y, entry_max_ignore_y, padx = 10, pady = 5, sticky = "w")
   tkgrid(label_max_mustep_y, entry_max_mustep_y, padx = 10, pady = 5, sticky = "w")
   tkgrid(label_title_mt, padx = 10, pady = 5, sticky = "w")
-  tkgrid(label_min_share_mt, entry_min_share_mt, padx = 10, pady = 5, sticky = "w")
   tkgrid(label_max_mismatch_mt, entry_max_mismatch_mt, padx = 10, pady = 5, sticky = "w")
+  tkgrid(label_min_share_mt, entry_min_share_mt, padx = 10, pady = 5, sticky = "w")
 
   # Grid widgets in frame_criteria_2
   tkgrid(butt_save, butt_reset, padx = 10, pady = 5, sticky = "w")

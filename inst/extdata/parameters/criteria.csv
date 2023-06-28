@@ -3,5 +3,5 @@ min_lr_auto,100
 max_mismatch_y,2
 max_ignore_y,10
 max_mustep_y,2
-min_share_mt,300
 max_mismatch_mt,1
+min_share_mt,300

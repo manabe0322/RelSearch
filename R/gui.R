@@ -82,8 +82,8 @@ set_env_proj_mt <- function(env_proj, bool_new){
 set_env_proj_default <- function(env_proj){
 
   # Set default criteria
-  criteria_default <- data.frame(Criteria = c("min_lr_auto", "max_mismatch_y", "max_ignore_y", "max_mustep_y", "min_share_mt", "max_mismatch_mt"),
-                                 Value = c(100, 2, 10, 2, 300, 1))
+  criteria_default <- data.frame(Criteria = c("min_lr_auto", "max_mismatch_y", "max_ignore_y", "max_mustep_y", "max_mismatch_mt", "min_share_mt"),
+                                 Value = c(100, 2, 10, 2, 1, 300))
   assign("criteria_default", criteria_default, envir = env_proj)
 
   # Set default mutation rates
