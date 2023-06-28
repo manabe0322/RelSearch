@@ -685,8 +685,8 @@ create_combined_data <- function(env_proj){
   max_mismatch_y <- criteria$Value[criteria$Criteria == "max_mismatch_y"]
   max_ignore_y <- criteria$Value[criteria$Criteria == "max_ignore_y"]
   max_mustep_y <- criteria$Value[criteria$Criteria == "max_mustep_y"]
-  min_share_mt <- criteria$Value[criteria$Criteria == "min_share_mt"]
   max_mismatch_mt <- criteria$Value[criteria$Criteria == "max_mismatch_mt"]
+  min_share_mt <- criteria$Value[criteria$Criteria == "min_share_mt"]
 
   # Get all sample names from the environment "env_proj"
   sn_v_all <- get("sn_v_all", pos = env_proj)
