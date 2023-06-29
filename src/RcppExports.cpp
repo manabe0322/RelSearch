@@ -29,15 +29,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // make_dummy_af
-std::vector<std::vector<double>> make_dummy_af(std::vector<std::vector<double>> dummy_gt, std::vector<double> af, std::vector<double> af_al);
-RcppExport SEXP _relsearch_make_dummy_af(SEXP dummy_gtSEXP, SEXP afSEXP, SEXP af_alSEXP) {
+std::vector<std::vector<double>> make_dummy_af(std::vector<double> uniq_vr_al, std::vector<double> af, std::vector<double> af_al);
+RcppExport SEXP _relsearch_make_dummy_af(SEXP uniq_vr_alSEXP, SEXP afSEXP, SEXP af_alSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector<std::vector<double>> >::type dummy_gt(dummy_gtSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type uniq_vr_al(uniq_vr_alSEXP);
     Rcpp::traits::input_parameter< std::vector<double> >::type af(afSEXP);
     Rcpp::traits::input_parameter< std::vector<double> >::type af_al(af_alSEXP);
-    rcpp_result_gen = Rcpp::wrap(make_dummy_af(dummy_gt, af, af_al));
+    rcpp_result_gen = Rcpp::wrap(make_dummy_af(uniq_vr_al, af, af_al));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -50,6 +50,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::vector<double> >::type target_gt(target_gtSEXP);
     Rcpp::traits::input_parameter< std::vector<double> >::type uniq_vr_al(uniq_vr_alSEXP);
     rcpp_result_gen = Rcpp::wrap(make_dummy_gt(target_gt, uniq_vr_al));
+    return rcpp_result_gen;
+END_RCPP
+}
+// set_prob_drop_gt
+std::vector<double> set_prob_drop_gt(std::vector<std::vector<double>> dummy_gt, double pd);
+RcppExport SEXP _relsearch_set_prob_drop_gt(SEXP dummy_gtSEXP, SEXP pdSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<std::vector<double>> >::type dummy_gt(dummy_gtSEXP);
+    Rcpp::traits::input_parameter< double >::type pd(pdSEXP);
+    rcpp_result_gen = Rcpp::wrap(set_prob_drop_gt(dummy_gt, pd));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -359,6 +371,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_relsearch_calc_kin_like", (DL_FUNC) &_relsearch_calc_kin_like, 8},
     {"_relsearch_make_dummy_af", (DL_FUNC) &_relsearch_make_dummy_af, 3},
     {"_relsearch_make_dummy_gt", (DL_FUNC) &_relsearch_make_dummy_gt, 2},
+    {"_relsearch_set_prob_drop_gt", (DL_FUNC) &_relsearch_set_prob_drop_gt, 2},
     {"_relsearch_calc_kin_like_drop", (DL_FUNC) &_relsearch_calc_kin_like_drop, 9},
     {"_relsearch_calc_kin_lr", (DL_FUNC) &_relsearch_calc_kin_lr, 10},
     {"_relsearch_calc_kin_lr_all", (DL_FUNC) &_relsearch_calc_kin_lr_all, 12},

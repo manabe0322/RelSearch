@@ -5,12 +5,16 @@ calc_kin_like <- function(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape) {
     .Call(`_relsearch_calc_kin_like`, vgt, rgt, af, af_al, pibd, cons_mu, myu, ape)
 }
 
-make_dummy_af <- function(dummy_gt, af, af_al) {
-    .Call(`_relsearch_make_dummy_af`, dummy_gt, af, af_al)
+make_dummy_af <- function(uniq_vr_al, af, af_al) {
+    .Call(`_relsearch_make_dummy_af`, uniq_vr_al, af, af_al)
 }
 
 make_dummy_gt <- function(target_gt, uniq_vr_al) {
     .Call(`_relsearch_make_dummy_gt`, target_gt, uniq_vr_al)
+}
+
+set_prob_drop_gt <- function(dummy_gt, pd) {
+    .Call(`_relsearch_set_prob_drop_gt`, dummy_gt, pd)
 }
 
 calc_kin_like_drop <- function(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd) {

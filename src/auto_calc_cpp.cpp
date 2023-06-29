@@ -20,14 +20,14 @@ std::vector<double> calc_kin_like(std::vector<double> vgt, std::vector<double> r
 
   double a, b, c, d;
   if(size_vgt == 1){
-    int pos_q = search_pos_double(af_al, vgt[0]);
-    a = af[pos_q];
-    b = af[pos_q];
+    int pos_v = search_pos_double(af_al, vgt[0]);
+    a = af[pos_v];
+    b = af[pos_v];
   }else{
-    int pos_q1 = search_pos_double(af_al, vgt[0]);
-    a = af[pos_q1];
-    int pos_q2 = search_pos_double(af_al, vgt[1]);
-    b = af[pos_q2];
+    int pos_v1 = search_pos_double(af_al, vgt[0]);
+    a = af[pos_v1];
+    int pos_v2 = search_pos_double(af_al, vgt[1]);
+    b = af[pos_v2];
   }
   if(size_rgt == 1){
     int pos_r = search_pos_double(af_al, rgt[0]);
@@ -40,29 +40,29 @@ std::vector<double> calc_kin_like(std::vector<double> vgt, std::vector<double> r
     d = af[pos_r2];
   }
 
-  std::vector<double> uni_qrgt;
-  std::set_union(vgt.begin(), vgt.end(), rgt.begin(), rgt.end(), inserter(uni_qrgt, uni_qrgt.end()));
-  bool presence_q1 = search_pos_double(rgt, vgt[0]) != size_rgt;
-  bool presence_q2;
+  std::vector<double> uniq_vr_al;
+  std::set_union(vgt.begin(), vgt.end(), rgt.begin(), rgt.end(), inserter(uniq_vr_al, uniq_vr_al.end()));
+  bool presence_v1 = search_pos_double(rgt, vgt[0]) != size_rgt;
+  bool presence_v2;
   if(size_vgt == 2){
-    presence_q2 = search_pos_double(rgt, vgt[1]) != size_rgt;
+    presence_v2 = search_pos_double(rgt, vgt[1]) != size_rgt;
   }else{
-    presence_q2 = search_pos_double(rgt, vgt[0]) != size_rgt;
+    presence_v2 = search_pos_double(rgt, vgt[0]) != size_rgt;
   }
-  bool equal_qr = true;
+  bool equal_vr = true;
   if(size_vgt == size_rgt){
     for(int i = 0; i < size_vgt; ++i){
       bool equal_al = vgt[i] == rgt[i];
       if(!equal_al){
-        equal_qr = false;
+        equal_vr = false;
         break;
       }
     }
   }else{
-    equal_qr = false;
+    equal_vr = false;
   }
 
-  if(!presence_q1 && !presence_q2){
+  if(!presence_v1 && !presence_v2){
     if(cons_mu){
       like_h12[0] = myu;
       like_h12[1] = ape;
@@ -85,7 +85,7 @@ std::vector<double> calc_kin_like(std::vector<double> vgt, std::vector<double> r
         }
       }
     }
-  }else if(equal_qr){
+  }else if(equal_vr){
     if(size_vgt == 1){
       like_h12[0] = c * c * (k2 + 2 * a * k1 + a * a * k0);
       like_h12[1] = c * c * a * a;
@@ -93,8 +93,8 @@ std::vector<double> calc_kin_like(std::vector<double> vgt, std::vector<double> r
       like_h12[0] = 2 * c * d * (k2 + a * k1 + b * k1 + 2 * a * b * k0);
       like_h12[1] = 2 * c * d * 2 * a * b;
     }
-  }else if(uni_qrgt.size() == 3){
-    if(presence_q1){
+  }else if(uniq_vr_al.size() == 3){
+    if(presence_v1){
       like_h12[0] = 2 * c * d * (b * k1 + 2 * a * b * k0);
       like_h12[1] = 2 * c * d * 2 * a * b;
     }else{
@@ -106,7 +106,7 @@ std::vector<double> calc_kin_like(std::vector<double> vgt, std::vector<double> r
       like_h12[0] = 2 * c * d * (a * k1 + a * a * k0);
       like_h12[1] = 2 * c * d * a * a;
     }else{
-      if(presence_q1){
+      if(presence_v1){
         like_h12[0] = c * c * (2 * b * k1 + 2 * a * b * k0);
         like_h12[1] = c * c * 2 * a * b;
       }else{
@@ -120,41 +120,44 @@ std::vector<double> calc_kin_like(std::vector<double> vgt, std::vector<double> r
 
 /*Make allele frequencies for dummy genotypes (testthat)*/
 // [[Rcpp::export]]
-std::vector<std::vector<double>> make_dummy_af(std::vector<std::vector<double>> dummy_gt, std::vector<double> af, std::vector<double> af_al){
-  int n_init_row = dummy_gt.size();
-  std::vector<double> af_al_dummy(2 * n_init_row);
-  for(int i = 0; i < n_init_row; ++i){
-    af_al_dummy[2 * i] = dummy_gt.at(i).at(0);
-    af_al_dummy[2 * i + 1] = dummy_gt.at(i).at(1);
-  }
-  std::sort(af_al_dummy.begin(), af_al_dummy.end());
-  af_al_dummy.erase(std::unique(af_al_dummy.begin(), af_al_dummy.end()), af_al_dummy.end());
+std::vector<std::vector<double>> make_dummy_af(std::vector<double> uniq_vr_al, std::vector<double> af, std::vector<double> af_al){
 
-  int len = af_al_dummy.size() - 1;
-  std::vector<int> pos_al_1(len);
+  /* The number of unique alleles of the victim and the reference genotypes */
+  int len = uniq_vr_al.size();
+
+  /* Define a vector for indices of observed alleles */
+  std::vector<int> pos_al_obs(len);
   for(int i = 0; i < len; ++i){
-    pos_al_1[i] = search_pos_double(af_al, af_al_dummy[i]);
+    pos_al_obs[i] = search_pos_double(af_al, uniq_vr_al[i]);
   }
+
+  /* Define a vector for indices of unobserved alleles */
   std::vector<int> pos_al_all = tousa(0, af_al.size() - 1, 1);
-  std::vector<int> pos_al_2;
-  std::set_difference(pos_al_all.begin(), pos_al_all.end(), pos_al_1.begin(), pos_al_1.end(), inserter(pos_al_2, pos_al_2.end()));
+  std::vector<int> pos_al_unobs;
+  std::set_difference(pos_al_all.begin(), pos_al_all.end(), pos_al_obs.begin(), pos_al_obs.end(), inserter(pos_al_unobs, pos_al_unobs.end()));
 
-  std::vector<std::vector<double>> dummy_data(2, std::vector<double>(len + 1));
+  /* Define a vector for saving dummy allele frequencies */
+  std::vector<std::vector<double>> dummy_af_data(2, std::vector<double>(len + 1));
+
+  /* Assign observed allele frequencies */
   for(int i = 0; i < len; ++i){
-    int pos1 = pos_al_1[i];
-    dummy_data.at(0).at(i) = af[pos1];
+    int pos1 = pos_al_obs[i];
+    dummy_af_data.at(0).at(i) = af[pos1];
+    dummy_af_data.at(1).at(i) = uniq_vr_al[i];
   }
 
-  int len2 = pos_al_2.size();
+  /* Assign unobserved allele frequencies */
+  int len2 = pos_al_unobs.size();
   std::vector<double> freq_qal(len2);
   for(int i = 0; i < len2; ++i){
-    int pos2 = pos_al_2[i];
+    int pos2 = pos_al_unobs[i];
     freq_qal[i] = af[pos2];
   }
-  dummy_data.at(0).at(len) = std::accumulate(freq_qal.begin(), freq_qal.end(), 0.0);
-  dummy_data.at(1) = af_al_dummy;
+  dummy_af_data.at(0).at(len) = std::accumulate(freq_qal.begin(), freq_qal.end(), 0.0);
+  dummy_af_data.at(1).at(len) = 99;
 
-  return(dummy_data);
+  /* Return */
+  return(dummy_af_data);
 }
 
 /*Determine dummy genotypes considering a drop-out allele (testthat)*/
@@ -212,34 +215,99 @@ std::vector<std::vector<double>> make_dummy_gt(std::vector<double> target_gt, st
   }
 }
 
+
+/*#######################################################################
+# The function to set probabilities for drop-out in each dummy genotype #
+#######################################################################*/
+
+// [[Rcpp::export]]
+std::vector<double> set_prob_drop_gt(std::vector<std::vector<double>> dummy_gt, double pd){
+
+  /* The number of dummy genotypes */
+  int size_dummy_gt = dummy_gt.size();
+
+  /* Define a vector for probabilities for drop-out in each dummy genotype */
+  std::vector<double> prob_drop_gt(size_dummy_gt);
+
+  /* Repetitive execution for dummy genotypes */
+  for(int i = 0; i < size_dummy_gt; ++i){
+
+    /* Extract a dummy genotype */
+    std::vector<double> dummy_gt_one = dummy_gt.at(i);
+
+    /* Set the probability without drop-out */
+    if(dummy_gt_one[0] == dummy_gt_one[1]){
+      prob_drop_gt[i] = (1 - pd) * (1 - pd);
+
+    /* Set the probability with one drop-out */
+    }else{
+      prob_drop_gt[i] = pd * (1 - pd);
+    }
+  }
+
+  /* Return */
+  return(prob_drop_gt);
+}
+
+
 /*Calculation of likelihoods for pairwise kinship analysis considering drop-out (testthat)*/
 // [[Rcpp::export]]
 std::vector<double> calc_kin_like_drop(std::vector<double> vgt, std::vector<double> rgt, std::vector<double> af, std::vector<double> af_al,
                                        std::vector<double> pibd, bool cons_mu, double myu, double ape, double pd){
-  /*homozygote (no drop-out)*/
-  std::vector<double> like_ho = calc_kin_like(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape);
-  double h1_ho = like_ho[0];
-  double h2_ho = like_ho[1];
 
-  /*heterozygote (drop-out)*/
-  std::vector<std::vector<double>> dummy_gt = make_dummy_gt(vgt, rgt);
-  std::vector<std::vector<double>> dummy_data = make_dummy_af(dummy_gt, af, af_al);
-  std::vector<double> af_dummy = dummy_data.at(0);
-  std::vector<double> af_al_dummy = dummy_data.at(1);
+  /* Define the initial likelihood of H1 and H2 in one locus */
+  double l_h1 = 0;
+  double l_h2 = 0;
 
-  double h1_he = 0;
-  double h2_he = 0;
-  int size_dummy_gt = dummy_gt.size();
-  for(int i = 0; i < size_dummy_gt; ++i){
-    std::vector<double> like_he = calc_kin_like(dummy_gt.at(i), rgt, af_dummy, af_al_dummy, pibd, cons_mu, myu, ape);
-    h1_he = h1_he + like_he[0];
-    h2_he = h2_he + like_he[1];
+  /* Define a vector for unique alleles of the victim and the reference genotypes */
+  std::vector<double> uniq_vr_al;
+  std::set_union(vgt.begin(), vgt.end(), rgt.begin(), rgt.end(), inserter(uniq_vr_al, uniq_vr_al.end()));
+
+  /* Create dummy genotypes */
+  std::vector<std::vector<double>> dummy_vgt = make_dummy_gt(vgt, uniq_vr_al);
+  std::vector<std::vector<double>> dummy_rgt = make_dummy_gt(rgt, uniq_vr_al);
+
+  /* Create dummy allele frequencies */
+  std::vector<std::vector<double>> dummy_af_data = make_dummy_af(uniq_vr_al, af, af_al);
+  std::vector<double> af_dummy = dummy_af_data.at(0);
+  std::vector<double> af_al_dummy = dummy_af_data.at(1);
+
+  /* The number of dummy genotypes */
+  int size_dummy_vgt = dummy_vgt.size();
+  int size_dummy_rgt = dummy_rgt.size();
+
+  /* Set probabilities for drop-out in each dummy genotype */
+  std::vector<double> prob_drop_vgt = set_prob_drop_gt(dummy_vgt, pd);
+  std::vector<double> prob_drop_rgt = set_prob_drop_gt(dummy_rgt, pd);
+
+  /* Repetitive execution for dummy reference genotypes */
+  for(int i = 0; i < size_dummy_rgt; ++i){
+
+    /* Extract the probability for drop-out in the dummy reference genotype */
+    double pd_rgt = prob_drop_rgt[i];
+
+    /* Repetitive execution for dummy victim genotypes */
+    for(int j = 0; j < size_dummy_vgt; ++j){
+
+      /* Extract the probability for drop-out in the dummy reference genotype */
+      double pd_vgt = prob_drop_vgt[j];
+
+      /* Calculate the likelihood in one genotype combination */
+      std::vector<double> l_h12_one = calc_kin_like(dummy_vgt.at(j), dummy_rgt.at(i), af_dummy, af_al_dummy, pibd, cons_mu, myu, ape);
+
+      /* Update the likelihood in one locus */
+      l_h1 = l_h1 + l_h12_one[0] * pd_rgt * pd_vgt;
+      l_h2 = l_h2 + l_h12_one[1] * pd_rgt * pd_vgt;
+    }
   }
 
-  std::vector<double> like_drop(2);
-  like_drop[0] = (1 - pd) * h1_ho + pd * h1_he;
-  like_drop[1] = (1 - pd) * h2_ho + pd * h2_he;
-  return(like_drop);
+  /* Define the likelihood of H1 and H2 in one locus */
+  std::vector<double> like_h12(2);
+  like_h12[0] = l_h1;
+  like_h12[1] = l_h2;
+
+  /* Return */
+  return(like_h12);
 }
 
 
@@ -298,21 +366,6 @@ std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim, st
       ans.at(0).at(i) = 1;
       ans.at(1).at(i) = 1;
       ans.at(2).at(i) = 1;
-
-    /* No undetected allele */
-    }else if(vgt.size() == 2 && rgt.size() == 2){
-
-      /* Calculate the likelihood in one locus */
-      std::vector<double> like_h12 = calc_kin_like(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape);
-
-      /* Assign the likelihood and the LR */
-      ans.at(0).at(i) = like_h12[0];
-      ans.at(1).at(i) = like_h12[1];
-      ans.at(2).at(i) = like_h12[0] / like_h12[1];
-
-      /* Update the cumulative likelihood of H1 and H2 */
-      cl_h1 = cl_h1 * like_h12[0];
-      cl_h2 = cl_h2 * like_h12[1];
 
     /* Not considering drop-out */
     }else if(meth_d == 0){
