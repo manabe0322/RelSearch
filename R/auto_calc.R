@@ -1,18 +1,18 @@
 # Setting allele frequencies
-set_af <- function(data_auto_q, data_auto_r, data_auto_af, maf){
+set_af <- function(data_auto_v, data_auto_r, data_auto_af, maf){
   n_l <- ncol(data_auto_af) - 1
   name_al <- data_auto_af[, Allele]
-  name_l <- setdiff(names(data_auto_q), c("SampleName", "Relationship"))
+  name_l <- setdiff(names(data_auto_v), c("SampleName", "Relationship"))
   af_list <- af_al_list <- list()
   for(i in 1:n_l){
 
     # Indices of each database
-    pos_q <- which(names(data_auto_q) == name_l[i])
+    pos_v <- which(names(data_auto_v) == name_l[i])
     pos_r <- which(names(data_auto_r) == name_l[i])
     pos_af <- which(names(data_auto_af) == name_l[i])
 
     # Observed alleles in query or reference database
-    obsal <- unique(c(data_auto_q[[pos_q[1]]], data_auto_q[[pos_q[2]]], data_auto_r[[pos_r[1]]], data_auto_r[[pos_r[2]]]))
+    obsal <- unique(c(data_auto_v[[pos_v[1]]], data_auto_v[[pos_v[2]]], data_auto_r[[pos_r[1]]], data_auto_r[[pos_r[2]]]))
     obsal <- obsal[!is.na(obsal)]
 
     # Extract allele frequencies in one locus
