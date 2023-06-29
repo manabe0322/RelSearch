@@ -52,7 +52,7 @@ make_tab2 <- function(env_proj, env_gui){
     create_display_criteria <- function(sn_v_select, sn_r_select){
 
       # Extract all results for the selected data
-      result_selected <- dt_result[.(sn_v_select, sn_r_select)]
+      result_selected <- dt_combined[.(sn_v_select, sn_r_select)]
 
       # Get criteria
       criteria <- get("criteria", pos = env_proj)
@@ -150,7 +150,7 @@ make_tab2 <- function(env_proj, env_gui){
         setkey(data_r_auto, SampleName)
 
         # Extract all results for the selected data
-        result_selected <- dt_result[.(sn_v_select, sn_r_select)]
+        result_selected <- dt_combined[.(sn_v_select, sn_r_select)]
         cn_result <- names(result_selected)
 
         # Extract genotypes for the selected data
@@ -214,7 +214,7 @@ make_tab2 <- function(env_proj, env_gui){
         setkey(data_r_y, SampleName)
 
         # Extract all results for the selected data
-        result_selected <- dt_result[.(sn_v_select, sn_r_select)]
+        result_selected <- dt_combined[.(sn_v_select, sn_r_select)]
         cn_result <- names(result_selected)
 
         # Extract haplotypes for the selected data
@@ -373,7 +373,7 @@ make_tab2 <- function(env_proj, env_gui){
         sn_r_select <- dt_display[pos_select, Reference]
 
         # Extract results of selected samples
-        result_selected <- dt_result[.(sn_v_select, sn_r_select)]
+        result_selected <- dt_combined[.(sn_v_select, sn_r_select)]
 
         # Define displayed estimated-relationship
         est_rel_display <- result_selected[, EstimatedRel]
@@ -572,10 +572,10 @@ make_tab2 <- function(env_proj, env_gui){
     env_result <- new.env(parent = globalenv())
 
     # Get the data table for all results
-    dt_result <- get("dt_result", pos = env_proj)
-    setkey(dt_result, Victim, Reference)
+    dt_combined <- get("dt_combined", pos = env_proj)
+    setkey(dt_combined, Victim, Reference)
 
-    dt_display <- dt_result[, list(Victim, Reference, AssumedRel, LR_Total, EstimatedRel, Paternal, Maternal)]
+    dt_display <- dt_combined[, list(Victim, Reference, AssumedRel, LR_Total, EstimatedRel, Paternal, Maternal)]
     dt_display <- dt_display[EstimatedRel != "" | Paternal == "support" | Maternal == "support"]
     setorder(dt_display, cols = - "LR_Total", na.last = TRUE)
     dt_display$LR_Total <- signif(dt_display$LR_Total, 3)

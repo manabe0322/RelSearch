@@ -536,14 +536,28 @@ analyze_auto <- function(env_proj, env_gui){
   # Calculate likelihood ratios
   result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus, apes, meth_d, pd)
 
-  # Arrange result_auto
+  # Create a vector for the result of victim names
+  result_sn_v_auto <- rep(sn_v_auto, length(sn_r_auto))
+
+  # Create a vector for the result of reference names
+  result_sn_r_auto <- as.vector(sapply(sn_r_auto, rep, length(sn_v_auto)))
+
+  # Create a vector for the result of assumed relationships
+  result_assumed_rel <- as.vector(sapply(assumed_rel_all, rep, length(sn_v_auto)))
+
+  # Create a part of the data.table
+  dt_left <- data.table(Victim = result_sn_v_auto, Reference = result_sn_r_auto, AssumedRel = result_assumed_rel)
+
+  # Create the data.table for the results of autosomal STR
   result_auto <- unlist(result_auto)
   result_auto <- matrix(result_auto, nrow = length(sn_v_auto) * length(sn_r_auto), ncol = 3 * (n_l + 1), byrow = TRUE)
-  rownames(result_auto) <- NULL
-  colnames(result_auto) <- c(paste0("LikeH1_", c(locus_auto, "Total")), paste0("LikeH2_", c(locus_auto, "Total")), paste0("LR_", c(locus_auto, "Total")))
+  dt_right <- as.data.frame(result_auto)
+  setDT(dt_right)
+  names(dt_right) <- c(paste0("LikeH1_", c(locus_auto, "Total")), paste0("LikeH2_", c(locus_auto, "Total")), paste0("LR_", c(locus_auto, "Total")))
+  dt_auto <- cbind(dt_left, dt_right)
 
-  # Assign result_auto
-  assign("result_auto", result_auto, envir = env_proj)
+  # Assign the data.table for the results of autosomal STR
+  assign("dt_auto", dt_auto, envir = env_proj)
 
   # Assign updated input data (ordered loci)
   assign("data_v_auto", data_v_auto, envir = env_proj)
@@ -608,14 +622,25 @@ analyze_y <- function(env_proj){
   # Analyze data for Y-STR
   result_y <- match_y_all(hap_v_y, hap_r_y)
 
-  # Arrange result_y
+  # Create a vector for the result of victim names
+  result_sn_v_y <- rep(sn_v_y, length(sn_r_y))
+
+  # Create a vector for the result of reference names
+  result_sn_r_y <- as.vector(sapply(sn_r_y, rep, length(sn_v_y)))
+
+  # Create a part of the data.table
+  dt_left <- data.table(Victim = result_sn_v_y, Reference = result_sn_r_y)
+
+  # Create the data.table for the results of Y-STR
   result_y <- unlist(result_y)
   result_y <- matrix(result_y, nrow = length(sn_v_y) * length(sn_r_y), ncol = 3 * (n_l + 1), byrow = TRUE)
-  rownames(result_y) <- NULL
-  colnames(result_y) <- c(paste0("Mismatch_", c(locus_y, "Total")), paste0("Ignore_", c(locus_y, "Total")), paste0("MuStep_", c(locus_y, "Total")))
+  dt_right <- as.data.frame(result_y)
+  setDT(dt_right)
+  names(dt_right) <- c(paste0("Mismatch_", c(locus_y, "Total")), paste0("Ignore_", c(locus_y, "Total")), paste0("MuStep_", c(locus_y, "Total")))
+  dt_y <- cbind(dt_left, dt_right)
 
-  # Assign result_y
-  assign("result_y", result_y, envir = env_proj)
+  # Assign the data.table for the results of Y-STR
+  assign("dt_y", dt_y, envir = env_proj)
 
   # Assign updated input data (ordered loci)
   assign("data_v_y", data_v_y, envir = env_proj)
@@ -654,14 +679,29 @@ analyze_mt <- function(env_proj){
   # Analyze data for mtDNA
   result_mt <- match_mt_all(hap_v_mt, hap_r_mt, range_v_mt, range_r_mt)
 
-  # Arrange result_mt
+  # Create a vector for the result of victim names
+  result_sn_v_mt <- rep(sn_v_mt, length(sn_r_mt))
+
+  # Create a vector for the result of reference names
+  result_sn_r_mt <- as.vector(sapply(sn_r_mt, rep, length(sn_v_mt)))
+
+  # Create a part of the data.table
+  dt_left <- data.table(Victim = result_sn_v_mt, Reference = result_sn_r_mt)
+
+  # Create the data.table for the results of mtDNA
   result_mt <- unlist(result_mt)
   result_mt <- matrix(result_mt, nrow = length(sn_v_mt) * length(sn_r_mt), ncol = 3, byrow = TRUE)
-  rownames(result_mt) <- NULL
-  colnames(result_mt) <- c("MismatchMt", "ShareRangeMt", "ShareLengthMt")
+  dt_right <- as.data.frame(result_mt)
+  setDT(dt_right)
+  names(dt_right) <- c("MismatchMt", "ShareRangeMt", "ShareLengthMt")
+  dt_mt <- cbind(dt_left, dt_right)
 
-  # Assign result_mt
-  assign("result_mt", result_mt, envir = env_proj)
+  # Convert column classes
+  col_change <- c("MismatchMt", "ShareLengthMt")
+  dt_mt[, (col_change) := lapply(.SD, as.numeric), .SDcols = col_change]
+
+  # Assign the data.table for the results of mtDNA
+  assign("dt_mt", dt_mt, envir = env_proj)
 
   # Update sample names in the environment "env_proj"
   set_env_proj_sn(env_proj, FALSE, sn_v_mt, sn_r_mt)
@@ -688,133 +728,86 @@ create_combined_data <- function(env_proj){
   max_mismatch_mt <- criteria$Value[criteria$Criteria == "max_mismatch_mt"]
   min_share_mt <- criteria$Value[criteria$Criteria == "min_share_mt"]
 
-  # Get all sample names from the environment "env_proj"
-  sn_v_all <- get("sn_v_all", pos = env_proj)
-  sn_r_all <- get("sn_r_all", pos = env_proj)
-
-  # The number of samples in all database
-  n_v_all <- length(sn_v_all)
-  n_r_all <- length(sn_r_all)
-
   # Get the end-sign of the analysis from the environment "env_proj"
   fin_auto <- get("fin_auto", pos = env_proj)
   fin_y <- get("fin_y", pos = env_proj)
   fin_mt <- get("fin_mt", pos = env_proj)
 
-  # Extract required data for autosomal STR
+  # Define the initial combined data.table
+  dt_combined <- NULL
+
   if(fin_auto){
 
-    # Get input data for autosomal STR from the environment "env_proj"
-    data_v_auto <- get("data_v_auto", pos = env_proj)
-    data_r_auto <- get("data_r_auto", pos = env_proj)
+    # Get the data.table for the results of autosomal STR
+    dt_auto <- get("dt_auto", pos = env_proj)
 
-    # Get results
-    result_auto <- get("result_auto", pos = env_proj)
-
-    # Extract locus names
-    locus_auto <- setdiff(names(data_v_auto), c("SampleName", "Relationship"))
-  }else{
-
-    # Define locus names
-    locus_auto <- character(0)
+    # Update the combined data.table
+    dt_combined <- dt_auto
   }
 
-  # Extract required data for Y-STR
   if(fin_y){
 
-    # Get input data for Y-STR from the environment "env_proj"
-    data_v_y <- get("data_v_y", pos = env_proj)
-    data_r_y <- get("data_r_y", pos = env_proj)
+    # Get the data.table for the results of Y-STR
+    dt_y <- get("dt_y", pos = env_proj)
 
-    # Get results
-    result_y <- get("result_y", pos = env_proj)
-
-    # Extract locus names
-    locus_y <- setdiff(names(data_v_y), c("SampleName", "Relationship"))
-  }else{
-
-    # Define locus names
-    locus_y <- character(0)
+    # Update the combined data.table
+    if(is.null(dt_combined)){
+      dt_combined <- dt_y
+    }else{
+      dt_combined <- full_join(dt_combined, dt_y, by = c("Victim", "Reference"))
+    }
   }
 
-  # Extract required data for mtDNA
   if(fin_mt){
 
-    # Get input data for mtDNA from the environment "env_proj"
-    data_v_mt <- get("data_v_mt", pos = env_proj)
-    data_r_mt <- get("data_r_mt", pos = env_proj)
+    # Get the data.table for the results of mtDNA
+    dt_mt <- get("dt_mt", pos = env_proj)
 
-    # Get results
-    result_mt <- get("result_mt", pos = env_proj)
+    # Update the combined data.table
+    if(is.null(dt_combined)){
+      dt_combined <- dt_mt
+    }else{
+      dt_combined <- full_join(dt_combined, dt_mt, by = c("Victim", "Reference"))
+    }
   }
 
-  # Define a matrix for saving all results
-  result_all <- matrix("", nrow = n_v_all * n_r_all, ncol = 3 * (length(locus_auto) + 1) + 3 * (length(locus_y) + 1) + 9)
-
-  # Define column names for result_all
-  cn_result_all <- c("Victim", "Reference", "AssumedRel",
-                     paste0("LikeH1_", c(locus_auto, "Total")), paste0("LikeH2_", c(locus_auto, "Total")), paste0("LR_", c(locus_auto, "Total")),
-                     paste0("Mismatch_", c(locus_y, "Total")), paste0("Ignore_", c(locus_y, "Total")), paste0("MuStep_", c(locus_y, "Total")),
-                     "MismatchMt", "ShareRangeMt", "ShareLengthMt",
-                     "EstimatedRel", "Paternal", "Maternal")
-  colnames(result_all) <- cn_result_all
-
-  # Record all sample names
-  result_all[, 1] <- rep(sn_v_all, n_r_all)
-  result_all[, 2] <- as.vector(sapply(sn_r_all, rep, n_v_all))
-
-  # Record results for autosomal STR
-  if(fin_auto){
-    pos_sn_auto <- search_pos_sn_comb(result_all[, 1], result_all[, 2], data_v_auto[, SampleName], data_r_auto[, SampleName]) + 1
-    result_all[pos_sn_auto, 3] <- as.character(sapply(data_r_auto[, Relationship], rep, nrow(data_v_auto)))
-    result_all[pos_sn_auto, c(grep("LikeH1_", cn_result_all), grep("LikeH2_", cn_result_all), grep("LR_", cn_result_all))] <- result_auto
-  }
-
-  # Record results for Y-STR
-  if(fin_y){
-    pos_sn_y <- search_pos_sn_comb(result_all[, 1], result_all[, 2], data_v_y[, SampleName], data_r_y[, SampleName]) + 1
-    result_all[pos_sn_y, c(grep("Mismatch_", cn_result_all), grep("Ignore_", cn_result_all), grep("MuStep_", cn_result_all))] <- result_y
-  }
-
-  # Record results for mtDNA
-  if(fin_mt){
-    pos_sn_mt <- search_pos_sn_comb(result_all[, 1], result_all[, 2], data_v_mt[, SampleName], data_r_mt[, SampleName]) + 1
-    result_all[pos_sn_mt, is.element(cn_result_all, c("MismatchMt", "ShareRangeMt", "ShareLengthMt"))] <- result_mt
-  }
+  # The number of data
+  n_data <- nrow(dt_combined)
 
   # Record estimated relationships
-  pos_meet_criteria_auto <- which(as.numeric(result_all[, "LR_Total"]) >= min_lr_auto)
-  result_all[pos_meet_criteria_auto, "EstimatedRel"] <- result_all[pos_meet_criteria_auto, "AssumedRel"]
+  pos_meet_criteria_auto <- which(dt_combined[, LR_Total] >= min_lr_auto)
+  est_rel_all <- rep("", n_data)
+  est_rel_all[pos_meet_criteria_auto] <- dt_combined[pos_meet_criteria_auto, AssumedRel]
 
   # Record paternal relationships
-  bool_meet_criteria_y <- matrix(FALSE, nrow(result_all), 4)
-  bool_meet_criteria_y[, 1] <- as.numeric(result_all[, "Mismatch_Total"]) <= max_mismatch_y
-  bool_meet_criteria_y[, 2] <- as.numeric(result_all[, "Ignore_Total"]) <= max_ignore_y
-  bool_meet_criteria_y[, 3] <- as.numeric(result_all[, "MuStep_Total"]) <= max_mustep_y
-  bool_meet_criteria_y[, 4] <- as.numeric(result_all[, "MuStep_Total"]) %% 1 == 0
+  bool_meet_criteria_y <- matrix(FALSE, n_data, 4)
+  bool_meet_criteria_y[, 1] <- dt_combined[, "Mismatch_Total"] <= max_mismatch_y
+  bool_meet_criteria_y[, 2] <- dt_combined[, "Ignore_Total"] <= max_ignore_y
+  bool_meet_criteria_y[, 3] <- dt_combined[, "MuStep_Total"] <= max_mustep_y
+  bool_meet_criteria_y[, 4] <- dt_combined[, "MuStep_Total"] %% 1 == 0
   pos_meet_criteria_y <- which(apply(bool_meet_criteria_y, 1, all))
-  result_all[pos_meet_criteria_y, "Paternal"] <- "support"
+  paternal_all <- rep("", n_data)
+  paternal_all[pos_meet_criteria_y] <- "support"
 
   # Record maternal relationships
-  bool_meet_criteria_mt <- matrix(FALSE, nrow(result_all), 2)
-  bool_meet_criteria_mt[, 1] <- as.numeric(result_all[, "MismatchMt"]) <= max_mismatch_mt
-  bool_meet_criteria_mt[, 2] <- as.numeric(result_all[, "ShareLengthMt"]) >= min_share_mt
+  bool_meet_criteria_mt <- matrix(FALSE, n_data, 2)
+  bool_meet_criteria_mt[, 1] <- dt_combined[, "MismatchMt"] <= max_mismatch_mt
+  bool_meet_criteria_mt[, 2] <- dt_combined[, "ShareLengthMt"] >= min_share_mt
   pos_meet_criteria_mt <- which(apply(bool_meet_criteria_mt, 1, all))
-  result_all[pos_meet_criteria_mt, "Maternal"] <- "support"
+  maternal_all <- rep("", n_data)
+  maternal_all[pos_meet_criteria_mt] <- "support"
 
-  # Create data.table for all results
-  dt_result <- as.data.frame(result_all)
-  setDT(dt_result)
-  names(dt_result) <- cn_result_all
-
-  # Convert column classes
-  col_change <- c(paste0("LikeH1_", c(locus_auto, "Total")), paste0("LikeH2_", c(locus_auto, "Total")), paste0("LR_", c(locus_auto, "Total")),
-                  paste0("Mismatch_", c(locus_y, "Total")), paste0("Ignore_", c(locus_y, "Total")), paste0("MuStep_", c(locus_y, "Total")),
-                  "MismatchMt", "ShareLengthMt")
-  dt_result[, (col_change) := lapply(.SD, as.numeric), .SDcols = col_change]
+  # Add columns to the data.table
+  if(!fin_auto){
+    dt_combined[, AssumedRel := rep("", n_data)]
+    dt_combined[, LR_Total := rep(NA, n_data)]
+  }
+  dt_combined[, EstimatedRel := est_rel_all]
+  dt_combined[, Paternal := paternal_all]
+  dt_combined[, Maternal := maternal_all]
 
   # Assign data table for all results
-  assign("dt_result", dt_result, envir = env_proj)
+  assign("dt_combined", dt_combined, envir = env_proj)
 }
 
 
@@ -861,6 +854,7 @@ search_rel <- function(env_proj, env_gui){
     }
 
     # Create combined data
+    cat("Creating combined data", "\n")
     create_combined_data(env_proj)
 
     # Make tab2
