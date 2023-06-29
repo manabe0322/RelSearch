@@ -159,45 +159,56 @@ std::vector<std::vector<double>> make_dummy_af(std::vector<std::vector<double>> 
 
 /*Determine dummy genotypes considering a drop-out allele (testthat)*/
 // [[Rcpp::export]]
-std::vector<std::vector<double>> make_dummy_gt(std::vector<double> vgt, std::vector<double> rgt){
-  std::sort(rgt.begin(), rgt.end());
-  rgt.erase(std::unique(rgt.begin(), rgt.end()), rgt.end());
-  int size_rgt = rgt.size();
+std::vector<std::vector<double>> make_dummy_gt(std::vector<double> target_gt, std::vector<double> uniq_vr_al){
 
-  bool presence_qal = search_pos_double(rgt, vgt[0]) != size_rgt;
+  /* The size of target_gt */
+  int size_target_gt = target_gt.size();
 
-  if(size_rgt == 1){
-    if(presence_qal){
-      std::vector<std::vector<double>> dummy_gt(1, std::vector<double>(2));
-      dummy_gt.at(0).at(0) = vgt[0];
-      dummy_gt.at(0).at(1) = 99;
-      return(dummy_gt);
-    }else{
-      std::vector<std::vector<double>> dummy_gt(2, std::vector<double>(2));
-      dummy_gt.at(0).at(0) = vgt[0];
-      dummy_gt.at(0).at(1) = rgt[0];
-      dummy_gt.at(1).at(0) = vgt[0];
-      dummy_gt.at(1).at(1) = 99;
-      return(dummy_gt);
-    }
+  /* No drop-out */
+  if(size_target_gt == 2){
+
+    /* Define a vector for dummy genotypes */
+    std::vector<std::vector<double>> dummy_gt(1, std::vector<double>(2));
+
+    /* Assign alleles */
+    dummy_gt.at(0).at(0) = target_gt[0];
+    dummy_gt.at(0).at(1) = target_gt[1];
+
+    /* Return */
+    return(dummy_gt);
+
+  /* Possible drop-out */
   }else{
-    if(presence_qal){
-      std::vector<std::vector<double>> dummy_gt(2, std::vector<double>(2));
-      dummy_gt.at(0).at(0) = rgt[0];
-      dummy_gt.at(0).at(1) = rgt[1];
-      dummy_gt.at(1).at(0) = vgt[0];
-      dummy_gt.at(1).at(1) = 99;
-      return(dummy_gt);
-    }else{
-      std::vector<std::vector<double>> dummy_gt(3, std::vector<double>(2));
-      dummy_gt.at(0).at(0) = vgt[0];
-      dummy_gt.at(0).at(1) = rgt[0];
-      dummy_gt.at(1).at(0) = vgt[0];
-      dummy_gt.at(1).at(1) = rgt[1];
-      dummy_gt.at(2).at(0) = vgt[0];
-      dummy_gt.at(2).at(1) = 99;
-      return(dummy_gt);
+
+    /* The size of uniq_vr_al */
+    int size_uniq_vr_al = uniq_vr_al.size();
+
+    /* Define a vector for dummy genotypes */
+    std::vector<std::vector<double>> dummy_gt(size_uniq_vr_al + 1, std::vector<double>(2));
+
+    /* Repetitive execution for other alleles */
+    for(int i = 0; i < size_uniq_vr_al; ++i){
+
+      /* Define a vector for a dummy genotype */
+      std::vector<double> dummy_gt_one(2);
+
+      /* Assign alleles */
+      dummy_gt_one[0] = target_gt[0];
+      dummy_gt_one[1] = uniq_vr_al[i];
+
+      /* Sort the dummy genotype */
+      std::sort(dummy_gt_one.begin(), dummy_gt_one.end());
+
+      /* Assign the dummy genotype */
+      dummy_gt.at(i) = dummy_gt_one;
     }
+
+    /* Assign alleles (allele 99) */
+    dummy_gt.at(size_uniq_vr_al).at(0) = target_gt[0];
+    dummy_gt.at(size_uniq_vr_al).at(1) = 99;
+
+    /* Return */
+    return(dummy_gt);
   }
 }
 
@@ -231,86 +242,105 @@ std::vector<double> calc_kin_like_drop(std::vector<double> vgt, std::vector<doub
   return(like_drop);
 }
 
-/*Calculation of likelihood ratio for kinship analysis*/
+
+/*##############################################
+# The function to calculate the LR of one pair #
+##############################################*/
+
 // [[Rcpp::export]]
 std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim, std::vector<double> prof_ref,
                                              std::vector<std::vector<double>> af_list, std::vector<std::vector<double>> af_al_list,
                                              std::vector<double> pibd, bool cons_mu, std::vector<double> myus, std::vector<double> apes,
                                              int meth_d, double pd){
+  /* The number of loci */
   int n_l = prof_victim.size() / 2;
+
+  /* Define an array for saving the likelihood and the LR */
   std::vector<std::vector<double>> ans(3, std::vector<double>(n_l + 1));
+
+  /* Define the initial cumulative likelihood of H1 and H2 */
   double cl_h1 = 1;
   double cl_h2 = 1;
+
+  /* Repetitive execution for loci */
   for(int i = 0; i < n_l; ++i){
+
+    /* Extract the victim's genotype in one locus */
     std::vector<double> vgt(2);
     vgt[0] = prof_victim[2 * i];
     vgt[1] = prof_victim[2 * i + 1];
+
+    /* Remove '-99' (the sign of drop-out) from the victim's genotype */
     auto vgt_end = std::remove(vgt.begin(), vgt.end(), -99);
     vgt.erase(vgt_end, vgt.cend());
+
+    /* Extract the reference's genotype in one locus */
     std::vector<double> rgt(2);
     rgt[0] = prof_ref[2 * i];
     rgt[1] = prof_ref[2 * i + 1];
+
+    /* Remove '-99' (the sign of drop-out) from the reference's genotype */
     auto rgt_end = std::remove(rgt.begin(), rgt.end(), -99);
     vgt.erase(rgt_end, rgt.cend());
+
+    /* Extract the allele frequencies in one locus */
     std::vector<double> af = af_list[i];
     std::vector<double> af_al = af_al_list[i];
 
+    /* Extract the mutation rate in one locus */
     double myu = myus[i];
+
+    /* Extract the average probability of exclusion in one locus */
     double ape = apes[i];
 
-    /*locus drop-out or no information*/
+    /* Locus drop-out or no information */
     if(vgt.size() == 0 || rgt.size() == 0){
       ans.at(0).at(i) = 1;
       ans.at(1).at(i) = 1;
       ans.at(2).at(i) = 1;
-      /*considering drop-out*/
-    }else if(meth_d != 0){
-      std::vector<double> vgt_uni = vgt;
-      vgt_uni.erase(std::unique(vgt_uni.begin(), vgt_uni.end()), vgt_uni.end());
-      /*vgt : heterozygote*/
-      if(vgt_uni.size() == 2){
-        std::vector<double> like_h12 = calc_kin_like(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape);
-        ans.at(0).at(i) = like_h12[0];
-        ans.at(1).at(i) = like_h12[1];
-        ans.at(2).at(i) = like_h12[0] / like_h12[1];
-        cl_h1 = cl_h1 * like_h12[0];
-        cl_h2 = cl_h2 * like_h12[1];
-        /*vgt : homozygote or heterozygote*/
-      }else{
-        if(meth_d == 1){
-          /*vgt : heterozygote*/
-          if(vgt.size() == 2){
-            std::vector<double> like_h12 = calc_kin_like(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape);
-            ans.at(0).at(i) = like_h12[0];
-            ans.at(1).at(i) = like_h12[1];
-            ans.at(2).at(i) = like_h12[0] / like_h12[1];
-            cl_h1 = cl_h1 * like_h12[0];
-            cl_h2 = cl_h2 * like_h12[1];
-            /*considering drop-out*/
-          }else{
-            std::vector<double> like_h12 = calc_kin_like_drop(vgt, rgt, af, af_al, pibd, false, myu, ape, pd);
-            ans.at(0).at(i) = like_h12[0];
-            ans.at(1).at(i) = like_h12[1];
-            ans.at(2).at(i) = like_h12[0] / like_h12[1];
-            cl_h1 = cl_h1 * like_h12[0];
-            cl_h2 = cl_h2 * like_h12[1];
-          }
-          /*considering drop-out*/
-        }else if(meth_d == 2){
-          std::vector<double> like_h12 = calc_kin_like_drop(vgt, rgt, af, af_al, pibd, false, myu, ape, pd);
-          ans.at(0).at(i) = like_h12[0];
-          ans.at(1).at(i) = like_h12[1];
-          ans.at(2).at(i) = like_h12[0] / like_h12[1];
-          cl_h1 = cl_h1 * like_h12[0];
-          cl_h2 = cl_h2 * like_h12[1];
-        }
-      }
-      /*not considering drop-out*/
-    }else{
+
+    /* No undetected allele */
+    }else if(vgt.size() == 2 && rgt.size() == 2){
+
+      /* Calculate the likelihood in one locus */
       std::vector<double> like_h12 = calc_kin_like(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape);
+
+      /* Assign the likelihood and the LR */
       ans.at(0).at(i) = like_h12[0];
       ans.at(1).at(i) = like_h12[1];
       ans.at(2).at(i) = like_h12[0] / like_h12[1];
+
+      /* Update the cumulative likelihood of H1 and H2 */
+      cl_h1 = cl_h1 * like_h12[0];
+      cl_h2 = cl_h2 * like_h12[1];
+
+    /* Not considering drop-out */
+    }else if(meth_d == 0){
+
+      /* Calculate the likelihood in one locus */
+      std::vector<double> like_h12 = calc_kin_like(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape);
+
+      /* Assign the likelihood and the LR */
+      ans.at(0).at(i) = like_h12[0];
+      ans.at(1).at(i) = like_h12[1];
+      ans.at(2).at(i) = like_h12[0] / like_h12[1];
+
+      /* Update the cumulative likelihood of H1 and H2 */
+      cl_h1 = cl_h1 * like_h12[0];
+      cl_h2 = cl_h2 * like_h12[1];
+
+    /* Considering drop-out */
+    }else{
+
+      /* Calculate the likelihood in one locus considering drop-out*/
+      std::vector<double> like_h12 = calc_kin_like_drop(vgt, rgt, af, af_al, pibd, false, myu, ape, pd);
+
+      /* Assign the likelihood and the LR */
+      ans.at(0).at(i) = like_h12[0];
+      ans.at(1).at(i) = like_h12[1];
+      ans.at(2).at(i) = like_h12[0] / like_h12[1];
+
+      /* Update the cumulative likelihood of H1 and H2 */
       cl_h1 = cl_h1 * like_h12[0];
       cl_h2 = cl_h2 * like_h12[1];
     }
@@ -321,6 +351,11 @@ std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim, st
   ans.at(2).at(n_l) = cl_h1 / cl_h2;
   return(ans);
 }
+
+
+/*###############################################
+# The function to calculate the LR of all pairs #
+###############################################*/
 
 // [[Rcpp::depends(RcppProgress)]]
 // [[Rcpp::export]]
@@ -336,23 +371,39 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
                                                               std::vector<double> apes,
                                                               int meth_d,
                                                               double pd){
+  /* The number of victims */
   int n_v = gt_v_auto.size();
+
+  /* The number of references */
   int n_r = gt_r_auto.size();
+
+  /* The number of loci */
   int n_l = gt_r_auto.at(0).size();
 
+  /* The number of pairs */
   int n_vr = n_v * n_r;
+
+  /* Set progress bar */
   Progress p(n_vr, true);
 
+  /* Define an array for saving likelihoods and LRs */
   std::vector<std::vector<std::vector<double>>> result_auto(n_vr, std::vector<std::vector<double>>(3, std::vector<double>(n_l + 1)));
 
+  /* Repetitive execution for references */
   for(int i = 0; i < n_r; ++i){
+
+    /* Extract the assumed relationship of one reference */
     std::string assumed_rel = assumed_rel_all[i];
+
+    /* Extract the profile of one reference */
     std::vector<double> prof_ref = gt_r_auto.at(i);
 
+    /* Extract the IBD probabilities */
     std::vector<double> pibd;
     int pos_assumed_rel = search_pos_string(names_rel, assumed_rel);
     pibd = pibds_rel.at(pos_assumed_rel);
 
+    /* Set the consideration of mutations */
     bool cons_mu;
     if(degrees_rel[pos_assumed_rel] == "1st_pc"){
       cons_mu = true;
@@ -360,18 +411,28 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
       cons_mu = false;
     }
 
+    /* Repetitive execution for victims */
     for(int j = 0; j < n_v; ++j){
+
+      /* Update progress bar */
       p.increment();
 
+      /* Extract the profile of one victim */
       std::vector<double> prof_victim = gt_v_auto.at(j);
 
+      /* Calculate the LR for the selected victim and reference */
       std::vector<std::vector<double>> ans = calc_kin_lr(prof_victim, prof_ref, af_list, af_al_list, pibd, cons_mu, myus, apes, meth_d, pd);
 
+      /* Define the index for assigning the likelihood and the LR */
       int pos = n_v * i + j;
+
+      /* Assign the likelihood and the LR */
       result_auto.at(pos).at(0) = ans.at(0);
       result_auto.at(pos).at(1) = ans.at(1);
       result_auto.at(pos).at(2) = ans.at(2);
     }
   }
+
+  /* Return */
   return(result_auto);
 }

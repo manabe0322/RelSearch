@@ -42,14 +42,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // make_dummy_gt
-std::vector<std::vector<double>> make_dummy_gt(std::vector<double> vgt, std::vector<double> rgt);
-RcppExport SEXP _relsearch_make_dummy_gt(SEXP vgtSEXP, SEXP rgtSEXP) {
+std::vector<std::vector<double>> make_dummy_gt(std::vector<double> target_gt, std::vector<double> uniq_vr_al);
+RcppExport SEXP _relsearch_make_dummy_gt(SEXP target_gtSEXP, SEXP uniq_vr_alSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector<double> >::type vgt(vgtSEXP);
-    Rcpp::traits::input_parameter< std::vector<double> >::type rgt(rgtSEXP);
-    rcpp_result_gen = Rcpp::wrap(make_dummy_gt(vgt, rgt));
+    Rcpp::traits::input_parameter< std::vector<double> >::type target_gt(target_gtSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type uniq_vr_al(uniq_vr_alSEXP);
+    rcpp_result_gen = Rcpp::wrap(make_dummy_gt(target_gt, uniq_vr_al));
     return rcpp_result_gen;
 END_RCPP
 }
