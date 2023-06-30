@@ -106,15 +106,15 @@ set_criteria <- function(env_proj, env_gui){
     if(sign_ok == "ok"){
 
       # Get default values from the environment "env_proj"
-      criteria <- get("criteria_default", pos = env_proj)
+      dt_criteria <- get("dt_criteria_default", pos = env_proj)
 
       # Reset tcl variables
-      tclvalue(min_lr_auto_var) <- criteria$Value[criteria$Criteria == "min_lr_auto"]
-      tclvalue(max_mismatch_y_var) <- criteria$Value[criteria$Criteria == "max_mismatch_y"]
-      tclvalue(max_ignore_y_var) <- criteria$Value[criteria$Criteria == "max_ignore_y"]
-      tclvalue(max_mustep_y_var) <- criteria$Value[criteria$Criteria == "max_mustep_y"]
-      tclvalue(max_mismatch_mt_var) <- criteria$Value[criteria$Criteria == "max_mismatch_mt"]
-      tclvalue(min_share_mt_var) <- criteria$Value[criteria$Criteria == "min_share_mt"]
+      tclvalue(min_lr_auto_var) <- dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"]
+      tclvalue(max_mismatch_y_var) <- dt_criteria$Value[dt_criteria$Criteria == "max_mismatch_y"]
+      tclvalue(max_ignore_y_var) <- dt_criteria$Value[dt_criteria$Criteria == "max_ignore_y"]
+      tclvalue(max_mustep_y_var) <- dt_criteria$Value[dt_criteria$Criteria == "max_mustep_y"]
+      tclvalue(max_mismatch_mt_var) <- dt_criteria$Value[dt_criteria$Criteria == "max_mismatch_mt"]
+      tclvalue(min_share_mt_var) <- dt_criteria$Value[dt_criteria$Criteria == "min_share_mt"]
 
       # Create the file "criteria.csv"
       create_criteria_csv(tclvalue(min_lr_auto_var),
@@ -141,27 +141,29 @@ set_criteria <- function(env_proj, env_gui){
   if(is.element("criteria.csv", fn_par)){
 
     # Load the file "criteria.csv"
-    criteria <- fread(paste0(path_pack, "/extdata/parameters/criteria.csv"))
+    dt_criteria <- fread(paste0(path_pack, "/extdata/parameters/criteria.csv"))
 
     # Extract values
-    min_lr_auto <- criteria$Value[criteria$Criteria == "min_lr_auto"]
-    max_mismatch_y <- criteria$Value[criteria$Criteria == "max_mismatch_y"]
-    max_ignore_y <- criteria$Value[criteria$Criteria == "max_ignore_y"]
-    max_mustep_y <- criteria$Value[criteria$Criteria == "max_mustep_y"]
-    max_mismatch_mt <- criteria$Value[criteria$Criteria == "max_mismatch_mt"]
-    min_share_mt <- criteria$Value[criteria$Criteria == "min_share_mt"]
+    min_lr_auto <- dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"]
+    max_mismatch_y <- dt_criteria$Value[dt_criteria$Criteria == "max_mismatch_y"]
+    max_ignore_y <- dt_criteria$Value[dt_criteria$Criteria == "max_ignore_y"]
+    max_mustep_y <- dt_criteria$Value[dt_criteria$Criteria == "max_mustep_y"]
+    max_mismatch_mt <- dt_criteria$Value[dt_criteria$Criteria == "max_mismatch_mt"]
+    min_share_mt <- dt_criteria$Value[dt_criteria$Criteria == "min_share_mt"]
 
   # If the file "criteria.csv" is missing
   }else{
 
     # Get default values from the environment "env_proj"
-    criteria <- get("criteria_default", pos = env_proj)
-    min_lr_auto <- criteria$Value[criteria$Criteria == "min_lr_auto"]
-    max_mismatch_y <- criteria$Value[criteria$Criteria == "max_mismatch_y"]
-    max_ignore_y <- criteria$Value[criteria$Criteria == "max_ignore_y"]
-    max_mustep_y <- criteria$Value[criteria$Criteria == "max_mustep_y"]
-    max_mismatch_mt <- criteria$Value[criteria$Criteria == "max_mismatch_mt"]
-    min_share_mt <- criteria$Value[criteria$Criteria == "min_share_mt"]
+    dt_criteria <- get("dt_criteria_default", pos = env_proj)
+
+    # Extract values
+    min_lr_auto <- dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"]
+    max_mismatch_y <- dt_criteria$Value[dt_criteria$Criteria == "max_mismatch_y"]
+    max_ignore_y <- dt_criteria$Value[dt_criteria$Criteria == "max_ignore_y"]
+    max_mustep_y <- dt_criteria$Value[dt_criteria$Criteria == "max_mustep_y"]
+    max_mismatch_mt <- dt_criteria$Value[dt_criteria$Criteria == "max_mismatch_mt"]
+    min_share_mt <- dt_criteria$Value[dt_criteria$Criteria == "min_share_mt"]
 
     # Create the file "criteria.csv"
     create_criteria_csv(min_lr_auto, max_mismatch_y, max_ignore_y, max_mustep_y, max_mismatch_mt, min_share_mt)
@@ -234,8 +236,7 @@ set_myu <- function(env_proj, env_gui){
   # The function to create the file "myu.csv" #
   #############################################
 
-  create_myu_csv <- function(myu_all){
-    dt_myu <- data.table(Markers = names(myu_all), Myu = myu_all)
+  create_myu_csv <- function(dt_myu){
     write.csv(dt_myu, paste0(path_pack, "/extdata/parameters/myu.csv"), row.names = FALSE)
   }
 
@@ -255,8 +256,8 @@ set_myu <- function(env_proj, env_gui){
 
       # Get the selected mutation rate
       pos_select <- as.numeric(tclvalue(tkcurselection(mlb_myu))) + 1
-      myu_all <- get("myu_all", pos = env_myu)
-      myu_select <- myu_all[pos_select]
+      dt_myu <- get("dt_myu", pos = env_myu)
+      myu_select <- dt_myu[pos_select, Myu]
       myu_select_var <- tclVar(myu_select)
 
       # Create a top frame
@@ -301,13 +302,13 @@ set_myu <- function(env_proj, env_gui){
     if(sign_ok == "ok"){
 
       # Get the current mutation rates from the environment "env_myu"
-      myu_all <- get("myu_all", pos = env_myu)
+      dt_myu <- get("dt_myu", pos = env_myu)
 
       # Update mutation rates
-      myu_all[pos_select] <- myu_select
+      dt_myu[pos_select, "Myu"] <- myu_select
 
       # Update the file "myu.csv"
-      create_myu_csv(myu_all)
+      create_myu_csv(dt_myu)
 
       # Get widgets from the environment "env_myu"
       scr1 <- get("scr1", pos = env_myu)
@@ -324,7 +325,7 @@ set_myu <- function(env_proj, env_gui){
       mlb_myu <- tk2mclistbox(frame_myu_1, width = 30, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
       tk2column(mlb_myu, "add", label = "Locus", width = 15)
       tk2column(mlb_myu, "add", label = "Mutation rate", width = 15)
-      tk2insert.multi(mlb_myu, "end", myu_save)
+      tk2insert.multi(mlb_myu, "end", dt_myu)
 
       # Grid widgets
       tkgrid(mlb_myu, scr1)
@@ -335,7 +336,7 @@ set_myu <- function(env_proj, env_gui){
       assign("mlb_myu", mlb_myu, envir = env_myu)
 
       # Assign mutation rates to the environment "env_myu"
-      assign("myu_all", myu_all, envir = env_myu)
+      assign("dt_myu", dt_myu, envir = env_myu)
 
       # Reset environment variables for autosomal STR
       set_env_proj_auto(env_proj, FALSE)
@@ -399,15 +400,14 @@ set_myu <- function(env_proj, env_gui){
     if(sign_ok == "ok"){
 
       # Get the current mutation rates from the environment "env_myu"
-      myu_all <- get("myu_all", pos = env_myu)
+      dt_myu <- get("dt_myu", pos = env_myu)
 
       # Update mutation rates
-      locus_myu <- names(myu_all)
-      myu_all[length(myu_all) + 1] <- myu_add
-      names(myu_all) <- c(locus_myu, locus_add)
+      dt_new <- data.table(Marker = locus_add, Myu = myu_add)
+      dt_myu <- rbind(dt_myu, dt_new)
 
       # Update the file "myu.csv"
-      create_myu_csv(myu_all)
+      create_myu_csv(dt_myu)
 
       # Get the multi-list box of mutation rates from the environment "env_myu"
       mlb_myu <- get("mlb_myu", pos = env_myu)
@@ -419,7 +419,7 @@ set_myu <- function(env_proj, env_gui){
       assign("mlb_myu", mlb_myu, envir = env_myu)
 
       # Assign mutation rates to the environment "env_myu"
-      assign("myu_all", myu_all, envir = env_myu)
+      assign("dt_myu", dt_myu, envir = env_myu)
 
       # Reset environment variables for autosomal STR
       set_env_proj_auto(env_proj, FALSE)
@@ -453,14 +453,14 @@ set_myu <- function(env_proj, env_gui){
       if(sign_ok == "ok"){
 
         # Get the current mutation rates from the environment "env_myu"
-        myu_all <- get("myu_all", pos = env_myu)
+        dt_myu <- get("dt_myu", pos = env_myu)
 
         # Update mutation rates
         pos_select <- as.numeric(tclvalue(tkcurselection(mlb_myu))) + 1
-        myu_all <- myu_all[-pos_select]
+        dt_myu <- dt_myu[-pos_select, ]
 
         # Update the file "myu.csv"
-        create_myu_csv(myu_all)
+        create_myu_csv(dt_myu)
 
         # Get the scrollbar from the environment "env_myu"
         scr1 <- get("scr1", pos = env_myu)
@@ -476,7 +476,7 @@ set_myu <- function(env_proj, env_gui){
         mlb_myu <- tk2mclistbox(frame_myu_1, width = 30, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
         tk2column(mlb_myu, "add", label = "Locus", width = 15)
         tk2column(mlb_myu, "add", label = "Mutation rate", width = 15)
-        tk2insert.multi(mlb_myu, "end", myu_save)
+        tk2insert.multi(mlb_myu, "end", dt_myu)
 
         # Grid widgets
         tkgrid(mlb_myu, scr1)
@@ -487,7 +487,7 @@ set_myu <- function(env_proj, env_gui){
         assign("scr1", scr1, envir = env_myu)
 
         # Assign mutation rates to the environment "env_myu"
-        assign("myu_all", myu_all, envir = env_myu)
+        assign("dt_myu", dt_myu, envir = env_myu)
 
         # Reset environment variables for autosomal STR
         set_env_proj_auto(env_proj, FALSE)
@@ -510,19 +510,14 @@ set_myu <- function(env_proj, env_gui){
     # Load the file "myu.csv"
     dt_myu <- fread(paste0(path_pack, "/extdata/parameters/myu.csv"))
 
-    # Extract mutation rates
-    locus_myu <- dt_myu[, Marker]
-    myu_all <- dt_myu[, Myu]
-    names(myu_all) <- locus_myu
-
   # If the file "myu.csv" is missing
   }else{
 
     # Get default mutation rates from the environment "env_proj"
-    myu_all <- get("myu_all_default", pos = env_proj)
+    dt_myu <- get("dt_myu_default", pos = env_proj)
 
     # Update the file "myu.csv"
-    create_myu_csv(myu_all)
+    create_myu_csv(dt_myu)
   }
 
   # Make an environment
@@ -543,7 +538,7 @@ set_myu <- function(env_proj, env_gui){
   mlb_myu <- tk2mclistbox(frame_myu_1, width = 30, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
   tk2column(mlb_myu, "add", label = "Locus", width = 15)
   tk2column(mlb_myu, "add", label = "Mutation rate", width = 15)
-  tk2insert.multi(mlb_myu, "end", cbind(locus_myu, myu_all))
+  tk2insert.multi(mlb_myu, "end", dt_myu)
 
   # Define widgets in frame_myu2
   butt_edit <- tkbutton(frame_myu_2, text = "    Edit    ", cursor = "hand2", command = function() edit_myu_1())
@@ -563,8 +558,8 @@ set_myu <- function(env_proj, env_gui){
   assign("mlb_myu", mlb_myu, envir = env_myu)
   assign("scr1", scr1, envir = env_myu)
 
-  # Assign mutation rates to the environment "env_myu"
-  assign("myu_all", myu_all, envir = env_myu)
+  # Assign dt_myu to the environment "env_myu"
+  assign("dt_myu", dt_myu, envir = env_myu)
 }
 
 ##########################################
@@ -1328,7 +1323,6 @@ set_rel <- function(env_proj, env_gui){
     assign("combos_father_unk", combos_father_unk, envir = env_rel)
     assign("combos_mother_unk", combos_mother_unk, envir = env_rel)
     assign("checks_founder_unk", checks_founder_unk, envir = env_rel)
-
   }
 
   ###############################################

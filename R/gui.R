@@ -82,22 +82,22 @@ set_env_proj_mt <- function(env_proj, bool_new){
 set_env_proj_default <- function(env_proj){
 
   # Set default criteria
-  criteria_default <- data.table(Criteria = c("min_lr_auto", "max_mismatch_y", "max_ignore_y", "max_mustep_y", "max_mismatch_mt", "min_share_mt"),
-                                 Value = c(100, 2, 10, 2, 1, 300))
-  assign("criteria_default", criteria_default, envir = env_proj)
+  dt_criteria_default <- data.table(Criteria = c("min_lr_auto", "max_mismatch_y", "max_ignore_y", "max_mustep_y", "max_mismatch_mt", "min_share_mt"),
+                                    Value = c(100, 2, 10, 2, 1, 300))
+  assign("dt_criteria_default", dt_criteria_default, envir = env_proj)
 
   # Set default mutation rates
-  myu_all_default <- c(0.001474647, 0.002858327, 0.001479789, 0.002240583, 0.000227000,
-                       0.001433812, 0.001130039, 0.001588339,
-                       0.001521043, 0.001069792, 0.000092200, 0.002602109,
-                       0.001521043, 0.001848550, 0.001574558, 0.001179836, 0.001521043,
-                       0.001521043, 0.001521043, 0.001521043, 0.001130039)
-  names(myu_all_default) <- c("D3S1358", "vWA", "D16S539", "CSF1PO", "TPOX",
-                              "D8S1179", "D21S11", "D18S51",
-                              "D2S441", "D19S433", "TH01", "FGA",
-                              "D22S1045", "D5S818", "D13S317", "D7S820", "SE33",
-                              "D10S1248", "D1S1656", "D12S391", "D2S1338")
-  assign("myu_all_default", myu_all_default, envir = env_proj)
+  dt_myu_default <- data.table(Marker = c("D3S1358", "vWA", "D16S539", "CSF1PO", "TPOX",
+                                          "D8S1179", "D21S11", "D18S51",
+                                          "D2S441", "D19S433", "TH01", "FGA",
+                                          "D22S1045", "D5S818", "D13S317", "D7S820", "SE33",
+                                          "D10S1248", "D1S1656", "D12S391", "D2S1338"),
+                               Myu = c(0.001474647, 0.002858327, 0.001479789, 0.002240583, 0.000227000,
+                                       0.001433812, 0.001130039, 0.001588339,
+                                       0.001521043, 0.001069792, 0.000092200, 0.002602109,
+                                       0.001521043, 0.001848550, 0.001574558, 0.001179836, 0.001521043,
+                                       0.001521043, 0.001521043, 0.001521043, 0.001130039))
+  assign("dt_myu_default", dt_myu_default, envir = env_proj)
 
   # Set default relationship
   name_rel <- c("parent-child", "sibling", "grandparent-grandchild", "uncle-nephew", "cousin")
@@ -105,7 +105,7 @@ set_env_proj_default <- function(env_proj){
   pibd2 <- c(0, 0.25, 0, 0, 0)
   pibd1 <- c(1, 0.5, 0.5, 0.5, 0.25)
   pibd0 <- c(0, 0.25, 0.5, 0.5, 0.75)
-  rel_data_default <- data.frame(Name_relationship = name_rel, Degree = degree, Pr_IBD2 = pibd2, Pr_IBD1 = pibd1, Pr_IBD0 = pibd0)
+  rel_data_default <- data.table(Name_relationship = name_rel, Degree = degree, Pr_IBD2 = pibd2, Pr_IBD1 = pibd1, Pr_IBD0 = pibd0)
   assign("rel_data_default", rel_data_default, envir = env_proj)
 
   # Set default parameters for autosomal STR
