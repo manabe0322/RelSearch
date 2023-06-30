@@ -235,8 +235,8 @@ set_myu <- function(env_proj, env_gui){
   #############################################
 
   create_myu_csv <- function(myu_all){
-    myu_data <- data.table(Markers = names(myu_all), Myu = myu_all)
-    write.csv(myu_data, paste0(path_pack, "/extdata/parameters/myu.csv"), row.names = FALSE)
+    dt_myu <- data.table(Markers = names(myu_all), Myu = myu_all)
+    write.csv(dt_myu, paste0(path_pack, "/extdata/parameters/myu.csv"), row.names = FALSE)
   }
 
   ########################################
@@ -508,11 +508,11 @@ set_myu <- function(env_proj, env_gui){
   if(is.element("myu.csv", fn_par)){
 
     # Load the file "myu.csv"
-    myu_data <- read.csv(paste0(path_pack, "/extdata/parameters/myu.csv"), header = TRUE)
+    dt_myu <- fread(paste0(path_pack, "/extdata/parameters/myu.csv"))
 
     # Extract mutation rates
-    locus_myu <- myu_data[, "Marker"]
-    myu_all <- as.numeric(myu_data[, "Myu"])
+    locus_myu <- dt_myu[, Marker]
+    myu_all <- dt_myu[, Myu]
     names(myu_all) <- locus_myu
 
   # If the file "myu.csv" is missing
@@ -738,15 +738,15 @@ set_rel <- function(env_proj, env_gui){
   # The function to create the file "rel.csv" #
   #############################################
 
-  create_rel_csv <- function(rel_data){
-    write.csv(rel_data, paste0(path_pack, "/extdata/parameters/rel.csv"), row.names = FALSE)
+  create_rel_csv <- function(dt_rel){
+    write.csv(dt_rel, paste0(path_pack, "/extdata/parameters/rel.csv"), row.names = FALSE)
   }
 
   ###########################################################################
   # The function to remake a multi-list box of information on relationships #
   ###########################################################################
 
-  remake_mlb_rel <- function(rel_data){
+  remake_mlb_rel <- function(dt_rel){
 
     # Get widgets from the environment "env_rel"
     scr1 <- get("scr1", pos = env_rel)
@@ -766,7 +766,7 @@ set_rel <- function(env_proj, env_gui){
     tk2column(mlb_rel, "add", label = "Pr (IBD = 2)", width = 20)
     tk2column(mlb_rel, "add", label = "Pr (IBD = 1)", width = 20)
     tk2column(mlb_rel, "add", label = "Pr (IBD = 0)", width = 20)
-    tk2insert.multi(mlb_rel, "end",  rel_data)
+    tk2insert.multi(mlb_rel, "end",  dt_rel)
 
     # Grid widgets
     tkgrid(mlb_rel, scr1)
@@ -794,11 +794,11 @@ set_rel <- function(env_proj, env_gui){
     }else{
 
       # Get relationship data from the environment "env_rel"
-      rel_data <- get("rel_data", pos = env_rel)
+      dt_rel <- get("dt_rel", pos = env_rel)
 
       # Get the selected relationship
       pos_select <- as.numeric(tclvalue(tkcurselection(mlb_rel))) + 1
-      rel_select <- rel_data[pos_select, "Name_relationship"]
+      rel_select <- dt_rel[pos_select, "Name_relationship"]
 
       # Define a tcl variable
       rel_select_var <- tclVar(rel_select)
@@ -832,19 +832,19 @@ set_rel <- function(env_proj, env_gui){
     if(sign_ok == "ok"){
 
       # Get the current relationship data from the environment "env_rel"
-      rel_data <- get("rel_data", pos = env_rel)
+      dt_rel <- get("dt_rel", pos = env_rel)
 
       # Update the name of the selected relationship
-      rel_data[pos_select, "Name_relationship"] <- rel_select
+      dt_rel[pos_select, "Name_relationship"] <- rel_select
 
       # Update the file "rel.csv"
-      create_rel_csv(rel_data)
+      create_rel_csv(dt_rel)
 
       # Remake a multi-list box of information on relationships
-      remake_mlb_rel(rel_data)
+      remake_mlb_rel(dt_rel)
 
       # Assign data to the environment "env_rel"
-      assign("rel_data", rel_data, envir = env_rel)
+      assign("dt_rel", dt_rel, envir = env_rel)
 
       # Reset environment variables for autosomal STR
       set_env_proj_auto(env_proj, FALSE)
@@ -1373,22 +1373,22 @@ set_rel <- function(env_proj, env_gui){
           }else{
 
             # Get relationship data from the environment "env_rel"
-            rel_data <- get("rel_data", pos = env_rel)
+            dt_rel <- get("dt_rel", pos = env_rel)
 
             # Make a displayed degree
             deg_display <- make_deg_display(deg, pibd[2])
 
             # Update the relationship data
-            rel_data <- rbind(rel_data, c(name_rel, deg_display, pibd))
+            dt_rel <- rbind(dt_rel, c(name_rel, deg_display, pibd))
 
             # Update the file "rel.csv"
-            create_rel_csv(rel_data)
+            create_rel_csv(dt_rel)
 
             # Remake a multi-list box of information on relationships
-            remake_mlb_rel(rel_data)
+            remake_mlb_rel(dt_rel)
 
             # Assign data to the environment "env_rel"
-            assign("rel_data", rel_data, envir = env_rel)
+            assign("dt_rel", dt_rel, envir = env_rel)
 
             # Reset environment variables for autosomal STR
             set_env_proj_auto(env_proj, FALSE)
@@ -1427,22 +1427,22 @@ set_rel <- function(env_proj, env_gui){
       if(sign_ok == "ok"){
 
         # Get relationship data from the environment "env_rel"
-        rel_data <- get("rel_data", pos = env_rel)
+        dt_rel <- get("dt_rel", pos = env_rel)
 
         # Get a row index deleted
         pos_select <- as.numeric(tclvalue(tkcurselection(mlb_rel))) + 1
 
         # Delete a selected relationship
-        rel_data <- rel_data[-pos_select, ]
+        dt_rel <- dt_rel[-pos_select, ]
 
         # Update the file "rel.csv"
-        create_rel_csv(rel_data)
+        create_rel_csv(dt_rel)
 
         # Remake a multi-list box of information on relationships
-        remake_mlb_rel(rel_data)
+        remake_mlb_rel(dt_rel)
 
         # Assign data to the environment "env_rel"
-        assign("rel_data", rel_data, envir = env_rel)
+        assign("dt_rel", dt_rel, envir = env_rel)
 
         # Reset environment variables for autosomal STR
         set_env_proj_auto(env_proj, FALSE)
@@ -1466,16 +1466,16 @@ set_rel <- function(env_proj, env_gui){
     if(sign_ok == "ok"){
 
       # Get default relationship data from the environment "env_proj"
-      rel_data <- get("rel_data_default", pos = env_proj)
+      dt_rel <- get("rel_data_default", pos = env_proj)
 
       # Update the file "rel.csv"
-      create_rel_csv(rel_data)
+      create_rel_csv(dt_rel)
 
       # Remake a multi-list box of information on relationships
-      remake_mlb_rel(rel_data)
+      remake_mlb_rel(dt_rel)
 
       # Assign data to the environment "env_rel"
-      assign("rel_data", rel_data, envir = env_rel)
+      assign("dt_rel", dt_rel, envir = env_rel)
 
       # Reset environment variables for autosomal STR
       set_env_proj_auto(env_proj, FALSE)
@@ -1491,11 +1491,11 @@ set_rel <- function(env_proj, env_gui){
   # Get file names in the folder "parameters"
   fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
 
-  # Define "rel_data"
+  # Define "dt_rel"
   if(is.element("rel.csv", fn_par)){
-    rel_data <- read.csv(paste0(path_pack, "/extdata/parameters/rel.csv"), header = TRUE)
+    dt_rel <- fread(paste0(path_pack, "/extdata/parameters/rel.csv"))
   }else{
-    rel_data <- get("rel_data_default", pos = env_proj)
+    dt_rel <- get("rel_data_default", pos = env_proj)
   }
 
   # Make an environment
@@ -1519,7 +1519,7 @@ set_rel <- function(env_proj, env_gui){
   tk2column(mlb_rel, "add", label = "Pr (IBD = 2)", width = 20)
   tk2column(mlb_rel, "add", label = "Pr (IBD = 1)", width = 20)
   tk2column(mlb_rel, "add", label = "Pr (IBD = 0)", width = 20)
-  tk2insert.multi(mlb_rel, "end",  rel_data)
+  tk2insert.multi(mlb_rel, "end",  dt_rel)
 
   # Define widgets in frame_rel_2
   butt_edit <- tkbutton(frame_rel_2, text = "    Edit    ", cursor = "hand2", command = function() edit_rel_1())
@@ -1541,7 +1541,7 @@ set_rel <- function(env_proj, env_gui){
   assign("mlb_rel", mlb_rel, envir = env_rel)
 
   # Assign data to the environment "env_rel"
-  assign("rel_data", rel_data, envir = env_rel)
+  assign("dt_rel", dt_rel, envir = env_rel)
 }
 
 
@@ -1558,8 +1558,8 @@ set_auto <- function(env_proj, env_gui){
   create_par_auto_csv <- function(maf, meth_d, pd){
     names_par <- c("Minimum allele frequency", "Drop-out of query alleles", "Probability of drop-out")
     values_par <- c(maf, meth_d, pd)
-    par_auto_data <- data.table(Parameter = names_par, Value = values_par)
-    write.csv(par_auto_data, paste0(path_pack, "/extdata/parameters/par_auto.csv"), row.names = FALSE)
+    dt_par_auto <- data.table(Parameter = names_par, Value = values_par)
+    write.csv(dt_par_auto, paste0(path_pack, "/extdata/parameters/par_auto.csv"), row.names = FALSE)
   }
 
   ###################################
@@ -1598,12 +1598,12 @@ set_auto <- function(env_proj, env_gui){
   if(is.element("par_auto.csv", fn_par)){
 
     # Load the file "par_auto.csv"
-    par_auto_data <- read.csv(paste0(path_pack, "/extdata/parameters/par_auto.csv"), header = TRUE)
+    dt_par_auto <- fread(paste0(path_pack, "/extdata/parameters/par_auto.csv"))
 
     # Extract parameters
-    maf <- par_auto_data$Value[par_auto$Parameter == "maf"]
-    meth_d <- par_auto_data$Value[par_auto$Parameter == "meth_d"]
-    pd <- par_auto_data$Value[par_auto$Parameter == "pd"]
+    maf <- dt_par_auto$Value[par_auto$Parameter == "maf"]
+    meth_d <- dt_par_auto$Value[par_auto$Parameter == "meth_d"]
+    pd <- dt_par_auto$Value[par_auto$Parameter == "pd"]
 
   # If the file "par_auto" is missing
   }else{
