@@ -18,6 +18,5 @@ std::vector<int> tousa(int start, int end, int interval);
 int search_pos_double(std::vector<double> vec, double target);
 int search_pos_int(std::vector<int> vec, int target);
 int search_pos_string(std::vector<std::string> vec, std::string target);
-std::vector<int> search_pos_string_all(std::vector<std::string> vec, std::string target);
 int extract_integer(std::string target);
 bool is_integer(double x);

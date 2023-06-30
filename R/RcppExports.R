@@ -29,10 +29,6 @@ calc_kin_lr_all <- function(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_a
     .Call(`_relsearch_calc_kin_lr_all`, gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus, apes, meth_d, pd)
 }
 
-search_pos_sn_comb <- function(sn_v_all, sn_r_all, sn_v_target, sn_r_target) {
-    .Call(`_relsearch_search_pos_sn_comb`, sn_v_all, sn_r_all, sn_v_target, sn_r_target)
-}
-
 split <- function(str, del) {
     .Call(`_relsearch_split`, str, del)
 }
@@ -59,10 +55,6 @@ search_pos_int <- function(vec, target) {
 
 search_pos_string <- function(vec, target) {
     .Call(`_relsearch_search_pos_string`, vec, target)
-}
-
-search_pos_string_all <- function(vec, target) {
-    .Call(`_relsearch_search_pos_string_all`, vec, target)
 }
 
 extract_integer <- function(target) {
