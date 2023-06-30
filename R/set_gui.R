@@ -1601,9 +1601,9 @@ set_auto <- function(env_proj, env_gui){
     dt_par_auto <- fread(paste0(path_pack, "/extdata/parameters/par_auto.csv"))
 
     # Extract parameters
-    maf <- dt_par_auto$Value[par_auto$Parameter == "maf"]
-    meth_d <- dt_par_auto$Value[par_auto$Parameter == "meth_d"]
-    pd <- dt_par_auto$Value[par_auto$Parameter == "pd"]
+    maf <- dt_par_auto$Value[dt_par_auto$Parameter == "maf"]
+    meth_d <- dt_par_auto$Value[dt_par_auto$Parameter == "meth_d"]
+    pd <- dt_par_auto$Value[dt_par_auto$Parameter == "pd"]
 
   # If the file "par_auto" is missing
   }else{
