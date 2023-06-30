@@ -1556,7 +1556,7 @@ set_auto <- function(env_proj, env_gui){
   ##################################################
 
   create_par_auto_csv <- function(maf, meth_d, pd){
-    names_par <- c("Minimum allele frequency", "Drop-out of query alleles", "Probability of drop-out")
+    names_par <- c("maf", "meth_d", "pd")
     values_par <- c(maf, meth_d, pd)
     dt_par_auto <- data.table(Parameter = names_par, Value = values_par)
     write.csv(dt_par_auto, paste0(path_pack, "/extdata/parameters/par_auto.csv"), row.names = FALSE)
