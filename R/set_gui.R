@@ -1,5 +1,9 @@
-# The function to check whether all results are deleted or not
+################################################################
+# The function to check whether all results are deleted or not #
+################################################################
+
 check_delete_all <- function(env_proj){
+
   # Get the end sign from the environment "env_proj"
   fin_auto <- get("fin_auto", pos = env_proj)
   fin_y <- get("fin_y", pos = env_proj)
@@ -15,7 +19,11 @@ check_delete_all <- function(env_proj){
   return(sign_ok)
 }
 
-# The function to check whether the autosomal STR results are deleted or not
+
+##############################################################################
+# The function to check whether the autosomal STR results are deleted or not #
+##############################################################################
+
 check_delete_auto <- function(env_proj){
 
   # Get the end sign of the autosomal STR analysis from the environment "env_proj"
@@ -31,24 +39,34 @@ check_delete_auto <- function(env_proj){
   return(sign_ok)
 }
 
-# The function to set criteria
+
+################################
+# The function to set criteria #
+################################
+
 set_criteria <- function(env_proj, env_gui){
 
-  # The function to create the file "criteria.csv"
+  ##################################################
+  # The function to create the file "criteria.csv" #
+  ##################################################
+
   create_criteria_csv <- function(min_lr_auto, max_mismatch_y, max_ignore_y, max_mustep_y, max_mismatch_mt, min_share_mt){
 
-    # Define a data.frame for criteria
+    # Define a data.table for criteria
     names_criteria <- c("min_lr_auto",
                         "max_mismatch_y", "max_ignore_y", "max_mustep_y",
                         "max_mismatch_mt", "min_share_mt")
     values_criteria <- c(min_lr_auto, max_mismatch_y, max_ignore_y, max_mustep_y, max_mismatch_mt, min_share_mt)
-    criteria_data <- data.frame(Criteria = names_criteria, Value = values_criteria)
+    dt_criteria <- data.table(Criteria = names_criteria, Value = values_criteria)
 
-    # Save the file "criteria.csv"
-    write.csv(criteria_data, paste0(path_pack, "/extdata/parameters/criteria.csv"), row.names = FALSE)
+    # Save the data.table as a .csv file"
+    write.csv(dt_criteria, paste0(path_pack, "/extdata/parameters/criteria.csv"), row.names = FALSE)
   }
 
-  # The function to save criteria
+  #################################
+  # The function to save criteria #
+  #################################
+
   save_criteria <- function(){
 
     # Check whether all results are deleted or not
@@ -62,22 +80,23 @@ set_criteria <- function(env_proj, env_gui){
                           tclvalue(max_mismatch_y_var), tclvalue(max_ignore_y_var), tclvalue(max_mustep_y_var),
                           tclvalue(max_mismatch_mt_var), tclvalue(min_share_mt_var))
 
-      # Assign end signs
-      assign("fin_auto", FALSE, envir = env_proj)
-      assign("fin_y", FALSE, envir = env_proj)
-      assign("fin_mt", FALSE, envir = env_proj)
+      # Reset the environment variables
+      set_env_proj_auto(env_proj, FALSE)
+      set_env_proj_y(env_proj, FALSE)
+      set_env_proj_mt(env_proj, FALSE)
 
-      # Reset tab2, tab4, and tab6
+      # Reset tab2
       make_tab2(env_proj, env_gui)
-      make_tab4(env_proj, env_gui)
-      make_tab6(env_proj, env_gui)
 
       # Destroy the top frame
       tkdestroy(tf)
     }
   }
 
-  # The function to reset criteria
+  ##################################
+  # The function to reset criteria #
+  ##################################
+
   reset_criteria <- function(){
 
     # Check whether all results are deleted or not
@@ -102,15 +121,13 @@ set_criteria <- function(env_proj, env_gui){
                           tclvalue(max_mismatch_y_var), tclvalue(max_ignore_y_var), tclvalue(max_mustep_y_var),
                           tclvalue(max_mismatch_mt_var), tclvalue(min_share_mt_var))
 
-      # Assign end signs
-      assign("fin_auto", FALSE, envir = env_proj)
-      assign("fin_y", FALSE, envir = env_proj)
-      assign("fin_mt", FALSE, envir = env_proj)
+      # Reset the environment variables
+      set_env_proj_auto(env_proj, FALSE)
+      set_env_proj_y(env_proj, FALSE)
+      set_env_proj_mt(env_proj, FALSE)
 
-      # Reset tab2, tab4, and tab6
+      # Reset tab2
       make_tab2(env_proj, env_gui)
-      make_tab4(env_proj, env_gui)
-      make_tab6(env_proj, env_gui)
     }
   }
 
@@ -124,7 +141,7 @@ set_criteria <- function(env_proj, env_gui){
   if(is.element("criteria.csv", fn_par)){
 
     # Load the file "criteria.csv"
-    criteria <- read.csv(paste0(path_pack, "/extdata/parameters/criteria.csv"), header = TRUE)
+    criteria <- fread(paste0(path_pack, "/extdata/parameters/criteria.csv"))
 
     # Extract values
     min_lr_auto <- criteria$Value[criteria$Criteria == "min_lr_auto"]
@@ -206,16 +223,26 @@ set_criteria <- function(env_proj, env_gui){
   tkgrid(frame_criteria_2, sticky = "w")
 }
 
-# Set mutation rates for autosomal STR
+
+########################################################
+# The function to set mutation rates for autosomal STR #
+########################################################
+
 set_myu <- function(env_proj, env_gui){
 
-  # The function to create the file "myu.csv"
+  #############################################
+  # The function to create the file "myu.csv" #
+  #############################################
+
   create_myu_csv <- function(myu_all){
-    myu_data <- data.frame(Markers = names(myu_all), Myu = myu_all)
+    myu_data <- data.table(Markers = names(myu_all), Myu = myu_all)
     write.csv(myu_data, paste0(path_pack, "/extdata/parameters/myu.csv"), row.names = FALSE)
   }
 
-  # The function to edit a mutation rate
+  ########################################
+  # The function to edit a mutation rate #
+  ########################################
+
   edit_myu_1 <- function(){
 
     # Get the multi-list box from the environment "env_myu"
@@ -261,7 +288,10 @@ set_myu <- function(env_proj, env_gui){
     }
   }
 
-  # The function to save the edited mutation rate
+  #################################################
+  # The function to save the edited mutation rate #
+  #################################################
+
   edit_myu_2 <- function(tf, mlb_myu, pos_select, myu_select){
 
     # Check whether the autosomal STR results are deleted or not
@@ -307,8 +337,8 @@ set_myu <- function(env_proj, env_gui){
       # Assign mutation rates to the environment "env_myu"
       assign("myu_all", myu_all, envir = env_myu)
 
-      # Assign the end sign for the autosomal STRs to the environment "env_proj"
-      assign("fin_auto", FALSE, envir = env_proj)
+      # Reset environment variables for autosomal STR
+      set_env_proj_auto(env_proj, FALSE)
 
       # Reset tab2
       make_tab2(env_proj, env_gui)
@@ -318,7 +348,10 @@ set_myu <- function(env_proj, env_gui){
     }
   }
 
-  # The function to add a mutation rate
+  #######################################
+  # The function to add a mutation rate #
+  #######################################
+
   add_myu_1 <- function(){
 
     # Define tcl variables
@@ -353,7 +386,10 @@ set_myu <- function(env_proj, env_gui){
     tkgrid(frame_add_2)
   }
 
-  # The function to save the added mutation rate
+  ################################################
+  # The function to save the added mutation rate #
+  ################################################
+
   add_myu_2 <- function(tf, locus_add, myu_add){
 
     # Check whether the autosomal STR results are deleted or not
@@ -385,8 +421,8 @@ set_myu <- function(env_proj, env_gui){
       # Assign mutation rates to the environment "env_myu"
       assign("myu_all", myu_all, envir = env_myu)
 
-      # Assign the end sign for the autosomal STRs to the environment "env_proj"
-      assign("fin_auto", FALSE, envir = env_proj)
+      # Reset environment variables for autosomal STR
+      set_env_proj_auto(env_proj, FALSE)
 
       # Reset tab2
       make_tab2(env_proj, env_gui)
@@ -396,7 +432,10 @@ set_myu <- function(env_proj, env_gui){
     }
   }
 
-  # The function to delete a mutation rate
+  ##########################################
+  # The function to delete a mutation rate #
+  ##########################################
+
   delete_myu <- function(){
 
     # Get the multi-list box of mutation rates from the environment "env_myu"
@@ -450,8 +489,8 @@ set_myu <- function(env_proj, env_gui){
         # Assign mutation rates to the environment "env_myu"
         assign("myu_all", myu_all, envir = env_myu)
 
-        # Assign the end sign for the autosomal STRs to the environment "env_proj"
-        assign("fin_auto", FALSE, envir = env_proj)
+        # Reset environment variables for autosomal STR
+        set_env_proj_auto(env_proj, FALSE)
 
         # Reset tab2
         make_tab2(env_proj, env_gui)
@@ -528,10 +567,16 @@ set_myu <- function(env_proj, env_gui){
   assign("myu_all", myu_all, envir = env_myu)
 }
 
-# The function to judge paternal lineage
+##########################################
+# The function to judge paternal lineage #
+##########################################
+
 judge_paternal <- function(p1, p2, id, fid, sex){
 
-  # Search paternal founder
+  ###########################################
+  # The function to search paternal founder #
+  ###########################################
+
   search_paternal_founder <- function(pos_start, pos_another){
 
     id_target <- pos_start
@@ -592,10 +637,17 @@ judge_paternal <- function(p1, p2, id, fid, sex){
   return(result)
 }
 
-# The function to judge maternal lineage
+
+##########################################
+# The function to judge maternal lineage #
+##########################################
+
 judge_maternal <- function(p1, p2, id, mid){
 
-  # Search maternal founder
+  ###########################################
+  # The function to search maternal founder #
+  ###########################################
+
   search_maternal_founder <- function(pos_start, pos_another){
 
     id_target <- pos_start
@@ -649,7 +701,11 @@ judge_maternal <- function(p1, p2, id, mid){
   return(result)
 }
 
-# The function to make a displayed degree
+
+###########################################
+# The function to make a displayed degree #
+###########################################
+
 make_deg_display <- function(deg, k1 = -1){
   if(is.na(deg)){
     deg_display <- "unr"
@@ -671,15 +727,25 @@ make_deg_display <- function(deg, k1 = -1){
   return(deg_display)
 }
 
-# Set relationships
+
+#####################################
+# The function to set relationships #
+#####################################
+
 set_rel <- function(env_proj, env_gui){
 
-  # The function to create the file "rel.csv"
+  #############################################
+  # The function to create the file "rel.csv" #
+  #############################################
+
   create_rel_csv <- function(rel_data){
     write.csv(rel_data, paste0(path_pack, "/extdata/parameters/rel.csv"), row.names = FALSE)
   }
 
-  # The function to remake a multi-list box of information on relationships
+  ###########################################################################
+  # The function to remake a multi-list box of information on relationships #
+  ###########################################################################
+
   remake_mlb_rel <- function(rel_data){
 
     # Get widgets from the environment "env_rel"
@@ -711,7 +777,10 @@ set_rel <- function(env_proj, env_gui){
     assign("mlb_rel", mlb_rel, envir = env_rel)
   }
 
-  # The function to edit the name of a relationship
+  ###################################################
+  # The function to edit the name of a relationship #
+  ###################################################
+
   edit_rel_1 <- function(){
 
     # Get the multi-list box from the environment "env_rel"
@@ -750,10 +819,14 @@ set_rel <- function(env_proj, env_gui){
     }
   }
 
+  ##########################################################
+  # The function to save the edited name of a relationship #
+  ##########################################################
+
   edit_rel_2 <- function(tf, mlb_rel, pos_select, rel_select){
 
-    # Check whether all results are deleted or not
-    sign_ok <- check_delete_all(env_proj)
+    # Check whether the autosomal STR results are deleted or not
+    sign_ok <- check_delete_auto(env_proj)
 
     # If all results are deleted
     if(sign_ok == "ok"){
@@ -773,20 +846,20 @@ set_rel <- function(env_proj, env_gui){
       # Assign data to the environment "env_rel"
       assign("rel_data", rel_data, envir = env_rel)
 
-      # Assign end signs
-      assign("fin_auto", FALSE, envir = env_proj)
-      assign("fin_y", FALSE, envir = env_proj)
-      assign("fin_mt", FALSE, envir = env_proj)
+      # Reset environment variables for autosomal STR
+      set_env_proj_auto(env_proj, FALSE)
 
-      # Reset tab2, tab4, and tab6
+      # Reset tab2
       make_tab2(env_proj, env_gui)
-      make_tab4(env_proj, env_gui)
-      make_tab6(env_proj, env_gui)
 
       # Destroy the top frame
       tkdestroy(tf)
     }
   }
+
+  #########################################
+  # The function to check the family tree #
+  #########################################
 
   check_tree <- function(){
 
@@ -854,7 +927,15 @@ set_rel <- function(env_proj, env_gui){
     return(tree)
   }
 
+  ######################################
+  # The function to add a relationship #
+  ######################################
+
   add_rel_1 <- function(){
+
+    ###################################################
+    # The function to add a person to the family tree #
+    ###################################################
 
     add_person <- function(){
 
@@ -874,17 +955,20 @@ set_rel <- function(env_proj, env_gui){
       combos_mother_unk <- get("combos_mother_unk", pos = env_rel)
       checks_founder_unk <- get("checks_founder_unk", pos = env_rel)
 
+      # Define a row index for the added person
       pos_add <- length(sex_unk_vars) + 1
 
+      # Define the name of the added person
       name_add <- paste0("Unk ", pos_add)
 
+      # Add the name of the added person to the candidate of the father and the mother
       fm_candidate <- c(fm_candidate, name_add)
 
+      # Update the list of the combobox for setting the father and the mother
       tkconfigure(combo_father_p1, values = fm_candidate)
       tkconfigure(combo_mother_p1, values = fm_candidate)
       tkconfigure(combo_father_p2, values = fm_candidate)
       tkconfigure(combo_mother_p2, values = fm_candidate)
-
       if(pos_add > 1){
         for(i in 1:(pos_add - 1)){
           tkconfigure(combos_father_unk[[i]], values = fm_candidate)
@@ -892,18 +976,20 @@ set_rel <- function(env_proj, env_gui){
         }
       }
 
+      # Define tcl variables for the added person
       sex_unk_vars[[pos_add]] <- tclVar("")
       father_unk_vars[[pos_add]] <- tclVar("")
       mother_unk_vars[[pos_add]] <- tclVar("")
       founder_unk_vars[[pos_add]] <- tclVar("0")
 
+      # Define widgets for the added person
       labels_name_unk[[pos_add]] <- tklabel(frame_family, text = name_add)
       combos_sex_unk[[pos_add]] <- ttkcombobox(frame_family, values = sex_candidate, textvariable = sex_unk_vars[[pos_add]], width = 10, state = "readonly")
       combos_father_unk[[pos_add]] <- ttkcombobox(frame_family, values = fm_candidate, textvariable = father_unk_vars[[pos_add]], width = 20, state = "readonly")
       combos_mother_unk[[pos_add]] <- ttkcombobox(frame_family, values = fm_candidate, textvariable = mother_unk_vars[[pos_add]], width = 20, state = "readonly")
       checks_founder_unk[[pos_add]] <- tkcheckbutton(frame_family, variable = founder_unk_vars[[pos_add]], width = 5, cursor = "hand2", command = function() change_founder("unk", pos_add))
 
-      # Grid widgets for the unknown person
+      # Grid widgets for the added person
       tkgrid(labels_name_unk[[pos_add]], row = pos_add + 2, column = 0, padx = 5, pady = 5, sticky = "w")
       tkgrid(combos_sex_unk[[pos_add]], row = pos_add + 2, column = 1, padx = 5, pady = 5, sticky = "w")
       tkgrid(combos_father_unk[[pos_add]], row = pos_add + 2, column = 2, padx = 5, pady = 5, sticky = "w")
@@ -930,6 +1016,10 @@ set_rel <- function(env_proj, env_gui){
       assign("checks_founder_unk", checks_founder_unk, envir = env_rel)
     }
 
+    ######################################################
+    # The function to delete a person to the family tree #
+    ######################################################
+
     delete_person <- function(){
 
       # Get candidates of the father and the mother
@@ -948,22 +1038,24 @@ set_rel <- function(env_proj, env_gui){
       combos_mother_unk <- get("combos_mother_unk", pos = env_rel)
       checks_founder_unk <- get("checks_founder_unk", pos = env_rel)
 
+      # Define a row index for the deleted person
       pos_del <- length(sex_unk_vars)
 
       if(pos_del > 0){
+
+        # Destroy widgets for the deleted person
         tkdestroy(labels_name_unk[[pos_del]])
         tkdestroy(combos_sex_unk[[pos_del]])
         tkdestroy(combos_father_unk[[pos_del]])
         tkdestroy(combos_mother_unk[[pos_del]])
         tkdestroy(checks_founder_unk[[pos_del]])
 
+        # Update the list of the combobox for setting the father and the mother
         fm_candidate <- fm_candidate[1:(length(fm_candidate) - 1)]
-
         tkconfigure(combo_father_p1, values = fm_candidate)
         tkconfigure(combo_mother_p1, values = fm_candidate)
         tkconfigure(combo_father_p2, values = fm_candidate)
         tkconfigure(combo_mother_p2, values = fm_candidate)
-
         if(pos_del > 1){
           for(i in 1:(pos_del - 1)){
             tkconfigure(combos_father_unk[[i]], values = fm_candidate)
@@ -974,11 +1066,13 @@ set_rel <- function(env_proj, env_gui){
         # Update the scrollbar
         tkconfigure(canvas_family, scrollregion = c(0, 0, 1000, 36 * (pos_del + 1)))
 
+        # Update tcl variables
         sex_unk_vars[[pos_del]] <- NULL
         father_unk_vars[[pos_del]] <- NULL
         mother_unk_vars[[pos_del]] <- NULL
         founder_unk_vars[[pos_del]] <- NULL
 
+        # Update widgets for the deleted person
         labels_name_unk[[pos_del]] <- NULL
         combos_sex_unk[[pos_del]] <- NULL
         combos_father_unk[[pos_del]] <- NULL
@@ -1003,6 +1097,10 @@ set_rel <- function(env_proj, env_gui){
       }
     }
 
+    ########################################
+    # The function to view the family tree #
+    ########################################
+
     view_tree <- function(){
 
       # Check the family tree
@@ -1018,10 +1116,14 @@ set_rel <- function(env_proj, env_gui){
       }
     }
 
+    ######################################
+    # The function to change the founder #
+    ######################################
+
     change_founder <- function(who, pos = numeric(0)){
 
+      # Change the founder of person 1
       if(who == "p1"){
-
         if(tclvalue(founder_p1_var) == "0"){
           tkconfigure(combo_father_p1, state = "readonly")
           tkconfigure(combo_mother_p1, state = "readonly")
@@ -1032,9 +1134,8 @@ set_rel <- function(env_proj, env_gui){
           tkconfigure(combo_mother_p1, textvariable = mother_p1_var, state = "disable")
         }
 
-
+      # Change the founder of person 2
       }else if(who == "p2"){
-
         if(tclvalue(founder_p2_var) == "0"){
           tkconfigure(combo_father_p2, state = "readonly")
           tkconfigure(combo_mother_p2, state = "readonly")
@@ -1045,6 +1146,7 @@ set_rel <- function(env_proj, env_gui){
           tkconfigure(combo_mother_p2, textvariable = mother_p2_var, state = "disable")
         }
 
+      # Change the founder of an unknown person
       }else{
 
         # Get tcl variables from the environment "env_rel"
@@ -1056,6 +1158,7 @@ set_rel <- function(env_proj, env_gui){
         combos_father_unk <- get("combos_father_unk", pos = env_rel)
         combos_mother_unk <- get("combos_mother_unk", pos = env_rel)
 
+        # Update widgets for the founder
         if(tclvalue(founder_unk_vars[[pos]]) == "0"){
           tkconfigure(combos_father_unk[[pos]], state = "readonly")
           tkconfigure(combos_mother_unk[[pos]], state = "readonly")
@@ -1076,6 +1179,7 @@ set_rel <- function(env_proj, env_gui){
       }
     }
 
+    # Define the initial family members
     sex_candidate <- c("Male", "Female")
     fm_candidate <- c("Person 1", "Person 2")
 
@@ -1227,6 +1331,10 @@ set_rel <- function(env_proj, env_gui){
 
   }
 
+  ###############################################
+  # The function to save the added relationship #
+  ###############################################
+
   add_rel_2 <- function(tf){
 
     # Get a new relationship name from the environment "env_rel"
@@ -1244,8 +1352,8 @@ set_rel <- function(env_proj, env_gui){
         tkmessageBox(message = "Incorrect setting of the family tree!", icon = "error", type = "ok")
       }else{
 
-        # Check whether all results are deleted or not
-        sign_ok <- check_delete_all(env_proj)
+        # Check whether the autosomal STR results are deleted or not
+        sign_ok <- check_delete_auto(env_proj)
 
         # If all results are deleted
         if(sign_ok == "ok"){
@@ -1259,6 +1367,7 @@ set_rel <- function(env_proj, env_gui){
           pibd <- as.numeric(coeff_tree[pos_row, c("k2", "k1", "k0")])
           deg <- as.numeric(coeff_tree[pos_row, "deg"])
 
+          # Check inbred relationship
           if(any(is.na(pibd))){
             tkmessageBox(message = "Person 1 and 2 are inbred individuals!", icon = "error", type = "ok")
           }else{
@@ -1281,15 +1390,11 @@ set_rel <- function(env_proj, env_gui){
             # Assign data to the environment "env_rel"
             assign("rel_data", rel_data, envir = env_rel)
 
-            # Assign end signs
-            assign("fin_auto", FALSE, envir = env_proj)
-            assign("fin_y", FALSE, envir = env_proj)
-            assign("fin_mt", FALSE, envir = env_proj)
+            # Reset environment variables for autosomal STR
+            set_env_proj_auto(env_proj, FALSE)
 
-            # Reset tab2, tab4, and tab6
+            # Reset tab2
             make_tab2(env_proj, env_gui)
-            make_tab4(env_proj, env_gui)
-            make_tab6(env_proj, env_gui)
 
             # Destroy the top frame
             tkdestroy(tf)
@@ -1298,6 +1403,10 @@ set_rel <- function(env_proj, env_gui){
       }
     }
   }
+
+  #########################################
+  # The function to delete a relationship #
+  #########################################
 
   delete_rel <- function(){
 
@@ -1311,8 +1420,8 @@ set_rel <- function(env_proj, env_gui){
     # If the user selects one relationship
     }else{
 
-      # Check whether all results are deleted or not
-      sign_ok <- check_delete_all(env_proj)
+      # Check whether the autosomal STR results are deleted or not
+      sign_ok <- check_delete_auto(env_proj)
 
       # If all results are deleted
       if(sign_ok == "ok"){
@@ -1335,23 +1444,23 @@ set_rel <- function(env_proj, env_gui){
         # Assign data to the environment "env_rel"
         assign("rel_data", rel_data, envir = env_rel)
 
-        # Assign end signs
-        assign("fin_auto", FALSE, envir = env_proj)
-        assign("fin_y", FALSE, envir = env_proj)
-        assign("fin_mt", FALSE, envir = env_proj)
+        # Reset environment variables for autosomal STR
+        set_env_proj_auto(env_proj, FALSE)
 
-        # Reset tab2, tab4, and tab6
+        # Reset tab2
         make_tab2(env_proj, env_gui)
-        make_tab4(env_proj, env_gui)
-        make_tab6(env_proj, env_gui)
       }
     }
   }
 
+  ##########################################
+  # The function to reset the relationship #
+  ##########################################
+
   reset_rel <- function(){
 
-    # Check whether all results are deleted or not
-    sign_ok <- check_delete_all(env_proj)
+    # Check whether the autosomal STR results are deleted or not
+    sign_ok <- check_delete_auto(env_proj)
 
     # If all results are deleted
     if(sign_ok == "ok"){
@@ -1368,15 +1477,11 @@ set_rel <- function(env_proj, env_gui){
       # Assign data to the environment "env_rel"
       assign("rel_data", rel_data, envir = env_rel)
 
-      # Assign end signs
-      assign("fin_auto", FALSE, envir = env_proj)
-      assign("fin_y", FALSE, envir = env_proj)
-      assign("fin_mt", FALSE, envir = env_proj)
+      # Reset environment variables for autosomal STR
+      set_env_proj_auto(env_proj, FALSE)
 
-      # Reset tab2, tab4, and tab6
+      # Reset tab2
       make_tab2(env_proj, env_gui)
-      make_tab4(env_proj, env_gui)
-      make_tab6(env_proj, env_gui)
     }
   }
 
@@ -1439,22 +1544,32 @@ set_rel <- function(env_proj, env_gui){
   assign("rel_data", rel_data, envir = env_rel)
 }
 
-# Set analysis method for autosomal STR
+
+#########################################################
+# The function to set analysis method for autosomal STR #
+#########################################################
+
 set_auto <- function(env_proj, env_gui){
 
-  # The function to create the file "par_auto.csv"
+  ##################################################
+  # The function to create the file "par_auto.csv" #
+  ##################################################
+
   create_par_auto_csv <- function(maf, meth_d, pd){
     names_par <- c("Minimum allele frequency", "Drop-out of query alleles", "Probability of drop-out")
     values_par <- c(maf, meth_d, pd)
-    par_auto_data <- data.frame(Parameter = names_par, Value = values_par)
+    par_auto_data <- data.table(Parameter = names_par, Value = values_par)
     write.csv(par_auto_data, paste0(path_pack, "/extdata/parameters/par_auto.csv"), row.names = FALSE)
   }
 
-  # The function to save parameters
+  ###################################
+  # The function to save parameters #
+  ###################################
+
   save_auto <- function(){
 
     # Check whether the autosomal STR results are deleted or not
-    sign_ok <- check_delete_all(env_proj)
+    sign_ok <- check_delete_auto(env_proj)
 
     # If the autosomal STR results are deleted
     if(sign_ok == "ok"){
@@ -1462,8 +1577,8 @@ set_auto <- function(env_proj, env_gui){
       # Update the file "par_auto.csv"
       create_par_auto_csv(tclvalue(maf_var), tclvalue(meth_d_var), tclvalue(pd_var))
 
-      # Assign the end sign for the autosomal STRs to the environment "env_proj"
-      assign("fin_auto", FALSE, envir = env_proj)
+      # Reset environment variables for autosomal STR
+      set_env_proj_auto(env_proj, FALSE)
 
       # Reset tab2
       make_tab2(env_proj, env_gui)
@@ -1486,9 +1601,9 @@ set_auto <- function(env_proj, env_gui){
     par_auto_data <- read.csv(paste0(path_pack, "/extdata/parameters/par_auto.csv"), header = TRUE)
 
     # Extract parameters
-    maf <- par_auto_data$Value[par_auto$Parameter == "Minimum allele frequency"]
-    meth_d <- par_auto_data$Value[par_auto$Parameter == "Drop-out of query alleles"]
-    pd <- par_auto_data$Value[par_auto$Parameter == "Probability of drop-out"]
+    maf <- par_auto_data$Value[par_auto$Parameter == "maf"]
+    meth_d <- par_auto_data$Value[par_auto$Parameter == "meth_d"]
+    pd <- par_auto_data$Value[par_auto$Parameter == "pd"]
 
   # If the file "par_auto" is missing
   }else{
@@ -1516,10 +1631,9 @@ set_auto <- function(env_proj, env_gui){
   entry_maf <- tkentry(tf, textvariable = maf_var, width = 10, highlightthickness = 1, relief = "solid", justify = "center", background = "white")
 
   # Define widgets for meth_d
-  label_meth_d <- tklabel(tf, text = "Drop-out of query alleles")
+  label_meth_d <- tklabel(tf, text = "Consideration of drop-out")
   radio_meth_d0 <- tkradiobutton(tf, anchor = "w", width = 60, state = "normal", text = "Not consider", variable = meth_d_var, value = 0)
-  radio_meth_d1 <- tkradiobutton(tf, anchor = "w", width = 60, state = "normal", text = "Consider only in the case that one allele is designated", variable = meth_d_var, value = 1)
-  radio_meth_d2 <- tkradiobutton(tf, anchor = "w", width = 60, state = "normal", text = "Consider also in the case that two alleles in homozygotes are designated", variable = meth_d_var, value = 2)
+  radio_meth_d1 <- tkradiobutton(tf, anchor = "w", width = 60, state = "normal", text = "Consider", variable = meth_d_var, value = 1)
 
   # Define widgets for pd
   label_pd <- tklabel(tf, text = "Probability of drop-out")
@@ -1532,7 +1646,6 @@ set_auto <- function(env_proj, env_gui){
   tkgrid(label_maf, entry_maf, padx = 10, pady = 5, sticky = "w")
   tkgrid(label_meth_d, radio_meth_d0, padx = 10, pady = 5, sticky = "w")
   tkgrid(tklabel(tf, text = ""), radio_meth_d1, padx = 10, pady = 5, sticky = "w")
-  tkgrid(tklabel(tf, text = ""), radio_meth_d2, padx = 10, pady = 5, sticky = "w")
   tkgrid(label_pd, entry_pd, padx = 10, pady = 5, sticky = "w")
   tkgrid(butt_save, padx = 10, pady = 5, sticky = "w")
 }

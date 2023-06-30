@@ -1,6 +1,6 @@
 Package: relsearch
 Type: Package
-Title: Open-source software for screening relatives between query and reference databases
+Title: Open-source software for searching relatives between victim and reference databases
 Version: 0.7.2
 Author: Sho Manabe <manabesh@hirakata.kmu.ac.jp>
 Maintainer: Sho Manabe <manabesh@hirakata.kmu.ac.jp>
@@ -12,7 +12,6 @@ Depends:
     R (>= 4.2.2), 
     tcltk, 
     tcltk2, 
-    ribd, 
     Rcpp, 
     RcppProgress
 Suggests: 
@@ -23,4 +22,4 @@ LinkingTo:
     Rcpp, 
     RcppProgress
 Imports: 
-    data.table, dplyr
+    data.table, dplyr, pedtools, ribd

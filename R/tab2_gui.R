@@ -43,6 +43,7 @@ make_tab2 <- function(env_proj, env_gui){
   fin_y <- get("fin_y", pos = env_proj)
   fin_mt <- get("fin_mt", pos = env_proj)
 
+  # If at least one analysis is finished
   if(any(fin_auto, fin_y, fin_mt)){
 
     ######################################################
@@ -630,5 +631,17 @@ make_tab2 <- function(env_proj, env_gui){
 
     # Select tab2
     tk2notetab.select(tabs, "Results")
+
+  # If at least one analysis is not finished
+  }else{
+
+    # Reset frame_tab2
+    tab2 <- get("tab2", pos = env_gui)
+    frame_tab2 <- get("frame_tab2", pos = env_gui)
+    tkdestroy(frame_tab2)
+    frame_tab2 <- tkframe(tab2)
+
+    # Assign frame_tab2 to the environment "env_gui"
+    assign("frame_tab2", frame_tab2, envir = env_gui)
   }
 }
