@@ -309,23 +309,33 @@ make_tab1 <- function(env_proj, env_gui){
 
 check_error <- function(env_proj, env_gui){
 
-  # Define an object to save an error message
+  #############################################
+  # Define an object to save an error message #
+  #############################################
+
   error_message <- ""
 
-  # Get input data for autosomal STR from the environment "env_proj"
+  ##################################################
+  # Get input data from the environment "env_proj" #
+  ##################################################
+
+  # Autosomal STR
   data_v_auto <- get("data_v_auto", pos = env_proj)
   data_r_auto <- get("data_r_auto", pos = env_proj)
   data_af <- get("data_af", pos = env_proj)
 
-  # Get input data for Y-STR from the environment "env_proj"
+  # Y-STR
   data_v_y <- get("data_v_y", pos = env_proj)
   data_r_y <- get("data_r_y", pos = env_proj)
 
-  # Get input data for mtDNA from the environment "env_proj"
+  # mtDNA
   data_v_mt <- get("data_v_mt", pos = env_proj)
   data_r_mt <- get("data_r_mt", pos = env_proj)
 
-  # check whether all required data is loaded or not
+  ####################################################
+  # check whether all required data is loaded or not #
+  ####################################################
+
   bool_check_auto <- all(c(length(data_v_auto) > 0, length(data_r_auto) > 0, length(data_af) > 0))
   bool_check_y <- all(c(length(data_v_y) > 0, length(data_r_y) > 0))
   bool_check_mt <- all(c(length(data_v_mt) > 0, length(data_r_mt) > 0))
@@ -336,6 +346,10 @@ check_error <- function(env_proj, env_gui){
 
   # All required data for at least one marker type is loaded
   }else{
+
+    ####################################################
+    # Check whether the file 'criteria.csv' is present #
+    ####################################################
 
     # Get the package path
     path_pack <- get("path_pack", pos = env_gui)
@@ -350,10 +364,17 @@ check_error <- function(env_proj, env_gui){
     # If the file 'criteria.csv' is found
     }else{
 
-      # Get the end-sign of the analysis from the environment "env_proj"
+      ####################################################################
+      # Get the end-sign of the analysis from the environment "env_proj" #
+      ####################################################################
+
       fin_auto <- get("fin_auto", pos = env_proj)
       fin_y <- get("fin_y", pos = env_proj)
       fin_mt <- get("fin_mt", pos = env_proj)
+
+      ################################
+      # Check data for autosomal STR #
+      ################################
 
       # All required data for the autosomal STR is loaded
       if(!fin_auto && bool_check_auto){
@@ -417,6 +438,10 @@ check_error <- function(env_proj, env_gui){
         }
       }
 
+      ########################
+      # Check data for Y-STR #
+      ########################
+
       # All required data for the Y-STR is loaded
       if(!fin_y && error_message == "" && bool_check_y){
 
@@ -443,6 +468,10 @@ check_error <- function(env_proj, env_gui){
 ##################################################
 
 analyze_auto <- function(env_proj, env_gui){
+
+  ###############
+  # Get objects #
+  ###############
 
   # Get input data from the environment "env_proj"
   data_v_auto <- get("data_v_auto", pos = env_proj)
@@ -476,7 +505,10 @@ analyze_auto <- function(env_proj, env_gui){
   # The number of loci
   n_l <- length(locus_auto)
 
-  # Order loci of each database
+  ###############################
+  # Order loci of each database #
+  ###############################
+
   pos_v <- rep(0, 2 * n_l + 1)
   pos_r <- rep(0, 2 * n_l + 2)
   pos_af <- rep(0, n_l + 1)
@@ -492,6 +524,10 @@ analyze_auto <- function(env_proj, env_gui){
   data_v_auto <- data_v_auto[, pos_v, with = FALSE]
   data_r_auto <- data_r_auto[, pos_r, with = FALSE]
   data_af <- data_af[, pos_af, with = FALSE]
+
+  ##################################################
+  # Prepare objects to calculate likelihood ratios #
+  ##################################################
 
   # Extract sample names
   sn_v_auto <- data_v_auto[, SampleName]
@@ -533,8 +569,15 @@ analyze_auto <- function(env_proj, env_gui){
   }
   names(apes) <- locus_auto
 
-  # Calculate likelihood ratios
+  ###############################
+  # Calculate likelihood ratios #
+  ###############################
+
   result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus, apes, meth_d, pd)
+
+  #######################
+  # Arrange the results #
+  #######################
 
   # Create a vector for the result of victim names
   result_sn_v_auto <- rep(sn_v_auto, length(sn_r_auto))
@@ -556,6 +599,16 @@ analyze_auto <- function(env_proj, env_gui){
   names(dt_right) <- c(paste0("LikeH1_", c(locus_auto, "Total")), paste0("LikeH2_", c(locus_auto, "Total")), paste0("LR_", c(locus_auto, "Total")))
   dt_auto <- cbind(dt_left, dt_right)
 
+  #####################################################
+  # Update sample names in the environment "env_proj" #
+  #####################################################
+
+  set_env_proj_sn(env_proj, FALSE, sn_v_auto, sn_r_auto)
+
+  #####################################
+  # Assign objects to the environment #
+  #####################################
+
   # Assign the data.table for the results of autosomal STR
   assign("dt_auto", dt_auto, envir = env_proj)
 
@@ -570,9 +623,6 @@ analyze_auto <- function(env_proj, env_gui){
   assign("myus", myus, envir = env_proj)
   assign("apes", apes, envir = env_proj)
 
-  # Update sample names in the environment "env_proj"
-  set_env_proj_sn(env_proj, FALSE, sn_v_auto, sn_r_auto)
-
   # Assign the end sign to the environment "env_proj"
   assign("fin_auto", TRUE, envir = env_proj)
 }
@@ -584,6 +634,10 @@ analyze_auto <- function(env_proj, env_gui){
 
 analyze_y <- function(env_proj){
 
+  ###############
+  # Get objects #
+  ###############
+
   # Get input data from the environment "env_proj"
   data_v_y <- get("data_v_y", pos = env_proj)
   data_r_y <- get("data_r_y", pos = env_proj)
@@ -594,6 +648,10 @@ analyze_y <- function(env_proj){
   # The number of loci
   n_l <- length(locus_y)
 
+  ####################
+  # Arrange database #
+  ####################
+
   # Order loci of reference database
   data_r_y <- data_r_y[, match(names(data_v_y), names(data_r_y)), with = FALSE]
 
@@ -602,6 +660,10 @@ analyze_y <- function(env_proj){
   data_v_y[, (change_columns) := lapply(.SD, as.character), .SDcols = change_columns]
   change_columns <- names(data_r_y)
   data_r_y[, (change_columns) := lapply(.SD, as.character), .SDcols = change_columns]
+
+  #########################################
+  # Prepare objects to analyze Y-STR data #
+  #########################################
 
   # Extract required data from victim database
   sn_v_y <- data_v_y[, SampleName]
@@ -619,8 +681,15 @@ analyze_y <- function(env_proj){
   hap_v_y <- asplit(hap_v_y, 1)
   hap_r_y <- asplit(hap_r_y, 1)
 
-  # Analyze data for Y-STR
+  ##########################
+  # Analyze data for Y-STR #
+  ##########################
+
   result_y <- match_y_all(hap_v_y, hap_r_y)
+
+  #######################
+  # Arrange the results #
+  #######################
 
   # Create a vector for the result of victim names
   result_sn_v_y <- rep(sn_v_y, length(sn_r_y))
@@ -639,15 +708,22 @@ analyze_y <- function(env_proj){
   names(dt_right) <- c(paste0("Mismatch_", c(locus_y, "Total")), paste0("Ignore_", c(locus_y, "Total")), paste0("MuStep_", c(locus_y, "Total")))
   dt_y <- cbind(dt_left, dt_right)
 
+  #####################################################
+  # Update sample names in the environment "env_proj" #
+  #####################################################
+
+  set_env_proj_sn(env_proj, FALSE, sn_v_y, sn_r_y)
+
+  #####################################
+  # Assign objects to the environment #
+  #####################################
+
   # Assign the data.table for the results of Y-STR
   assign("dt_y", dt_y, envir = env_proj)
 
   # Assign updated input data (ordered loci)
   assign("data_v_y", data_v_y, envir = env_proj)
   assign("data_r_y", data_r_y, envir = env_proj)
-
-  # Update sample names in the environment "env_proj"
-  set_env_proj_sn(env_proj, FALSE, sn_v_y, sn_r_y)
 
   # Assign the end sign
   assign("fin_y", TRUE, envir = env_proj)
@@ -660,9 +736,17 @@ analyze_y <- function(env_proj){
 
 analyze_mt <- function(env_proj){
 
+  ###############
+  # Get objects #
+  ###############
+
   # Get input data from the environment "env_proj"
   data_v_mt <- get("data_v_mt", pos = env_proj)
   data_r_mt <- get("data_r_mt", pos = env_proj)
+
+  #############################################
+  # Prepare objects to analyze data for mtDNA #
+  #############################################
 
   # Extract required data from victim database
   sn_v_mt <- data_v_mt[, SampleName]
@@ -676,8 +760,15 @@ analyze_mt <- function(env_proj){
   hap_r_mt <- strsplit(data_r_mt[, Haplotype], " ")
   hap_r_mt <- lapply(hap_r_mt, setdiff, "")
 
-  # Analyze data for mtDNA
+  ##########################
+  # Analyze data for mtDNA #
+  ##########################
+
   result_mt <- match_mt_all(hap_v_mt, hap_r_mt, range_v_mt, range_r_mt)
+
+  #######################
+  # Arrange the results #
+  #######################
 
   # Create a vector for the result of victim names
   result_sn_v_mt <- rep(sn_v_mt, length(sn_r_mt))
@@ -700,11 +791,18 @@ analyze_mt <- function(env_proj){
   col_change <- c("MismatchMt", "ShareLengthMt")
   dt_mt[, (col_change) := lapply(.SD, as.numeric), .SDcols = col_change]
 
+  #####################################################
+  # Update sample names in the environment "env_proj" #
+  #####################################################
+
+  set_env_proj_sn(env_proj, FALSE, sn_v_mt, sn_r_mt)
+
+  #####################################
+  # Assign objects to the environment #
+  #####################################
+
   # Assign the data.table for the results of mtDNA
   assign("dt_mt", dt_mt, envir = env_proj)
-
-  # Update sample names in the environment "env_proj"
-  set_env_proj_sn(env_proj, FALSE, sn_v_mt, sn_r_mt)
 
   # Assign the end sign
   assign("fin_mt", TRUE, envir = env_proj)
@@ -716,6 +814,10 @@ analyze_mt <- function(env_proj){
 ########################
 
 create_combined_data <- function(env_proj){
+
+  ###############
+  # Get objects #
+  ###############
 
   # Get criteria
   criteria <- get("criteria", pos = env_proj)
@@ -733,9 +835,14 @@ create_combined_data <- function(env_proj){
   fin_y <- get("fin_y", pos = env_proj)
   fin_mt <- get("fin_mt", pos = env_proj)
 
+  ##################################
+  # Create the combined data.table #
+  ##################################
+
   # Define the initial combined data.table
   dt_combined <- NULL
 
+  # If the analysis for autosomal STR is finished
   if(fin_auto){
 
     # Get the data.table for the results of autosomal STR
@@ -745,6 +852,7 @@ create_combined_data <- function(env_proj){
     dt_combined <- dt_auto
   }
 
+  # If the analysis for Y-STR is finished
   if(fin_y){
 
     # Get the data.table for the results of Y-STR
@@ -758,6 +866,7 @@ create_combined_data <- function(env_proj){
     }
   }
 
+  # If the analysis for mtDNA is finished
   if(fin_mt){
 
     # Get the data.table for the results of mtDNA
@@ -770,6 +879,10 @@ create_combined_data <- function(env_proj){
       dt_combined <- full_join(dt_combined, dt_mt, by = c("Victim", "Reference"))
     }
   }
+
+  ####################################
+  # Extract data that meets criteria #
+  ####################################
 
   # The number of data
   n_data <- nrow(dt_combined)
@@ -806,7 +919,10 @@ create_combined_data <- function(env_proj){
   dt_combined[, Paternal := paternal_all]
   dt_combined[, Maternal := maternal_all]
 
-  # Assign data table for all results
+  #####################################
+  # Assign objects to the environment #
+  #####################################
+
   assign("dt_combined", dt_combined, envir = env_proj)
 }
 
@@ -817,11 +933,18 @@ create_combined_data <- function(env_proj){
 
 search_rel <- function(env_proj, env_gui){
 
-  # Check whether all required data is loaded or not
+  ##################
+  # Check all data #
+  ##################
+
   error_message <- check_error(env_proj, env_gui)
   if(error_message != ""){
     tkmessageBox(message = error_message, icon = "error", type = "ok")
   }else{
+
+    ###############
+    # Get objects #
+    ###############
 
     # Get the package path
     path_pack <- get("path_pack", pos = env_gui)
@@ -834,6 +957,10 @@ search_rel <- function(env_proj, env_gui){
     fin_auto <- get("fin_auto", pos = env_proj)
     fin_y <- get("fin_y", pos = env_proj)
     fin_mt <- get("fin_mt", pos = env_proj)
+
+    ################
+    # Analyze data #
+    ################
 
     # Analyze data for autosomal STR
     if(!fin_auto){
@@ -853,11 +980,17 @@ search_rel <- function(env_proj, env_gui){
       analyze_mt(env_proj)
     }
 
-    # Create combined data
+    ##################################
+    # Create the combined data.table #
+    ##################################
+
     cat("Creating combined data", "\n")
     create_combined_data(env_proj)
 
-    # Make tab2
+    #############
+    # Make tab2 #
+    #############
+
     make_tab2(env_proj, env_gui)
   }
 }
