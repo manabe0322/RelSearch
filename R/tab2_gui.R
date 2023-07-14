@@ -23,11 +23,13 @@ display_gt <- function(data_gt){
     if(length(gt) == 1){
       gt_vec[i] <- gt
 
-      # If heterozygote
+    # If heterozygote
     }else if(length(gt) == 2){
       gt_vec[i] <- paste(gt[1], ", ", gt[2], sep = "")
     }
   }
+
+  # Return
   return(gt_vec)
 }
 
@@ -37,6 +39,10 @@ display_gt <- function(data_gt){
 #############################
 
 make_tab2 <- function(env_proj, env_gui){
+
+  ###################################################
+  # Check whether at least one analysis is finished #
+  ###################################################
 
   # Get the end-sign of the analysis from the environment "env_proj"
   fin_auto <- get("fin_auto", pos = env_proj)
@@ -140,6 +146,7 @@ make_tab2 <- function(env_proj, env_gui){
 
     create_display_auto <- function(sn_v_select, sn_r_select){
 
+      # If the analysis for the autosomal STRs is finished
       if(fin_auto){
 
         # Get input data for autosomal STR from the environment "env_proj"
@@ -197,13 +204,13 @@ make_tab2 <- function(env_proj, env_gui){
       return(dt_auto_display)
     }
 
-
     ###################################################
     # The function to create displayed data for Y-STR #
     ###################################################
 
     create_display_y <- function(sn_v_select, sn_r_select){
 
+      # If the analysis for the Y-STRs is finished
       if(fin_y){
 
         # Get input data for Y-STR from the environment "env_proj"
@@ -267,13 +274,13 @@ make_tab2 <- function(env_proj, env_gui){
       return(dt_y_display)
     }
 
-
     ###################################################
     # The function to create displayed data for mtDNA #
     ###################################################
 
     create_display_mt <- function(sn_v_select, sn_r_select){
 
+      # If the analysis for the mtDNA is finished
       if(fin_mt){
 
         # Get input data for mtDNA from the environment "env_proj"
@@ -346,22 +353,29 @@ make_tab2 <- function(env_proj, env_gui){
       return(dt_mt_display)
     }
 
-
     #######################################
     # The function to show data in detail #
     #######################################
 
     show_detail <- function(){
 
+      #############################################
+      # Check whether the user selects one result #
+      #############################################
+
       # Get the multi-list box for displayed data from the environment "env_result"
       mlb_result <- get("mlb_result", pos = env_result)
 
-      # If the user does not select one line
+      # If the user does not select one result
       if(tclvalue(tkcurselection(mlb_result)) == ""){
         tkmessageBox(message = "Select one result!", icon = "error", type = "ok")
 
-      # If the user selects one line
+      # If the user selects one result
       }else{
+
+        #########################
+        # Extract selected data #
+        #########################
 
         # Index of the selected data
         pos_select <- as.numeric(tclvalue(tkcurselection(mlb_result))) + 1
@@ -375,6 +389,10 @@ make_tab2 <- function(env_proj, env_gui){
 
         # Extract results of selected samples
         result_selected <- dt_combined[.(sn_v_select, sn_r_select)]
+
+        #########################
+        # Create displayed data #
+        #########################
 
         # Define displayed estimated-relationship
         est_rel_display <- result_selected[, EstimatedRel]
@@ -417,7 +435,11 @@ make_tab2 <- function(env_proj, env_gui){
         dt_other_candidate <- dt_other_candidate[Victim != sn_v_select | Reference != sn_r_select]
         dt_other_candidate$LR_Total <- signif(dt_other_candidate$LR_Total, 3)
 
-        # Make a top frame
+        #######
+        # GUI #
+        #######
+
+        # Top frame
         tf_detail <- tktoplevel()
         tkwm.title(tf_detail, "Results in detail")
 
@@ -569,33 +591,48 @@ make_tab2 <- function(env_proj, env_gui){
       }
     }
 
-    # Define an environment variable (env_result)
+    #######################################
+    # Define the environment "env_result" #
+    #######################################
+
     env_result <- new.env(parent = globalenv())
+
+    ###################################
+    # Create the displayed data.table #
+    ###################################
 
     # Get the data table for all results
     dt_combined <- get("dt_combined", pos = env_proj)
     setkey(dt_combined, Victim, Reference)
 
+    # Create the displayed data.table
     dt_display <- dt_combined[, list(Victim, Reference, AssumedRel, LR_Total, EstimatedRel, Paternal, Maternal)]
     dt_display <- dt_display[EstimatedRel != "" | Paternal == "support" | Maternal == "support"]
     setorder(dt_display, cols = - "LR_Total", na.last = TRUE)
     dt_display$LR_Total <- signif(dt_display$LR_Total, 3)
 
-    # Reset frame_tab2
+    ####################
+    # Reset frame_tab2 #
+    ####################
+
     tabs <- get("tabs", pos = env_gui)
     tab2 <- get("tab2", pos = env_gui)
     frame_tab2 <- get("frame_tab2", pos = env_gui)
     tkdestroy(frame_tab2)
     frame_tab2 <- tkframe(tab2)
 
-    # Define frames
+    ##################
+    # Define widgets #
+    ##################
+
+    # Frames
     frame_result_1 <- tkframe(frame_tab2)
     frame_result_2 <- tkframe(frame_tab2)
 
-    # Define a scrollbar for a multi-list box (mlb_result)
+    # Scrollbar for a multi-list box (mlb_result)
     scr1 <- tkscrollbar(frame_result_1, repeatinterval = 5, command = function(...) tkyview(mlb_result, ...))
 
-    # Define a multi-list box (mlb_result)
+    # Multi-list box (mlb_result)
     mlb_result <- tk2mclistbox(frame_result_1, width = 100, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
     tk2column(mlb_result, "add", label = "Victim", width = 10)
     tk2column(mlb_result, "add", label = "Reference", width = 10)
@@ -606,8 +643,12 @@ make_tab2 <- function(env_proj, env_gui){
     tk2column(mlb_result, "add", label = "Maternal lineage", width = 15)
     tk2insert.multi(mlb_result, "end", dt_display)
 
-    # Define widgets in frame_result_2
+    # Button to show detail in frame_result_2
     butt_detail <- tkbutton(frame_result_2, text = "    Show detail    ", cursor = "hand2", command = function() show_detail())
+
+    ################
+    # Grid widgets #
+    ################
 
     # Grid a scrollbar and a multi-list box
     tkgrid(mlb_result, scr1)
@@ -621,27 +662,40 @@ make_tab2 <- function(env_proj, env_gui){
     tkgrid(frame_result_2)
     tkgrid(frame_tab2)
 
-    # Assign data to the environment variable (env_result)
+    #####################################
+    # Assign objects to the environment #
+    #####################################
+
+    # Assign data to the environment "env_result"
     assign("mlb_result", mlb_result, envir = env_result)
     assign("scr1", scr1, envir = env_result)
     assign("dt_display", dt_display, envir = env_result)
 
-    # Assign data to the environment variable (env_gui)
+    # Assign frame_tab2 to the environment "env_gui"
     assign("frame_tab2", frame_tab2, envir = env_gui)
 
-    # Select tab2
+    ###############
+    # Select tab2 #
+    ###############
+
     tk2notetab.select(tabs, "Results")
 
   # If at least one analysis is not finished
   }else{
 
-    # Reset frame_tab2
+    ####################
+    # Reset frame_tab2 #
+    ####################
+
     tab2 <- get("tab2", pos = env_gui)
     frame_tab2 <- get("frame_tab2", pos = env_gui)
     tkdestroy(frame_tab2)
     frame_tab2 <- tkframe(tab2)
 
-    # Assign frame_tab2 to the environment "env_gui"
+    #####################################
+    # Assign objects to the environment #
+    #####################################
+
     assign("frame_tab2", frame_tab2, envir = env_gui)
   }
 }
