@@ -34,6 +34,57 @@ display_gt <- function(data_gt){
 }
 
 
+###################################################
+# The function to create a report for all results #
+###################################################
+
+create_report_all <- function(env_proj){
+  saveas <- tkgetSaveFile(filetypes = "{{CSV Files} {.csv}}")
+  if(tclvalue(saveas) != ""){
+    if(substr(tclvalue(saveas), nchar(tclvalue(saveas)) - 3, nchar(tclvalue(saveas))) == ".csv"){
+      name_report <- tclvalue(saveas)
+    }else{
+      name_report <- paste0(tclvalue(saveas), ".csv")
+    }
+  }
+
+  ###############
+  # Get objects #
+  ###############
+
+  # Software version
+  ver_soft <- get("ver_soft", pos = env_proj)
+
+  # System time
+  sys_time <- Sys.time()
+
+  # Input file paths for autosomal STR
+  fp_v_auto_report <- get("fp_v_auto_report", pos = env_proj)
+  fp_r_auto_report <- get("fp_r_auto_report", pos = env_proj)
+  fp_af_report <- get("fp_af_report", pos = env_proj)
+
+  # Input file paths for Y-STR
+  fp_v_y_report <- get("fp_v_y_report", pos = env_proj)
+  fp_r_y_report <- get("fp_r_y_report", pos = env_proj)
+
+  # Input file paths for mtDNA
+  fp_v_mt_report <- get("fp_v_mt_report", pos = env_proj)
+  fp_r_mt_report <- get("fp_r_mt_report", pos = env_proj)
+
+  # Criteria
+  criteria <- get("criteria", pos = env_proj)
+
+  # Information on relationship
+  info_rel <- get("info_rel", pos = env_proj)
+
+  # Parameters for autosomal STR
+  params_auto <- get("params_auto", pos = env_proj)
+
+  # Mutation rates
+  myus <- get("myus", pos = env_proj)
+}
+
+
 #############################
 # The function to make tab2 #
 #############################
@@ -643,8 +694,11 @@ make_tab2 <- function(env_proj, env_gui){
     tk2column(mlb_result, "add", label = "Maternal lineage", width = 15)
     tk2insert.multi(mlb_result, "end", dt_display)
 
-    # Button to show detail in frame_result_2
+    # Button to show results in detail
     butt_detail <- tkbutton(frame_result_2, text = "    Show detail    ", cursor = "hand2", command = function() show_detail())
+
+    # Button to create report
+    butt_report <- tkbutton(frame_result_2, text = "    Report    ", cursor = "hand2", command = function() create_report_all(env_proj, dt_display))
 
     ################
     # Grid widgets #

@@ -8,7 +8,7 @@ make_tab1 <- function(env_proj, env_gui){
   # The function to load required files #
   #######################################
 
-  open_file <- function(mk, fp, fn, label_fn, name_db, name_fp, name_fn){
+  open_file <- function(mk, fp, fn, label_fn, name_fp, name_fn){
 
     # Get the end-sign of the analysis from the environment "env_proj"
     if(mk == "auto"){
@@ -63,11 +63,7 @@ make_tab1 <- function(env_proj, env_gui){
         # Update the name of query database
         tkconfigure(label_fn, textvariable = fn_var)
 
-        # Load database
-        db <- fread(tclvalue(fp_var))
-
         # Assign objects to the environment "env_proj"
-        assign(name_db, db, envir = env_proj)
         assign(name_fp, tclvalue(fp_var), envir = env_proj)
         assign(name_fn, tclvalue(fn_var), envir = env_proj)
       }
@@ -141,17 +137,17 @@ make_tab1 <- function(env_proj, env_gui){
 
   # Autosomal STR
   label_v_auto_mk <- tklabel(frame_v_auto, text = "Autosomal STR")
-  butt_v_auto_load <- tkbutton(frame_v_auto, text = "    Load    ", cursor = "hand2", command = function() open_file("auto", fp_v_auto, fn_v_auto, label_v_auto_fn, "data_v_auto", "fp_v_auto", "fn_v_auto"))
+  butt_v_auto_load <- tkbutton(frame_v_auto, text = "    Load    ", cursor = "hand2", command = function() open_file("auto", fp_v_auto, fn_v_auto, label_v_auto_fn, "fp_v_auto", "fn_v_auto"))
   label_v_auto_fn <- tklabel(frame_v_auto, textvariable = fn_v_auto_var, width = 30, highlightthickness = 1, relief = "groove", justify = "center", background = "white")
 
   # Y-STR
   label_v_y_mk <- tklabel(frame_v_y, text = "Y-STR")
-  butt_v_y_load <- tkbutton(frame_v_y, text = "    Load    ", cursor = "hand2", command = function() open_file("y", fp_v_y, fn_v_y, label_v_y_fn, "data_v_y", "fp_v_y", "fn_v_y"))
+  butt_v_y_load <- tkbutton(frame_v_y, text = "    Load    ", cursor = "hand2", command = function() open_file("y", fp_v_y, fn_v_y, label_v_y_fn, "fp_v_y", "fn_v_y"))
   label_v_y_fn <- tklabel(frame_v_y, textvariable = fn_v_y_var, width = 30, highlightthickness = 1, relief = "groove", justify = "center", background = "white")
 
   # mtDNA
   label_v_mt_mk <- tklabel(frame_v_mt, text = "mtDNA")
-  butt_v_mt_load <- tkbutton(frame_v_mt, text = "    Load    ", cursor = "hand2", command = function() open_file("mt", fp_v_mt, fn_v_mt, label_v_mt_fn, "data_v_mt", "fp_v_mt", "fn_v_mt"))
+  butt_v_mt_load <- tkbutton(frame_v_mt, text = "    Load    ", cursor = "hand2", command = function() open_file("mt", fp_v_mt, fn_v_mt, label_v_mt_fn, "fp_v_mt", "fn_v_mt"))
   label_v_mt_fn <- tklabel(frame_v_mt, textvariable = fn_v_mt_var, width = 30, highlightthickness = 1, relief = "groove", justify = "center", background = "white")
 
   #########################################
@@ -171,17 +167,17 @@ make_tab1 <- function(env_proj, env_gui){
 
   # Autosomal STR
   label_r_auto_mk <- tklabel(frame_r_auto, text = "Autosomal STR")
-  butt_r_auto_load <- tkbutton(frame_r_auto, text = "    Load    ", cursor = "hand2", command = function() open_file("auto", fp_r_auto, fn_r_auto, label_r_auto_fn, "data_r_auto", "fp_r_auto", "fn_r_auto"))
+  butt_r_auto_load <- tkbutton(frame_r_auto, text = "    Load    ", cursor = "hand2", command = function() open_file("auto", fp_r_auto, fn_r_auto, label_r_auto_fn, "fp_r_auto", "fn_r_auto"))
   label_r_auto_fn <- tklabel(frame_r_auto, textvariable = fn_r_auto_var, width = 30, highlightthickness = 1, relief = "groove", justify = "center", background = "white")
 
   # Y-STR
   label_r_y_mk <- tklabel(frame_r_y, text = "Y-STR")
-  butt_r_y_load <- tkbutton(frame_r_y, text = "    Load    ", cursor = "hand2", command = function() open_file("y", fp_r_y, fn_r_y, label_r_y_fn, "data_r_y", "fp_r_y", "fn_r_y"))
+  butt_r_y_load <- tkbutton(frame_r_y, text = "    Load    ", cursor = "hand2", command = function() open_file("y", fp_r_y, fn_r_y, label_r_y_fn, "fp_r_y", "fn_r_y"))
   label_r_y_fn <- tklabel(frame_r_y, textvariable = fn_r_y_var, width = 30, highlightthickness = 1, relief = "groove", justify = "center", background = "white")
 
   # mtDNA
   label_r_mt_mk <- tklabel(frame_r_mt, text = "mtDNA")
-  butt_r_mt_load <- tkbutton(frame_r_mt, text = "    Load    ", cursor = "hand2", command = function() open_file("mt", fp_r_mt, fn_r_mt, label_r_mt_fn, "data_r_mt", "fp_r_mt", "fn_r_mt"))
+  butt_r_mt_load <- tkbutton(frame_r_mt, text = "    Load    ", cursor = "hand2", command = function() open_file("mt", fp_r_mt, fn_r_mt, label_r_mt_fn, "fp_r_mt", "fn_r_mt"))
   label_r_mt_fn <- tklabel(frame_r_mt, textvariable = fn_r_mt_var, width = 30, highlightthickness = 1, relief = "groove", justify = "center", background = "white")
 
   #########################################
@@ -197,7 +193,7 @@ make_tab1 <- function(env_proj, env_gui){
   label_af_title <- tklabel(frame_af_title, text = "Allele frequencies for autosomal STR", font = "Helvetica 10 bold")
 
   # Allele frequencies
-  butt_af_load <- tkbutton(frame_af_file, text = "    Load    ", cursor = "hand2", command = function() open_file("auto", fp_af, fn_af, label_af_fn, "data_af", "fp_af", "fn_af"))
+  butt_af_load <- tkbutton(frame_af_file, text = "    Load    ", cursor = "hand2", command = function() open_file("auto", fp_af, fn_af, label_af_fn, "fp_af", "fn_af"))
   label_af_fn <- tklabel(frame_af_file, textvariable = fn_af_var, width = 30, highlightthickness = 1, relief = "groove", justify = "center", background = "white")
 
   ###############################
@@ -300,6 +296,154 @@ make_tab1 <- function(env_proj, env_gui){
 }
 
 
+#################################
+# The function to load database #
+#################################
+
+load_db <- function(env_proj){
+
+  ##################################
+  # Autosomal STR, victim database #
+  ##################################
+
+  # Get the file path
+  fp_v_auto <- get("fp_v_auto", pos = env_proj)
+
+  # If the file path is designated
+  if(length(fp_v_auto) > 0){
+
+    # Load database
+    data_v_auto <- fread(fp_v_auto)
+
+    # Assign database
+    assign("data_v_auto", data_v_auto, envir = env_proj)
+
+    # Assign the file path for reporting
+    assign("fp_v_auto_report", fp_v_auto, envir = env_proj)
+  }
+
+  #####################################
+  # Autosomal STR, reference database #
+  #####################################
+
+  # Get the file path
+  fp_r_auto <- get("fp_r_auto", pos = env_proj)
+
+  # If the file path is designated
+  if(length(fp_r_auto) > 0){
+
+    # Load database
+    data_r_auto <- fread(fp_r_auto)
+
+    # Assign database
+    assign("data_r_auto", data_r_auto, envir = env_proj)
+
+    # Assign the file path for reporting
+    assign("fp_r_auto_report", fp_r_auto, envir = env_proj)
+  }
+
+  #####################################
+  # Autosomal STR, allele frequencies #
+  #####################################
+
+  # Get the file path
+  fp_af <- get("fp_af", pos = env_proj)
+
+  # If the file path is designated
+  if(length(fp_af) > 0){
+
+    # Load database
+    data_af <- fread(fp_af)
+
+    # Assign database
+    assign("data_af", data_af, envir = env_proj)
+
+    # Assign the file path for reporting
+    assign("fp_af_report", fp_af, envir = env_proj)
+  }
+
+  ##########################
+  # Y-STR, victim database #
+  ##########################
+
+  # Get the file path
+  fp_v_y <- get("fp_v_y", pos = env_proj)
+
+  # If the file path is designated
+  if(length(fp_v_y) > 0){
+
+    # Load database
+    data_v_y <- fread(fp_v_y)
+
+    # Assign database
+    assign("data_v_y", data_v_y, envir = env_proj)
+
+    # Assign the file path for reporting
+    assign("fp_v_y_report", fp_v_y, envir = env_proj)
+  }
+
+  #############################
+  # Y-STR, reference database #
+  #############################
+
+  # Get the file path
+  fp_r_y <- get("fp_r_y", pos = env_proj)
+
+  # If the file path is designated
+  if(length(fp_r_y) > 0){
+
+    # Load database
+    data_r_y <- fread(fp_r_y)
+
+    # Assign database
+    assign("data_r_y", data_r_y, envir = env_proj)
+
+    # Assign the file path for reporting
+    assign("fp_r_y_report", fp_r_y, envir = env_proj)
+  }
+
+  ##########################
+  # mtDNA, victim database #
+  ##########################
+
+  # Get the file path
+  fp_v_mt <- get("fp_v_mt", pos = env_proj)
+
+  # If the file path is designated
+  if(length(fp_v_mt) > 0){
+
+    # Load database
+    data_v_mt <- fread(fp_v_mt)
+
+    # Assign database
+    assign("data_v_mt", data_v_mt, envir = env_proj)
+
+    # Assign the file path for reporting
+    assign("fp_v_mt_report", fp_v_mt, envir = env_proj)
+  }
+
+  #############################
+  # mtDNA, reference database #
+  #############################
+
+  # Get the file path
+  fp_r_mt <- get("fp_r_mt", pos = env_proj)
+
+  # If the file path is designated
+  if(length(fp_r_mt) > 0){
+
+    # Load database
+    data_r_mt <- fread(fp_r_mt)
+
+    # Assign database
+    assign("data_r_mt", data_r_mt, envir = env_proj)
+
+    # Assign the file path for reporting
+    assign("fp_r_mt_report", fp_r_mt, envir = env_proj)
+  }
+}
+
+
 #####################################
 # The function to check loaded data #
 #####################################
@@ -312,9 +456,9 @@ check_error <- function(env_proj, env_gui){
 
   error_message <- ""
 
-  ##################################################
-  # Get input data from the environment "env_proj" #
-  ##################################################
+  ################################################
+  # Get database from the environment 'env_proj' #
+  ################################################
 
   # Autosomal STR
   data_v_auto <- get("data_v_auto", pos = env_proj)
@@ -389,8 +533,8 @@ check_error <- function(env_proj, env_gui){
           locus_myu <- data_myu[, Marker]
 
           # Load information on relationship
-          data_rel <- fread(paste0(path_pack, "/extdata/parameters/rel.csv"))
-          names_rel <- data_rel[, Name_relationship]
+          info_rel <- fread(paste0(path_pack, "/extdata/parameters/rel.csv"))
+          names_rel <- info_rel[, Name_relationship]
 
           # Whether the locus set of the query database is the same as that of the reference database or not
           bool_locus_1 <- setequal(locus_v_auto, locus_r_auto)
@@ -484,17 +628,17 @@ analyze_auto <- function(env_proj, env_gui){
   myu_all <- data_myu[, Myu]
 
   # Load information on relationship
-  data_rel <- fread(paste0(path_pack, "/extdata/parameters/rel.csv"))
-  names_rel <- data_rel[, Name_relationship]
-  degrees_rel <- data_rel[, Degree]
-  pibds_rel <- as.matrix(data_rel[, list(Pr_IBD2, Pr_IBD1, Pr_IBD0)])
+  info_rel <- fread(paste0(path_pack, "/extdata/parameters/rel.csv"))
+  names_rel <- info_rel[, Name_relationship]
+  degrees_rel <- info_rel[, Degree]
+  pibds_rel <- as.matrix(info_rel[, list(Pr_IBD2, Pr_IBD1, Pr_IBD0)])
   pibds_rel <- asplit(pibds_rel, 1)
 
   # Load analysis methods
-  data_par_auto <- fread(paste0(path_pack, "/extdata/parameters/par_auto.csv"))
-  maf <- data_par_auto$Value[data_par_auto$Parameter == "maf"]
-  meth_d <- data_par_auto$Value[data_par_auto$Parameter == "meth_d"]
-  pd <- data_par_auto$Value[data_par_auto$Parameter == "pd"]
+  params_auto <- fread(paste0(path_pack, "/extdata/parameters/par_auto.csv"))
+  maf <- params_auto$Value[params_auto$Parameter == "maf"]
+  meth_d <- params_auto$Value[params_auto$Parameter == "meth_d"]
+  pd <- params_auto$Value[params_auto$Parameter == "pd"]
 
   # Extract loci
   locus_auto <- setdiff(names(data_v_auto), c("SampleName", "Relationship"))
@@ -615,8 +759,8 @@ analyze_auto <- function(env_proj, env_gui){
   assign("data_af", data_af, envir = env_proj)
 
   # Assign parameters to the environment "env_proj"
-  assign("data_rel", data_rel, envir = env_proj)
-  assign("data_par_auto", data_par_auto, envir = env_proj)
+  assign("info_rel", info_rel, envir = env_proj)
+  assign("params_auto", params_auto, envir = env_proj)
   assign("myus", myus, envir = env_proj)
   assign("apes", apes, envir = env_proj)
 
@@ -929,6 +1073,12 @@ create_combined_data <- function(env_proj){
 ####################################
 
 search_rel <- function(env_proj, env_gui){
+
+  #################
+  # Load database #
+  #################
+
+  load_db(env_proj)
 
   ##################
   # Check all data #

@@ -4,6 +4,7 @@
 
 reset_env_proj_data <- function(env_proj, bool_file){
 
+  # If file paths and names are reset
   if(bool_file){
 
     ###########################
@@ -11,17 +12,14 @@ reset_env_proj_data <- function(env_proj, bool_file){
     ###########################
 
     # Victim database
-    assign("data_v_auto", NULL, envir = env_proj)
     assign("fp_v_auto", character(0), envir = env_proj)
     assign("fn_v_auto", character(0), envir = env_proj)
 
     # Reference database
-    assign("data_r_auto", NULL, envir = env_proj)
     assign("fp_r_auto", character(0), envir = env_proj)
     assign("fn_r_auto", character(0), envir = env_proj)
 
     # Allele frequencies
-    assign("data_af", NULL, envir = env_proj)
     assign("fp_af", character(0), envir = env_proj)
     assign("fn_af", character(0), envir = env_proj)
 
@@ -30,12 +28,10 @@ reset_env_proj_data <- function(env_proj, bool_file){
     ###################
 
     # Victim database
-    assign("data_v_y", NULL, envir = env_proj)
     assign("fp_v_y", character(0), envir = env_proj)
     assign("fn_v_y", character(0), envir = env_proj)
 
     # Reference database
-    assign("data_r_y", NULL, envir = env_proj)
     assign("fp_r_y", character(0), envir = env_proj)
     assign("fn_r_y", character(0), envir = env_proj)
 
@@ -44,12 +40,10 @@ reset_env_proj_data <- function(env_proj, bool_file){
     ###################
 
     # Victim database
-    assign("data_v_mt", NULL, envir = env_proj)
     assign("fp_v_mt", character(0), envir = env_proj)
     assign("fn_v_mt", character(0), envir = env_proj)
 
     # Reference database
-    assign("data_r_mt", NULL, envir = env_proj)
     assign("fp_r_mt", character(0), envir = env_proj)
     assign("fn_r_mt", character(0), envir = env_proj)
   }
@@ -61,9 +55,19 @@ reset_env_proj_data <- function(env_proj, bool_file){
   # data.table
   assign("dt_auto", NULL, envir = env_proj)
 
+  # File paths for report
+  assign("fp_v_auto_report", character(0), envir = env_proj)
+  assign("fp_r_auto_report", character(0), envir = env_proj)
+  assign("fp_af_report", character(0), envir = env_proj)
+
+  # Database
+  assign("data_v_auto", NULL, envir = env_proj)
+  assign("data_r_auto", NULL, envir = env_proj)
+  assign("data_af", NULL, envir = env_proj)
+
   # Parameters
-  assign("data_rel", NULL, envir = env_proj)
-  assign("data_par_auto", NULL, envir = env_proj)
+  assign("info_rel", NULL, envir = env_proj)
+  assign("params_auto", NULL, envir = env_proj)
   assign("myus", NULL, envir = env_proj)
   assign("apes", NULL, envir = env_proj)
 
@@ -77,6 +81,14 @@ reset_env_proj_data <- function(env_proj, bool_file){
   # data.table
   assign("dt_y", NULL, envir = env_proj)
 
+  # File paths for report
+  assign("fp_v_y_report", character(0), envir = env_proj)
+  assign("fp_r_y_report", character(0), envir = env_proj)
+
+  # Database
+  assign("data_v_y", NULL, envir = env_proj)
+  assign("data_r_y", NULL, envir = env_proj)
+
   # End-sign
   assign("fin_y", FALSE, envir = env_proj)
 
@@ -87,6 +99,14 @@ reset_env_proj_data <- function(env_proj, bool_file){
   # data.table
   assign("dt_mt", NULL, envir = env_proj)
 
+  # File paths for report
+  assign("fp_v_mt_report", character(0), envir = env_proj)
+  assign("fp_r_mt_report", character(0), envir = env_proj)
+
+  # Database
+  assign("data_v_mt", NULL, envir = env_proj)
+  assign("data_r_mt", NULL, envir = env_proj)
+
   # End-sign
   assign("fin_mt", FALSE, envir = env_proj)
 
@@ -96,6 +116,9 @@ reset_env_proj_data <- function(env_proj, bool_file){
 
   # data.table
   assign("dt_combined", NULL, envir = env_proj)
+
+  # Criteria
+  assign("criteria", NULL, envir = env_proj)
 }
 
 
@@ -258,7 +281,7 @@ relsearch <- function(){
   ########################
 
   ver_soft <- packageVersion("relsearch")
-  assign("ver_soft", ver_soft, envir = env_gui)
+  assign("ver_soft", ver_soft, envir = env_proj)
 
   ####################
   # Set package path #
