@@ -1,10 +1,14 @@
-###############################################################
-# The function to set environment variables for autosomal STR #
-###############################################################
+########################################################
+# The function to reset environment variables for data #
+########################################################
 
-set_env_proj_auto <- function(env_proj, bool_new){
+reset_env_proj_data <- function(env_proj, bool_file){
 
-  if(bool_new){
+  if(bool_file){
+
+    ###########################
+    # Files for Autosomal STR #
+    ###########################
 
     # Victim database
     assign("data_v_auto", NULL, envir = env_proj)
@@ -20,20 +24,10 @@ set_env_proj_auto <- function(env_proj, bool_new){
     assign("data_af", NULL, envir = env_proj)
     assign("fp_af", character(0), envir = env_proj)
     assign("fn_af", character(0), envir = env_proj)
-  }
 
-  # End-sign
-  assign("fin_auto", FALSE, envir = env_proj)
-}
-
-
-#######################################################
-# The function to set environment variables for Y-STR #
-#######################################################
-
-set_env_proj_y <- function(env_proj, bool_new){
-
-  if(bool_new){
+    ###################
+    # Files for Y-STR #
+    ###################
 
     # Victim database
     assign("data_v_y", NULL, envir = env_proj)
@@ -44,20 +38,10 @@ set_env_proj_y <- function(env_proj, bool_new){
     assign("data_r_y", NULL, envir = env_proj)
     assign("fp_r_y", character(0), envir = env_proj)
     assign("fn_r_y", character(0), envir = env_proj)
-  }
 
-  # End-sign
-  assign("fin_y", FALSE, envir = env_proj)
-}
-
-
-#######################################################
-# The function to set environment variables for mtDNA #
-#######################################################
-
-set_env_proj_mt <- function(env_proj, bool_new){
-
-  if(bool_new){
+    ###################
+    # Files for mtDNA #
+    ###################
 
     # Victim database
     assign("data_v_mt", NULL, envir = env_proj)
@@ -70,8 +54,48 @@ set_env_proj_mt <- function(env_proj, bool_new){
     assign("fn_r_mt", character(0), envir = env_proj)
   }
 
+  #############################
+  # Results for autosomal STR #
+  #############################
+
+  # data.table
+  assign("dt_auto", NULL, envir = env_proj)
+
+  # Parameters
+  assign("data_rel", NULL, envir = env_proj)
+  assign("data_par_auto", NULL, envir = env_proj)
+  assign("myus", NULL, envir = env_proj)
+  assign("apes", NULL, envir = env_proj)
+
+  # End-sign
+  assign("fin_auto", FALSE, envir = env_proj)
+
+  #####################
+  # Results for Y-STR #
+  #####################
+
+  # data.table
+  assign("dt_y", NULL, envir = env_proj)
+
+  # End-sign
+  assign("fin_y", FALSE, envir = env_proj)
+
+  #####################
+  # Results for mtDNA #
+  #####################
+
+  # data.table
+  assign("dt_mt", NULL, envir = env_proj)
+
   # End-sign
   assign("fin_mt", FALSE, envir = env_proj)
+
+  ####################
+  # Combined results #
+  ####################
+
+  # data.table
+  assign("dt_combined", NULL, envir = env_proj)
 }
 
 
@@ -128,9 +152,7 @@ renew_proj <- function(env_proj, env_gui){
     sign_ok <- tclvalue(tkmessageBox(message = "Unsaved data will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
   }
   if(sign_ok == "ok"){
-    set_env_proj_auto(env_proj, TRUE)
-    set_env_proj_y(env_proj, TRUE)
-    set_env_proj_mt(env_proj, TRUE)
+    reset_env_proj_data(env_proj, TRUE)
     make_tab1(env_proj, env_gui)
     make_tab2(env_proj, env_gui)
   }
@@ -220,9 +242,7 @@ relsearch <- function(){
     env_proj <- get("env_proj", pos = parent.env(environment()))
   }else{
     env_proj <- new.env(parent = globalenv())
-    set_env_proj_auto(env_proj, TRUE)
-    set_env_proj_y(env_proj, TRUE)
-    set_env_proj_mt(env_proj, TRUE)
+    reset_env_proj_data(env_proj, TRUE)
     set_env_proj_default(env_proj)
     set_env_proj_sn(env_proj, TRUE)
   }

@@ -1,45 +1,3 @@
-################################################################
-# The function to check whether all results are deleted or not #
-################################################################
-
-check_delete_all <- function(env_proj){
-
-  # Get the end sign from the environment "env_proj"
-  fin_auto <- get("fin_auto", pos = env_proj)
-  fin_y <- get("fin_y", pos = env_proj)
-  fin_mt <- get("fin_mt", pos = env_proj)
-
-  # Check whether all results are deleted or not
-  if(any(fin_auto, fin_y, fin_mt)){
-    sign_ok <- tclvalue(tkmessageBox(message = "All results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
-  }else{
-    sign_ok <- "ok"
-  }
-
-  return(sign_ok)
-}
-
-
-##############################################################################
-# The function to check whether the autosomal STR results are deleted or not #
-##############################################################################
-
-check_delete_auto <- function(env_proj){
-
-  # Get the end sign of the autosomal STR analysis from the environment "env_proj"
-  fin_auto <- get("fin_auto", pos = env_proj)
-
-  # Check whether the autosomal STR results are deleted or not
-  if(fin_auto){
-    sign_ok <- tclvalue(tkmessageBox(message = "Autosomal STR results will be deleted. Do you want to continue?", type = "okcancel", icon = "warning"))
-  }else{
-    sign_ok <- "ok"
-  }
-
-  return(sign_ok)
-}
-
-
 ################################
 # The function to set criteria #
 ################################
@@ -69,28 +27,13 @@ set_criteria <- function(env_proj, env_gui){
 
   save_criteria <- function(){
 
-    # Check whether all results are deleted or not
-    sign_ok <- check_delete_all(env_proj)
+    # Create the file "criteria.csv"
+    create_criteria_csv(tclvalue(min_lr_auto_var),
+                        tclvalue(max_mismatch_y_var), tclvalue(max_ignore_y_var), tclvalue(max_mustep_y_var),
+                        tclvalue(max_mismatch_mt_var), tclvalue(min_share_mt_var))
 
-    # If all results are deleted
-    if(sign_ok == "ok"){
-
-      # Create the file "criteria.csv"
-      create_criteria_csv(tclvalue(min_lr_auto_var),
-                          tclvalue(max_mismatch_y_var), tclvalue(max_ignore_y_var), tclvalue(max_mustep_y_var),
-                          tclvalue(max_mismatch_mt_var), tclvalue(min_share_mt_var))
-
-      # Reset the environment variables
-      set_env_proj_auto(env_proj, FALSE)
-      set_env_proj_y(env_proj, FALSE)
-      set_env_proj_mt(env_proj, FALSE)
-
-      # Reset tab2
-      make_tab2(env_proj, env_gui)
-
-      # Destroy the top frame
-      tkdestroy(tf)
-    }
+    # Destroy the top frame
+    tkdestroy(tf)
   }
 
   ##################################
@@ -99,36 +42,21 @@ set_criteria <- function(env_proj, env_gui){
 
   reset_criteria <- function(){
 
-    # Check whether all results are deleted or not
-    sign_ok <- check_delete_all(env_proj)
+    # Get default values from the environment "env_proj"
+    dt_criteria <- get("dt_criteria_default", pos = env_proj)
 
-    # If all results are deleted
-    if(sign_ok == "ok"){
+    # Reset tcl variables
+    tclvalue(min_lr_auto_var) <- dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"]
+    tclvalue(max_mismatch_y_var) <- dt_criteria$Value[dt_criteria$Criteria == "max_mismatch_y"]
+    tclvalue(max_ignore_y_var) <- dt_criteria$Value[dt_criteria$Criteria == "max_ignore_y"]
+    tclvalue(max_mustep_y_var) <- dt_criteria$Value[dt_criteria$Criteria == "max_mustep_y"]
+    tclvalue(max_mismatch_mt_var) <- dt_criteria$Value[dt_criteria$Criteria == "max_mismatch_mt"]
+    tclvalue(min_share_mt_var) <- dt_criteria$Value[dt_criteria$Criteria == "min_share_mt"]
 
-      # Get default values from the environment "env_proj"
-      dt_criteria <- get("dt_criteria_default", pos = env_proj)
-
-      # Reset tcl variables
-      tclvalue(min_lr_auto_var) <- dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"]
-      tclvalue(max_mismatch_y_var) <- dt_criteria$Value[dt_criteria$Criteria == "max_mismatch_y"]
-      tclvalue(max_ignore_y_var) <- dt_criteria$Value[dt_criteria$Criteria == "max_ignore_y"]
-      tclvalue(max_mustep_y_var) <- dt_criteria$Value[dt_criteria$Criteria == "max_mustep_y"]
-      tclvalue(max_mismatch_mt_var) <- dt_criteria$Value[dt_criteria$Criteria == "max_mismatch_mt"]
-      tclvalue(min_share_mt_var) <- dt_criteria$Value[dt_criteria$Criteria == "min_share_mt"]
-
-      # Create the file "criteria.csv"
-      create_criteria_csv(tclvalue(min_lr_auto_var),
-                          tclvalue(max_mismatch_y_var), tclvalue(max_ignore_y_var), tclvalue(max_mustep_y_var),
-                          tclvalue(max_mismatch_mt_var), tclvalue(min_share_mt_var))
-
-      # Reset the environment variables
-      set_env_proj_auto(env_proj, FALSE)
-      set_env_proj_y(env_proj, FALSE)
-      set_env_proj_mt(env_proj, FALSE)
-
-      # Reset tab2
-      make_tab2(env_proj, env_gui)
-    }
+    # Create the file "criteria.csv"
+    create_criteria_csv(tclvalue(min_lr_auto_var),
+                        tclvalue(max_mismatch_y_var), tclvalue(max_ignore_y_var), tclvalue(max_mustep_y_var),
+                        tclvalue(max_mismatch_mt_var), tclvalue(min_share_mt_var))
   }
 
   # Get the package path
@@ -295,58 +223,45 @@ set_myu <- function(env_proj, env_gui){
 
   edit_myu_2 <- function(tf, mlb_myu, pos_select, myu_select){
 
-    # Check whether the autosomal STR results are deleted or not
-    sign_ok <- check_delete_auto(env_proj)
+    # Get the current mutation rates from the environment "env_myu"
+    dt_myu <- get("dt_myu", pos = env_myu)
 
-    # If the autosomal STR results are deleted
-    if(sign_ok == "ok"){
+    # Update mutation rates
+    dt_myu[pos_select, "Myu"] <- myu_select
 
-      # Get the current mutation rates from the environment "env_myu"
-      dt_myu <- get("dt_myu", pos = env_myu)
+    # Update the file "myu.csv"
+    create_myu_csv(dt_myu)
 
-      # Update mutation rates
-      dt_myu[pos_select, "Myu"] <- myu_select
+    # Get widgets from the environment "env_myu"
+    scr1 <- get("scr1", pos = env_myu)
+    mlb_myu <- get("mlb_myu", pos = env_myu)
 
-      # Update the file "myu.csv"
-      create_myu_csv(dt_myu)
+    # Destroy widgets
+    tkdestroy(scr1)
+    tkdestroy(mlb_myu)
 
-      # Get widgets from the environment "env_myu"
-      scr1 <- get("scr1", pos = env_myu)
-      mlb_myu <- get("mlb_myu", pos = env_myu)
+    # Define a scrollbar for the multi-list box of mutation rates
+    scr1 <- tkscrollbar(frame_myu_1, repeatinterval = 5, command = function(...) tkyview(mlb_myu, ...))
 
-      # Destroy widgets
-      tkdestroy(scr1)
-      tkdestroy(mlb_myu)
+    # Define a multi-list box of mutation rates
+    mlb_myu <- tk2mclistbox(frame_myu_1, width = 30, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+    tk2column(mlb_myu, "add", label = "Locus", width = 15)
+    tk2column(mlb_myu, "add", label = "Mutation rate", width = 15)
+    tk2insert.multi(mlb_myu, "end", dt_myu)
 
-      # Define a scrollbar for the multi-list box of mutation rates
-      scr1 <- tkscrollbar(frame_myu_1, repeatinterval = 5, command = function(...) tkyview(mlb_myu, ...))
+    # Grid widgets
+    tkgrid(mlb_myu, scr1)
+    tkgrid.configure(scr1, rowspan = 30, sticky = "nsw")
 
-      # Define a multi-list box of mutation rates
-      mlb_myu <- tk2mclistbox(frame_myu_1, width = 30, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
-      tk2column(mlb_myu, "add", label = "Locus", width = 15)
-      tk2column(mlb_myu, "add", label = "Mutation rate", width = 15)
-      tk2insert.multi(mlb_myu, "end", dt_myu)
+    # Assign widgets to the environment "env_myu"
+    assign("scr1", scr1, envir = env_myu)
+    assign("mlb_myu", mlb_myu, envir = env_myu)
 
-      # Grid widgets
-      tkgrid(mlb_myu, scr1)
-      tkgrid.configure(scr1, rowspan = 30, sticky = "nsw")
+    # Assign mutation rates to the environment "env_myu"
+    assign("dt_myu", dt_myu, envir = env_myu)
 
-      # Assign widgets to the environment "env_myu"
-      assign("scr1", scr1, envir = env_myu)
-      assign("mlb_myu", mlb_myu, envir = env_myu)
-
-      # Assign mutation rates to the environment "env_myu"
-      assign("dt_myu", dt_myu, envir = env_myu)
-
-      # Reset environment variables for autosomal STR
-      set_env_proj_auto(env_proj, FALSE)
-
-      # Reset tab2
-      make_tab2(env_proj, env_gui)
-
-      # Destroy the top frame
-      tkdestroy(tf)
-    }
+    # Destroy the top frame
+    tkdestroy(tf)
   }
 
   #######################################
@@ -393,43 +308,30 @@ set_myu <- function(env_proj, env_gui){
 
   add_myu_2 <- function(tf, locus_add, myu_add){
 
-    # Check whether the autosomal STR results are deleted or not
-    sign_ok <- check_delete_auto(env_proj)
+    # Get the current mutation rates from the environment "env_myu"
+    dt_myu <- get("dt_myu", pos = env_myu)
 
-    # If the autosomal STR results are deleted
-    if(sign_ok == "ok"){
+    # Update mutation rates
+    dt_new <- data.table(Marker = locus_add, Myu = myu_add)
+    dt_myu <- rbind(dt_myu, dt_new)
 
-      # Get the current mutation rates from the environment "env_myu"
-      dt_myu <- get("dt_myu", pos = env_myu)
+    # Update the file "myu.csv"
+    create_myu_csv(dt_myu)
 
-      # Update mutation rates
-      dt_new <- data.table(Marker = locus_add, Myu = myu_add)
-      dt_myu <- rbind(dt_myu, dt_new)
+    # Get the multi-list box of mutation rates from the environment "env_myu"
+    mlb_myu <- get("mlb_myu", pos = env_myu)
 
-      # Update the file "myu.csv"
-      create_myu_csv(dt_myu)
+    # update the multi-list box
+    tk2insert.multi(mlb_myu, "end", c(locus_add, myu_add))
 
-      # Get the multi-list box of mutation rates from the environment "env_myu"
-      mlb_myu <- get("mlb_myu", pos = env_myu)
+    # Assign the multi-list box to the environment "env_myu"
+    assign("mlb_myu", mlb_myu, envir = env_myu)
 
-      # update the multi-list box
-      tk2insert.multi(mlb_myu, "end", c(locus_add, myu_add))
+    # Assign mutation rates to the environment "env_myu"
+    assign("dt_myu", dt_myu, envir = env_myu)
 
-      # Assign the multi-list box to the environment "env_myu"
-      assign("mlb_myu", mlb_myu, envir = env_myu)
-
-      # Assign mutation rates to the environment "env_myu"
-      assign("dt_myu", dt_myu, envir = env_myu)
-
-      # Reset environment variables for autosomal STR
-      set_env_proj_auto(env_proj, FALSE)
-
-      # Reset tab2
-      make_tab2(env_proj, env_gui)
-
-      # Destroy the top frame
-      tkdestroy(tf)
-    }
+    # Destroy the top frame
+    tkdestroy(tf)
   }
 
   ##########################################
@@ -446,55 +348,42 @@ set_myu <- function(env_proj, env_gui){
       tkmessageBox(message = "Select one locus!", icon = "error", type = "ok")
     }else{
 
-      # Check whether the autosomal STR results are deleted or not
-      sign_ok <- check_delete_auto(env_proj)
+      # Get the current mutation rates from the environment "env_myu"
+      dt_myu <- get("dt_myu", pos = env_myu)
 
-      # If the autosomal STR results are deleted
-      if(sign_ok == "ok"){
+      # Update mutation rates
+      pos_select <- as.numeric(tclvalue(tkcurselection(mlb_myu))) + 1
+      dt_myu <- dt_myu[-pos_select, ]
 
-        # Get the current mutation rates from the environment "env_myu"
-        dt_myu <- get("dt_myu", pos = env_myu)
+      # Update the file "myu.csv"
+      create_myu_csv(dt_myu)
 
-        # Update mutation rates
-        pos_select <- as.numeric(tclvalue(tkcurselection(mlb_myu))) + 1
-        dt_myu <- dt_myu[-pos_select, ]
+      # Get the scrollbar from the environment "env_myu"
+      scr1 <- get("scr1", pos = env_myu)
 
-        # Update the file "myu.csv"
-        create_myu_csv(dt_myu)
+      # Destroy widgets
+      tkdestroy(scr1)
+      tkdestroy(mlb_myu)
 
-        # Get the scrollbar from the environment "env_myu"
-        scr1 <- get("scr1", pos = env_myu)
+      # Define a scrollbar for the multi-list box of mutation rates
+      scr1 <- tkscrollbar(frame_myu_1, repeatinterval = 5, command = function(...) tkyview(mlb_myu, ...))
 
-        # Destroy widgets
-        tkdestroy(scr1)
-        tkdestroy(mlb_myu)
+      # Define a multi-list box of mutation rates
+      mlb_myu <- tk2mclistbox(frame_myu_1, width = 30, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
+      tk2column(mlb_myu, "add", label = "Locus", width = 15)
+      tk2column(mlb_myu, "add", label = "Mutation rate", width = 15)
+      tk2insert.multi(mlb_myu, "end", dt_myu)
 
-        # Define a scrollbar for the multi-list box of mutation rates
-        scr1 <- tkscrollbar(frame_myu_1, repeatinterval = 5, command = function(...) tkyview(mlb_myu, ...))
+      # Grid widgets
+      tkgrid(mlb_myu, scr1)
+      tkgrid.configure(scr1, rowspan = 30, sticky = "nsw")
 
-        # Define a multi-list box of mutation rates
-        mlb_myu <- tk2mclistbox(frame_myu_1, width = 30, height = 30, resizablecolumns = TRUE, selectmode = "single", yscrollcommand = function(...) tkset(scr1, ...))
-        tk2column(mlb_myu, "add", label = "Locus", width = 15)
-        tk2column(mlb_myu, "add", label = "Mutation rate", width = 15)
-        tk2insert.multi(mlb_myu, "end", dt_myu)
+      # Assign widgets to environment variable (env_myu)
+      assign("mlb_myu", mlb_myu, envir = env_myu)
+      assign("scr1", scr1, envir = env_myu)
 
-        # Grid widgets
-        tkgrid(mlb_myu, scr1)
-        tkgrid.configure(scr1, rowspan = 30, sticky = "nsw")
-
-        # Assign widgets to environment variable (env_myu)
-        assign("mlb_myu", mlb_myu, envir = env_myu)
-        assign("scr1", scr1, envir = env_myu)
-
-        # Assign mutation rates to the environment "env_myu"
-        assign("dt_myu", dt_myu, envir = env_myu)
-
-        # Reset environment variables for autosomal STR
-        set_env_proj_auto(env_proj, FALSE)
-
-        # Reset tab2
-        make_tab2(env_proj, env_gui)
-      }
+      # Assign mutation rates to the environment "env_myu"
+      assign("dt_myu", dt_myu, envir = env_myu)
     }
   }
 
@@ -561,6 +450,7 @@ set_myu <- function(env_proj, env_gui){
   # Assign dt_myu to the environment "env_myu"
   assign("dt_myu", dt_myu, envir = env_myu)
 }
+
 
 ##########################################
 # The function to judge paternal lineage #
@@ -820,36 +710,23 @@ set_rel <- function(env_proj, env_gui){
 
   edit_rel_2 <- function(tf, mlb_rel, pos_select, rel_select){
 
-    # Check whether the autosomal STR results are deleted or not
-    sign_ok <- check_delete_auto(env_proj)
+    # Get the current relationship data from the environment "env_rel"
+    dt_rel <- get("dt_rel", pos = env_rel)
 
-    # If all results are deleted
-    if(sign_ok == "ok"){
+    # Update the name of the selected relationship
+    dt_rel[pos_select, "Name_relationship"] <- rel_select
 
-      # Get the current relationship data from the environment "env_rel"
-      dt_rel <- get("dt_rel", pos = env_rel)
+    # Update the file "rel.csv"
+    create_rel_csv(dt_rel)
 
-      # Update the name of the selected relationship
-      dt_rel[pos_select, "Name_relationship"] <- rel_select
+    # Remake a multi-list box of information on relationships
+    remake_mlb_rel(dt_rel)
 
-      # Update the file "rel.csv"
-      create_rel_csv(dt_rel)
+    # Assign data to the environment "env_rel"
+    assign("dt_rel", dt_rel, envir = env_rel)
 
-      # Remake a multi-list box of information on relationships
-      remake_mlb_rel(dt_rel)
-
-      # Assign data to the environment "env_rel"
-      assign("dt_rel", dt_rel, envir = env_rel)
-
-      # Reset environment variables for autosomal STR
-      set_env_proj_auto(env_proj, FALSE)
-
-      # Reset tab2
-      make_tab2(env_proj, env_gui)
-
-      # Destroy the top frame
-      tkdestroy(tf)
-    }
+    # Destroy the top frame
+    tkdestroy(tf)
   }
 
   #########################################
@@ -1346,53 +1223,40 @@ set_rel <- function(env_proj, env_gui){
         tkmessageBox(message = "Incorrect setting of the family tree!", icon = "error", type = "ok")
       }else{
 
-        # Check whether the autosomal STR results are deleted or not
-        sign_ok <- check_delete_auto(env_proj)
+        # Make the coefficient table
+        coeff_tree <- coeffTable(tree)
 
-        # If all results are deleted
-        if(sign_ok == "ok"){
+        # Extract k2, k1, and k0
+        pos_row <- intersect(which(is.element(coeff_tree[, "id1"], c("Person 1", "Person 2")) == TRUE),
+                             which(is.element(coeff_tree[, "id2"], c("Person 1", "Person 2")) == TRUE))
+        pibd <- as.numeric(coeff_tree[pos_row, c("k2", "k1", "k0")])
+        deg <- as.numeric(coeff_tree[pos_row, "deg"])
 
-          # Make the coefficient table
-          coeff_tree <- coeffTable(tree)
+        # Check inbred relationship
+        if(any(is.na(pibd))){
+          tkmessageBox(message = "Person 1 and 2 are inbred individuals!", icon = "error", type = "ok")
+        }else{
 
-          # Extract k2, k1, and k0
-          pos_row <- intersect(which(is.element(coeff_tree[, "id1"], c("Person 1", "Person 2")) == TRUE),
-                               which(is.element(coeff_tree[, "id2"], c("Person 1", "Person 2")) == TRUE))
-          pibd <- as.numeric(coeff_tree[pos_row, c("k2", "k1", "k0")])
-          deg <- as.numeric(coeff_tree[pos_row, "deg"])
+          # Get relationship data from the environment "env_rel"
+          dt_rel <- get("dt_rel", pos = env_rel)
 
-          # Check inbred relationship
-          if(any(is.na(pibd))){
-            tkmessageBox(message = "Person 1 and 2 are inbred individuals!", icon = "error", type = "ok")
-          }else{
+          # Make a displayed degree
+          deg_display <- make_deg_display(deg, pibd[2])
 
-            # Get relationship data from the environment "env_rel"
-            dt_rel <- get("dt_rel", pos = env_rel)
+          # Update the relationship data
+          dt_rel <- rbind(dt_rel, c(name_rel, deg_display, pibd))
 
-            # Make a displayed degree
-            deg_display <- make_deg_display(deg, pibd[2])
+          # Update the file "rel.csv"
+          create_rel_csv(dt_rel)
 
-            # Update the relationship data
-            dt_rel <- rbind(dt_rel, c(name_rel, deg_display, pibd))
+          # Remake a multi-list box of information on relationships
+          remake_mlb_rel(dt_rel)
 
-            # Update the file "rel.csv"
-            create_rel_csv(dt_rel)
+          # Assign data to the environment "env_rel"
+          assign("dt_rel", dt_rel, envir = env_rel)
 
-            # Remake a multi-list box of information on relationships
-            remake_mlb_rel(dt_rel)
-
-            # Assign data to the environment "env_rel"
-            assign("dt_rel", dt_rel, envir = env_rel)
-
-            # Reset environment variables for autosomal STR
-            set_env_proj_auto(env_proj, FALSE)
-
-            # Reset tab2
-            make_tab2(env_proj, env_gui)
-
-            # Destroy the top frame
-            tkdestroy(tf)
-          }
+          # Destroy the top frame
+          tkdestroy(tf)
         }
       }
     }
@@ -1414,53 +1278,14 @@ set_rel <- function(env_proj, env_gui){
     # If the user selects one relationship
     }else{
 
-      # Check whether the autosomal STR results are deleted or not
-      sign_ok <- check_delete_auto(env_proj)
+      # Get relationship data from the environment "env_rel"
+      dt_rel <- get("dt_rel", pos = env_rel)
 
-      # If all results are deleted
-      if(sign_ok == "ok"){
+      # Get a row index deleted
+      pos_select <- as.numeric(tclvalue(tkcurselection(mlb_rel))) + 1
 
-        # Get relationship data from the environment "env_rel"
-        dt_rel <- get("dt_rel", pos = env_rel)
-
-        # Get a row index deleted
-        pos_select <- as.numeric(tclvalue(tkcurselection(mlb_rel))) + 1
-
-        # Delete a selected relationship
-        dt_rel <- dt_rel[-pos_select, ]
-
-        # Update the file "rel.csv"
-        create_rel_csv(dt_rel)
-
-        # Remake a multi-list box of information on relationships
-        remake_mlb_rel(dt_rel)
-
-        # Assign data to the environment "env_rel"
-        assign("dt_rel", dt_rel, envir = env_rel)
-
-        # Reset environment variables for autosomal STR
-        set_env_proj_auto(env_proj, FALSE)
-
-        # Reset tab2
-        make_tab2(env_proj, env_gui)
-      }
-    }
-  }
-
-  ##########################################
-  # The function to reset the relationship #
-  ##########################################
-
-  reset_rel <- function(){
-
-    # Check whether the autosomal STR results are deleted or not
-    sign_ok <- check_delete_auto(env_proj)
-
-    # If all results are deleted
-    if(sign_ok == "ok"){
-
-      # Get default relationship data from the environment "env_proj"
-      dt_rel <- get("rel_data_default", pos = env_proj)
+      # Delete a selected relationship
+      dt_rel <- dt_rel[-pos_select, ]
 
       # Update the file "rel.csv"
       create_rel_csv(dt_rel)
@@ -1470,13 +1295,26 @@ set_rel <- function(env_proj, env_gui){
 
       # Assign data to the environment "env_rel"
       assign("dt_rel", dt_rel, envir = env_rel)
-
-      # Reset environment variables for autosomal STR
-      set_env_proj_auto(env_proj, FALSE)
-
-      # Reset tab2
-      make_tab2(env_proj, env_gui)
     }
+  }
+
+  ##########################################
+  # The function to reset the relationship #
+  ##########################################
+
+  reset_rel <- function(){
+
+    # Get default relationship data from the environment "env_proj"
+    dt_rel <- get("rel_data_default", pos = env_proj)
+
+    # Update the file "rel.csv"
+    create_rel_csv(dt_rel)
+
+    # Remake a multi-list box of information on relationships
+    remake_mlb_rel(dt_rel)
+
+    # Assign data to the environment "env_rel"
+    assign("dt_rel", dt_rel, envir = env_rel)
   }
 
   # Get the package path
@@ -1562,24 +1400,11 @@ set_auto <- function(env_proj, env_gui){
 
   save_auto <- function(){
 
-    # Check whether the autosomal STR results are deleted or not
-    sign_ok <- check_delete_auto(env_proj)
+    # Update the file "par_auto.csv"
+    create_par_auto_csv(tclvalue(maf_var), tclvalue(meth_d_var), tclvalue(pd_var))
 
-    # If the autosomal STR results are deleted
-    if(sign_ok == "ok"){
-
-      # Update the file "par_auto.csv"
-      create_par_auto_csv(tclvalue(maf_var), tclvalue(meth_d_var), tclvalue(pd_var))
-
-      # Reset environment variables for autosomal STR
-      set_env_proj_auto(env_proj, FALSE)
-
-      # Reset tab2
-      make_tab2(env_proj, env_gui)
-
-      # Destroy the top frame
-      tkdestroy(tf)
-    }
+    # Destroy the top frame
+    tkdestroy(tf)
   }
 
   # Get the package path

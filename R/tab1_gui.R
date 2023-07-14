@@ -24,23 +24,11 @@ make_tab1 <- function(env_proj, env_gui){
 
     # Confirm that the user allows to delete the results
     if(fin){
-      sign_ok <- tclvalue(tkmessageBox(message = paste0("The result of ", marker_type, " will be deleted. Do you want to continue?"), type = "okcancel", icon = "warning"))
+      sign_ok <- tclvalue(tkmessageBox(message = paste0("All results will be deleted. Do you want to continue?"), type = "okcancel", icon = "warning"))
     }else{
       sign_ok <- "ok"
     }
     if(sign_ok == "ok"){
-
-      # Reset the environment variables
-      if(mk == "auto"){
-        set_env_proj_auto(env_proj, FALSE)
-      }else if(mk == "y"){
-        set_env_proj_y(env_proj, FALSE)
-      }else if(mk == "mt"){
-        set_env_proj_mt(env_proj, FALSE)
-      }
-
-      # Reset tab2
-      make_tab2(env_proj, env_gui)
 
       # Define tcl variables for the file path and the file name
       fp_var <- tclVar(fp)
@@ -55,6 +43,15 @@ make_tab1 <- function(env_proj, env_gui){
 
       # If the user selects a file
       }else{
+
+        if(fin){
+
+          # Reset the environment variables
+          reset_env_proj_data(env_proj, FALSE)
+
+          # Reset tab2
+          make_tab2(env_proj, env_gui)
+        }
 
         # Update tcl variables for the file path and the file name
         tmp <- sub("\\}", path_file, replacement = "")
