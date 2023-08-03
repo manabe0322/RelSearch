@@ -1,5 +1,15 @@
 #include "header.h"
 
+// [[Rcpp::export]]
+std::vector<double> union_vr_al(std::vector<double> vgt, std::vector<double> rgt){
+  std::vector<double> uniq_vr_al;
+  std::set_union(vgt.begin(), vgt.end(), rgt.begin(), rgt.end(), inserter(uniq_vr_al, uniq_vr_al.end()));
+  std::sort(uniq_vr_al.begin(), uniq_vr_al.end());
+  uniq_vr_al.erase(std::unique(uniq_vr_al.begin(), uniq_vr_al.end()), uniq_vr_al.end());
+  return(uniq_vr_al);
+}
+
+
 /*General calculation of likelihoods for pairwise kinship analysis (testthat)*/
 // [[Rcpp::export]]
 std::vector<double> calc_kin_like(std::vector<double> vgt, std::vector<double> rgt, std::vector<double> af, std::vector<double> af_al,
@@ -40,8 +50,7 @@ std::vector<double> calc_kin_like(std::vector<double> vgt, std::vector<double> r
     d = af[pos_r2];
   }
 
-  std::vector<double> uniq_vr_al;
-  std::set_union(vgt.begin(), vgt.end(), rgt.begin(), rgt.end(), inserter(uniq_vr_al, uniq_vr_al.end()));
+  std::vector<double> uniq_vr_al = union_vr_al(vgt, rgt);
   bool presence_v1 = search_pos_double(rgt, vgt[0]) != size_rgt;
   bool presence_v2;
   if(size_vgt == 2){
@@ -269,8 +278,7 @@ std::vector<double> calc_kin_like_drop(std::vector<double> vgt, std::vector<doub
   double l_h2 = 0;
 
   /* Define a vector for unique alleles of the victim and the reference genotypes */
-  std::vector<double> uniq_vr_al;
-  std::set_union(vgt.begin(), vgt.end(), rgt.begin(), rgt.end(), inserter(uniq_vr_al, uniq_vr_al.end()));
+  std::vector<double> uniq_vr_al = union_vr_al(vgt, rgt);
 
   /* Create dummy genotypes */
   std::vector<std::vector<double>> dummy_vgt = make_dummy_gt(vgt, uniq_vr_al);

@@ -10,6 +10,18 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// union_vr_al
+std::vector<double> union_vr_al(std::vector<double> vgt, std::vector<double> rgt);
+RcppExport SEXP _relsearch_union_vr_al(SEXP vgtSEXP, SEXP rgtSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<double> >::type vgt(vgtSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type rgt(rgtSEXP);
+    rcpp_result_gen = Rcpp::wrap(union_vr_al(vgt, rgt));
+    return rcpp_result_gen;
+END_RCPP
+}
 // calc_kin_like
 std::vector<double> calc_kin_like(std::vector<double> vgt, std::vector<double> rgt, std::vector<double> af, std::vector<double> af_al, std::vector<double> pibd, bool cons_mu, double myu, double ape);
 RcppExport SEXP _relsearch_calc_kin_like(SEXP vgtSEXP, SEXP rgtSEXP, SEXP afSEXP, SEXP af_alSEXP, SEXP pibdSEXP, SEXP cons_muSEXP, SEXP myuSEXP, SEXP apeSEXP) {
@@ -343,6 +355,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_relsearch_union_vr_al", (DL_FUNC) &_relsearch_union_vr_al, 2},
     {"_relsearch_calc_kin_like", (DL_FUNC) &_relsearch_calc_kin_like, 8},
     {"_relsearch_make_dummy_af", (DL_FUNC) &_relsearch_make_dummy_af, 3},
     {"_relsearch_make_dummy_gt", (DL_FUNC) &_relsearch_make_dummy_gt, 2},
