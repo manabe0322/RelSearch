@@ -7,8 +7,6 @@
 #include <numeric>
 #include <algorithm>
 #include <regex>
-#include <progress.hpp>
-#include <progress_bar.hpp>
 using namespace Rcpp;
 
 std::vector<std::string> split(std::string str, const char* del);

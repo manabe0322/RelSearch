@@ -120,17 +120,18 @@ std::vector<std::string> match_mt(std::vector<std::string> profile_victim, std::
   return(ans);
 }
 
-// [[Rcpp::depends(RcppProgress)]]
 // [[Rcpp::export]]
 std::vector<std::vector<std::string>> match_mt_all(std::vector<std::vector<std::string>> hap_v_mt,
                                                    std::vector<std::vector<std::string>> hap_r_mt,
                                                    std::vector<std::string> range_v_mt,
                                                    std::vector<std::string> range_r_mt){
+  /* Call R function */
+  Function message("message");
+
   int n_v = hap_v_mt.size();
   int n_r = hap_r_mt.size();
 
   int n_vr = n_v * n_r;
-  Progress p(n_vr, true);
 
   std::vector<std::vector<std::string>> result_mt(std::vector<std::vector<std::string>>(n_vr, std::vector<std::string>(3)));
 
@@ -138,7 +139,6 @@ std::vector<std::vector<std::string>> match_mt_all(std::vector<std::vector<std::
     std::vector<std::string> profile_ref = hap_r_mt.at(i);
     std::string range_ref = range_r_mt[i];
     for(int j = 0; j < n_v; ++j){
-      p.increment();
 
       std::vector<std::string> profile_victim = hap_v_mt.at(j);
       std::string range_victim = range_v_mt[j];
@@ -146,6 +146,11 @@ std::vector<std::vector<std::string>> match_mt_all(std::vector<std::vector<std::
 
       int pos = n_v * i + j;
       result_mt.at(pos) = ans;
+
+      std::string txt_console = "mtDNA_Victim-Reference_ : ";
+      txt_console += int_to_str(pos);
+
+      message('\r', txt_console, _["appendLF"] = false);
     }
   }
   return(result_mt);

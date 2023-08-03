@@ -386,7 +386,7 @@ std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim, st
     }else{
 
       /* Calculate the likelihood in one locus considering drop-out*/
-      std::vector<double> like_h12 = calc_kin_like_drop(vgt, rgt, af, af_al, pibd, false, myu, ape, pd);
+      std::vector<double> like_h12 = calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd);
 
       /* Assign the likelihood and the LR */
       ans.at(0).at(i) = like_h12[0];
@@ -410,7 +410,6 @@ std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim, st
 # The function to calculate the LR of all pairs #
 ###############################################*/
 
-// [[Rcpp::depends(RcppProgress)]]
 // [[Rcpp::export]]
 std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::vector<double>> gt_v_auto,
                                                               std::vector<std::vector<double>> gt_r_auto,
@@ -424,6 +423,9 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
                                                               std::vector<double> apes,
                                                               int meth_d,
                                                               double pd){
+  /* Call R function */
+  Function message("message");
+
   /* The number of victims */
   int n_v = gt_v_auto.size();
 
@@ -435,9 +437,6 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
 
   /* The number of pairs */
   int n_vr = n_v * n_r;
-
-  /* Set progress bar */
-  Progress p(n_vr, true);
 
   /* Define an array for saving likelihoods and LRs */
   std::vector<std::vector<std::vector<double>>> result_auto(n_vr, std::vector<std::vector<double>>(3, std::vector<double>(n_l + 1)));
@@ -467,9 +466,6 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
     /* Repetitive execution for victims */
     for(int j = 0; j < n_v; ++j){
 
-      /* Update progress bar */
-      p.increment();
-
       /* Extract the profile of one victim */
       std::vector<double> prof_victim = gt_v_auto.at(j);
 
@@ -483,6 +479,11 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
       result_auto.at(pos).at(0) = ans.at(0);
       result_auto.at(pos).at(1) = ans.at(1);
       result_auto.at(pos).at(2) = ans.at(2);
+
+      std::string txt_console = "STR_Victim-Reference_ : ";
+      txt_console += int_to_str(pos);
+
+      message('\r', txt_console, _["appendLF"] = false);
     }
   }
 

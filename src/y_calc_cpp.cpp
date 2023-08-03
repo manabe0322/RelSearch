@@ -78,7 +78,7 @@ std::vector<std::vector<int>> match_y(std::vector<std::string> prof_victim, std:
   std::vector<std::vector<int>> ans(3, std::vector<int>(n_l + 1));
   int sum_l_0 = 0;
   int sum_l_1 = 0;
-  int max_mu_step = 0;
+  int sum_mu_step = 0;
   for(int i = 0; i < n_l; ++i){
     std::string v_al_pre = prof_victim[i];
     std::vector<double> v_al = obtain_al(v_al_pre);
@@ -121,36 +121,34 @@ std::vector<std::vector<int>> match_y(std::vector<std::string> prof_victim, std:
           sum_l_0 += 1;
           int mu_step = calc_mu_step(v_al, r_al);
           ans.at(2).at(i) = mu_step;
-          if(max_mu_step < mu_step){
-            max_mu_step = mu_step;
-          }
+          sum_mu_step += mu_step;
         }
       }
     }
   }
   ans.at(0).at(n_l) = sum_l_0;
   ans.at(1).at(n_l) = sum_l_1;
-  ans.at(2).at(n_l) = max_mu_step;
+  ans.at(2).at(n_l) = sum_mu_step;
   return(ans);
 }
 
-// [[Rcpp::depends(RcppProgress)]]
 // [[Rcpp::export]]
 std::vector<std::vector<std::vector<int>>> match_y_all(std::vector<std::vector<std::string>> hap_v_y,
                                                        std::vector<std::vector<std::string>> hap_r_y){
+  /* Call R function */
+  Function message("message");
+
   int n_v = hap_v_y.size();
   int n_r = hap_r_y.size();
   int n_l = hap_r_y.at(0).size();
 
   int n_vr = n_v * n_r;
-  Progress p(n_vr, true);
 
   std::vector<std::vector<std::vector<int>>> result_y(n_vr, std::vector<std::vector<int>>(3, std::vector<int>(n_l + 1)));
 
   for(int i = 0; i < n_r; ++i){
     std::vector<std::string> prof_ref = hap_r_y.at(i);
     for(int j = 0; j < n_v; ++j){
-      p.increment();
 
       std::vector<std::string> prof_victim = hap_v_y.at(j);
       std::vector<std::vector<int>> ans = match_y(prof_victim, prof_ref);
@@ -159,6 +157,11 @@ std::vector<std::vector<std::vector<int>>> match_y_all(std::vector<std::vector<s
       result_y.at(pos).at(0) = ans.at(0);
       result_y.at(pos).at(1) = ans.at(1);
       result_y.at(pos).at(2) = ans.at(2);
+
+      std::string txt_console = "Y-STR_Victim-Reference_ : ";
+      txt_console += int_to_str(pos);
+
+      message('\r', txt_console, _["appendLF"] = false);
     }
   }
   return(result_y);
