@@ -13,8 +13,8 @@ make_dummy_gt <- function(target_gt, uniq_vr_al) {
     .Call(`_relsearch_make_dummy_gt`, target_gt, uniq_vr_al)
 }
 
-set_prob_drop_gt <- function(dummy_gt, pd) {
-    .Call(`_relsearch_set_prob_drop_gt`, dummy_gt, pd)
+set_prob_drop_gt <- function(target_gt, dummy_gt, pd) {
+    .Call(`_relsearch_set_prob_drop_gt`, target_gt, dummy_gt, pd)
 }
 
 calc_kin_like_drop <- function(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd) {

@@ -54,14 +54,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // set_prob_drop_gt
-std::vector<double> set_prob_drop_gt(std::vector<std::vector<double>> dummy_gt, double pd);
-RcppExport SEXP _relsearch_set_prob_drop_gt(SEXP dummy_gtSEXP, SEXP pdSEXP) {
+std::vector<double> set_prob_drop_gt(std::vector<double> target_gt, std::vector<std::vector<double>> dummy_gt, double pd);
+RcppExport SEXP _relsearch_set_prob_drop_gt(SEXP target_gtSEXP, SEXP dummy_gtSEXP, SEXP pdSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<double> >::type target_gt(target_gtSEXP);
     Rcpp::traits::input_parameter< std::vector<std::vector<double>> >::type dummy_gt(dummy_gtSEXP);
     Rcpp::traits::input_parameter< double >::type pd(pdSEXP);
-    rcpp_result_gen = Rcpp::wrap(set_prob_drop_gt(dummy_gt, pd));
+    rcpp_result_gen = Rcpp::wrap(set_prob_drop_gt(target_gt, dummy_gt, pd));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -345,7 +346,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_relsearch_calc_kin_like", (DL_FUNC) &_relsearch_calc_kin_like, 8},
     {"_relsearch_make_dummy_af", (DL_FUNC) &_relsearch_make_dummy_af, 3},
     {"_relsearch_make_dummy_gt", (DL_FUNC) &_relsearch_make_dummy_gt, 2},
-    {"_relsearch_set_prob_drop_gt", (DL_FUNC) &_relsearch_set_prob_drop_gt, 2},
+    {"_relsearch_set_prob_drop_gt", (DL_FUNC) &_relsearch_set_prob_drop_gt, 3},
     {"_relsearch_calc_kin_like_drop", (DL_FUNC) &_relsearch_calc_kin_like_drop, 9},
     {"_relsearch_calc_kin_lr", (DL_FUNC) &_relsearch_calc_kin_lr, 10},
     {"_relsearch_calc_kin_lr_all", (DL_FUNC) &_relsearch_calc_kin_lr_all, 12},

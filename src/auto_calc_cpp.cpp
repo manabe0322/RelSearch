@@ -221,7 +221,7 @@ std::vector<std::vector<double>> make_dummy_gt(std::vector<double> target_gt, st
 #######################################################################*/
 
 // [[Rcpp::export]]
-std::vector<double> set_prob_drop_gt(std::vector<std::vector<double>> dummy_gt, double pd){
+std::vector<double> set_prob_drop_gt(std::vector<double> target_gt, std::vector<std::vector<double>> dummy_gt, double pd){
 
   /* The number of dummy genotypes */
   int size_dummy_gt = dummy_gt.size();
@@ -229,19 +229,28 @@ std::vector<double> set_prob_drop_gt(std::vector<std::vector<double>> dummy_gt, 
   /* Define a vector for probabilities for drop-out in each dummy genotype */
   std::vector<double> prob_drop_gt(size_dummy_gt);
 
-  /* Repetitive execution for dummy genotypes */
-  for(int i = 0; i < size_dummy_gt; ++i){
+  /* The size of gt */
+  int size_target_gt = target_gt.size();
 
-    /* Extract a dummy genotype */
-    std::vector<double> dummy_gt_one = dummy_gt.at(i);
+  /* If two alleles are designated */
+  if(size_target_gt == 2){
+    prob_drop_gt[0] = (1 - pd) * (1 - pd);
+  }else{
 
-    /* Set the probability without drop-out */
-    if(dummy_gt_one[0] == dummy_gt_one[1]){
-      prob_drop_gt[i] = (1 - pd) * (1 - pd);
+    /* Repetitive execution for dummy genotypes */
+    for(int i = 0; i < size_dummy_gt; ++i){
 
-    /* Set the probability with one drop-out */
-    }else{
-      prob_drop_gt[i] = pd * (1 - pd);
+      /* Extract a dummy genotype */
+      std::vector<double> dummy_gt_one = dummy_gt.at(i);
+
+      /* Homozygote (without drop-out) */
+      if(dummy_gt_one[0] == dummy_gt_one[1]){
+        prob_drop_gt[i] = (1 - pd) * (1 - pd);
+
+      /* Heterozygote (with one drop-out) */
+      }else{
+        prob_drop_gt[i] = pd * (1 - pd);
+      }
     }
   }
 
@@ -277,11 +286,14 @@ std::vector<double> calc_kin_like_drop(std::vector<double> vgt, std::vector<doub
   int size_dummy_rgt = dummy_rgt.size();
 
   /* Set probabilities for drop-out in each dummy genotype */
-  std::vector<double> prob_drop_vgt = set_prob_drop_gt(dummy_vgt, pd);
-  std::vector<double> prob_drop_rgt = set_prob_drop_gt(dummy_rgt, pd);
+  std::vector<double> prob_drop_vgt = set_prob_drop_gt(vgt, dummy_vgt, pd);
+  std::vector<double> prob_drop_rgt = set_prob_drop_gt(rgt, dummy_rgt, pd);
 
   /* Repetitive execution for dummy reference genotypes */
   for(int i = 0; i < size_dummy_rgt; ++i){
+
+    /* Extract a reference dummy genotype */
+    std::vector<double> drgt1 = dummy_rgt.at(i);
 
     /* Extract the probability for drop-out in the dummy reference genotype */
     double pd_rgt = prob_drop_rgt[i];
@@ -289,15 +301,18 @@ std::vector<double> calc_kin_like_drop(std::vector<double> vgt, std::vector<doub
     /* Repetitive execution for dummy victim genotypes */
     for(int j = 0; j < size_dummy_vgt; ++j){
 
+      /* Extract a victim dummy genotype */
+      std::vector<double> dvgt1 = dummy_vgt.at(j);
+
       /* Extract the probability for drop-out in the dummy reference genotype */
       double pd_vgt = prob_drop_vgt[j];
 
       /* Calculate the likelihood in one genotype combination */
-      std::vector<double> l_h12_one = calc_kin_like(dummy_vgt.at(j), dummy_rgt.at(i), af_dummy, af_al_dummy, pibd, cons_mu, myu, ape);
+      std::vector<double> l_h12_one = calc_kin_like(dvgt1, drgt1, af_dummy, af_al_dummy, pibd, cons_mu, myu, ape);
 
       /* Update the likelihood in one locus */
-      l_h1 = l_h1 + l_h12_one[0] * pd_rgt * pd_vgt;
-      l_h2 = l_h2 + l_h12_one[1] * pd_rgt * pd_vgt;
+      l_h1 += l_h12_one[0] * pd_rgt * pd_vgt;
+      l_h2 += l_h12_one[1] * pd_rgt * pd_vgt;
     }
   }
 
