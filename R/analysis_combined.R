@@ -1,3 +1,41 @@
+###############################################################
+# The function to create the sign of the number of candidates #
+###############################################################
+
+create_num_cand <- function(dt_combined){
+
+  # Define the initial number of candidates
+  num_cand <- rep(0, nrow(dt_combined))
+
+  # Extract indices with the estimated relationship
+  pos_est_rel <- which(dt_combined[, EstimatedRel] != "")
+
+  # The number of indices
+  n_est_rel <- length(pos_est_rel)
+
+  # If the number of indices > 0
+  if(n_est_rel > 0){
+
+    # Extract data with the estimated relationship
+    dt_extract <- dt_combined[pos_est_rel, ]
+
+    # Extract victims
+    vics <- dt_extract[, Victim]
+
+    # Extract references
+    refs <- dt_extract[, Reference]
+
+    # Count the number of candidates
+    for(i in seq_len(n_est_rel)){
+      num_cand[pos_est_rel[i]] <- length(union(which(vics == vics[i]), which(refs == refs[i])))
+    }
+  }
+
+  # Return
+  return(num_cand)
+}
+
+
 ########################################################
 # The function to judge relationships in combined data #
 ########################################################
@@ -55,6 +93,12 @@ judge_rel_combined_data <- function(dt_combined, dt_result_auto, dt_result_y, dt
   dt_combined[, EstimatedRel := est_rel_all]
   dt_combined[, Paternal := paternal_all]
   dt_combined[, Maternal := maternal_all]
+  options(warn = 0)
+
+  # Create the sign of the number of candidates
+  num_cand <- create_num_cand(dt_combined)
+  options(warn = -1)
+  dt_combined[, NumCand := num_cand]
   options(warn = 0)
 
   # Return
@@ -126,7 +170,7 @@ create_displayed_data <- function(dt_combined, min_lr = NULL, no_lr = FALSE){
   setkey(dt_combined, Victim, Reference, AssumedRel)
 
   # Extract required columns
-  dt_display <- dt_combined[, list(Victim, Reference, AssumedRel, LR_Total, EstimatedRel, Paternal, Maternal)]
+  dt_display <- dt_combined[, list(Victim, Reference, AssumedRel, LR_Total, EstimatedRel, Paternal, Maternal, NumCand)]
 
   # Filtering
   if(no_lr){

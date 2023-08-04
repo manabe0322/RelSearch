@@ -981,10 +981,10 @@ relsearch <- function(){
     output$dt_display <- renderDataTable(server = FALSE, {
       datatable(
         dt_reactive$dt_display,
-        colnames = c("Victim", "Reference", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage"),
+        colnames = c("Victim", "Reference", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage", "NumCand"),
         filter = "top",
         extensions = "Buttons",
-        selection = list(mode = "single", selected = 1, target = "row"),
+        selection = list(mode = "single", target = "row"),
         options = list(iDisplayLength = 10, ordering = FALSE,
                        dom = "Bfrtip",
                        buttons = list(list(extend = "csv",
@@ -993,10 +993,10 @@ relsearch <- function(){
                                            exportOptions = list(modifier = list(page = "all"))
                                            )
                                       ),
-                       columnDefs = list(list(targets = 3, searchable = FALSE))
+                       columnDefs = list(list(targets = 3, searchable = FALSE), list(targets = 7, visible = FALSE))
                        ),
         rownames = FALSE
-      )
+      ) %>% formatStyle("NumCand", target = "row", backgroundColor = styleEqual(c(1, 2), c("#e0ffe0", "lightyellow")))
     })
 
     #########################

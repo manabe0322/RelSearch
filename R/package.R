@@ -3,7 +3,8 @@
 #' @importFrom Rcpp sourceCpp
 #' @importFrom data.table data.table copy fread setDT setkey setorder
 #' @importFrom dplyr full_join
-#' @importFrom DT datatable dataTableOutput renderDataTable
+#' @importFrom DT datatable dataTableOutput formatStyle styleEqual renderDataTable
+#' @importFrom magrittr "%>%"
 #' @importFrom pedtools ped
 #' @importFrom ribd coeffTable
 #' @importFrom shinyjs disable disabled enable refresh useShinyjs
