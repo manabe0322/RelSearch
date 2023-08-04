@@ -81,8 +81,8 @@ make_share_range <- function(pos_mt_vr) {
     .Call(`_relsearch_make_share_range`, pos_mt_vr)
 }
 
-match_mt <- function(profile_victim, range_victim, profile_ref, range_ref) {
-    .Call(`_relsearch_match_mt`, profile_victim, range_victim, profile_ref, range_ref)
+match_mt <- function(prof_victim, range_victim, prof_ref, range_ref) {
+    .Call(`_relsearch_match_mt`, prof_victim, range_victim, prof_ref, range_ref)
 }
 
 match_mt_all <- function(hap_v_mt, hap_r_mt, range_v_mt, range_r_mt) {

@@ -276,16 +276,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // match_mt
-std::vector<std::string> match_mt(std::vector<std::string> profile_victim, std::string range_victim, std::vector<std::string> profile_ref, std::string range_ref);
-RcppExport SEXP _relsearch_match_mt(SEXP profile_victimSEXP, SEXP range_victimSEXP, SEXP profile_refSEXP, SEXP range_refSEXP) {
+std::vector<std::string> match_mt(std::vector<std::string> prof_victim, std::string range_victim, std::vector<std::string> prof_ref, std::string range_ref);
+RcppExport SEXP _relsearch_match_mt(SEXP prof_victimSEXP, SEXP range_victimSEXP, SEXP prof_refSEXP, SEXP range_refSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type profile_victim(profile_victimSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type prof_victim(prof_victimSEXP);
     Rcpp::traits::input_parameter< std::string >::type range_victim(range_victimSEXP);
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type profile_ref(profile_refSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type prof_ref(prof_refSEXP);
     Rcpp::traits::input_parameter< std::string >::type range_ref(range_refSEXP);
-    rcpp_result_gen = Rcpp::wrap(match_mt(profile_victim, range_victim, profile_ref, range_ref));
+    rcpp_result_gen = Rcpp::wrap(match_mt(prof_victim, range_victim, prof_ref, range_ref));
     return rcpp_result_gen;
 END_RCPP
 }

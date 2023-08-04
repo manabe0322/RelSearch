@@ -1,5 +1,9 @@
 #include "header.h"
 
+/*####################################################################
+# The function to split a string object using a character (testthat) #
+####################################################################*/
+
 // [[Rcpp::export]]
 std::vector<std::string> split(std::string str, const char* del){
   auto first = 0;
@@ -22,17 +26,32 @@ std::vector<std::string> split(std::string str, const char* del){
   return(result);
 }
 
+
+/*#########################################################################
+# The function to change a string object to the integer object (testthat) #
+#########################################################################*/
+
 // [[Rcpp::export]]
 int str_to_int(std::string str){
   int num = atoi(str.c_str());
   return(num);
 }
 
+
+/*##########################################################################
+# The function to change an integer object to the string object (testthat) #
+##########################################################################*/
+
 // [[Rcpp::export]]
 std::string int_to_str(int num){
   std::string str = std::to_string(num);
   return(str);
 }
+
+
+/*#####################################################
+# The function to make arithmetic sequence (testthat) #
+#####################################################*/
 
 // [[Rcpp::export]]
 std::vector<int> tousa(int start, int end, int interval){
@@ -43,6 +62,11 @@ std::vector<int> tousa(int start, int end, int interval){
   }
   return(vec);
 }
+
+
+/*##################################################################
+# The function to search an index for the double object (testthat) #
+##################################################################*/
 
 // [[Rcpp::export]]
 int search_pos_double(std::vector<double> vec, double target){
@@ -57,6 +81,11 @@ int search_pos_double(std::vector<double> vec, double target){
   return(pos);
 }
 
+
+/*###################################################################
+# The function to search an index for the integer object (testthat) #
+###################################################################*/
+
 // [[Rcpp::export]]
 int search_pos_int(std::vector<int> vec, int target){
   int len = vec.size();
@@ -69,6 +98,11 @@ int search_pos_int(std::vector<int> vec, int target){
   }
   return(pos);
 }
+
+
+/*##################################################################
+# The function to search an index for the string object (testthat) #
+##################################################################*/
 
 // [[Rcpp::export]]
 int search_pos_string(std::vector<std::string> vec, std::string target){
@@ -83,6 +117,11 @@ int search_pos_string(std::vector<std::string> vec, std::string target){
   return(pos);
 }
 
+
+/*######################################################################
+# The function to extract an integer from the string object (testthat) #
+######################################################################*/
+
 // [[Rcpp::export]]
 int extract_integer(std::string target){
   const std::regex re("^0123456789.");
@@ -90,6 +129,11 @@ int extract_integer(std::string target){
   int integer = str_to_int(target_new);
   return(integer);
 }
+
+
+/*#################################################################################
+# The function to judge whether an object is the integer object or not (testthat) #
+#################################################################################*/
 
 // [[Rcpp::export]]
 bool is_integer(double x){

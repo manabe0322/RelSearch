@@ -1,6 +1,9 @@
 #include "header.h"
 
-/* Union of the victim alleles and the reference alleles */
+/*################################################################################
+# The function to unite the victim alleles with the reference alleles (testthat) #
+################################################################################*/
+
 // [[Rcpp::export]]
 std::vector<double> union_vr_al(std::vector<double> vgt, std::vector<double> rgt){
   std::vector<double> uniq_vr_al;
@@ -11,7 +14,10 @@ std::vector<double> union_vr_al(std::vector<double> vgt, std::vector<double> rgt
 }
 
 
-/*General calculation of likelihoods for pairwise kinship analysis (testthat)*/
+/*################################################################################
+# The function to calculate likelihoods for pairwise kinship analysis (testthat) #
+################################################################################*/
+
 // [[Rcpp::export]]
 std::vector<double> calc_kin_like(std::vector<double> vgt, std::vector<double> rgt, std::vector<double> af, std::vector<double> af_al,
                                   std::vector<double> pibd, bool cons_mu, double myu){
@@ -143,7 +149,11 @@ std::vector<double> calc_kin_like(std::vector<double> vgt, std::vector<double> r
   return(like_h12);
 }
 
-/*Make allele frequencies for dummy genotypes (testthat)*/
+
+/*########################################################################
+# The function to make allele frequencies for dummy genotypes (testthat) #
+########################################################################*/
+
 // [[Rcpp::export]]
 std::vector<std::vector<double>> make_dummy_af(std::vector<double> uniq_vr_al, std::vector<double> af, std::vector<double> af_al){
 
@@ -185,7 +195,11 @@ std::vector<std::vector<double>> make_dummy_af(std::vector<double> uniq_vr_al, s
   return(dummy_af_data);
 }
 
-/*Determine dummy genotypes considering a drop-out allele (testthat)*/
+
+/*##############################################################################
+# The function to make dummy genotypes considering drop-out alleles (testthat) #
+##############################################################################*/
+
 // [[Rcpp::export]]
 std::vector<std::vector<double>> make_dummy_gt(std::vector<double> target_gt, std::vector<double> uniq_vr_al){
 
@@ -241,9 +255,9 @@ std::vector<std::vector<double>> make_dummy_gt(std::vector<double> target_gt, st
 }
 
 
-/*#######################################################################
-# The function to set probabilities for drop-out in each dummy genotype #
-#######################################################################*/
+/*##################################################################################
+# The function to set probabilities for drop-out in each dummy genotype (testthat) #
+##################################################################################*/
 
 // [[Rcpp::export]]
 std::vector<double> set_prob_drop_gt(std::vector<double> target_gt, std::vector<std::vector<double>> dummy_gt, double pd){
@@ -284,7 +298,10 @@ std::vector<double> set_prob_drop_gt(std::vector<double> target_gt, std::vector<
 }
 
 
-/*Calculation of likelihoods for pairwise kinship analysis considering drop-out (testthat)*/
+/*#####################################################################################################
+# The function to calculate likelihoods for pairwise kinship analysis considering drop-out (testthat) #
+#####################################################################################################*/
+
 // [[Rcpp::export]]
 std::vector<double> calc_kin_like_drop(std::vector<double> vgt, std::vector<double> rgt, std::vector<double> af, std::vector<double> af_al,
                                        std::vector<double> pibd, bool cons_mu, double myu, double pd_v, double pd_r){
@@ -443,7 +460,7 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
                                                               std::vector<double> myus,
                                                               double pd_v,
                                                               double pd_r){
-  /* Call R function */
+  /* Call the R function "message" */
   Function message("message");
 
   /* The number of victims */
@@ -500,9 +517,9 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
       result_auto.at(pos).at(1) = ans.at(1);
       result_auto.at(pos).at(2) = ans.at(2);
 
+      /* Display a message to the console to update the progress bar */
       std::string txt_console = "STR_Victim-Reference_ : ";
       txt_console += int_to_str(pos);
-
       message('\r', txt_console, _["appendLF"] = false);
     }
   }
