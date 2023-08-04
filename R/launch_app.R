@@ -883,6 +883,13 @@ relsearch <- function(){
             dt_result_mt <- NULL
           }
 
+          #############################
+          # Clean the console message #
+          #############################
+
+          message('\r', paste0(rep(" ", 100), collapse = ""), appendLF = FALSE)
+
+
           ############################
           # Create the combined data #
           ############################
