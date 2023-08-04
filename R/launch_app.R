@@ -226,11 +226,11 @@ relsearch <- function(){
                                                                       h5(div("Minimum allele frequency", style = "color:#555555;font-weight:bold;")),
                                                                       textOutput("result_maf"),
                                                                       br(),
-                                                                      h5(div("Consideration of drop-out", style = "color:#555555;font-weight:bold;")),
-                                                                      textOutput("result_meth_d"),
+                                                                      h5(div("Probability of drop-out for victims", style = "color:#555555;font-weight:bold;")),
+                                                                      textOutput("result_pd_v"),
                                                                       br(),
-                                                                      h5(div("Probability of drop-out", style = "color:#555555;font-weight:bold;")),
-                                                                      textOutput("result_pd")
+                                                                      h5(div("Probability of drop-out for references", style = "color:#555555;font-weight:bold;")),
+                                                                      textOutput("result_pd_r")
                                                              )
                                                            )
                                                   ),
@@ -299,8 +299,8 @@ relsearch <- function(){
                                                  titlePanel("Set analysis method for STR"),
 
                                                  numeric_ui("maf"),
-                                                 radio_ui("meth_d"),
-                                                 numeric_ui("pd"),
+                                                 numeric_ui("pd_v"),
+                                                 numeric_ui("pd_r"),
                                                  br(),
                                                  h4("Update default"),
                                                  actionButton("act_par_auto_update", label = "Update default")
@@ -392,14 +392,14 @@ relsearch <- function(){
     ###################################
 
     rv_maf <- callModule(numeric_server, "maf", "Minimum allele frequency", init_dt_par_auto$Value[init_dt_par_auto$Parameter == "maf"])
-    rv_meth_d <- callModule(radio_server, "meth_d", "Consideration of drop-out", list("Not consider" = 0, "Consider" = 1), init_dt_par_auto$Value[init_dt_par_auto$Parameter == "meth_d"])
-    rv_pd <- callModule(numeric_server, "pd", "Probability of drop-out", init_dt_par_auto$Value[init_dt_par_auto$Parameter == "pd"])
+    rv_pd_v <- callModule(numeric_server, "pd_v", "Probability of drop-out for victims", init_dt_par_auto$Value[init_dt_par_auto$Parameter == "pd_v"])
+    rv_pd_r <- callModule(numeric_server, "pd_r", "Probability of drop-out for references", init_dt_par_auto$Value[init_dt_par_auto$Parameter == "pd_r"])
 
     # Update the default parameters
     observeEvent(input$act_par_auto_update, {
 
       # Create the data.table
-      dt_par_auto <- data.table(Parameter = c("maf", "meth_d", "pd"), Value = c(rv_maf(), rv_meth_d(), rv_pd()))
+      dt_par_auto <- data.table(Parameter = c("maf", "pd_v", "pd_r"), Value = c(rv_maf(), rv_pd_v(), rv_pd_r()))
 
       # Save the data.table
       write.csv(dt_par_auto, paste0(path_pack, "/extdata/parameters/par_auto.csv"), row.names = FALSE)
@@ -719,7 +719,7 @@ relsearch <- function(){
         showModal(modalDialog(title = "Error", "Set criteria!", easyClose = TRUE, footer = NULL))
 
       # Parameters for autosomal STR
-      }else if(any(!isTruthy(rv_maf()), !isTruthy(rv_meth_d()), !isTruthy(rv_pd()))){
+      }else if(any(!isTruthy(rv_maf()), !isTruthy(rv_pd_v()), !isTruthy(rv_pd_r()))){
         showModal(modalDialog(title = "Error", "Set analysis method for STR!", easyClose = TRUE, footer = NULL))
       }else{
 
@@ -751,7 +751,7 @@ relsearch <- function(){
         dt_myu <- data.table(Marker = rv_myu$mk, Myu = rv_myu$val)
 
         # Parameters for autosomal STR
-        dt_par_auto <- data.table(Parameter = c("maf", "meth_d", "pd"), Value = c(rv_maf(), rv_meth_d(), rv_pd()))
+        dt_par_auto <- data.table(Parameter = c("maf", "pd_v", "pd_r"), Value = c(rv_maf(), rv_pd_v(), rv_pd_r()))
 
         ###################################
         # Fix file names of each database #
@@ -1158,17 +1158,8 @@ relsearch <- function(){
 
     # Parameters
     output$result_maf <- renderText({paste0(dt_reactive$dt_par_auto$Value[dt_reactive$dt_par_auto$Parameter == "maf"])})
-    output$result_meth_d <- renderText({
-      meth_d <- paste0(dt_reactive$dt_par_auto$Value[dt_reactive$dt_par_auto$Parameter == "meth_d"])
-      if(meth_d == 0){
-        out <- "Not consider"
-      }else{
-        out <- "Consider"
-      }
-      out
-    })
-    output$result_pd <- renderText({paste0(dt_reactive$dt_par_auto$Value[dt_reactive$dt_par_auto$Parameter == "pd"])})
-
+    output$result_pd_v <- renderText({paste0(dt_reactive$dt_par_auto$Value[dt_reactive$dt_par_auto$Parameter == "pd_v"])})
+    output$result_pd_r <- renderText({paste0(dt_reactive$dt_par_auto$Value[dt_reactive$dt_par_auto$Parameter == "pd_r"])})
 
     ###############
     # New project #

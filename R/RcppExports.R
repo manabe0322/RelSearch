@@ -21,16 +21,16 @@ set_prob_drop_gt <- function(target_gt, dummy_gt, pd) {
     .Call(`_relsearch_set_prob_drop_gt`, target_gt, dummy_gt, pd)
 }
 
-calc_kin_like_drop <- function(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd) {
-    .Call(`_relsearch_calc_kin_like_drop`, vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd)
+calc_kin_like_drop <- function(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd_v, pd_r) {
+    .Call(`_relsearch_calc_kin_like_drop`, vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd_v, pd_r)
 }
 
-calc_kin_lr <- function(prof_victim, prof_ref, af_list, af_al_list, pibd, cons_mu, myus, apes, meth_d, pd) {
-    .Call(`_relsearch_calc_kin_lr`, prof_victim, prof_ref, af_list, af_al_list, pibd, cons_mu, myus, apes, meth_d, pd)
+calc_kin_lr <- function(prof_victim, prof_ref, af_list, af_al_list, pibd, cons_mu, myus, apes, pd_v, pd_r) {
+    .Call(`_relsearch_calc_kin_lr`, prof_victim, prof_ref, af_list, af_al_list, pibd, cons_mu, myus, apes, pd_v, pd_r)
 }
 
-calc_kin_lr_all <- function(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus, apes, meth_d, pd) {
-    .Call(`_relsearch_calc_kin_lr_all`, gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus, apes, meth_d, pd)
+calc_kin_lr_all <- function(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus, apes, pd_v, pd_r) {
+    .Call(`_relsearch_calc_kin_lr_all`, gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus, apes, pd_v, pd_r)
 }
 
 split <- function(str, del) {
