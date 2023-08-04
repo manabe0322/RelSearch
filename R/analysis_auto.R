@@ -39,22 +39,6 @@ set_af <- function(dt_v_auto, dt_r_auto, dt_af, maf){
 }
 
 
-##################################################################
-# The function to calculate the average probability of exclusion #
-##################################################################
-
-calc_ape <- function(af){
-  sigma1 <- sum(af^2 * (1 - af)^2)
-  nAl <- length(af)
-  posAf <- combn(1:nAl, 2)
-  sigma2 <- 0
-  for(i in 1:ncol(posAf)){
-    heteroAf <- af[posAf[, i]]
-    sigma2 <- sigma2 + 2 * prod(heteroAf) * (1 - sum(heteroAf))^2
-  }
-  return(sum(sigma1 + sigma2))
-}
-
 #########################################################################
 # The function to rearrange in order of loci for autosomal STR database #
 #########################################################################
@@ -158,12 +142,6 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
   }
   names(myus) <- locus_auto
 
-  # Calculate average probabilities of exclusion
-  apes <- rep(0, n_l)
-  for(i in 1:n_l){
-    apes[i] <- calc_ape(af_list[[i]])
-  }
-  names(apes) <- locus_auto
 
   ###############################
   # Calculate likelihood ratios #
@@ -171,7 +149,7 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
 
   withProgress(
     withCallingHandlers(
-      result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus, apes, pd_v, pd_r),
+      result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus, pd_v, pd_r),
       message = function(m) if(grepl("STR_Victim-Reference_ : ", m$message)){
         val <- as.numeric(gsub("STR_Victim-Reference_ : ", "", m$message))
         setProgress(value = val)

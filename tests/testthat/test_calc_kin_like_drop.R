@@ -11,7 +11,6 @@ test_that("calc_kin_like_drop vgt pattern 1", {
   pibd <- c(k2, 2 * k1, k0)
   cons_mu <- FALSE
   myu <- 0.002
-  ape <- calc_ape(af)
   pd_v <- 0.3
   pd_r <- 0.1
 
@@ -40,7 +39,7 @@ test_that("calc_kin_like_drop vgt pattern 1", {
   like_h2 <- pvgt_h2_1 * prgt * pd_vgt_homo * pd_rgt + pvgt_h2_2 * prgt * pd_vgt_hetero * pd_rgt
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd_v, pd_r)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, pd_v, pd_r)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -60,7 +59,6 @@ test_that("calc_kin_like_drop vgt pattern 2", {
   pibd <- c(k2, 2 * k1, k0)
   cons_mu <- FALSE
   myu <- 0.002
-  ape <- calc_ape(af)
   pd_v <- 0.3
   pd_r <- 0.1
 
@@ -93,7 +91,7 @@ test_that("calc_kin_like_drop vgt pattern 2", {
   like_h2 <- pvgt_h2_1 * prgt * pd_vgt_homo * pd_rgt + (pvgt_h2_2 + pvgt_h2_3) * prgt * pd_vgt_hetero * pd_rgt
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd_v, pd_r)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, pd_v, pd_r)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -113,7 +111,6 @@ test_that("calc_kin_like_drop vgt pattern 3", {
   pibd <- c(k2, 2 * k1, k0)
   cons_mu <- FALSE
   myu <- 0.002
-  ape <- calc_ape(af)
   pd_v <- 0.3
   pd_r <- 0.1
 
@@ -146,7 +143,7 @@ test_that("calc_kin_like_drop vgt pattern 3", {
   like_h2 <- pvgt_h2_1 * prgt * pd_vgt_homo * pd_rgt + (pvgt_h2_2 + pvgt_h2_3) * prgt * pd_vgt_hetero * pd_rgt
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd_v, pd_r)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, pd_v, pd_r)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -166,7 +163,6 @@ test_that("calc_kin_like_drop vgt pattern 4", {
   pibd <- c(k2, 2 * k1, k0)
   cons_mu <- FALSE
   myu <- 0.002
-  ape <- calc_ape(af)
   pd_v <- 0.3
   pd_r <- 0.1
 
@@ -199,7 +195,7 @@ test_that("calc_kin_like_drop vgt pattern 4", {
   like_h2 <- pvgt_h2_1 * prgt * pd_vgt_homo * pd_rgt + (pvgt_h2_2 + pvgt_h2_3) * prgt * pd_vgt_hetero * pd_rgt
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd_v, pd_r)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, pd_v, pd_r)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -219,7 +215,6 @@ test_that("calc_kin_like_drop vgt pattern 5", {
   pibd <- c(k2, 2 * k1, k0)
   cons_mu <- FALSE
   myu <- 0.002
-  ape <- calc_ape(af)
   pd_v <- 0.3
   pd_r <- 0.1
 
@@ -256,7 +251,7 @@ test_that("calc_kin_like_drop vgt pattern 5", {
   like_h2 <- pvgt_h2_1 * prgt * pd_vgt_homo * pd_rgt + (pvgt_h2_2 + pvgt_h2_3 + pvgt_h2_4) * prgt * pd_vgt_hetero * pd_rgt
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd_v, pd_r)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, pd_v, pd_r)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -276,7 +271,6 @@ test_that("calc_kin_like_drop rgt pattern 1", {
   pibd <- c(k2, 2 * k1, k0)
   cons_mu <- FALSE
   myu <- 0.002
-  ape <- calc_ape(af)
   pd_v <- 0.3
   pd_r <- 0.1
 
@@ -304,7 +298,7 @@ test_that("calc_kin_like_drop rgt pattern 1", {
   like_h2 <- pvgt_h2_1 * prgt_1 * pd_vgt * pd_rgt_homo + pvgt_h2_2 * prgt_2 * pd_vgt * pd_rgt_hetero
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd_v, pd_r)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, pd_v, pd_r)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -324,7 +318,6 @@ test_that("calc_kin_like_drop rgt pattern 2", {
   pibd <- c(k2, 2 * k1, k0)
   cons_mu <- FALSE
   myu <- 0.002
-  ape <- calc_ape(af)
   pd_v <- 0.3
   pd_r <- 0.1
 
@@ -357,7 +350,7 @@ test_that("calc_kin_like_drop rgt pattern 2", {
   like_h2 <- pvgt_h2_1 * prgt_1 * pd_vgt * pd_rgt_homo + pvgt_h2_2 * prgt_2 * pd_vgt * pd_rgt_hetero + pvgt_h2_3 * prgt_3 * pd_vgt * pd_rgt_hetero
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd_v, pd_r)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, pd_v, pd_r)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -377,7 +370,6 @@ test_that("calc_kin_like_drop rgt pattern 3", {
   pibd <- c(k2, 2 * k1, k0)
   cons_mu <- FALSE
   myu <- 0.002
-  ape <- calc_ape(af)
   pd_v <- 0.3
   pd_r <- 0.1
 
@@ -410,7 +402,7 @@ test_that("calc_kin_like_drop rgt pattern 3", {
   like_h2 <- pvgt_h2_1 * prgt_1 * pd_vgt * pd_rgt_homo + pvgt_h2_2 * prgt_2 * pd_vgt * pd_rgt_hetero + pvgt_h2_3 * prgt_3 * pd_vgt * pd_rgt_hetero
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd_v, pd_r)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, pd_v, pd_r)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -430,7 +422,6 @@ test_that("calc_kin_like_drop rgt pattern 4", {
   pibd <- c(k2, 2 * k1, k0)
   cons_mu <- FALSE
   myu <- 0.002
-  ape <- calc_ape(af)
   pd_v <- 0.3
   pd_r <- 0.1
 
@@ -463,7 +454,7 @@ test_that("calc_kin_like_drop rgt pattern 4", {
   like_h2 <- pvgt_h2_1 * prgt_1 * pd_vgt * pd_rgt_homo + pvgt_h2_2 * prgt_2 * pd_vgt * pd_rgt_hetero + pvgt_h2_3 * prgt_3 * pd_vgt * pd_rgt_hetero
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd_v, pd_r)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, pd_v, pd_r)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -483,7 +474,6 @@ test_that("calc_kin_like_drop rgt pattern 5", {
   pibd <- c(k2, 2 * k1, k0)
   cons_mu <- FALSE
   myu <- 0.002
-  ape <- calc_ape(af)
   pd_v <- 0.3
   pd_r <- 0.1
 
@@ -521,7 +511,7 @@ test_that("calc_kin_like_drop rgt pattern 5", {
   like_h2 <- pvgt_h2_1 * prgt_1 * pd_vgt * pd_rgt_homo + pvgt_h2_2 * prgt_2 * pd_vgt * pd_rgt_hetero + pvgt_h2_3 * prgt_3 * pd_vgt * pd_rgt_hetero + pvgt_h2_4 * prgt_4 * pd_vgt * pd_rgt_hetero
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd_v, pd_r)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, pd_v, pd_r)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -541,7 +531,6 @@ test_that("calc_kin_like_drop designated two alleles pattern 1", {
   pibd <- c(k2, 2 * k1, k0)
   cons_mu <- FALSE
   myu <- 0.002
-  ape <- calc_ape(af)
   pd_v <- 0.3
   pd_r <- 0.1
 
@@ -565,7 +554,7 @@ test_that("calc_kin_like_drop designated two alleles pattern 1", {
   like_h2 <- pvgt_h2_1 * prgt * pd_vgt * pd_rgt
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd_v, pd_r)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, pd_v, pd_r)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -585,7 +574,6 @@ test_that("calc_kin_like_drop designated two alleles pattern 2", {
   pibd <- c(k2, 2 * k1, k0)
   cons_mu <- FALSE
   myu <- 0.002
-  ape <- calc_ape(af)
   pd_v <- 0.3
   pd_r <- 0.1
 
@@ -609,7 +597,7 @@ test_that("calc_kin_like_drop designated two alleles pattern 2", {
   like_h2 <- pvgt_h2_1 * prgt * pd_vgt * pd_rgt
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd_v, pd_r)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, pd_v, pd_r)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -629,7 +617,6 @@ test_that("calc_kin_like_drop designated two alleles pattern 3", {
   pibd <- c(k2, 2 * k1, k0)
   cons_mu <- FALSE
   myu <- 0.002
-  ape <- calc_ape(af)
   pd_v <- 0.3
   pd_r <- 0.1
 
@@ -653,7 +640,7 @@ test_that("calc_kin_like_drop designated two alleles pattern 3", {
   like_h2 <- pvgt_h2_1 * prgt * pd_vgt * pd_rgt
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd_v, pd_r)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, pd_v, pd_r)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -673,13 +660,12 @@ test_that("calc_kin_like_drop Pr(D) = 0 pattern 1", {
   pibd <- c(k2, 2 * k1, k0)
   cons_mu <- FALSE
   myu <- 0.002
-  ape <- calc_ape(af)
   pd_v <- 0
   pd_r <- 0
 
   # Run
-  likelihoods_1 <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd_v, pd_r)
-  likelihoods_2 <- calc_kin_like(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape)
+  likelihoods_1 <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, pd_v, pd_r)
+  likelihoods_2 <- calc_kin_like(vgt, rgt, af, af_al, pibd, cons_mu, myu)
 
   # Test
   expect_equal(as.numeric(likelihoods_1[1]), as.numeric(likelihoods_1[1]))
@@ -699,13 +685,12 @@ test_that("calc_kin_like_drop Pr(D) = 0 pattern 2", {
   pibd <- c(k2, 2 * k1, k0)
   cons_mu <- FALSE
   myu <- 0.002
-  ape <- calc_ape(af)
   pd_v <- 0
   pd_r <- 0
 
   # Run
-  likelihoods_1 <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd_v, pd_r)
-  likelihoods_2 <- calc_kin_like(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape)
+  likelihoods_1 <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, pd_v, pd_r)
+  likelihoods_2 <- calc_kin_like(vgt, rgt, af, af_al, pibd, cons_mu, myu)
 
   # Test
   expect_equal(as.numeric(likelihoods_1[1]), as.numeric(likelihoods_1[1]))
@@ -725,21 +710,17 @@ test_that("calc_kin_like_drop Pr(D) = 0 pattern 3", {
   pibd <- c(k2, 2 * k1, k0)
   cons_mu <- FALSE
   myu <- 0.002
-  ape <- calc_ape(af)
   pd_v <- 0
   pd_r <- 0
 
   # Run
-  likelihoods_1 <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd_v, pd_r)
-  likelihoods_2 <- calc_kin_like(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape)
+  likelihoods_1 <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, pd_v, pd_r)
+  likelihoods_2 <- calc_kin_like(vgt, rgt, af, af_al, pibd, cons_mu, myu)
 
   # Test
   expect_equal(as.numeric(likelihoods_1[1]), as.numeric(likelihoods_1[1]))
   expect_equal(as.numeric(likelihoods_2[2]), as.numeric(likelihoods_2[2]))
 })
-
-
-
 
 test_that("calc_kin_like_drop mutation pattern 1", {
 
@@ -754,23 +735,22 @@ test_that("calc_kin_like_drop mutation pattern 1", {
   pibd <- c(k2, 2 * k1, k0)
   cons_mu <- TRUE
   myu <- 0.002
-  ape <- calc_ape(af)
   pd_v <- 0.3
   pd_r <- 0.1
 
   # True answer
 
   ## vgt : 11, 11
-  pvgt_h1_1 <- myu
-  pvgt_h2_1 <- ape
+  pvgt_h1_1 <- myu * 0.15
+  pvgt_h2_1 <- 0.15^2
 
   ## vgt : 11, 12
   pvgt_h1_2 <- 2 * k1 * 0.15 + k0 * 2 * 0.15 * 0.25
   pvgt_h2_2 <- 2 * 0.15 * 0.25
 
   ## vgt : 11, 99
-  pvgt_h1_3 <- myu
-  pvgt_h2_3 <- ape
+  pvgt_h1_3 <- myu * (0.15 + 0.6)
+  pvgt_h2_3 <- 2 * 0.15 * 0.6
 
   ## vgt dropout
   pd_vgt_homo <- (1 - pd_v)^2
@@ -787,34 +767,9 @@ test_that("calc_kin_like_drop mutation pattern 1", {
   like_h2 <- pvgt_h2_1 * prgt * pd_vgt_homo * pd_rgt + (pvgt_h2_2 + pvgt_h2_3) * prgt * pd_vgt_hetero * pd_rgt
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd_v, pd_r)
-
-  likelihoods_2 <- calc_kin_like(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, pd_v, pd_r)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
   expect_equal(as.numeric(likelihoods[2]), like_h2)
 })
-
-test_that("calc_kin_like_drop mutation pattern 2", {
-  vgt <- 12
-  rgt <- c(11, 13)
-  af <- c(0.15, 0.25, 0.3, 0.25, 0.05)
-  af_al <- 11:15
-  pibd <- c(0, 1, 0)
-  cons_mu <- FALSE
-  myu <- 0.002
-  ape <- calc_ape(af)
-  pd <- 0.5
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, ape, pd)
-
-  prgt <- 2 * 0.15 * 0.3
-  calc_homo_h1 <- 0
-  calc_hetero_h1 <- pd * prgt * (0.5 * 0.25 + 0.5 * 0.25)
-  calc_homo_h2 <- (1 - pd) * prgt * 0.25^2
-  calc_hetero_h2 <- pd * prgt * (2 * 0.15 * 0.25 + 2 * 0.25 * 0.3 + 2 * 0.25 * 0.3)
-
-  expect_equal(as.numeric(likelihoods[1]), calc_homo_h1 + calc_hetero_h1)
-  expect_equal(as.numeric(likelihoods[2]), calc_homo_h2 + calc_hetero_h2)
-})
-
