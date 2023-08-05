@@ -66,22 +66,29 @@ relsearch <- function(){
 
                                                            sidebarLayout(
                                                              sidebarPanel(
+                                                               h4("Display setting"),
+                                                               br(),
+                                                               actionButton("act_all_data", label = "Show all data", class = "btn btn-primary"),
+                                                               br(),
+                                                               br(),
+                                                               actionButton("act_identified", label = "Show identified pairs", class = "btn btn-success"),
+                                                               br(),
+                                                               br(),
+                                                               actionButton("act_multi_cand", label = "Show multiple candidates", class = "btn btn-warning"),
+                                                               br(),
+                                                               br(),
                                                                uiOutput("summary_min_lr"),
                                                                actionButton("act_fltr_lr", label = "Apply"),
                                                                br(),
                                                                br(),
                                                                h5(div("Show data without LR", style = "color:#555555;font-weight:bold;")),
                                                                actionButton("act_without_lr", label = "Apply"),
-                                                               br(),
-                                                               br(),
-                                                               h5(div("Show all data", style = "color:#555555;font-weight:bold;")),
-                                                               actionButton("act_all_data", label = "Apply"),
-                                                               width = 2
+                                                               width = 3
                                                              ),
                                                              mainPanel(
                                                                br(),
                                                                dataTableOutput("dt_display"),
-                                                               width = 10
+                                                               width = 9
                                                              )
                                                            )
                                                   ),
@@ -895,7 +902,7 @@ relsearch <- function(){
           ############################
 
           # Create the combined data
-          dt_reactive$dt_combined <- create_combined_data(dt_result_auto, dt_result_y, dt_result_mt, dt_criteria)
+          dt_reactive$dt_combined <- create_combined_data(dt_result_auto, dt_result_y, dt_result_mt, dt_criteria, dt_rel)
 
           # Create the displayed data
           dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, min_lr = dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"])
@@ -956,6 +963,16 @@ relsearch <- function(){
 
     # Output the widget to enter the minimum LR displayed
     output$summary_min_lr <- renderUI({numericInput("summary_min_lr", label = "Enter the minimum LR displayed", value = rv_min_lr_auto())})
+
+    # Display identified pairs
+    observeEvent(input$act_identified, {
+      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, num_cand_target = 1)
+    })
+
+    # Display multiple candidates
+    observeEvent(input$act_multi_cand, {
+      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, num_cand_target = 2)
+    })
 
     # Change displayed data which depends on the minimum LR
     observeEvent(input$act_fltr_lr, {

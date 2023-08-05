@@ -27,7 +27,12 @@ create_num_cand <- function(dt_combined){
 
     # Count the number of candidates
     for(i in seq_len(n_est_rel)){
-      num_cand[pos_est_rel[i]] <- length(union(which(vics == vics[i]), which(refs == refs[i])))
+      nc <- length(union(which(vics == vics[i]), which(refs == refs[i])))
+      if(nc >= 2){
+        num_cand[pos_est_rel[i]] <- 2
+      }else{
+        num_cand[pos_est_rel[i]] <- nc
+      }
     }
   }
 
@@ -40,7 +45,7 @@ create_num_cand <- function(dt_combined){
 # The function to judge relationships in combined data #
 ########################################################
 
-judge_rel_combined_data <- function(dt_combined, dt_result_auto, dt_result_y, dt_result_mt, dt_criteria){
+judge_rel_combined_data <- function(dt_combined, dt_result_auto, dt_result_y, dt_result_mt, dt_criteria, dt_rel){
 
   # Extract criteria
   min_lr_auto <- dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"]
@@ -95,6 +100,12 @@ judge_rel_combined_data <- function(dt_combined, dt_result_auto, dt_result_y, dt
   dt_combined[, Maternal := maternal_all]
   options(warn = 0)
 
+  # Change character to factor
+  name_rel <- dt_rel[, Name_relationship]
+  dt_combined$EstimatedRel <- factor(dt_combined$EstimatedRel, levels = name_rel, labels = name_rel)
+  dt_combined$Paternal <- factor(dt_combined$Paternal, levels = c("support", ""), labels = c("support", "not support"))
+  dt_combined$Maternal <- factor(dt_combined$Maternal, levels = c("support", ""), labels = c("support", "not support"))
+
   # Create the sign of the number of candidates
   num_cand <- create_num_cand(dt_combined)
   options(warn = -1)
@@ -110,7 +121,7 @@ judge_rel_combined_data <- function(dt_combined, dt_result_auto, dt_result_y, dt
 # The function to create combined data #
 ########################################
 
-create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_criteria){
+create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_criteria, dt_rel){
 
   ##################################
   # Create the combined data.table #
@@ -153,7 +164,7 @@ create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_c
   ########################################
 
   # Run judge_rel_combined_data
-  dt_combined <- judge_rel_combined_data(dt_combined, dt_result_auto, dt_result_y, dt_result_mt, dt_criteria)
+  dt_combined <- judge_rel_combined_data(dt_combined, dt_result_auto, dt_result_y, dt_result_mt, dt_criteria, dt_rel)
 
   # Return
   return(dt_combined)
@@ -164,7 +175,7 @@ create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_c
 # The function to create the displayed data #
 #############################################
 
-create_displayed_data <- function(dt_combined, min_lr = NULL, no_lr = FALSE){
+create_displayed_data <- function(dt_combined, num_cand_target = NULL, min_lr = NULL, no_lr = FALSE){
 
   # Set key
   setkey(dt_combined, Victim, Reference, AssumedRel)
@@ -173,10 +184,16 @@ create_displayed_data <- function(dt_combined, min_lr = NULL, no_lr = FALSE){
   dt_display <- dt_combined[, list(Victim, Reference, AssumedRel, LR_Total, EstimatedRel, Paternal, Maternal, NumCand)]
 
   # Filtering
-  if(no_lr){
-    dt_display <- dt_display[is.na(LR_Total)]
-  }else if(!is.null(min_lr)){
-    dt_display <- dt_display[LR_Total >= min_lr]
+  if(is.null(num_cand_target)){
+    if(no_lr){
+      dt_display <- dt_display[is.na(LR_Total)]
+    }else if(!is.null(min_lr)){
+      dt_display <- dt_display[LR_Total >= min_lr]
+    }
+  }else if(num_cand_target == 1){
+    dt_display <- dt_display[NumCand == 1]
+  }else if(num_cand_target == 2){
+    dt_display <- dt_display[NumCand == 2]
   }
 
   # Descending order of LR
