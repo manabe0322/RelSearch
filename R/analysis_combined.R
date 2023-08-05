@@ -101,7 +101,12 @@ judge_rel_combined_data <- function(dt_combined, dt_result_auto, dt_result_y, dt
   options(warn = 0)
 
   # Change character to factor
+  sn_v <- sort(unique(dt_combined[, Victim]))
+  dt_combined$Victim <- factor(dt_combined$Victim, levels = sn_v, labels = sn_v)
+  sn_r <- sort(unique(dt_combined[, Reference]))
+  dt_combined$Reference <- factor(dt_combined$Reference, levels = sn_r, labels = sn_r)
   name_rel <- dt_rel[, Name_relationship]
+  dt_combined$AssumedRel <- factor(dt_combined$AssumedRel, levels = name_rel, labels = name_rel)
   dt_combined$EstimatedRel <- factor(dt_combined$EstimatedRel, levels = name_rel, labels = name_rel)
   dt_combined$Paternal <- factor(dt_combined$Paternal, levels = c("support", ""), labels = c("support", "not support"))
   dt_combined$Maternal <- factor(dt_combined$Maternal, levels = c("support", ""), labels = c("support", "not support"))
@@ -175,7 +180,7 @@ create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_c
 # The function to create the displayed data #
 #############################################
 
-create_displayed_data <- function(dt_combined, num_cand_target = NULL, min_lr = NULL, no_lr = FALSE){
+create_displayed_data <- function(dt_combined, num_cand_target = NULL, min_lr = NULL, no_lr = FALSE, max_data = 10000){
 
   # Set key
   setkey(dt_combined, Victim, Reference, AssumedRel)
@@ -201,6 +206,11 @@ create_displayed_data <- function(dt_combined, num_cand_target = NULL, min_lr = 
 
   # Round LR
   dt_display$LR_Total <- signif(dt_display$LR_Total, 3)
+
+  # Check the number of rows
+  if(nrow(dt_display) > max_data){
+    dt_display <- dt_display[1:max_data, ]
+  }
 
   # Return
   return(dt_display)

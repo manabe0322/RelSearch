@@ -5,11 +5,15 @@
 #' @export
 relsearch <- function(){
 
-  ########################
-  # Set software version #
-  ########################
+  ###########################
+  # Set internal parameters #
+  ###########################
 
+  # Software version
   ver_soft <- packageVersion("relsearch")
+
+  # The maximum number of data in the summary tab
+  max_data <- 10000
 
   ##########
   # Set ui #
@@ -77,12 +81,11 @@ relsearch <- function(){
                                                                actionButton("act_multi_cand", label = "Show multiple candidates", class = "btn btn-warning"),
                                                                br(),
                                                                br(),
+                                                               actionButton("act_without_lr", label = "Show data without LR"),
+                                                               br(),
+                                                               br(),
                                                                uiOutput("summary_min_lr"),
                                                                actionButton("act_fltr_lr", label = "Apply"),
-                                                               br(),
-                                                               br(),
-                                                               h5(div("Show data without LR", style = "color:#555555;font-weight:bold;")),
-                                                               actionButton("act_without_lr", label = "Apply"),
                                                                width = 3
                                                              ),
                                                              mainPanel(
@@ -905,7 +908,7 @@ relsearch <- function(){
           dt_reactive$dt_combined <- create_combined_data(dt_result_auto, dt_result_y, dt_result_mt, dt_criteria, dt_rel)
 
           # Create the displayed data
-          dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, min_lr = dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"])
+          dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, max_data = max_data)
 
           #################################
           # Assign objects to dt_reactive #
@@ -953,6 +956,14 @@ relsearch <- function(){
 
           # Select result tab
           updateNavbarPage(session, "navbar", selected = "Result")
+
+          ###############################################################
+          # Show a message for indicating that the data size is too big #
+          ###############################################################
+
+          if(nrow(dt_reactive$dt_display) == max_data){
+            showModal(modalDialog(title = "Information", paste0("The data is too big. Only data up to the top ", max_data, " is shown."), easyClose = TRUE, footer = NULL))
+          }
         }
       }
     })
@@ -962,23 +973,35 @@ relsearch <- function(){
     ########################
 
     # Output the widget to enter the minimum LR displayed
-    output$summary_min_lr <- renderUI({numericInput("summary_min_lr", label = "Enter the minimum LR displayed", value = rv_min_lr_auto())})
+    output$summary_min_lr <- renderUI({numericInput("summary_min_lr", label = "Minimum LR displayed", value = rv_min_lr_auto())})
 
     # Display identified pairs
     observeEvent(input$act_identified, {
-      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, num_cand_target = 1)
+      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, num_cand_target = 1, max_data = max_data)
+
+      if(nrow(dt_reactive$dt_display) == max_data){
+        showModal(modalDialog(title = "Information", paste0("The data is too big. Only data up to the top ", max_data, " is shown."), easyClose = TRUE, footer = NULL))
+      }
     })
 
     # Display multiple candidates
     observeEvent(input$act_multi_cand, {
-      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, num_cand_target = 2)
+      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, num_cand_target = 2, max_data = max_data)
+
+      if(nrow(dt_reactive$dt_display) == max_data){
+        showModal(modalDialog(title = "Information", paste0("The data is too big. Only data up to the top ", max_data, " is shown."), easyClose = TRUE, footer = NULL))
+      }
     })
 
     # Change displayed data which depends on the minimum LR
     observeEvent(input$act_fltr_lr, {
       summary_min_lr <- input$summary_min_lr
       if(isTruthy(summary_min_lr)){
-        dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, min_lr = summary_min_lr)
+        dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, min_lr = summary_min_lr, max_data = max_data)
+
+        if(nrow(dt_reactive$dt_display) == max_data){
+          showModal(modalDialog(title = "Information", paste0("The data is too big. Only data up to the top ", max_data, " is shown."), easyClose = TRUE, footer = NULL))
+        }
       }else{
         showModal(modalDialog(title = "Error", "Enter the minimum LR displayed!", easyClose = TRUE, footer = NULL))
       }
@@ -986,12 +1009,20 @@ relsearch <- function(){
 
     # Display data without LR
     observeEvent(input$act_without_lr, {
-      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, no_lr = TRUE)
+      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, no_lr = TRUE, max_data = max_data)
+
+      if(nrow(dt_reactive$dt_display) == max_data){
+        showModal(modalDialog(title = "Information", paste0("The data is too big. Only data up to the top ", max_data, " is shown."), easyClose = TRUE, footer = NULL))
+      }
     })
 
     # Display all data
     observeEvent(input$act_all_data, {
-      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined)
+      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, max_data = max_data)
+
+      if(nrow(dt_reactive$dt_display) == max_data){
+        showModal(modalDialog(title = "Information", paste0("The data is too big. Only data up to the top ", max_data, " is shown."), easyClose = TRUE, footer = NULL))
+      }
     })
 
     # Display the data.table
@@ -1002,7 +1033,7 @@ relsearch <- function(){
         filter = "top",
         extensions = "Buttons",
         selection = list(mode = "single", target = "row"),
-        options = list(iDisplayLength = 10, ordering = FALSE,
+        options = list(iDisplayLength = 10, ordering = FALSE, autoWidth = TRUE,
                        dom = "Bfrtip",
                        buttons = list(list(extend = "csv",
                                            text = "Download",

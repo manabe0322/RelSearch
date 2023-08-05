@@ -257,6 +257,10 @@ std::vector<std::vector<std::vector<int>>> match_y_all(std::vector<std::vector<s
   /* Define an object for saving results */
   std::vector<std::vector<std::vector<int>>> result_y(n_vr, std::vector<std::vector<int>>(3, std::vector<int>(n_l + 1)));
 
+  /* Define the counter for updating the progress bar */
+  int counter_base = n_vr * 0.001;
+  int counter = counter_base;
+
   /* Repetitive execution for references */
   for(int i = 0; i < n_r; ++i){
 
@@ -281,9 +285,14 @@ std::vector<std::vector<std::vector<int>>> match_y_all(std::vector<std::vector<s
       result_y.at(pos).at(2) = ans.at(2);
 
       /* Display a message to the console to update the progress bar */
-      std::string txt_console = "Y-STR_Victim-Reference_ : ";
-      txt_console += int_to_str(pos);
-      message('\r', txt_console, _["appendLF"] = false);
+      if(pos >= counter){
+        std::string txt_console = "Y-STR_Victim-Reference_ : ";
+        txt_console += int_to_str(pos);
+        message('\r', txt_console, _["appendLF"] = false);
+
+        /* Update the counter */
+        counter += counter_base;
+      }
     }
   }
 

@@ -478,6 +478,10 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
   /* Define an array for saving likelihoods and LRs */
   std::vector<std::vector<std::vector<double>>> result_auto(n_vr, std::vector<std::vector<double>>(3, std::vector<double>(n_l + 1)));
 
+  /* Define the counter for updating the progress bar */
+  int counter_base = n_vr * 0.001;
+  int counter = counter_base;
+
   /* Repetitive execution for references */
   for(int i = 0; i < n_r; ++i){
 
@@ -518,9 +522,14 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
       result_auto.at(pos).at(2) = ans.at(2);
 
       /* Display a message to the console to update the progress bar */
-      std::string txt_console = "STR_Victim-Reference_ : ";
-      txt_console += int_to_str(pos);
-      message('\r', txt_console, _["appendLF"] = false);
+      if(pos >= counter){
+        std::string txt_console = "STR_Victim-Reference_ : ";
+        txt_console += int_to_str(pos);
+        message('\r', txt_console, _["appendLF"] = false);
+
+        /* Update the counter */
+        counter += counter_base;
+      }
     }
   }
 
