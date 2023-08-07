@@ -253,11 +253,13 @@ relsearch <- function(){
                                                  actionButton("act_new_proj", label = "New project", class = "btn btn-primary btn-lg")
                                         ),
                                         tabPanel("Load project",
+                                                 useWaiter(),
                                                  h2("Load project"),
                                                  fileInput("file_proj", label = "Select a project file", accept = ".RData"),
                                                  actionButton("act_load_proj", label = "Load project", class = "btn btn-primary btn-lg")
                                         ),
                                         tabPanel("Save project",
+                                                 useWaiter(),
                                                  h2("Save project"),
                                                  disabled(textInput("name_proj", label = "Enter the project name", value = NULL)),
                                                  disabled(downloadButton("download_proj", label = "Save as", class = "btn btn-primary btn-lg"))
@@ -330,6 +332,8 @@ relsearch <- function(){
   ##############
 
   server <- function(input, output, session){
+
+    options(shiny.maxRequestSize = 300*1024^2)
 
     disable(selector = '.navbar-nav a[data-value = "Result"]')
 
@@ -1243,6 +1247,8 @@ relsearch <- function(){
         showModal(modalDialog(title = "Error", "Select a project file!", easyClose = TRUE, footer = NULL))
       }else{
 
+        waiter_show(html = spin_3k(), color = "white")
+
         # Load project
         load(input$file_proj$datapath)
 
@@ -1336,11 +1342,21 @@ relsearch <- function(){
           )
         })
 
+        waiter_hide()
+
+        # Enable save project
+        enable("name_proj")
+        enable("download_proj")
+
         # Enable result tab
         enable(selector = '.navbar-nav a[data-value = "Result"]')
 
         # Select result tab
         updateNavbarPage(session, "navbar", selected = "Result")
+
+        if(nrow(dt_reactive$dt_display) == max_data){
+          showModal(modalDialog(title = "Information", paste0("The data is too big. Only data up to the top ", max_data, " is shown."), easyClose = TRUE, footer = NULL))
+        }
       }
     })
 
@@ -1355,6 +1371,8 @@ relsearch <- function(){
       },
 
       content = function(file){
+        waiter_show(html = spin_3k(), color = "white")
+
         dt_combined <- dt_reactive$dt_combined
         dt_display <- dt_reactive$dt_display
         dt_result_auto <- dt_reactive$dt_result_auto
@@ -1388,6 +1406,8 @@ relsearch <- function(){
                       "fn_v_auto", "fn_r_auto", "fn_af",
                       "fn_v_y", "fn_r_y",
                       "fn_v_mt", "fn_r_mt"), file = file)
+
+        waiter_hide()
       }
     )
   }
