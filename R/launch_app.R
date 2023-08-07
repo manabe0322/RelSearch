@@ -15,6 +15,8 @@ relsearch <- function(){
   # The maximum number of data in the summary tab
   max_data <- 10000
 
+  options(shiny.maxRequestSize = 500 * 1024^2)
+
   ##########
   # Set ui #
   ##########
@@ -332,8 +334,6 @@ relsearch <- function(){
   ##############
 
   server <- function(input, output, session){
-
-    options(shiny.maxRequestSize = 300 * 1024^2)
 
     disable(selector = '.navbar-nav a[data-value = "Result"]')
 
