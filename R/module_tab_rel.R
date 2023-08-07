@@ -5,9 +5,9 @@
 tab_rel_ui <- function(id){
   ns <- NS(id)
 
-  tabPanel("Set relationships",
+  tabPanel("Relationships",
 
-           titlePanel("Set relationships"),
+           titlePanel("Relationships"),
 
            dataTableOutput(ns("dt_rel")),
 

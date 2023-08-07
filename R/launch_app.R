@@ -277,8 +277,8 @@ relsearch <- function(){
                              ),
 
                              navbarMenu("Tools",
-                                        tabPanel("Set criteria",
-                                                 titlePanel("Set criteria"),
+                                        tabPanel("Criteria",
+                                                 titlePanel("Criteria"),
                                                  br(),
                                                  fluidRow(
                                                    column(4,
@@ -306,9 +306,9 @@ relsearch <- function(){
 
                                         tab_myu_ui("tab_myu"),
 
-                                        tabPanel("Set analysis method for STR",
+                                        tabPanel("Analysis method for STR",
 
-                                                 titlePanel("Set analysis method for STR"),
+                                                 titlePanel("Analysis method for STR"),
 
                                                  numeric_ui("maf"),
                                                  numeric_ui("pd_v"),

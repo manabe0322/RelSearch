@@ -5,9 +5,9 @@
 tab_myu_ui <- function(id){
   ns <- NS(id)
 
-  tabPanel("Set mutation rates",
+  tabPanel("Mutation rates",
 
-           titlePanel("Set mutation rates"),
+           titlePanel("Mutation rates"),
 
            br(),
 

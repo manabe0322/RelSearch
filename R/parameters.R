@@ -113,7 +113,7 @@ create_dt_par_auto <- function(path_pack){
   # If the file "par_auto.csv" is found
   if(is.element("par_auto.csv", fn_par)){
 
-    # Load the file "criteria.csv"
+    # Load the file "par_auto.csv"
     dt_par_auto <- fread(paste0(path_pack, "/extdata/parameters/par_auto.csv"))
 
   # If the file "par_auto.csv" is missing
