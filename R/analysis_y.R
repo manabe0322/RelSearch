@@ -82,7 +82,7 @@ analyze_y <- function(dt_v_y, dt_r_y){
         setProgress(value = val)
       }
     ),
-    message = "Analyzing data of Y-STR...",
+    message = "Analyzing Y-STR data...",
     max = length(sn_v_y) * length(sn_r_y),
     value = 0
   )

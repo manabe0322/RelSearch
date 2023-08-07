@@ -155,7 +155,7 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
         setProgress(value = val)
       }
     ),
-    message = "Analyzing data of autosomal STR...",
+    message = "Analyzing STR data...",
     max = length(sn_v_auto) * length(sn_r_auto),
     value = 0
   )

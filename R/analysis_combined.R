@@ -111,6 +111,9 @@ judge_rel_combined_data <- function(dt_combined, dt_result_auto, dt_result_y, dt
   dt_combined$Paternal <- factor(dt_combined$Paternal, levels = c("support", ""), labels = c("support", "not support"))
   dt_combined$Maternal <- factor(dt_combined$Maternal, levels = c("support", ""), labels = c("support", "not support"))
 
+  # Keep data which satisfied criteria
+  dt_combined <- dt_combined[EstimatedRel != "" | Paternal == "support" | Maternal == "support"]
+
   # Create the sign of the number of candidates
   num_cand <- create_num_cand(dt_combined)
   options(warn = -1)
@@ -180,7 +183,7 @@ create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_c
 # The function to create the displayed data #
 #############################################
 
-create_displayed_data <- function(dt_combined, num_cand_target = NULL, min_lr = NULL, no_lr = FALSE, max_data = 10000){
+create_displayed_data <- function(dt_combined, fltr_type = "default", min_lr = NULL){
 
   # Set key
   setkey(dt_combined, Victim, Reference, AssumedRel)
@@ -189,16 +192,16 @@ create_displayed_data <- function(dt_combined, num_cand_target = NULL, min_lr = 
   dt_display <- dt_combined[, list(Victim, Reference, AssumedRel, LR_Total, EstimatedRel, Paternal, Maternal, NumCand)]
 
   # Filtering
-  if(is.null(num_cand_target)){
-    if(no_lr){
-      dt_display <- dt_display[is.na(LR_Total)]
-    }else if(!is.null(min_lr)){
-      dt_display <- dt_display[LR_Total >= min_lr]
-    }
-  }else if(num_cand_target == 1){
+  if(fltr_type == "identified"){
     dt_display <- dt_display[NumCand == 1]
-  }else if(num_cand_target == 2){
+  }else if(fltr_type == "multiple"){
     dt_display <- dt_display[NumCand == 2]
+  }else if(fltr_type == "min_lr"){
+    dt_display <- dt_display[LR_Total >= min_lr]
+  }else if(fltr_type == "paternal"){
+    dt_display <- dt_display[Paternal == "support"]
+  }else if(fltr_type == "maternal"){
+    dt_display <- dt_display[Maternal == "support"]
   }
 
   # Descending order of LR
@@ -206,11 +209,6 @@ create_displayed_data <- function(dt_combined, num_cand_target = NULL, min_lr = 
 
   # Round LR
   dt_display$LR_Total <- signif(dt_display$LR_Total, 3)
-
-  # Check the number of rows
-  if(nrow(dt_display) > max_data){
-    dt_display <- dt_display[1:max_data, ]
-  }
 
   # Return
   return(dt_display)

@@ -32,7 +32,7 @@ analyze_mt <- function(dt_v_mt, dt_r_mt){
         setProgress(value = val)
       }
     ),
-    message = "Analyzing data of mtDNA...",
+    message = "Analyzing mtDNA data...",
     max = length(sn_v_mt) * length(sn_r_mt),
     value = 0
   )

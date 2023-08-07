@@ -12,9 +12,6 @@ relsearch <- function(){
   # Software version
   ver_soft <- packageVersion("relsearch")
 
-  # The maximum number of data in the summary tab
-  max_data <- 10000
-
   options(shiny.maxRequestSize = 500 * 1024^2)
 
   ##########
@@ -52,6 +49,8 @@ relsearch <- function(){
                                         )
                                       ),
 
+                                      br(),
+
                                       fluidRow(
 
                                         column(12,
@@ -74,16 +73,19 @@ relsearch <- function(){
                                                              sidebarPanel(
                                                                h4("Display setting"),
                                                                br(),
-                                                               actionButton("act_all_data", label = "Show all data", class = "btn btn-primary"),
+                                                               actionButton("act_default", label = "Default display", class = "btn btn-primary"),
                                                                br(),
                                                                br(),
-                                                               actionButton("act_identified", label = "Show identified pairs", class = "btn btn-success"),
+                                                               actionButton("act_identified", label = "Identified pairs", class = "btn btn-success"),
                                                                br(),
                                                                br(),
-                                                               actionButton("act_multi_cand", label = "Show multiple candidates", class = "btn btn-warning"),
+                                                               actionButton("act_multiple", label = "Multiple candidates", class = "btn btn-warning"),
                                                                br(),
                                                                br(),
-                                                               actionButton("act_without_lr", label = "Show data without LR"),
+                                                               actionButton("act_paternal", label = "Estimated paternal lineages", class = "btn btn-info"),
+                                                               br(),
+                                                               br(),
+                                                               actionButton("act_maternal", label = "Estimated maternal lineages", class="btn btn-danger"),
                                                                br(),
                                                                br(),
                                                                uiOutput("summary_min_lr"),
@@ -252,18 +254,23 @@ relsearch <- function(){
                              navbarMenu("Project",
                                         tabPanel("New project",
                                                  h2("New project"),
+                                                 br(),
                                                  actionButton("act_new_proj", label = "New project", class = "btn btn-primary btn-lg")
                                         ),
                                         tabPanel("Load project",
                                                  useWaiter(),
                                                  h2("Load project"),
+                                                 br(),
                                                  fileInput("file_proj", label = "Select a project file", accept = ".RData"),
+                                                 br(),
                                                  actionButton("act_load_proj", label = "Load project", class = "btn btn-primary btn-lg")
                                         ),
                                         tabPanel("Save project",
                                                  useWaiter(),
                                                  h2("Save project"),
+                                                 br(),
                                                  disabled(textInput("name_proj", label = "Enter the project name", value = NULL)),
+                                                 br(),
                                                  disabled(downloadButton("download_proj", label = "Save as", class = "btn btn-primary btn-lg"))
                                         )
                              ),
@@ -912,7 +919,7 @@ relsearch <- function(){
           dt_reactive$dt_combined <- create_combined_data(dt_result_auto, dt_result_y, dt_result_mt, dt_criteria, dt_rel)
 
           # Create the displayed data
-          dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, max_data = max_data)
+          dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined)
 
           #################################
           # Assign objects to dt_reactive #
@@ -961,13 +968,11 @@ relsearch <- function(){
           # Select result tab
           updateNavbarPage(session, "navbar", selected = "Result")
 
-          ###############################################################
-          # Show a message for indicating that the data size is too big #
-          ###############################################################
+          #######################################################
+          # Show a message of information on the displayed data #
+          #######################################################
 
-          if(nrow(dt_reactive$dt_display) == max_data){
-            showModal(modalDialog(title = "Information", paste0("The data is too big. Only data up to the top ", max_data, " is shown."), easyClose = TRUE, footer = NULL))
-          }
+          showModal(modalDialog(title = "Information", "Displayed data satisfies at least one of the criteria for STR, Y-STR, and mtDNA.", easyClose = TRUE, footer = NULL))
         }
       }
     })
@@ -979,53 +984,41 @@ relsearch <- function(){
     # Output the widget to enter the minimum LR displayed
     output$summary_min_lr <- renderUI({numericInput("summary_min_lr", label = "Minimum LR displayed", value = rv_min_lr_auto())})
 
+    # Display default data
+    observeEvent(input$act_default, {
+      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined)
+
+      # Show a message of information on the displayed data
+      showModal(modalDialog(title = "Information", "Displayed data satisfies at least one of the criteria for STR, Y-STR, and mtDNA.", easyClose = TRUE, footer = NULL))
+    })
+
     # Display identified pairs
     observeEvent(input$act_identified, {
-      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, num_cand_target = 1, max_data = max_data)
-
-      if(nrow(dt_reactive$dt_display) == max_data){
-        showModal(modalDialog(title = "Information", paste0("The data is too big. Only data up to the top ", max_data, " is shown."), easyClose = TRUE, footer = NULL))
-      }
+      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "identified")
     })
 
     # Display multiple candidates
-    observeEvent(input$act_multi_cand, {
-      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, num_cand_target = 2, max_data = max_data)
+    observeEvent(input$act_multiple, {
+      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "multiple")
+    })
 
-      if(nrow(dt_reactive$dt_display) == max_data){
-        showModal(modalDialog(title = "Information", paste0("The data is too big. Only data up to the top ", max_data, " is shown."), easyClose = TRUE, footer = NULL))
-      }
+    # Display the estimated paternal lineages
+    observeEvent(input$act_paternal, {
+      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "paternal")
+    })
+
+    # Display the estimated paternal lineages
+    observeEvent(input$act_maternal, {
+      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "maternal")
     })
 
     # Change displayed data which depends on the minimum LR
     observeEvent(input$act_fltr_lr, {
       summary_min_lr <- input$summary_min_lr
       if(isTruthy(summary_min_lr)){
-        dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, min_lr = summary_min_lr, max_data = max_data)
-
-        if(nrow(dt_reactive$dt_display) == max_data){
-          showModal(modalDialog(title = "Information", paste0("The data is too big. Only data up to the top ", max_data, " is shown."), easyClose = TRUE, footer = NULL))
-        }
+        dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "min_lr", min_lr = summary_min_lr)
       }else{
         showModal(modalDialog(title = "Error", "Enter the minimum LR displayed!", easyClose = TRUE, footer = NULL))
-      }
-    })
-
-    # Display data without LR
-    observeEvent(input$act_without_lr, {
-      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, no_lr = TRUE, max_data = max_data)
-
-      if(nrow(dt_reactive$dt_display) == max_data){
-        showModal(modalDialog(title = "Information", paste0("The data is too big. Only data up to the top ", max_data, " is shown."), easyClose = TRUE, footer = NULL))
-      }
-    })
-
-    # Display all data
-    observeEvent(input$act_all_data, {
-      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, max_data = max_data)
-
-      if(nrow(dt_reactive$dt_display) == max_data){
-        showModal(modalDialog(title = "Information", paste0("The data is too big. Only data up to the top ", max_data, " is shown."), easyClose = TRUE, footer = NULL))
       }
     })
 
@@ -1042,7 +1035,8 @@ relsearch <- function(){
                        buttons = list(list(extend = "csv",
                                            text = "Download",
                                            filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_relsearch_result"),
-                                           exportOptions = list(modifier = list(page = "all"))
+                                           exportOptions = list(modifier = list(page = "all"),
+                                                                columns = c(0:6))
                                            )
                                       ),
                        columnDefs = list(list(targets = 3, searchable = FALSE), list(targets = 7, visible = FALSE))
@@ -1354,9 +1348,8 @@ relsearch <- function(){
         # Select result tab
         updateNavbarPage(session, "navbar", selected = "Result")
 
-        if(nrow(dt_reactive$dt_display) == max_data){
-          showModal(modalDialog(title = "Information", paste0("The data is too big. Only data up to the top ", max_data, " is shown."), easyClose = TRUE, footer = NULL))
-        }
+        # Show a message of information on the displayed data
+        showModal(modalDialog(title = "Information", "Displayed data satisfies at least one of the criteria for STR, Y-STR, and mtDNA.", easyClose = TRUE, footer = NULL))
       }
     })
 
