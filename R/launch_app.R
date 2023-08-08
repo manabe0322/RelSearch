@@ -332,7 +332,7 @@ relsearch <- function(){
                              ),
 
                              tabPanel("Manual",
-                                      includeHTML(paste0(path_pack, "/extdata/manual/relsearch_user_manual.html"))
+                                      h2("Manual")
                              )
                   )
   )
