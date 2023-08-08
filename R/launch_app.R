@@ -12,6 +12,9 @@ relsearch <- function(){
   # Software version
   ver_soft <- packageVersion("relsearch")
 
+  # Package path
+  path_pack <- path.package("relsearch", quiet = FALSE)
+
   options(shiny.maxRequestSize = 500 * 1024^2)
 
   ##########
@@ -328,10 +331,8 @@ relsearch <- function(){
                                         )
                              ),
 
-                             navbarMenu("Help",
-                                        tabPanel("Manual",
-                                                 h2("Manual")
-                                        )
+                             tabPanel("Manual",
+                                      includeHTML(paste0(path_pack, "/extdata/manual/relsearch_user_manual.html"))
                              )
                   )
   )
@@ -343,12 +344,6 @@ relsearch <- function(){
   server <- function(input, output, session){
 
     disable(selector = '.navbar-nav a[data-value = "Result"]')
-
-    ###########################
-    # Define the package path #
-    ###########################
-
-    path_pack <- path.package("relsearch", quiet = FALSE)
 
     ###########################
     # Load initial data.table #
