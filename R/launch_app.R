@@ -332,7 +332,7 @@ relsearch <- function(){
                              ),
 
                              tabPanel("Manual",
-                                      h2("Manual")
+                                      tab_manual_ui("manual")
                              )
                   )
   )
@@ -715,6 +715,12 @@ relsearch <- function(){
         )
       })
     })
+
+    ##########
+    # Manual #
+    ##########
+
+    callModule(tab_manual_server, "manual")
 
     ####################
     # Perform analysis #
