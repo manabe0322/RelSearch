@@ -40,7 +40,7 @@ order_loci_y <- function(dt_v_y, dt_r_y){
 # The function to analyze data for Y-STR #
 ##########################################
 
-analyze_y <- function(dt_v_y, dt_r_y){
+analyze_y <- function(dt_v_y, dt_r_y, dt_criteria, show_progress = TRUE){
 
   #########################################
   # Prepare objects to analyze Y-STR data #
@@ -74,18 +74,22 @@ analyze_y <- function(dt_v_y, dt_r_y){
   # Analyze data for Y-STR #
   ##########################
 
-  withProgress(
-    withCallingHandlers(
-      result_y <- match_y_all(hap_v_y, hap_r_y),
-      message = function(m) if(grepl("Y-STR_Victim-Reference_ : ", m$message)){
-        val <- as.numeric(gsub("Y-STR_Victim-Reference_ : ", "", m$message))
-        setProgress(value = val)
-      }
-    ),
-    message = "Analyzing Y-STR data...",
-    max = length(sn_v_y) * length(sn_r_y),
-    value = 0
-  )
+  if(show_progress){
+    withProgress(
+      withCallingHandlers(
+        result_y <- match_y_all(hap_v_y, hap_r_y),
+        message = function(m) if(grepl("Y-STR_Victim-Reference_ : ", m$message)){
+          val <- as.numeric(gsub("Y-STR_Victim-Reference_ : ", "", m$message))
+          setProgress(value = val)
+        }
+      ),
+      message = "Analyzing Y-STR data...",
+      max = length(sn_v_y) * length(sn_r_y),
+      value = 0
+    )
+  }else{
+    result_y <- match_y_all(hap_v_y, hap_r_y)
+  }
 
   #######################
   # Arrange the results #
@@ -110,6 +114,31 @@ analyze_y <- function(dt_v_y, dt_r_y){
   setDT(dt_right)
   names(dt_right) <- c(paste0("Mismatch_", c(locus_y, "Total")), paste0("Ignore_", c(locus_y, "Total")), paste0("MuStep_", c(locus_y, "Total")))
   dt_result_y <- cbind(dt_left, dt_right)
+
+  ###############################
+  # Estimate paternal relatives #
+  ###############################
+
+  # Extract criteria
+  max_mismatch_y <- dt_criteria$Value[dt_criteria$Criteria == "max_mismatch_y"]
+  max_ignore_y <- dt_criteria$Value[dt_criteria$Criteria == "max_ignore_y"]
+  max_mustep_y <- dt_criteria$Value[dt_criteria$Criteria == "max_mustep_y"]
+
+  # Estimate paternal relatives using criteria
+  n_data <- nrow(dt_result_y)
+  paternal_all <- rep("Not support", n_data)
+  bool_meet_criteria_y <- matrix(FALSE, n_data, 4)
+  bool_meet_criteria_y[, 1] <- dt_result_y[, "Mismatch_Total"] <= max_mismatch_y
+  bool_meet_criteria_y[, 2] <- dt_result_y[, "Ignore_Total"] <= max_ignore_y
+  bool_meet_criteria_y[, 3] <- dt_result_y[, "MuStep_Total"] <= max_mustep_y
+  bool_meet_criteria_y[, 4] <- dt_result_y[, "MuStep_Total"] %% 1 == 0
+  pos_meet_criteria_y <- which(apply(bool_meet_criteria_y, 1, all))
+  paternal_all[pos_meet_criteria_y] <- "Support"
+
+  # Add the column "Paternal" to the data.table
+  options(warn = -1)
+  dt_result_y[, Paternal := paternal_all]
+  options(warn = 0)
 
   # Return
   return(dt_result_y)

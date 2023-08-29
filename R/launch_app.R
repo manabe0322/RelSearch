@@ -796,6 +796,12 @@ relsearch <- function(){
           showModal(modalDialog(title = "Error", error_message, easyClose = TRUE, footer = NULL))
         }else{
 
+          ###############################
+          # Record the calculation time #
+          ###############################
+
+          start_time <- proc.time()
+
           ###############
           # Show waiter #
           ###############
@@ -846,7 +852,7 @@ relsearch <- function(){
             })
 
             # Main analysis
-            dt_result_auto <- analyze_auto(dt_v_auto, dt_r_auto, dt_af, dt_rel, dt_myu, dt_par_auto)
+            dt_result_auto <- analyze_auto(dt_v_auto, dt_r_auto, dt_af, dt_rel, dt_myu, dt_par_auto, dt_criteria)
           }else{
             dt_result_auto <- NULL
           }
@@ -885,7 +891,7 @@ relsearch <- function(){
             })
 
             # Main analysis
-            dt_result_y <- analyze_y(dt_v_y, dt_r_y)
+            dt_result_y <- analyze_y(dt_v_y, dt_r_y, dt_criteria)
           }else{
             dt_result_y <- NULL
           }
@@ -900,7 +906,7 @@ relsearch <- function(){
           if(bool_check_mt){
 
             # Main analysis
-            dt_result_mt <- analyze_mt(dt_v_mt, dt_r_mt)
+            dt_result_mt <- analyze_mt(dt_v_mt, dt_r_mt, dt_criteria)
           }else{
             dt_result_mt <- NULL
           }
@@ -917,7 +923,7 @@ relsearch <- function(){
           ############################
 
           # Create the combined data
-          dt_reactive$dt_combined <- create_combined_data(dt_result_auto, dt_result_y, dt_result_mt, dt_criteria, dt_rel)
+          dt_reactive$dt_combined <- create_combined_data(dt_result_auto, dt_result_y, dt_result_mt, dt_rel)
 
           # Create the displayed data
           dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined)
@@ -954,6 +960,13 @@ relsearch <- function(){
           ###############
 
           waiter_hide()
+
+          ###############################
+          # Record the calculation time #
+          ###############################
+
+          run_time <- proc.time() - start_time
+          cat(paste0("\n", "Calculation time : ", run_time[3], " sec", "\n"))
 
           ##################
           # Update widgets #
@@ -1060,16 +1073,16 @@ relsearch <- function(){
       sn_r_select <- dt_reactive$dt_display[pos_select, Reference]
       assumed_rel_select <- dt_reactive$dt_display[pos_select, AssumedRel]
       estimated_rel_select <- dt_reactive$dt_display[pos_select, EstimatedRel]
-      if(estimated_rel_select == ""){
-        estimated_rel_select <- "Nothing"
+      if(is.na(estimated_rel_select)){
+        estimated_rel_select <- "Not identified"
       }
       paternal_select <- dt_reactive$dt_display[pos_select, Paternal]
-      if(paternal_select == ""){
-        paternal_select <- "Not support"
+      if(is.na(paternal_select)){
+        paternal_select <- "No data"
       }
       maternal_select <- dt_reactive$dt_display[pos_select, Maternal]
-      if(maternal_select == ""){
-        maternal_select <- "Not support"
+      if(is.na(maternal_select)){
+        maternal_select <- "No data"
       }
 
       # Extract the result of the selected data
@@ -1092,19 +1105,21 @@ relsearch <- function(){
       # Create the detailed data for mtDNA
       if(!is.null(dt_reactive$dt_result_mt)){
         dt_detail_mt <- create_detailed_data_mt(dt_reactive$dt_v_mt, dt_reactive$dt_r_mt, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
+
+        # Display the detailed data other than the table
+        output$num_mismatch_select <- renderText({paste0(result_selected[, MismatchMt])})
+        output$share_range_select <- renderText({paste0(result_selected[, ShareRangeMt])})
+        output$share_len_select <- renderText({paste0(result_selected[, ShareLengthMt])})
       }else{
         dt_detail_mt <- NULL
       }
 
-      # Display the selected sample names
+      # Display the information on the selected pair
       output$sn_v_select <- renderText({paste0(sn_v_select)})
       output$sn_r_select <- renderText({paste0(sn_r_select)})
       output$estimated_rel_select <- renderText({paste0(estimated_rel_select)})
       output$paternal_select <- renderText({paste0(paternal_select)})
       output$maternal_select <- renderText({paste0(maternal_select)})
-      output$num_mismatch_select <- renderText({paste0(result_selected[, MismatchMt])})
-      output$share_range_select <- renderText({paste0(result_selected[, ShareRangeMt])})
-      output$share_len_select <- renderText({paste0(result_selected[, ShareLengthMt])})
 
       # Display the detailed data for autosomal STR
       output$dt_detail_auto <- renderDataTable(server = FALSE, {

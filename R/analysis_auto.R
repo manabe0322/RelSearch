@@ -84,7 +84,8 @@ order_loci_auto <- function(dt_v_auto, dt_r_auto, dt_af){
 ##################################################
 
 analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
-                         dt_rel, dt_myu, dt_par_auto){
+                         dt_rel, dt_myu, dt_par_auto, dt_criteria,
+                         show_progress = TRUE){
 
   ##################################################
   # Prepare objects to calculate likelihood ratios #
@@ -142,23 +143,26 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
   }
   names(myus) <- locus_auto
 
-
   ###############################
   # Calculate likelihood ratios #
   ###############################
 
-  withProgress(
-    withCallingHandlers(
-      result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus, pd_v, pd_r),
-      message = function(m) if(grepl("STR_Victim-Reference_ : ", m$message)){
-        val <- as.numeric(gsub("STR_Victim-Reference_ : ", "", m$message))
-        setProgress(value = val)
-      }
-    ),
-    message = "Analyzing STR data...",
-    max = length(sn_v_auto) * length(sn_r_auto),
-    value = 0
-  )
+  if(show_progress){
+    withProgress(
+      withCallingHandlers(
+        result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus, pd_v, pd_r),
+        message = function(m) if(grepl("STR_Victim-Reference_ : ", m$message)){
+          val <- as.numeric(gsub("STR_Victim-Reference_ : ", "", m$message))
+          setProgress(value = val)
+        }
+      ),
+      message = "Analyzing STR data...",
+      max = length(sn_v_auto) * length(sn_r_auto),
+      value = 0
+    )
+  }else{
+    result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus, pd_v, pd_r)
+  }
 
   #######################
   # Arrange the results #
@@ -183,6 +187,23 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
   setDT(dt_right)
   names(dt_right) <- c(paste0("LikeH1_", c(locus_auto, "Total")), paste0("LikeH2_", c(locus_auto, "Total")), paste0("LR_", c(locus_auto, "Total")))
   dt_result_auto <- cbind(dt_left, dt_right)
+
+  ##########################
+  # Estimate relationships #
+  ##########################
+
+  # Extract criteria
+  min_lr_auto <- dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"]
+
+  # Estimate relationships using criteria
+  est_rel_all <- rep(NA, nrow(dt_result_auto))
+  pos_meet_criteria_auto <- which(dt_result_auto[, "LR_Total"] >= min_lr_auto)
+  est_rel_all[pos_meet_criteria_auto] <- dt_result_auto[pos_meet_criteria_auto, AssumedRel]
+
+  # Add the column "EstimatedRel" to the data.table
+  options(warn = -1)
+  dt_result_auto[, EstimatedRel := est_rel_all]
+  options(warn = 0)
 
   # Return
   return(dt_result_auto)

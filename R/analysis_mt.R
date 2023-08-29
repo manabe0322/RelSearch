@@ -2,7 +2,7 @@
 # The function to analyze data for mtDNA #
 ##########################################
 
-analyze_mt <- function(dt_v_mt, dt_r_mt){
+analyze_mt <- function(dt_v_mt, dt_r_mt, dt_criteria, show_progress = TRUE){
 
   #############################################
   # Prepare objects to analyze data for mtDNA #
@@ -24,18 +24,22 @@ analyze_mt <- function(dt_v_mt, dt_r_mt){
   # Analyze data for mtDNA #
   ##########################
 
-  withProgress(
-    withCallingHandlers(
-      result_mt <- match_mt_all(hap_v_mt, hap_r_mt, range_v_mt, range_r_mt),
-      message = function(m) if(grepl("mtDNA_Victim-Reference_ : ", m$message)){
-        val <- as.numeric(gsub("mtDNA_Victim-Reference_ : ", "", m$message))
-        setProgress(value = val)
-      }
-    ),
-    message = "Analyzing mtDNA data...",
-    max = length(sn_v_mt) * length(sn_r_mt),
-    value = 0
-  )
+  if(show_progress){
+    withProgress(
+      withCallingHandlers(
+        result_mt <- match_mt_all(hap_v_mt, hap_r_mt, range_v_mt, range_r_mt),
+        message = function(m) if(grepl("mtDNA_Victim-Reference_ : ", m$message)){
+          val <- as.numeric(gsub("mtDNA_Victim-Reference_ : ", "", m$message))
+          setProgress(value = val)
+        }
+      ),
+      message = "Analyzing mtDNA data...",
+      max = length(sn_v_mt) * length(sn_r_mt),
+      value = 0
+    )
+  }else{
+    result_mt <- match_mt_all(hap_v_mt, hap_r_mt, range_v_mt, range_r_mt)
+  }
 
   #######################
   # Arrange the results #
@@ -60,6 +64,28 @@ analyze_mt <- function(dt_v_mt, dt_r_mt){
   setDT(dt_right)
   names(dt_right) <- c("MismatchMt", "ShareRangeMt", "ShareLengthMt")
   dt_result_mt <- cbind(dt_left, dt_right)
+
+  ###############################
+  # Estimate maternal relatives #
+  ###############################
+
+  # Extract criteria
+  max_mismatch_mt <- dt_criteria$Value[dt_criteria$Criteria == "max_mismatch_mt"]
+  min_share_mt <- dt_criteria$Value[dt_criteria$Criteria == "min_share_mt"]
+
+  # Estimate maternal relatives using criteria
+  n_data <- nrow(dt_result_mt)
+  maternal_all <- rep("Not support", n_data)
+  bool_meet_criteria_mt <- matrix(FALSE, n_data, 2)
+  bool_meet_criteria_mt[, 1] <- dt_result_mt[, "MismatchMt"] <= max_mismatch_mt
+  bool_meet_criteria_mt[, 2] <- dt_result_mt[, "ShareLengthMt"] >= min_share_mt
+  pos_meet_criteria_mt <- which(apply(bool_meet_criteria_mt, 1, all))
+  maternal_all[pos_meet_criteria_mt] <- "Support"
+
+  # Add the column "Maternal" to the data.table
+  options(warn = -1)
+  dt_result_mt[, Maternal := maternal_all]
+  options(warn = 0)
 
   # Return
   return(dt_result_mt)
