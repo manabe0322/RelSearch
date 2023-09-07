@@ -332,7 +332,7 @@ relsearch <- function(){
                              ),
 
                              tabPanel("Manual",
-                                      tab_manual_ui("manual")
+                                      includeMarkdown(paste0(path_pack, "/extdata/manual/test_manual.md"))
                              )
                   )
   )
@@ -715,12 +715,6 @@ relsearch <- function(){
         )
       })
     })
-
-    ##########
-    # Manual #
-    ##########
-
-    callModule(tab_manual_server, "manual")
 
     ####################
     # Perform analysis #
