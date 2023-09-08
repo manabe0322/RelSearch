@@ -1,3 +1,14 @@
+<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({
+ tex2jax: {
+ inlineMath: [['$', '$'] ],
+ displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+ }
+ });
+</script>
+
 ## Contents
 
 * [Getting started](#sec1)
@@ -38,11 +49,9 @@
 install.packages(c("shiny", "Rcpp", "data.table", "dplyr", "DT", "magrittr", "pedtools", "ribd", "shinyjs", "shinythemes", "waiter"))
 ```
 
-4. Go to https://github.com/manabe0322/relsearch/releases.
+4. Download ”relsearch_1.0.0.zip” from the <a href="https://github.com/manabe0322/relsearch/releases" target="_blank">GitHub repository page</a>.
 
-5. Download ”relsearch_1.0.0.zip”.
-
-6. Execute the following commands in R to start GUI.
+5. Execute the following commands in R to start GUI.
 
 ```
 library(relsearch)
@@ -154,6 +163,10 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 
 <u>STR: Victim database</u>
 
+<br>
+
+**Example**
+
 <style>
 .fileformat{
     text-align: center;
@@ -176,18 +189,32 @@ The number of inconsistencies and the total shared lengths in each victim-refere
     <td>14</td>
     <td>17</td>
     <td>10</td>
-    <td>11</td>
+    <td></td>
   </tr>
   <tr>
     <td>Victim2</td>
     <td>15</td>
     <td>17</td>
-    <td>14</td>
-    <td>19</td>
+    <td></td>
+    <td></td>
     <td>10</td>
     <td>11</td>
   </tr>
 </table>
+
+<br>
+
+**Note**
+
+* File type: .csv
+
+* This file requires the column "SampleName" and columns for each marker (two columns in each).
+
+* <span style="background-color:#ffcce5">The marker with two empty cells (e.g., Marker 2 of sample 'Victim2' in the above table) is ignored when calculating the likelihood ratio.</span>
+
+* <span style="background-color:#ffcce5">The marker with one empty cell (e.g., Marker 3 of sample 'Victim1' in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.</span>
+
+* <span style="background-color:#ffcce5">An example file named "str_victim_example.csv" is included in the ”relsearch_1.0.0.zip”. See relsearch > extdata > examples.</span>
 
 <br>
 
@@ -197,9 +224,56 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 
 <br>
 
+**Example**
+
+<table class="fileformat" border="1" width="80%">
+  <tr>
+    <td bgcolor=whitesmoke>SampleName</td>
+    <td bgcolor=whitesmoke>Relationship</td>
+    <td bgcolor=whitesmoke>Marker1</td>
+    <td bgcolor=whitesmoke>Marker1</td>
+    <td bgcolor=whitesmoke>Marker2</td>
+    <td bgcolor=whitesmoke>Marker2</td>
+    <td bgcolor=whitesmoke>Marker3</td>
+    <td bgcolor=whitesmoke>Marker3</td>
+  </tr>
+  <tr>
+    <td>Reference1</td>
+    <td>parent-child</td>
+    <td>15</td>
+    <td>15</td>
+    <td>14</td>
+    <td></td>
+    <td>10</td>
+    <td>11</td>
+  </tr>
+  <tr>
+    <td>Reference2</td>
+    <td>sibling</td>
+    <td>15</td>
+    <td>16</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+</table>
+
+<br>
+
 **Note**
 
-* Relationships must be the same as those of other database
+* File type: .csv
+
+* This file requires the columns "SampleName", "Relationship", and columns for each marker (two columns in each).
+
+* <span style="background-color:#ffcce5">Relationships must be the same as those of other database</span>
+
+* <span style="background-color:#ffcce5">The marker with two empty cells (e.g., Marker 2 of sample 'Reference2' in the above table) is ignored when calculating the likelihood ratio.</span>
+
+* <span style="background-color:#ffcce5">The marker with one empty cell (e.g., Marker 3 of sample 'Reference1' in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.</span>
+
+* <span style="background-color:#ffcce5">An example file named "str_ref_example.csv" is included in the ”relsearch_1.0.0.zip”. See relsearch > extdata > examples.</span>
 
 <br>
 
@@ -209,9 +283,17 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 
 <br>
 
+**Example**
+
+<br>
+
 <a id="ff4"></a>
 
 <u>Y-STR: Victim database</u>
+
+<br>
+
+**Example**
 
 <br>
 
@@ -221,15 +303,27 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 
 <br>
 
+**Example**
+
+<br>
+
 <a id="ff6"></a>
 
 <u>mtDNA: Victim database</u>
 
 <br>
 
+**Example**
+
+<br>
+
 <a id="ff7"></a>
 
 <u>mtDNA: Reference database</u>
+
+<br>
+
+**Example**
 
 <br>
 
