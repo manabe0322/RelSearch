@@ -5,10 +5,12 @@
 * [Overall flow](#sec2)
 
   * [Load files](#sec2-1)
+  
+  * [Check settings](#sec2-2)
 
-  * [Perform analysis](#sec2-2)
+  * [Perform analysis](#sec2-3)
 
-  * [Check results](#sec2-3)
+  * [Check results](#sec2-4)
   
 * [File format](#sec3)
 
@@ -98,11 +100,51 @@ Load the following files from each **"Browse..."** button.
 
 <a id="sec2-2"></a>
 
-#### Perform analysis
+#### Check settings
+
+Check the following settings from the **"Tools"** tab.
+
+* Criteria
+
+* Information on the relationship
+
+* Mutation rates
+
+* Parameters for autosomal STR
+
+<br>
 
 <a id="sec2-3"></a>
 
+#### Perform analysis
+
+Click the **"Analysis"** button after loading required files. Then, the following analyses will be started.
+
+<br>
+
+<u>STR analysis</u>
+
+The likelihood ratios of each victim-reference pair are calculated considering mutation and drop-out. Click [here](#sec4-1) for more information.
+
+<br>
+
+<u>Y-STR analysis</u>
+
+The number of inconsistencies and the mutational steps in each victim-reference pair are calculated. Click [here](#sec4-2) for more information.
+
+<br>
+
+<u>mtDNA analysis</u>
+
+The number of inconsistencies and the total shared lengths in each victim-reference pair are calculated. Click [here](#sec4-3) for more information.
+
+<br>
+
+<a id="sec2-4"></a>
+
 #### Check results
+
+<br>
 
 <a id="sec3"></a>
 
@@ -112,11 +154,39 @@ Load the following files from each **"Browse..."** button.
 
 <u>STR: Victim database</u>
 
-<table border="1" width="80%">
-<tr><td align="center" bgcolor=whitesmoke>SampleName<td align="center" bgcolor=whitesmoke>Marker1<td align="center" bgcolor=whitesmoke>Marker1<td align="center" bgcolor=whitesmoke>Marker2<td align="center" bgcolor=whitesmoke>Marker2<td align="center" bgcolor=whitesmoke>Marker3<td align="center" bgcolor=whitesmoke>Marker3<td align="center" bgcolor=whitesmoke>...
-<tr><td align="center">Victim1<td align="center">15<td align="center">16<td align="center">14<td align="center">17<td align="center">10<td align="center">11<td align="center">...
-<tr><td align="center">Victim2<td align="center">15<td align="center">17<td align="center">14<td align="center">19<td align="center">10<td align="center">11<td align="center">...
-<tr><td align="center">...<td align="center">...<td align="center">...<td align="center">...<td align="center">...<td align="center">...<td align="center">...<td align="center">...
+<style>
+.fileformat{
+    text-align: center;
+}
+</style>
+<table class="fileformat" border="1" width="80%">
+  <tr>
+    <td bgcolor=whitesmoke>SampleName</td>
+    <td bgcolor=whitesmoke>Marker1</td>
+    <td bgcolor=whitesmoke>Marker1</td>
+    <td bgcolor=whitesmoke>Marker2</td>
+    <td bgcolor=whitesmoke>Marker2</td>
+    <td bgcolor=whitesmoke>Marker3</td>
+    <td bgcolor=whitesmoke>Marker3</td>
+  </tr>
+  <tr>
+    <td>Victim1</td>
+    <td>15</td>
+    <td>16</td>
+    <td>14</td>
+    <td>17</td>
+    <td>10</td>
+    <td>11</td>
+  </tr>
+  <tr>
+    <td>Victim2</td>
+    <td>15</td>
+    <td>17</td>
+    <td>14</td>
+    <td>19</td>
+    <td>10</td>
+    <td>11</td>
+  </tr>
 </table>
 
 <br>
@@ -174,6 +244,8 @@ Load the following files from each **"Browse..."** button.
 <a id="sec4-1"></a>
 
 #### STR
+
+$$ LR = \frac{Pr(E|H1)}{Pr(E|H2)} $$
 
 <br>
 
