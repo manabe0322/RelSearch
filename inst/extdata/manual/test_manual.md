@@ -25,13 +25,15 @@
   
 * [File format](#sec3)
 
-* [Calculation principle](#sec4)
+* [Settings](#sec4)
 
-  * [STR](#sec4-1)
+* [Calculation principle](#sec5)
+
+  * [STR](#sec5-1)
   
-  * [Y-STR](#sec4-2)
+  * [Y-STR](#sec5-2)
   
-  * [mtDNA](#sec4-3)
+  * [mtDNA](#sec5-3)
 
 <a id="sec1"></a>
 
@@ -76,33 +78,32 @@ Load the following files from each **"Browse..."** button.
 
 <u>STR</u>
 
-* Victim database
+* [Victim database](#ff1)
 
-* Reference database
+* [Reference database](#ff2)
 
-* Allele frequencies
+* [Allele frequencies](#ff3)
 
 <br>
 
 <u>Y-STR</u>
 
-* Victim database
+* [Victim database](#ff4)
 
-* Reference database
+* [Reference database](#ff5)
 
 <br>
 
 <u>mtDNA</u>
 
-* Victim database
+* [Victim database](#ff6)
 
-* Reference database
+* [Reference database](#ff7)
 
 <br>
 
 **Note**
 
-* See [file format](#sec3)
 * Possibility of memory over
 
 <br>
@@ -113,13 +114,13 @@ Load the following files from each **"Browse..."** button.
 
 Check the following settings from the **"Tools"** tab.
 
-* Criteria
+* [Criteria](#sec4-1)
 
-* Information on the relationship
+* [Information on the relationship](#sec4-2)
 
-* Mutation rates
+* [Mutation rates](#sec4-3)
 
-* Parameters for autosomal STR
+* [Parameters for autosomal STR](#sec4-4)
 
 <br>
 
@@ -133,19 +134,19 @@ Click the **"Analysis"** button after loading required files. Then, the followin
 
 <u>STR analysis</u>
 
-The likelihood ratios of each victim-reference pair are calculated considering mutation and drop-out. Click [here](#sec4-1) for more information.
+The likelihood ratios of each victim-reference pair are calculated considering mutation and drop-out. Click [here](#sec5-1) for more information.
 
 <br>
 
 <u>Y-STR analysis</u>
 
-The number of inconsistencies and the mutational steps in each victim-reference pair are calculated. Click [here](#sec4-2) for more information.
+The number of inconsistencies and the mutational steps in each victim-reference pair are calculated. Click [here](#sec5-2) for more information.
 
 <br>
 
 <u>mtDNA analysis</u>
 
-The number of inconsistencies and the total shared lengths in each victim-reference pair are calculated. Click [here](#sec4-3) for more information.
+The number of inconsistencies and the total shared lengths in each victim-reference pair are calculated. Click [here](#sec5-3) for more information.
 
 <br>
 
@@ -160,6 +161,8 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 ---
 
 ## File format
+
+<a id="ff1"></a>
 
 <u>STR: Victim database</u>
 
@@ -189,16 +192,25 @@ The number of inconsistencies and the total shared lengths in each victim-refere
     <td>14</td>
     <td>17</td>
     <td>10</td>
-    <td></td>
+    <td>10</td>
   </tr>
   <tr>
     <td>Victim2</td>
     <td>15</td>
     <td>17</td>
-    <td></td>
+    <td>16</td>
     <td></td>
     <td>10</td>
     <td>11</td>
+  </tr>
+  <tr>
+    <td>Victim3</td>
+    <td>16</td>
+    <td>17</td>
+    <td></td>
+    <td></td>
+    <td>12</td>
+    <td></td>
   </tr>
 </table>
 
@@ -331,11 +343,43 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 
 ---
 
-## Calculation principle
+## Settings
 
 <br>
 
 <a id="sec4-1"></a>
+
+#### Criteria
+
+<br>
+
+<a id="sec4-2"></a>
+
+#### Information on the relationship
+
+<br>
+
+<a id="sec4-3"></a>
+
+#### Mutation rates
+
+<br>
+
+<a id="sec4-4"></a>
+
+#### Parameters for autosomal STR
+
+<br>
+
+<a id="sec5"></a>
+
+---
+
+## Calculation principle
+
+<br>
+
+<a id="sec5-1"></a>
 
 #### STR
 
@@ -343,12 +387,12 @@ $$ LR = \frac{Pr(E|H1)}{Pr(E|H2)} $$
 
 <br>
 
-<a id="sec4-2"></a>
+<a id="sec5-2"></a>
 
 #### Y-STR
 
 <br>
 
-<a id="sec4-3"></a>
+<a id="sec5-3"></a>
 
 #### mtDNA
