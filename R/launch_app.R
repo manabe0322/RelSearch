@@ -25,6 +25,8 @@ relsearch <- function(){
                   theme = shinytheme("cerulean"),
                   navbarPage(title = paste0("relsearch ver. ", ver_soft),
                              id = "navbar",
+                             position = c("fixed-top"),
+                             tags$style(type = "text/css", "body{padding-top: 70px;}"),
 
                              tabPanel("Load",
 
