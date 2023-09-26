@@ -39,11 +39,11 @@ tab_rel_ui <- function(id){
 
                       fluidRow(
                         column(12,
-                               h4("Add"),
+                               h4("Define a new relationship"),
                                br(),
                                uiOutput(ns("rel_add")),
                                br(),
-                               h5(div("Set family tree", style = "color:#555555;font-weight:bold;")),
+                               h5(div("Set a family tree", style = "color:#555555;font-weight:bold;")),
                                column(3, uiOutput(ns("act_famtree_add"))),
                                column(3, uiOutput(ns("act_famtree_del"))),
                                column(4, uiOutput(ns("act_famtree_view"))),
@@ -117,7 +117,7 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
   output$rel_old_edit <- renderUI(selectInput(session$ns("rel_old_edit"), label = "Select a relationship", choices = rv_rel$name, selected = rv_rel$name[1]))
 
   # Rename a relationship
-  output$rel_new_edit <- renderUI(textInput(session$ns("rel_new_edit"), label = "Enter a relationship", value = NULL))
+  output$rel_new_edit <- renderUI(textInput(session$ns("rel_new_edit"), label = "Enter a new name", value = NULL))
 
   # Button to edit
   output$act_rel_edit <- renderUI(actionButton(session$ns("act_rel_edit"), label = "Edit"))
@@ -238,7 +238,7 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
   rv_famtree$founder <- character(0)
 
   # Enter a relationship
-  output$rel_add <- renderUI(textInput(session$ns("rel_add"), label = "Enter a relationship", value = NULL))
+  output$rel_add <- renderUI(textInput(session$ns("rel_add"), label = "Enter the name of a defined relationship", value = NULL))
 
   # Switch between enable and disable for some widgets of the victim
   observeEvent(input$v_founder, {
