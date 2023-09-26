@@ -118,7 +118,7 @@ Check the following settings from the **"Tools"** tab.
 
 * [Criteria](#sec4-1)
 
-* [Information on the relationship](#sec4-2)
+* [Relationships](#sec4-2)
 
 * [Mutation rates](#sec4-3)
 
@@ -295,6 +295,8 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 
 * The marker with one empty cell (e.g., Marker 2 of sample 'Reference2' in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.
 
+* <span style="background-color:#ffcce5">Multiple relationships.</span>
+
 <br>
 
 <a id="ff3"></a>
@@ -442,7 +444,6 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 
 * This file requires the columns "Allele" and columns for each marker (one column in each).
 
-
 <br>
 
 <a id="ff4"></a>
@@ -452,6 +453,142 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 <br>
 
 **Example**
+
+<table class="fileformat" border="1" width="80%">
+  <tr>
+    <td bgcolor=whitesmoke>SampleName</td>
+    <td bgcolor=whitesmoke>DYS456</td>
+    <td bgcolor=whitesmoke>DYS390</td>
+    <td bgcolor=whitesmoke>DYS438</td>
+    <td bgcolor=whitesmoke>DYS392</td>
+    <td bgcolor=whitesmoke>DYS518</td>
+    <td bgcolor=whitesmoke>DYS570</td>
+    <td bgcolor=whitesmoke>DYS437</td>
+    <td bgcolor=whitesmoke>DYS385</td>
+  </tr>
+  <tr>
+    <td>Victim1</td>
+    <td>15</td>
+    <td>24</td>
+    <td>10</td>
+    <td>11</td>
+    <td>37</td>
+    <td>17</td>
+    <td>14</td>
+    <td>13,17</td>
+  </tr>
+  <tr>
+    <td>Victim2</td>
+    <td>15</td>
+    <td>22</td>
+    <td>13</td>
+    <td>13</td>
+    <td>38</td>
+    <td>19</td>
+    <td>14</td>
+    <td>10,20</td>
+  </tr>
+  <tr>
+    <td>Victim3</td>
+    <td>15</td>
+    <td>25</td>
+    <td>10</td>
+    <td>11</td>
+    <td>37</td>
+    <td>17</td>
+    <td>14</td>
+    <td>14</td>
+  </tr>
+  <tr>
+    <td>Victim4</td>
+    <td>15</td>
+    <td>26</td>
+    <td>11</td>
+    <td>11</td>
+    <td>37</td>
+    <td>16</td>
+    <td>14</td>
+    <td>13</td>
+  </tr>
+  <tr>
+    <td>Victim5</td>
+    <td>15</td>
+    <td>23</td>
+    <td>11</td>
+    <td></td>
+    <td></td>
+    <td>18</td>
+    <td></td>
+    <td>13,17</td>
+  </tr>
+  <tr>
+    <td>Victim6</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td>11</td>
+    <td>40</td>
+    <td></td>
+    <td>14</td>
+    <td>14</td>
+  </tr>
+  <tr>
+    <td>Victim7</td>
+    <td>15</td>
+    <td>23</td>
+    <td>10</td>
+    <td>11</td>
+    <td>38</td>
+    <td>16</td>
+    <td>14</td>
+    <td>11,19</td>
+  </tr>
+  <tr>
+    <td>Victim8</td>
+    <td>16</td>
+    <td>24</td>
+    <td>10</td>
+    <td>11</td>
+    <td>38</td>
+    <td>19</td>
+    <td>14</td>
+    <td>13,15</td>
+  </tr>
+  <tr>
+    <td>Victim9</td>
+    <td>14</td>
+    <td>24</td>
+    <td>11</td>
+    <td>14</td>
+    <td>37</td>
+    <td>18</td>
+    <td>14</td>
+    <td>13,18</td>
+  </tr>
+  <tr>
+    <td>Victim10</td>
+    <td>16</td>
+    <td>24</td>
+    <td>11</td>
+    <td>14</td>
+    <td></td>
+    <td>16</td>
+    <td>15</td>
+    <td>13,17</td>
+  </tr>
+</table>
+
+<br>
+
+**Note**
+
+* File type: .csv
+
+* This file requires the column "SampleName" and columns for each marker (one column in each).
+
+* In the marker with more than one allele, each allele must be separated by a comma without any spaces (e.g., DYS385).
+
+* The marker with an empty cell (e.g., DYS456 of sample ‘Victim6’) is ignored for analysis.
 
 <br>
 
@@ -463,6 +600,153 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 
 **Example**
 
+<table class="fileformat" border="1" width="80%">
+  <tr>
+    <td bgcolor=whitesmoke>SampleName</td>
+    <td bgcolor=whitesmoke>Relationship</td>
+    <td bgcolor=whitesmoke>DYS456</td>
+    <td bgcolor=whitesmoke>DYS390</td>
+    <td bgcolor=whitesmoke>DYS438</td>
+    <td bgcolor=whitesmoke>DYS392</td>
+    <td bgcolor=whitesmoke>DYS518</td>
+    <td bgcolor=whitesmoke>DYS570</td>
+    <td bgcolor=whitesmoke>DYS437</td>
+    <td bgcolor=whitesmoke>DYS385</td>
+  </tr>
+  <tr>
+    <td>Reference1</td>
+    <td>parent-child</td>
+    <td>15</td>
+    <td>24</td>
+    <td>10</td>
+    <td>11</td>
+    <td>37</td>
+    <td>17</td>
+    <td>14</td>
+    <td>13,17</td>
+  </tr>
+  <tr>
+    <td>Reference2</td>
+    <td>parent-child</td>
+    <td>15</td>
+    <td>22</td>
+    <td>13</td>
+    <td>13</td>
+    <td>38</td>
+    <td>19</td>
+    <td>14</td>
+    <td>10,20</td>
+  </tr>
+  <tr>
+    <td>Reference3</td>
+    <td>parent-child</td>
+    <td>15</td>
+    <td>25</td>
+    <td>10</td>
+    <td>11</td>
+    <td>37</td>
+    <td>17</td>
+    <td>14</td>
+    <td>14,17</td>
+  </tr>
+  <tr>
+    <td>Reference4</td>
+    <td>parent-child</td>
+    <td>15</td>
+    <td>26</td>
+    <td>11</td>
+    <td>11</td>
+    <td>37</td>
+    <td>16</td>
+    <td>14</td>
+    <td>13,16</td>
+  </tr>
+  <tr>
+    <td>Reference5</td>
+    <td>sibling</td>
+    <td>15</td>
+    <td>23</td>
+    <td>11</td>
+    <td>12</td>
+    <td>42</td>
+    <td>18</td>
+    <td>14</td>
+    <td>13,17</td>
+  </tr>
+  <tr>
+    <td>Reference6</td>
+    <td>sibling</td>
+    <td>16</td>
+    <td>26</td>
+    <td>10</td>
+    <td>11</td>
+    <td>40</td>
+    <td>20</td>
+    <td>14</td>
+    <td>14</td>
+  </tr>
+  <tr>
+    <td>Reference7</td>
+    <td>sibling</td>
+    <td>15</td>
+    <td>23</td>
+    <td>10</td>
+    <td>11</td>
+    <td>38</td>
+    <td>16</td>
+    <td>14</td>
+    <td>11,19</td>
+  </tr>
+  <tr>
+    <td>Reference8</td>
+    <td>sibling</td>
+    <td>16</td>
+    <td>24</td>
+    <td>10</td>
+    <td>11</td>
+    <td>38</td>
+    <td>19</td>
+    <td>14</td>
+    <td>13,15</td>
+  </tr>
+  <tr>
+    <td>Reference9</td>
+    <td>uncle-nephew</td>
+    <td>14</td>
+    <td>24</td>
+    <td>11</td>
+    <td>14</td>
+    <td>37</td>
+    <td>18</td>
+    <td>14</td>
+    <td>13,18</td>
+  </tr>
+  <tr>
+    <td>Reference10</td>
+    <td>cousin</td>
+    <td>16</td>
+    <td>24</td>
+    <td>11</td>
+    <td>14</td>
+    <td></td>
+    <td>16</td>
+    <td>15</td>
+    <td>13,17</td>
+  </tr>
+</table>
+
+<br>
+
+**Note**
+
+* File type: .csv
+
+* This file requires the column "SampleName", "Relationship", and columns for each marker (one column in each).
+
+* In the marker with more than one allele, each allele must be separated by a comma without any spaces (e.g., DYS385).
+
+* The marker with an empty cell (e.g., DYS518 of sample ‘Reference10’) is ignored for analysis.
+
 <br>
 
 <a id="ff6"></a>
@@ -473,6 +757,72 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 
 **Example**
 
+<table class="fileformat" border="1" width="80%">
+  <tr>
+    <td bgcolor=whitesmoke>SampleName</td>
+    <td bgcolor=whitesmoke>Range</td>
+    <td bgcolor=whitesmoke>Haplotype</td>
+  </tr>
+  <tr>
+    <td>Victim1</td>
+    <td>73-340 16024-16365</td>
+    <td>16183C 16189C 16217C 16311C 73G 263G 309.1C 315.1C</td>
+  </tr>
+  <tr>
+    <td>Victim2</td>
+    <td>73-340 16024-16365</td>
+    <td>16093C 16114A 16223T 16362C 73G 191.1A 194T 263G 309.1C 315.1C</td>
+  </tr>
+  <tr>
+    <td>Victim3</td>
+    <td>73-167 240-340 16024-16365</td>
+    <td>16095T 16189C 16223T 16265C 16274A 16362C 73G 143A 152C 263G 315.1C</td>
+  </tr>
+  <tr>
+    <td>Victim4</td>
+    <td>73-265 16024-16284</td>
+    <td>16223T 73G 152C 263G</td>
+  </tr>
+  <tr>
+    <td>Victim5</td>
+    <td>16117-16365</td>
+    <td>16140C 16182C 16183C 16189C 16234T 16243C 16291T</td>
+  </tr>
+  <tr>
+    <td>Victim6</td>
+    <td>73-167 16117-16209</td>
+    <td>16172C 73G 150T</td>
+  </tr>
+  <tr>
+    <td>Victim7</td>
+    <td>73-340 16024-16365</td>
+    <td>16172C 16223T 16257A 16261T 73G 150T 263G 309.1C 309.2C 315.1C</td>
+  </tr>
+  <tr>
+    <td>Victim8</td>
+    <td>73-340 16024-16365</td>
+    <td>16129A 16183C 16189C 16223T 16297C 16298C 16311C 73G 150T 199C 263G 309.1C 309.2C 315.1C</td>
+  </tr>
+  <tr>
+    <td>Victim9</td>
+    <td>73-340 16024-16132 16179-16365</td>
+    <td>16183C 16189C 16209C 16223T 16324C 73G 207A 263G 284G 309.1C 309.2C 315.1C</td>
+  </tr>
+  <tr>
+    <td>Victim10</td>
+    <td>73-265 16024-16209 16266-16365</td>
+    <td>16362C 73G 263G</td>
+  </tr>
+</table>
+
+<br>
+
+**Note**
+
+* File type: .csv
+
+* This file requires the column "SampleName", "Range", and "Haplotype".
+
 <br>
 
 <a id="ff7"></a>
@@ -482,6 +832,83 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 <br>
 
 **Example**
+
+<table class="fileformat" border="1" width="80%">
+  <tr>
+    <td bgcolor=whitesmoke>SampleName</td>
+    <td bgcolor=whitesmoke>Relationship</td>
+    <td bgcolor=whitesmoke>Range</td>
+    <td bgcolor=whitesmoke>Haplotype</td>
+  </tr>
+  <tr>
+    <td>Reference1</td>
+    <td>parent-child</td>
+    <td>16024-16365 73-340</td>
+    <td>16183C 16189C 16217C 16311C 73G 263G 309.1C 315.1C</td>
+  </tr>
+  <tr>
+    <td>Reference2</td>
+    <td>parent-child</td>
+    <td>16024-16365 73-340</td>
+    <td>16093C 16114A 16223T 16362C 73G 191.1A 194T 263G 309.1C 315.1C</td>
+  </tr>
+  <tr>
+    <td>Reference3</td>
+    <td>parent-child</td>
+    <td>16024-16365 73-340</td>
+    <td>16095T 16189C 16223T 16265C 16274A 16362C 73G 143A 152C 263G 315.1C</td>
+  </tr>
+  <tr>
+    <td>Reference4</td>
+    <td>parent-child</td>
+    <td>16024-16365 73-340</td>
+    <td>16223T 16319A 16362C 73G 152C 263G 309.1C 315.1C</td>
+  </tr>
+  <tr>
+    <td>Reference5</td>
+    <td>sibling</td>
+    <td>16024-16365 73-340</td>
+    <td>16111T 16140C 16182C 16183C 16189C 16234T 16243C 16291T 73G 131C 195C 204C 263G 309.1C 309.2C 315.1C</td>
+  </tr>
+  <tr>
+    <td>Reference6</td>
+    <td>sibling</td>
+    <td>16024-16365 73-340</td>
+    <td>16172C 16223T 16250T 16257A 16261T 73G 150T 263G 309.1C 315.1C</td>
+  </tr>
+  <tr>
+    <td>Reference7</td>
+    <td>sibling</td>
+    <td>16024-16365 73-340</td>
+    <td>16172C 16189C 16223T 16355T 16362C 73G 150T 263G 309.1C 315.1C</td>
+  </tr>
+  <tr>
+    <td>Reference8</td>
+    <td>sibling</td>
+    <td>16024-16365 73-340</td>
+    <td>16223T 16362C 73G 263G 315.1C</td>
+  </tr>
+  <tr>
+    <td>Reference9</td>
+    <td>uncle-nephew</td>
+    <td>16024-16365 73-340</td>
+    <td>16183G 16223T 16274A 16290T 16319A 16362C 73G 195C 263G 309.1C 315.1C</td>
+  </tr>
+  <tr>
+    <td>Reference10</td>
+    <td>cousin</td>
+    <td>16024-16365 73-340</td>
+    <td>16111T 16140C 16154C 16183C 16189C 16217C 16261T 16274A 73G 263G 315.1C</td>
+  </tr>
+</table>
+
+<br>
+
+**Note**
+
+* File type: .csv
+
+* This file requires the column "SampleName", "Relationship", "Range", and "Haplotype".
 
 <br>
 
@@ -501,7 +928,33 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 
 <a id="sec4-2"></a>
 
-#### Information on the relationship
+#### Relationships
+
+<br>
+
+<span style="background-color:#ffcce5">Enter fig_rel.jpg after correction</span>
+
+<br>
+
+<br>
+
+**1. Information on the defined relationships.**
+
+**2. Edit the name of a defined relationship.** Select a defined relationship and enter a new name. Then press the "Edit" button.
+
+**3. Delete a relationship.** Select a defined relationship and press the "Delete" button.
+
+**4. Define a new relationship.** Enter the name of a defined relationship and set a family tree. Click [here](#sec4-2-2) for more information on setting a family tree.
+
+**5. Display a family tree.** Click [here](#sec4-2-2) for more information.
+
+**6. Reset all defined relationships to default.**
+
+**7. Update default to current settings.**
+
+<br>
+
+<a id="sec4-2-2"></a>
 
 <br>
 
