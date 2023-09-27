@@ -87,10 +87,10 @@ relsearch <- function(){
                                                                actionButton("act_multiple", label = "Multiple candidates", class = "btn btn-warning"),
                                                                br(),
                                                                br(),
-                                                               actionButton("act_paternal", label = "Estimated paternal lineages", class = "btn btn-info"),
+                                                               actionButton("act_paternal", label = "Paternal lineages", class = "btn btn-info"),
                                                                br(),
                                                                br(),
-                                                               actionButton("act_maternal", label = "Estimated maternal lineages", class="btn btn-danger"),
+                                                               actionButton("act_maternal", label = "Maternal lineages", class="btn btn-danger"),
                                                                br(),
                                                                br(),
                                                                uiOutput("summary_min_lr"),
@@ -1148,7 +1148,7 @@ relsearch <- function(){
                        columnDefs = list(list(targets = 3, searchable = FALSE), list(targets = 7, visible = FALSE))
                        ),
         rownames = FALSE
-      ) %>% formatStyle("NumCand", target = "row", backgroundColor = styleEqual(c(1, 2), c("#e0ffe0", "lightyellow")))
+      ) %>% formatStyle("NumCand", target = "row", backgroundColor = styleEqual(c(1, 2), c("#e0ffe0", "#ffffe0")))
     })
 
     #########################
