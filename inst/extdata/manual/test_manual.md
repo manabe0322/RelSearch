@@ -23,9 +23,33 @@
 
   * [Check results](#sec2-4)
   
+  * [Save project](#sec2-5)
+  
 * [File format](#sec3)
 
+  * [STR: Victim database](#sec3-1)
+
+  * [STR: Reference database](#sec3-2)
+
+  * [STR: Allele frequencies](#sec3-3)
+
+  * [Y-STR: Victim database](#sec3-4)
+
+  * [Y-STR: Reference database](#sec3-5)
+
+  * [mtDNA: Victim database](#sec3-6)
+
+  * [mtDNA: Reference database](#sec3-7)
+
 * [Settings](#sec4)
+
+  * [Criteria](#sec4-1)
+  
+  * [Relationships](#sec4-2)
+  
+  * [Mutation rates](#sec4-3)
+  
+  * [Minimum allele frequency](#sec4-4)
 
 * [Calculation principle](#sec5)
 
@@ -60,6 +84,12 @@ library(relsearch)
 relsearch()
 ```
 
+<br>
+
+<div align="right"><a href="#">To Top</a></div>
+
+<br>
+
 <a id="sec2"></a>
 
 ---
@@ -70,7 +100,7 @@ relsearch()
 
 <a id="sec2-1"></a>
 
-#### Load files
+### Load files
 
 Load the following files from each **"Browse..."** button.
 
@@ -78,27 +108,27 @@ Load the following files from each **"Browse..."** button.
 
 <u>STR</u>
 
-* [Victim database](#ff1)
+* [Victim database](#sec3-1)
 
-* [Reference database](#ff2)
+* [Reference database](#sec3-2)
 
-* [Allele frequencies](#ff3)
+* [Allele frequencies](#sec3-3)
 
 <br>
 
 <u>Y-STR</u>
 
-* [Victim database](#ff4)
+* [Victim database](#sec3-4)
 
-* [Reference database](#ff5)
+* [Reference database](#sec3-5)
 
 <br>
 
 <u>mtDNA</u>
 
-* [Victim database](#ff6)
+* [Victim database](#sec3-6)
 
-* [Reference database](#ff7)
+* [Reference database](#sec3-7)
 
 <br>
 
@@ -106,13 +136,15 @@ Load the following files from each **"Browse..."** button.
 
 * Example files can be downloaded from the **"Example files"** tab.
 
-* <span style="background-color:#ffcce5">Possibility of memory over.</span>
+* Loaded data can be checked from the **"Database"** tab.
+
+* Large data size may cause memory overflow.
 
 <br>
 
 <a id="sec2-2"></a>
 
-#### Check settings
+### Check settings
 
 Check the following settings from the **"Tools"** tab.
 
@@ -122,13 +154,13 @@ Check the following settings from the **"Tools"** tab.
 
 * [Mutation rates](#sec4-3)
 
-* [Parameters for autosomal STR](#sec4-4)
+* [Minimum allele frequency](#sec4-4)
 
 <br>
 
 <a id="sec2-3"></a>
 
-#### Perform analysis
+### Perform analysis
 
 Click the **"Analysis" button in the "Load" tab** after loading required files. Then, the following analyses will be started.
 
@@ -136,25 +168,87 @@ Click the **"Analysis" button in the "Load" tab** after loading required files. 
 
 <u>STR analysis</u>
 
-The likelihood ratios of each victim-reference pair are calculated considering mutation and drop-out. Click [here](#sec5-1) for more information.
+* The likelihood ratios of each victim-reference pair are calculated considering mutation and drop-out.
+
+* Click [here](#sec5-1) for more information.
 
 <br>
 
 <u>Y-STR analysis</u>
 
-The number of inconsistencies and the mutational steps in each victim-reference pair are calculated. Click [here](#sec5-2) for more information.
+* The number of mismatches and the mutational steps in each victim-reference pair are calculated.
+
+* Click [here](#sec5-2) for more information.
 
 <br>
 
 <u>mtDNA analysis</u>
 
-The number of inconsistencies and the total shared lengths in each victim-reference pair are calculated. Click [here](#sec5-3) for more information.
+* The number of mismatches and the total shared lengths in each victim-reference pair are calculated.
+
+* Click [here](#sec5-3) for more information.
 
 <br>
 
 <a id="sec2-4"></a>
 
-#### Check results
+### Check results
+
+<br>
+
+<span style="background-color:#ffcce5">Enter fig_summary.jpg after correction</span>
+
+<br>
+
+<br>
+
+**1. Summary data.**
+
+* <span style="background-color:#e0ffe0">Green-shaded row</span>  : The relationship of the victim-reference pair is identified.
+
+* <span style="background-color:#ffffe0">Yellow-shaded row</span> : The victim-reference pair is one of the candidate relationship and there are other candidate pairs including at least victim or reference.
+
+**2. Change displayed data.**
+
+* <span style="background-color:#e0ffff">Default display</span> : Show data that satisfies at least one of the criteria for STR, Y-STR, and mtDNA.
+
+* <span style="background-color:#e0ffe0">Identified pair</span> : Show only green-shaded rows.
+
+* <span style="background-color:#ffffe0">Multiple candidates</span> : Show only yellow-shaded rows.
+
+* <span style="background-color:#e0e0ff">Paternal lineages</span> : Show only data that supports the paternal lineage.
+
+* <span style="background-color:#ffe0e0">Maternal lineages</span> : Show only data that supports the maternal lineage.
+
+* <span style="background-color:#eeeeee">Minimum LR displayed</span> : Set the minimum LR and press the "Apply" button. Then data with the LR greater than the set value is displayed.
+
+**3. Show the selected data in detail.**
+
+* Select a row in the summary table and press the "Selected data in detail".
+
+**4. Show the analysis conditions.**
+
+<br>
+
+<a id="sec2-5"></a>
+
+### Save project
+
+1. Go to **Project > Save project**.
+
+2. Enter the project name.
+
+3. Press the **"Save as"** button.
+
+<br>
+
+**Note**
+
+* The saved project can be loaded from **Project > Load project**.
+
+<br>
+
+<div align="right"><a href="#">To Top</a></div>
 
 <br>
 
@@ -164,9 +258,11 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 
 ## File format
 
-<a id="ff1"></a>
+<br>
 
-<u>STR: Victim database</u>
+<a id="sec3-1"></a>
+
+### STR: Victim database
 
 <br>
 
@@ -180,39 +276,146 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 <table class="fileformat" border="1" width="80%">
   <tr>
     <td bgcolor=whitesmoke>SampleName</td>
-    <td bgcolor=whitesmoke>Marker1</td>
-    <td bgcolor=whitesmoke>Marker1</td>
-    <td bgcolor=whitesmoke>Marker2</td>
-    <td bgcolor=whitesmoke>Marker2</td>
-    <td bgcolor=whitesmoke>Marker3</td>
-    <td bgcolor=whitesmoke>Marker3</td>
+    <td bgcolor=whitesmoke>D3S1358</td>
+    <td bgcolor=whitesmoke>D3S1358</td>
+    <td bgcolor=whitesmoke>vWA</td>
+    <td bgcolor=whitesmoke>vWA</td>
+    <td bgcolor=whitesmoke>D16S539</td>
+    <td bgcolor=whitesmoke>D16S539</td>
+    <td bgcolor=whitesmoke>CSF1PO</td>
+    <td bgcolor=whitesmoke>CSF1PO</td>
+    <td bgcolor=whitesmoke>TPOX</td>
+    <td bgcolor=whitesmoke>TPOX</td>
   </tr>
   <tr>
     <td>Victim1</td>
-    <td>15</td>
-    <td>16</td>
-    <td>14</td>
     <td>17</td>
-    <td>10</td>
-    <td>10</td>
-  </tr>
-  <tr>
-    <td>Victim2</td>
-    <td>15</td>
     <td>17</td>
-    <td>16</td>
+    <td>17</td>
     <td></td>
-    <td>10</td>
     <td>11</td>
-  </tr>
-  <tr>
-    <td>Victim3</td>
-    <td>16</td>
-    <td>17</td>
-    <td></td>
     <td></td>
     <td>12</td>
     <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Victim2</td>
+    <td>17</td>
+    <td></td>
+    <td>18</td>
+    <td>18</td>
+    <td></td>
+    <td></td>
+    <td>10</td>
+    <td>11</td>
+    <td>8</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Victim3</td>
+    <td>15</td>
+    <td>17</td>
+    <td>17</td>
+    <td>18</td>
+    <td>10</td>
+    <td>10</td>
+    <td>10</td>
+    <td>12</td>
+    <td>8</td>
+    <td>11</td>
+  </tr>
+  <tr>
+    <td>Victim4</td>
+    <td>15</td>
+    <td>18</td>
+    <td>15</td>
+    <td>18</td>
+    <td>9</td>
+    <td>12</td>
+    <td>11</td>
+    <td>12</td>
+    <td>8</td>
+    <td>8</td>
+  </tr>
+  <tr>
+    <td>Victim5</td>
+    <td>15</td>
+    <td>15</td>
+    <td>18</td>
+    <td></td>
+    <td>9</td>
+    <td>9</td>
+    <td>10</td>
+    <td></td>
+    <td>9</td>
+    <td>11</td>
+  </tr>
+  <tr>
+    <td>Victim6</td>
+    <td>16</td>
+    <td>16</td>
+    <td>17</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td>10</td>
+    <td>13</td>
+    <td>8</td>
+    <td>8</td>
+  </tr>
+  <tr>
+    <td>Victim7</td>
+    <td>14</td>
+    <td>15</td>
+    <td>17</td>
+    <td>18</td>
+    <td>12</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td>8</td>
+    <td>8</td>
+  </tr>
+  <tr>
+    <td>Victim8</td>
+    <td>16</td>
+    <td>18</td>
+    <td>17</td>
+    <td>18</td>
+    <td>11</td>
+    <td></td>
+    <td>9</td>
+    <td>12</td>
+    <td>8</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Victim9</td>
+    <td>15</td>
+    <td>15</td>
+    <td>16</td>
+    <td>18</td>
+    <td>11</td>
+    <td>11</td>
+    <td>12</td>
+    <td>12</td>
+    <td>8</td>
+    <td>11</td>
+  </tr>
+  <tr>
+    <td>Victim10</td>
+    <td>15</td>
+    <td>16</td>
+    <td>18</td>
+    <td>19</td>
+    <td>9</td>
+    <td>10</td>
+    <td>12</td>
+    <td>12</td>
+    <td>8</td>
+    <td>11</td>
   </tr>
 </table>
 
@@ -224,15 +427,15 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 
 * This file requires the column "SampleName" and columns for each marker (two columns in each).
 
-* The marker with two empty cells (e.g., Marker 2 of sample 'Victim3' in the above table) is ignored when calculating the likelihood ratio.
+* The marker with two empty cells (e.g., TPOX of sample 'Victim1' in the above table) is ignored when calculating the likelihood ratio.
 
-* The marker with one empty cell (e.g., Marker 2 of sample 'Victim2' in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.
+* The marker with one empty cell (e.g., vWA of sample 'Victim1' in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.
 
 <br>
 
-<a id="ff2"></a>
+<a id="sec3-2"></a>
 
-<u>STR: Reference database</u>
+### STR: Reference database
 
 <br>
 
@@ -241,43 +444,156 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 <table class="fileformat" border="1" width="80%">
   <tr>
     <td bgcolor=whitesmoke>SampleName</td>
-    <td bgcolor=whitesmoke>Relationship</td>
-    <td bgcolor=whitesmoke>Marker1</td>
-    <td bgcolor=whitesmoke>Marker1</td>
-    <td bgcolor=whitesmoke>Marker2</td>
-    <td bgcolor=whitesmoke>Marker2</td>
-    <td bgcolor=whitesmoke>Marker3</td>
-    <td bgcolor=whitesmoke>Marker3</td>
+    <td bgcolor=whitesmoke>D3S1358</td>
+    <td bgcolor=whitesmoke>D3S1358</td>
+    <td bgcolor=whitesmoke>vWA</td>
+    <td bgcolor=whitesmoke>vWA</td>
+    <td bgcolor=whitesmoke>D16S539</td>
+    <td bgcolor=whitesmoke>D16S539</td>
+    <td bgcolor=whitesmoke>CSF1PO</td>
+    <td bgcolor=whitesmoke>CSF1PO</td>
+    <td bgcolor=whitesmoke>TPOX</td>
+    <td bgcolor=whitesmoke>TPOX</td>
   </tr>
   <tr>
     <td>Reference1</td>
     <td>parent-child</td>
-    <td>15</td>
-    <td>15</td>
+    <td>17</td>
+    <td>17</td>
     <td>14</td>
-    <td>16</td>
+    <td>17</td>
     <td>10</td>
-    <td>11</td>
+    <td>10</td>
+    <td>12</td>
+    <td>12</td>
+    <td>8</td>
+    <td>8</td>
   </tr>
   <tr>
     <td>Reference2</td>
-    <td>sibling</td>
-    <td>15</td>
-    <td>16</td>
-    <td>14</td>
-    <td></td>
+    <td>parent-child</td>
+    <td>17</td>
+    <td>18</td>
+    <td>17</td>
+    <td>18</td>
+    <td>12</td>
+    <td>13</td>
     <td>10</td>
+    <td>11</td>
+    <td>11</td>
     <td>11</td>
   </tr>
   <tr>
     <td>Reference3</td>
+    <td>parent-child</td>
+    <td>15</td>
+    <td>16</td>
+    <td>17</td>
+    <td>18</td>
+    <td>9</td>
+    <td>10</td>
+    <td>11</td>
+    <td>12</td>
+    <td>8</td>
+    <td>8</td>
+  </tr>
+  <tr>
+    <td>Reference4</td>
+    <td>parent-child</td>
+    <td>15</td>
+    <td>16</td>
+    <td>15</td>
+    <td>18</td>
+    <td>9</td>
+    <td>9</td>
+    <td>10</td>
+    <td>12</td>
+    <td>9</td>
+    <td>11</td>
+  </tr>
+  <tr>
+    <td>Reference5</td>
+    <td>sibling</td>
+    <td>15</td>
+    <td>16</td>
+    <td>15</td>
+    <td>18</td>
+    <td>9</td>
+    <td>9</td>
+    <td>10</td>
+    <td>12</td>
+    <td>9</td>
+    <td>11</td>
+  </tr>
+  <tr>
+    <td>Reference6</td>
     <td>sibling</td>
     <td>16</td>
     <td>17</td>
-    <td></td>
-    <td></td>
+    <td>17</td>
+    <td>17</td>
+    <td>10</td>
     <td>12</td>
     <td>13</td>
+    <td>13</td>
+    <td>8</td>
+    <td>11</td>
+  </tr>
+  <tr>
+    <td>Reference7</td>
+    <td>sibling</td>
+    <td>16</td>
+    <td>17</td>
+    <td>14</td>
+    <td>18</td>
+    <td>9</td>
+    <td>9</td>
+    <td>12</td>
+    <td>15</td>
+    <td>8</td>
+    <td>8</td>
+  </tr>
+  <tr>
+    <td>Reference8</td>
+    <td>sibling</td>
+    <td>15</td>
+    <td>16</td>
+    <td>17</td>
+    <td>18</td>
+    <td>9</td>
+    <td>12</td>
+    <td>11</td>
+    <td>12</td>
+    <td>8</td>
+    <td>9</td>
+  </tr>
+  <tr>
+    <td>Reference9</td>
+    <td>uncle-nephew</td>
+    <td>15</td>
+    <td>15</td>
+    <td>14</td>
+    <td>16</td>
+    <td>10</td>
+    <td>11</td>
+    <td>11</td>
+    <td>12</td>
+    <td>8</td>
+    <td>9</td>
+  </tr>
+  <tr>
+    <td>Reference10</td>
+    <td>cousin</td>
+    <td>15</td>
+    <td>16</td>
+    <td>17</td>
+    <td></td>
+    <td>9</td>
+    <td>12</td>
+    <td></td>
+    <td></td>
+    <td>8</td>
+    <td>12</td>
   </tr>
 </table>
 
@@ -289,19 +605,21 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 
 * This file requires the columns "SampleName", "Relationship", and columns for each marker (two columns in each).
 
+* The relationship of a missing family member should be designated in the column "Relationship". The name of the relationship should be defined in Settings > Relationships.
+
 * <span style="background-color:#ffcce5">Relationships must be the same as those of other database.</span>
 
-* The marker with two empty cells (e.g., Marker 2 of sample 'Reference3' in the above table) is ignored when calculating the likelihood ratio.
+* The marker with two empty cells (e.g., CSF1PO of sample 'Reference10' in the above table) is ignored when calculating the likelihood ratio.
 
-* The marker with one empty cell (e.g., Marker 2 of sample 'Reference2' in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.
+* The marker with one empty cell (e.g., vWA of sample 'Reference10' in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.
 
 * <span style="background-color:#ffcce5">Multiple relationships.</span>
 
 <br>
 
-<a id="ff3"></a>
+<a id="sec3-3"></a>
 
-<u>STR: Allele frequencies</u>
+### STR: Allele frequencies
 
 <br>
 
@@ -446,9 +764,9 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 
 <br>
 
-<a id="ff4"></a>
+<a id="sec3-4"></a>
 
-<u>Y-STR: Victim database</u>
+### Y-STR: Victim database
 
 <br>
 
@@ -592,9 +910,9 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 
 <br>
 
-<a id="ff5"></a>
+<a id="sec3-5"></a>
 
-<u>Y-STR: Reference database</u>
+### Y-STR: Reference database
 
 <br>
 
@@ -743,15 +1061,17 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 
 * This file requires the column "SampleName", "Relationship", and columns for each marker (one column in each).
 
+* The relationship of a missing family member should be designated in the column "Relationship". The name of the relationship should be defined in Settings > Relationships.
+
 * In the marker with more than one allele, each allele must be separated by a comma without any spaces (e.g., DYS385).
 
 * The marker with an empty cell (e.g., DYS518 of sample ‘Reference10’) is ignored for analysis.
 
 <br>
 
-<a id="ff6"></a>
+<a id="sec3-6"></a>
 
-<u>mtDNA: Victim database</u>
+### mtDNA: Victim database
 
 <br>
 
@@ -825,9 +1145,9 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 
 <br>
 
-<a id="ff7"></a>
+<a id="sec3-7"></a>
 
-<u>mtDNA: Reference database</u>
+### mtDNA: Reference database
 
 <br>
 
@@ -910,6 +1230,12 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 
 * This file requires the column "SampleName", "Relationship", "Range", and "Haplotype".
 
+* The relationship of a missing family member should be designated in the column "Relationship". The name of the relationship should be defined in Settings > Relationships.
+
+<br>
+
+<div align="right"><a href="#">To Top</a></div>
+
 <br>
 
 <a id="sec4"></a>
@@ -922,13 +1248,41 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 
 <a id="sec4-1"></a>
 
-#### Criteria
+### Criteria
+
+<br>
+
+<span style="background-color:#ffcce5">Enter fig_criteria.jpg after correction</span>
+
+<br>
+
+<br>
+
+**1. Set the minimum likelihood ratio (LR) for the autosomal STR.**
+
+* When the LR for a victim-reference pair is larger than the threshold, the victim-reference pair is estimated to be the assumed relationship.
+
+* Click [here](#sec5-1) for more information.
+
+**2. Set criteria for the Y-STR.**
+
+* The victim-reference pair that satisfies all criteria is estimated to be the paternal lineage.
+
+* Click [here](#sec5-1) for more information.
+
+**3. Set criteria for the mtDNA.**
+
+* The victim-reference pair that satisfies all criteria is estimated to be the maternal lineage.
+
+* Click [here](#sec5-1) for more information.
+
+**4. Update default to current settings.**
 
 <br>
 
 <a id="sec4-2"></a>
 
-#### Relationships
+### Relationships
 
 <br>
 
@@ -940,13 +1294,23 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 
 **1. Information on the defined relationships.**
 
-**2. Edit the name of a defined relationship.** Select a defined relationship and enter a new name. Then press the "Edit" button.
+**2. Edit the name of a defined relationship.**
 
-**3. Delete a relationship.** Select a defined relationship and press the "Delete" button.
+* Select a defined relationship and enter a new name. Then press the "Edit" button.
 
-**4. Define a new relationship.** Enter the name of a defined relationship and set a family tree. Click [here](#sec4-2-2) for more information on setting a family tree.
+**3. Delete a relationship.**
 
-**5. Display a family tree.** Click [here](#sec4-2-2) for more information.
+* Select a defined relationship and press the "Delete" button.
+
+**4. Define a new relationship.**
+
+* Enter the name of a defined relationship and set a family tree.
+
+* Click [here](#sec4-2-2) for more information on setting a family tree.
+
+**5. Display a family tree.**
+
+* Click [here](#sec4-2-2) for more information.
 
 **6. Reset all defined relationships to default.**
 
@@ -960,13 +1324,55 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 
 <a id="sec4-3"></a>
 
-#### Mutation rates
+### Mutation rates
+
+<br>
+
+<span style="background-color:#ffcce5">Enter fig_myu.jpg after correction</span>
+
+<br>
+
+<br>
+
+**1. Information on the mutation rates.**
+
+**2. Edit a mutation rate.**
+
+* Select a locus and enter a mutation rate. Then press the "Edit" button.
+
+**3. Add a mutation rate.**
+
+* Enter a locus name and a mutation rate. Then press the "Add" button.
+
+**4. Delete a mutation rate.**
+
+* Select a locus and press the "Delete" button.
+
+**5. Reset all mutation rates to default.**
+
+**6. Update default to current settings.**
 
 <br>
 
 <a id="sec4-4"></a>
 
-#### Parameters for autosomal STR
+### Minimum allele frequency
+
+<br>
+
+<span style="background-color:#ffcce5">Enter fig_maf.jpg after correction</span>
+
+<br>
+
+<br>
+
+**1. Set the minimum allele frequency.**
+
+**2. Update default to the current setting.**
+
+<br>
+
+<div align="right"><a href="#">To Top</a></div>
 
 <br>
 
@@ -980,7 +1386,7 @@ The number of inconsistencies and the total shared lengths in each victim-refere
 
 <a id="sec5-1"></a>
 
-#### STR
+### STR
 
 $$ LR = \frac{Pr(E|H1)}{Pr(E|H2)} $$
 
@@ -988,10 +1394,14 @@ $$ LR = \frac{Pr(E|H1)}{Pr(E|H2)} $$
 
 <a id="sec5-2"></a>
 
-#### Y-STR
+### Y-STR
 
 <br>
 
 <a id="sec5-3"></a>
 
-#### mtDNA
+### mtDNA
+
+<br>
+
+<div align="right"><a href="#">To Top</a></div>
