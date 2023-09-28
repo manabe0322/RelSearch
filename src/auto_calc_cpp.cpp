@@ -255,56 +255,13 @@ std::vector<std::vector<double>> make_dummy_gt(std::vector<double> target_gt, st
 }
 
 
-/*##################################################################################
-# The function to set probabilities for drop-out in each dummy genotype (testthat) #
-##################################################################################*/
-
-// [[Rcpp::export]]
-std::vector<double> set_prob_drop_gt(std::vector<double> target_gt, std::vector<std::vector<double>> dummy_gt, double pd){
-
-  /* The number of dummy genotypes */
-  int size_dummy_gt = dummy_gt.size();
-
-  /* Define a vector for probabilities for drop-out in each dummy genotype */
-  std::vector<double> prob_drop_gt(size_dummy_gt);
-
-  /* The size of gt */
-  int size_target_gt = target_gt.size();
-
-  /* If two alleles are designated */
-  if(size_target_gt == 2){
-    prob_drop_gt[0] = (1 - pd) * (1 - pd);
-  }else{
-
-    /* Repetitive execution for dummy genotypes */
-    for(int i = 0; i < size_dummy_gt; ++i){
-
-      /* Extract a dummy genotype */
-      std::vector<double> dummy_gt_one = dummy_gt.at(i);
-
-      /* Homozygote (without drop-out) */
-      if(dummy_gt_one[0] == dummy_gt_one[1]){
-        prob_drop_gt[i] = (1 - pd) * (1 - pd);
-
-      /* Heterozygote (with one drop-out) */
-      }else{
-        prob_drop_gt[i] = pd * (1 - pd);
-      }
-    }
-  }
-
-  /* Return */
-  return(prob_drop_gt);
-}
-
-
 /*#####################################################################################################
 # The function to calculate likelihoods for pairwise kinship analysis considering drop-out (testthat) #
 #####################################################################################################*/
 
 // [[Rcpp::export]]
 std::vector<double> calc_kin_like_drop(std::vector<double> vgt, std::vector<double> rgt, std::vector<double> af, std::vector<double> af_al,
-                                       std::vector<double> pibd, bool cons_mu, double myu, double pd_v, double pd_r){
+                                       std::vector<double> pibd, bool cons_mu, double myu){
 
   /* Define the initial likelihood of H1 and H2 in one locus */
   double l_h1 = 0;
@@ -326,18 +283,11 @@ std::vector<double> calc_kin_like_drop(std::vector<double> vgt, std::vector<doub
   int size_dummy_vgt = dummy_vgt.size();
   int size_dummy_rgt = dummy_rgt.size();
 
-  /* Set probabilities for drop-out in each dummy genotype */
-  std::vector<double> prob_drop_vgt = set_prob_drop_gt(vgt, dummy_vgt, pd_v);
-  std::vector<double> prob_drop_rgt = set_prob_drop_gt(rgt, dummy_rgt, pd_r);
-
   /* Repetitive execution for dummy reference genotypes */
   for(int i = 0; i < size_dummy_rgt; ++i){
 
     /* Extract a reference dummy genotype */
     std::vector<double> drgt1 = dummy_rgt.at(i);
-
-    /* Extract the probability for drop-out in the dummy reference genotype */
-    double pd_rgt = prob_drop_rgt[i];
 
     /* Repetitive execution for dummy victim genotypes */
     for(int j = 0; j < size_dummy_vgt; ++j){
@@ -345,15 +295,12 @@ std::vector<double> calc_kin_like_drop(std::vector<double> vgt, std::vector<doub
       /* Extract a victim dummy genotype */
       std::vector<double> dvgt1 = dummy_vgt.at(j);
 
-      /* Extract the probability for drop-out in the dummy reference genotype */
-      double pd_vgt = prob_drop_vgt[j];
-
       /* Calculate the likelihood in one genotype combination */
       std::vector<double> l_h12_one = calc_kin_like(dvgt1, drgt1, af_dummy, af_al_dummy, pibd, cons_mu, myu);
 
       /* Update the likelihood in one locus */
-      l_h1 += l_h12_one[0] * pd_rgt * pd_vgt;
-      l_h2 += l_h12_one[1] * pd_rgt * pd_vgt;
+      l_h1 += l_h12_one[0];
+      l_h2 += l_h12_one[1];
     }
   }
 
@@ -374,8 +321,7 @@ std::vector<double> calc_kin_like_drop(std::vector<double> vgt, std::vector<doub
 // [[Rcpp::export]]
 std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim, std::vector<double> prof_ref,
                                              std::vector<std::vector<double>> af_list, std::vector<std::vector<double>> af_al_list,
-                                             std::vector<double> pibd, bool cons_mu, std::vector<double> myus,
-                                             double pd_v, double pd_r){
+                                             std::vector<double> pibd, bool cons_mu, std::vector<double> myus){
   /* The number of loci */
   int n_l = prof_victim.size() / 2;
 
@@ -424,7 +370,7 @@ std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim, st
     }else{
 
       /* Calculate the likelihood in one locus considering drop-out*/
-      std::vector<double> like_h12 = calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu, pd_v, pd_r);
+      std::vector<double> like_h12 = calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu);
 
       /* Assign the likelihood and the LR */
       ans.at(0).at(i) = like_h12[0];
@@ -457,9 +403,8 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
                                                               std::vector<std::string> names_rel,
                                                               std::vector<std::string> degrees_rel,
                                                               std::vector<std::vector<double>> pibds_rel,
-                                                              std::vector<double> myus,
-                                                              double pd_v,
-                                                              double pd_r){
+                                                              std::vector<double> myus
+                                                              ){
   /* Call the R function "message" */
   Function message("message");
 
@@ -511,7 +456,7 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
       std::vector<double> prof_victim = gt_v_auto.at(j);
 
       /* Calculate the LR for the selected victim and reference */
-      std::vector<std::vector<double>> ans = calc_kin_lr(prof_victim, prof_ref, af_list, af_al_list, pibd, cons_mu, myus, pd_v, pd_r);
+      std::vector<std::vector<double>> ans = calc_kin_lr(prof_victim, prof_ref, af_list, af_al_list, pibd, cons_mu, myus);
 
       /* Define the index for assigning the likelihood and the LR */
       int pos = n_v * i + j;

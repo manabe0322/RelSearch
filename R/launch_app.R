@@ -243,13 +243,7 @@ relsearch <- function(){
                                                              tabPanel("Parameter",
                                                                       br(),
                                                                       h5(div("Minimum allele frequency", style = "color:#555555;font-weight:bold;")),
-                                                                      textOutput("result_maf"),
-                                                                      br(),
-                                                                      h5(div("Probability of drop-out for victims", style = "color:#555555;font-weight:bold;")),
-                                                                      textOutput("result_pd_v"),
-                                                                      br(),
-                                                                      h5(div("Probability of drop-out for references", style = "color:#555555;font-weight:bold;")),
-                                                                      textOutput("result_pd_r")
+                                                                      textOutput("result_maf")
                                                              )
                                                            )
                                                   ),
@@ -320,11 +314,9 @@ relsearch <- function(){
 
                                         tab_myu_ui("tab_myu"),
 
-                                        tabPanel("Analysis method for STR",
-                                                 titlePanel("Analysis method for STR"),
+                                        tabPanel("Parameter",
+                                                 titlePanel("Parameter"),
                                                  numeric_ui("maf"),
-                                                 numeric_ui("pd_v"),
-                                                 numeric_ui("pd_r"),
                                                  br(),
                                                  h4("Update default"),
                                                  actionButton("act_par_auto_update", label = "Update default")
@@ -431,20 +423,18 @@ relsearch <- function(){
     ###################################
 
     rv_maf <- callModule(numeric_server, "maf", "Minimum allele frequency", init_dt_par_auto$Value[init_dt_par_auto$Parameter == "maf"])
-    rv_pd_v <- callModule(numeric_server, "pd_v", "Probability of drop-out for victims", init_dt_par_auto$Value[init_dt_par_auto$Parameter == "pd_v"])
-    rv_pd_r <- callModule(numeric_server, "pd_r", "Probability of drop-out for references", init_dt_par_auto$Value[init_dt_par_auto$Parameter == "pd_r"])
 
     # Update the default parameters
     observeEvent(input$act_par_auto_update, {
 
       # Create the data.table
-      dt_par_auto <- data.table(Parameter = c("maf", "pd_v", "pd_r"), Value = c(rv_maf(), rv_pd_v(), rv_pd_r()))
+      dt_par_auto <- data.table(Parameter = c("maf"), Value = c(rv_maf()))
 
       # Save the data.table
       write.csv(dt_par_auto, paste0(path_pack, "/extdata/parameters/par_auto.csv"), row.names = FALSE)
 
       # Show a message
-      showModal(modalDialog(title = "Information", "Default parameters of autosomal STR have been updated.", easyClose = TRUE, footer = NULL))
+      showModal(modalDialog(title = "Information", "The default parameter has been updated.", easyClose = TRUE, footer = NULL))
     })
 
     #################
@@ -833,8 +823,8 @@ relsearch <- function(){
         showModal(modalDialog(title = "Error", "Set criteria!", easyClose = TRUE, footer = NULL))
 
       # Parameters for autosomal STR
-      }else if(any(!isTruthy(rv_maf()), !isTruthy(rv_pd_v()), !isTruthy(rv_pd_r()))){
-        showModal(modalDialog(title = "Error", "Set analysis method for STR!", easyClose = TRUE, footer = NULL))
+      }else if(!isTruthy(rv_maf())){
+        showModal(modalDialog(title = "Error", "Set the minimum allele frequency!", easyClose = TRUE, footer = NULL))
       }else{
 
         #####################
@@ -865,7 +855,7 @@ relsearch <- function(){
         dt_myu <- data.table(Marker = rv_myu$mk, Myu = rv_myu$val)
 
         # Parameters for autosomal STR
-        dt_par_auto <- data.table(Parameter = c("maf", "pd_v", "pd_r"), Value = c(rv_maf(), rv_pd_v(), rv_pd_r()))
+        dt_par_auto <- data.table(Parameter = c("maf"), Value = c(rv_maf()))
 
         ###################################
         # Fix file names of each database #
@@ -915,7 +905,7 @@ relsearch <- function(){
             dt_r_auto <- tmp[[2]]
             dt_af <- tmp[[3]]
 
-            # Output rearranged database
+            # Output rearranged victim database
             output$view_dt_v_auto <- renderDataTable({
               datatable(
                 dt_v_auto,
@@ -925,6 +915,7 @@ relsearch <- function(){
               )
             })
 
+            # Output rearranged reference database
             output$view_dt_r_auto <- renderDataTable({
               datatable(
                 dt_r_auto,
@@ -934,6 +925,7 @@ relsearch <- function(){
               )
             })
 
+            # Output rearranged allele frequencies
             output$view_dt_af <- renderDataTable({
               datatable(
                 dt_af,
@@ -963,7 +955,7 @@ relsearch <- function(){
             dt_v_y <- tmp[[1]]
             dt_r_y <- tmp[[2]]
 
-            # Output rearranged database
+            # Output rearranged victim database
             output$view_dt_v_y <- renderDataTable({
               datatable(
                 dt_v_y,
@@ -973,6 +965,7 @@ relsearch <- function(){
               )
             })
 
+            # Output rearranged reference database
             output$view_dt_r_y <- renderDataTable({
               datatable(
                 dt_r_y,
@@ -1319,8 +1312,6 @@ relsearch <- function(){
 
     # Parameters
     output$result_maf <- renderText({paste0(dt_reactive$dt_par_auto$Value[dt_reactive$dt_par_auto$Parameter == "maf"])})
-    output$result_pd_v <- renderText({paste0(dt_reactive$dt_par_auto$Value[dt_reactive$dt_par_auto$Parameter == "pd_v"])})
-    output$result_pd_r <- renderText({paste0(dt_reactive$dt_par_auto$Value[dt_reactive$dt_par_auto$Parameter == "pd_r"])})
 
     ###############
     # New project #

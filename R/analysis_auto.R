@@ -99,8 +99,6 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
 
   # Extract parameters
   maf <- dt_par_auto$Value[dt_par_auto$Parameter == "maf"]
-  pd_v <- dt_par_auto$Value[dt_par_auto$Parameter == "pd_v"]
-  pd_r <- dt_par_auto$Value[dt_par_auto$Parameter == "pd_r"]
 
   # Extract sample names
   sn_v_auto <- dt_v_auto[, SampleName]
@@ -150,7 +148,7 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
   if(show_progress){
     withProgress(
       withCallingHandlers(
-        result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus, pd_v, pd_r),
+        result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus),
         message = function(m) if(grepl("STR_Victim-Reference_ : ", m$message)){
           val <- as.numeric(gsub("STR_Victim-Reference_ : ", "", m$message))
           setProgress(value = val)
@@ -161,7 +159,7 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
       value = 0
     )
   }else{
-    result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus, pd_v, pd_r)
+    result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus)
   }
 
   #######################
