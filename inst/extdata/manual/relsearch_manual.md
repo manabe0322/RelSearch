@@ -429,9 +429,9 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 
 * This file requires the column "SampleName" and columns for each marker (two columns in each).
 
-* The marker with two empty cells (e.g., TPOX of sample 'Victim1' in the above table) is ignored when calculating the likelihood ratio.
+* The marker with two empty cells (e.g., TPOX of sample "Victim1" in the above table) is ignored when calculating the likelihood ratio.
 
-* The marker with one empty cell (e.g., vWA of sample 'Victim1' in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.
+* The marker with one empty cell (e.g., vWA of sample "Victim1" in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.
 
 <a id="sec3-2"></a>
 
@@ -556,6 +556,20 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
     <td>8</td>
   </tr>
   <tr>
+    <td>Reference7</td>
+    <td>parent-child</td>
+    <td>16</td>
+    <td>17</td>
+    <td>14</td>
+    <td>18</td>
+    <td>9</td>
+    <td>9</td>
+    <td>12</td>
+    <td>15</td>
+    <td>8</td>
+    <td>8</td>
+  </tr>
+  <tr>
     <td>Reference8</td>
     <td>sibling</td>
     <td>15</td>
@@ -609,13 +623,11 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 
 * The relationship of a missing family member should be designated in the column "Relationship". The name of the relationship should be defined in Settings > Relationships.
 
-* <span style="background-color:#ffcce5">Relationships must be the same as those of other database.</span>
+* If a reference has multiple missing family members, add rows for each relationship of the members (e.g., sibling and parent-child of the sample "Reference7").
 
-* The marker with two empty cells (e.g., CSF1PO of sample 'Reference10' in the above table) is ignored when calculating the likelihood ratio.
+* The marker with two empty cells (e.g., CSF1PO of sample "Reference10" in the above table) is ignored when calculating the likelihood ratio.
 
-* The marker with one empty cell (e.g., vWA of sample 'Reference10' in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.
-
-* <span style="background-color:#ffcce5">Multiple relationships.</span>
+* The marker with one empty cell (e.g., vWA of sample "Reference10" in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.
 
 <a id="sec3-3"></a>
 
@@ -1018,6 +1030,18 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
     <td>11,19</td>
   </tr>
   <tr>
+    <td>Reference7</td>
+    <td>parent-child</td>
+    <td>15</td>
+    <td>23</td>
+    <td>10</td>
+    <td>11</td>
+    <td>38</td>
+    <td>16</td>
+    <td>14</td>
+    <td>11,19</td>
+  </tr>
+  <tr>
     <td>Reference8</td>
     <td>sibling</td>
     <td>16</td>
@@ -1064,6 +1088,8 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 * This file requires the column "SampleName", "Relationship", and columns for each marker (one column in each).
 
 * The relationship of a missing family member should be designated in the column "Relationship". The name of the relationship should be defined in Settings > Relationships.
+
+* If a reference has multiple missing family members, add rows for each relationship of the members (e.g., sibling and parent-child of the sample "Reference7").
 
 * In the marker with more than one allele, each allele must be separated by a comma without any spaces (e.g., DYS385).
 
@@ -1205,6 +1231,12 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
     <td>16172C 16189C 16223T 16355T 16362C 73G 150T 263G 309.1C 315.1C</td>
   </tr>
   <tr>
+    <td>Reference7</td>
+    <td>parent-child</td>
+    <td>16024-16365 73-340</td>
+    <td>16172C 16189C 16223T 16355T 16362C 73G 150T 263G 309.1C 315.1C</td>
+  </tr>
+  <tr>
     <td>Reference8</td>
     <td>sibling</td>
     <td>16024-16365 73-340</td>
@@ -1233,6 +1265,8 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 * This file requires the column "SampleName", "Relationship", "Range", and "Haplotype".
 
 * The relationship of a missing family member should be designated in the column "Relationship". The name of the relationship should be defined in Settings > Relationships.
+
+* If a reference has multiple missing family members, add rows for each relationship of the members (e.g., sibling and parent-child of the sample "Reference7").
 
 <br>
 
