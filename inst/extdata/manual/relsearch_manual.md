@@ -446,6 +446,7 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 <table class="fileformat" border="1" width="80%">
   <tr>
     <td bgcolor=whitesmoke>SampleName</td>
+    <td bgcolor=whitesmoke>Relationship</td>
     <td bgcolor=whitesmoke>D3S1358</td>
     <td bgcolor=whitesmoke>D3S1358</td>
     <td bgcolor=whitesmoke>vWA</td>
