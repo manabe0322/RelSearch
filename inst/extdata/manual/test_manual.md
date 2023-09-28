@@ -162,7 +162,7 @@ Check the following settings from the **"Tools"** tab.
 
 ### Perform analysis
 
-Click the **"Analysis" button in the "Load" tab** after loading required files. Then, the following analyses will be started.
+Click the **"Analysis"** button in the "Load" tab. Then, the following analyses will be started.
 
 <br>
 
@@ -202,13 +202,13 @@ Click the **"Analysis" button in the "Load" tab** after loading required files. 
 
 <br>
 
-**1. Summary data.**
+<u>1. Summary data.</u>
 
 * <span style="background-color:#e0ffe0">Green-shaded row</span>  : The relationship of the victim-reference pair is identified.
 
 * <span style="background-color:#ffffe0">Yellow-shaded row</span> : The victim-reference pair is one of the candidate relationship and there are other candidate pairs including at least victim or reference.
 
-**2. Change displayed data.**
+<u>2. Change displayed data.</u>
 
 * <span style="background-color:#e0ffff">Default display</span> : Show data that satisfies at least one of the criteria for STR, Y-STR, and mtDNA.
 
@@ -222,11 +222,11 @@ Click the **"Analysis" button in the "Load" tab** after loading required files. 
 
 * <span style="background-color:#eeeeee">Minimum LR displayed</span> : Set the minimum LR and press the "Apply" button. Then data with the LR greater than the set value is displayed.
 
-**3. Show the selected data in detail.**
+<u>3. Show the selected data in detail.</u>
 
 * Select a row in the summary table and press the "Selected data in detail".
 
-**4. Show the analysis conditions.**
+<u>4. Show the analysis conditions.</u>
 
 <br>
 
@@ -1258,25 +1258,25 @@ Click the **"Analysis" button in the "Load" tab** after loading required files. 
 
 <br>
 
-**1. Set the minimum likelihood ratio (LR) for the autosomal STR.**
+<u>1. Set the minimum likelihood ratio (LR) for the autosomal STR.</u>
 
 * When the LR for a victim-reference pair is larger than the threshold, the victim-reference pair is estimated to be the assumed relationship.
 
 * Click [here](#sec5-1) for more information.
 
-**2. Set criteria for the Y-STR.**
+<u>2. Set criteria for the Y-STR.</u>
 
 * The victim-reference pair that satisfies all criteria is estimated to be the paternal lineage.
 
 * Click [here](#sec5-1) for more information.
 
-**3. Set criteria for the mtDNA.**
+<u>3. Set criteria for the mtDNA.</u>
 
 * The victim-reference pair that satisfies all criteria is estimated to be the maternal lineage.
 
 * Click [here](#sec5-1) for more information.
 
-**4. Update default to current settings.**
+<u>4. Update default to current settings.</u>
 
 <br>
 
@@ -1292,33 +1292,63 @@ Click the **"Analysis" button in the "Load" tab** after loading required files. 
 
 <br>
 
-**1. Information on the defined relationships.**
+<u>1. Information on the defined relationships.</u>
 
-**2. Edit the name of a defined relationship.**
+* Parent-child, sibling, uncle-nephew (2nd-degree relative), and cousin (3rd-degree relative) are defined as defaults.
+
+* The factor affecting the calculation is the IBD probabilities. If the IBD probabilities of the assumed victim-reference relationship are not on the default list, the relationship should be defined.
+
+the user needs to define the relationship with IBD probabilities not on the default list.
+
+<u>2. Edit the name of a defined relationship.</u>
 
 * Select a defined relationship and enter a new name. Then press the "Edit" button.
 
-**3. Delete a relationship.**
+<u>3. Delete a relationship.</u>
 
 * Select a defined relationship and press the "Delete" button.
 
-**4. Define a new relationship.**
+<u>4. Define a new relationship.</u>
 
-* Enter the name of a defined relationship and set a family tree.
+* Enter the name of a defined relationship and set a family tree to define the victim-reference relationship.
 
 * Click [here](#sec4-2-2) for more information on setting a family tree.
 
-**5. Display a family tree.**
+<u>5. Display a family tree.</u>
 
 * Click [here](#sec4-2-2) for more information.
 
-**6. Reset all defined relationships to default.**
+<u>6. Reset all defined relationships to default.</u>
 
-**7. Update default to current settings.**
+<u>7. Update default to current settings.</u>
 
 <br>
 
 <a id="sec4-2-2"></a>
+
+#### Set a family tree
+
+When defining a new relationship between the victim and the reference, the user needs to set the family tree manually. For example, the grandparent-grandchild relationship can be defined as follows.
+
+<br>
+
+<span style="background-color:#ffcce5">Enter fig_tree.jpg after correction</span>
+
+<br>
+
+**Note**
+
+* In regard to each person, information on the sex, father, and mother are required.
+
+* If the person is a founder of the family tree, "Founder" needs to be set to "Yes".
+
+* Persons other than the victim and the reference can be added by pressing the **"Add a person"** button.
+
+* Persons other than the victim and the reference can be deleted by pressing the **"Delete a person"** button.
+
+* The user can check the family tree. Press the **"View family tree"** button and then the family tree is displayed. An error message pops up when the setting of the family tree is inappropriate.
+
+* When registering the defined relationship, press the **"Set"** button. An error message pops up when the setting of the family tree is inappropriate.
 
 <br>
 
@@ -1334,23 +1364,23 @@ Click the **"Analysis" button in the "Load" tab** after loading required files. 
 
 <br>
 
-**1. Information on the mutation rates.**
+<u>1. Information on the mutation rates.</u>
 
-**2. Edit a mutation rate.**
+<u>2. Edit a mutation rate.</u>
 
-* Select a locus and enter a mutation rate. Then press the "Edit" button.
+* Select a locus and enter a mutation rate. Then press the **"Edit"** button.
 
-**3. Add a mutation rate.**
+<u>3. Add a mutation rate.</u>
 
-* Enter a locus name and a mutation rate. Then press the "Add" button.
+* Enter a locus name and a mutation rate. Then press the **"Add"** button.
 
-**4. Delete a mutation rate.**
+<u>4. Delete a mutation rate.</u>
 
-* Select a locus and press the "Delete" button.
+* Select a locus and press the **"Delete"** button.
 
-**5. Reset all mutation rates to default.**
+<u>5. Reset all mutation rates to default.</u>
 
-**6. Update default to current settings.**
+<u>6. Update default to current settings.</u>
 
 <br>
 
@@ -1366,9 +1396,9 @@ Click the **"Analysis" button in the "Load" tab** after loading required files. 
 
 <br>
 
-**1. Set the minimum allele frequency.**
+<u>1. Set the minimum allele frequency.</u>
 
-**2. Update default to the current setting.**
+<u>2. Update default to the current setting.</u>
 
 <br>
 
