@@ -214,15 +214,15 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 
 * <span style="background-color:#e0ffff">Default display</span> : Show data that satisfies at least one of the criteria for STR, Y-STR, and mtDNA.
 
-* <span style="background-color:#e0ffe0">Identified pair</span> : Show only green-shaded rows.
+* <span style="background-color:#e0ffe0">Identified pair</span> : Select green-shaded rows from the default displayed data.
 
-* <span style="background-color:#ffffe0">Multiple candidates</span> : Show only yellow-shaded rows.
+* <span style="background-color:#ffffe0">Multiple candidates</span> : Select yellow-shaded rows from the default displayed data.
 
-* <span style="background-color:#e0e0ff">Paternal lineages</span> : Show only data that supports the paternal lineage.
+* <span style="background-color:#e0e0ff">Paternal lineages</span> : Select data that supports the paternal lineage from the default displayed data.
 
-* <span style="background-color:#ffe0e0">Maternal lineages</span> : Show only data that supports the maternal lineage.
+* <span style="background-color:#ffe0e0">Maternal lineages</span> : Select data that supports the maternal lineage from the default displayed data.
 
-* <span style="background-color:#eeeeee">Minimum LR displayed</span> : Set the minimum LR and press the "Apply" button. Then data with the LR greater than the set value is displayed.
+* <span style="background-color:#eeeeee">Minimum LR displayed</span> : Select data with the LR greater than the set value from the default displayed data.
 
 <u>3. Show the selected data in detail.</u>
 
