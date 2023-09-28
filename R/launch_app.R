@@ -218,7 +218,7 @@ relsearch <- function(){
                                                                                h5(div("Maximum number of ignored loci", style = "color:#555555;font-weight:bold;")),
                                                                                textOutput("result_max_ignore_y"),
                                                                                br(),
-                                                                               h5(div("Total mutational steps", style = "color:#555555;font-weight:bold;")),
+                                                                               h5(div("Maximum total mutational steps", style = "color:#555555;font-weight:bold;")),
                                                                                textOutput("result_max_mustep_y")
                                                                         ),
                                                                         column(4,
@@ -386,7 +386,7 @@ relsearch <- function(){
     # Y-STR
     rv_max_mismatch_y <- callModule(numeric_server, "max_mismatch_y", "Maximum number of mismatched loci", init_dt_criteria$Value[init_dt_criteria$Criteria == "max_mismatch_y"])
     rv_max_ignore_y <- callModule(numeric_server, "max_ignore_y", "Maximum number of ignored loci", init_dt_criteria$Value[init_dt_criteria$Criteria == "max_ignore_y"])
-    rv_max_mustep_y <- callModule(numeric_server, "max_mustep_y", "Total mutational steps", init_dt_criteria$Value[init_dt_criteria$Criteria == "max_mustep_y"])
+    rv_max_mustep_y <- callModule(numeric_server, "max_mustep_y", "Maximum total mutational steps", init_dt_criteria$Value[init_dt_criteria$Criteria == "max_mustep_y"])
 
     # mtDNA
     rv_max_mismatch_mt <- callModule(numeric_server, "max_mismatch_mt", "Maximum number of inconsistency", init_dt_criteria$Value[init_dt_criteria$Criteria == "max_mismatch_mt"])
