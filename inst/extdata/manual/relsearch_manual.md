@@ -61,6 +61,8 @@
 
 <a id="sec1"></a>
 
+<br>
+
 ---
 
 ## Getting started
@@ -88,17 +90,17 @@ relsearch()
 
 <div align="right"><a href="#">To Top</a></div>
 
-<br>
-
 <a id="sec2"></a>
+
+<br>
 
 ---
 
 ## Overall flow
 
-<br>
-
 <a id="sec2-1"></a>
+
+<br>
 
 ### Load files
 
@@ -140,9 +142,9 @@ Load the following files from each **"Browse..."** button.
 
 * Large data size may cause memory overflow.
 
-<br>
-
 <a id="sec2-2"></a>
+
+<br>
 
 ### Check settings
 
@@ -156,9 +158,9 @@ Check the following settings from the **"Tools"** tab.
 
 * [Minimum allele frequency](#sec4-4)
 
-<br>
-
 <a id="sec2-3"></a>
+
+<br>
 
 ### Perform analysis
 
@@ -188,9 +190,9 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 
 * Click [here](#sec5-3) for more information.
 
-<br>
-
 <a id="sec2-4"></a>
+
+<br>
 
 ### Check results
 
@@ -228,9 +230,9 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 
 <u>4. Show the analysis conditions.</u>
 
-<br>
-
 <a id="sec2-5"></a>
+
+<br>
 
 ### Save project
 
@@ -250,17 +252,17 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 
 <div align="right"><a href="#">To Top</a></div>
 
-<br>
-
 <a id="sec3"></a>
 
+<br>
+
 ---
+
+<a id="sec3-1"></a>
 
 ## File format
 
 <br>
-
-<a id="sec3-1"></a>
 
 ### STR: Victim database
 
@@ -431,9 +433,9 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 
 * The marker with one empty cell (e.g., vWA of sample 'Victim1' in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.
 
-<br>
-
 <a id="sec3-2"></a>
+
+<br>
 
 ### STR: Reference database
 
@@ -615,9 +617,9 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 
 * <span style="background-color:#ffcce5">Multiple relationships.</span>
 
-<br>
-
 <a id="sec3-3"></a>
+
+<br>
 
 ### STR: Allele frequencies
 
@@ -762,9 +764,9 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 
 * This file requires the columns "Allele" and columns for each marker (one column in each).
 
-<br>
-
 <a id="sec3-4"></a>
+
+<br>
 
 ### Y-STR: Victim database
 
@@ -908,9 +910,9 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 
 * The marker with an empty cell (e.g., DYS456 of sample ‘Victim6’) is ignored for analysis.
 
-<br>
-
 <a id="sec3-5"></a>
+
+<br>
 
 ### Y-STR: Reference database
 
@@ -1067,9 +1069,9 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 
 * The marker with an empty cell (e.g., DYS518 of sample ‘Reference10’) is ignored for analysis.
 
-<br>
-
 <a id="sec3-6"></a>
+
+<br>
 
 ### mtDNA: Victim database
 
@@ -1143,9 +1145,9 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 
 * This file requires the column "SampleName", "Range", and "Haplotype".
 
-<br>
-
 <a id="sec3-7"></a>
+
+<br>
 
 ### mtDNA: Reference database
 
@@ -1236,17 +1238,17 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 
 <div align="right"><a href="#">To Top</a></div>
 
+<a id="sec4"></a>
+
 <br>
 
-<a id="sec4"></a>
+<a id="sec4-1"></a>
 
 ---
 
 ## Settings
 
 <br>
-
-<a id="sec4-1"></a>
 
 ### Criteria
 
@@ -1278,9 +1280,9 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 
 <u>4. Update default to current settings.</u>
 
-<br>
-
 <a id="sec4-2"></a>
+
+<br>
 
 ### Relationships
 
@@ -1322,9 +1324,9 @@ the user needs to define the relationship with IBD probabilities not on the defa
 
 <u>7. Update default to current settings.</u>
 
-<br>
-
 <a id="sec4-2-2"></a>
+
+<br>
 
 #### Set a family tree
 
@@ -1350,9 +1352,9 @@ When defining a new relationship between the victim and the reference, the user 
 
 * When registering the defined relationship, press the **"Set"** button. An error message pops up when the setting of the family tree is inappropriate.
 
-<br>
-
 <a id="sec4-3"></a>
+
+<br>
 
 ### Mutation rates
 
@@ -1382,9 +1384,9 @@ When defining a new relationship between the victim and the reference, the user 
 
 <u>6. Update default to current settings.</u>
 
-<br>
-
 <a id="sec4-4"></a>
+
+<br>
 
 ### Minimum allele frequency
 
@@ -1404,9 +1406,11 @@ When defining a new relationship between the victim and the reference, the user 
 
 <div align="right"><a href="#">To Top</a></div>
 
+<a id="sec5"></a>
+
 <br>
 
-<a id="sec5"></a>
+<a id="sec5-1"></a>
 
 ---
 
@@ -1414,21 +1418,19 @@ When defining a new relationship between the victim and the reference, the user 
 
 <br>
 
-<a id="sec5-1"></a>
-
 ### STR
 
 $$ LR = \frac{Pr(E|H1)}{Pr(E|H2)} $$
 
-<br>
-
 <a id="sec5-2"></a>
+
+<br>
 
 ### Y-STR
 
-<br>
-
 <a id="sec5-3"></a>
+
+<br>
 
 ### mtDNA
 

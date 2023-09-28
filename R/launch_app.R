@@ -347,7 +347,7 @@ relsearch <- function(){
                              ),
 
                              tabPanel("Manual",
-                                      includeMarkdown(paste0(path_pack, "/extdata/manual/test_manual.md"))
+                                      includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual.md"))
                              )
                   )
   )
