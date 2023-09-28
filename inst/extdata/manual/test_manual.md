@@ -196,7 +196,7 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 
 <br>
 
-<span style="background-color:#ffcce5">Enter fig_summary.jpg after correction</span>
+<img src="fig_summary.jpg" width="80%">
 
 <br>
 
@@ -1252,7 +1252,7 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 
 <br>
 
-<span style="background-color:#ffcce5">Enter fig_criteria.jpg after correction</span>
+<img src="fig_criteria.jpg" width="80%">
 
 <br>
 
@@ -1286,7 +1286,7 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 
 <br>
 
-<span style="background-color:#ffcce5">Enter fig_rel.jpg after correction</span>
+<img src="fig_rel.jpg" width="80%">
 
 <br>
 
@@ -1332,7 +1332,7 @@ When defining a new relationship between the victim and the reference, the user 
 
 <br>
 
-<span style="background-color:#ffcce5">Enter fig_tree.jpg after correction</span>
+<img src="fig_tree.jpg" width="80%">
 
 <br>
 
@@ -1358,7 +1358,7 @@ When defining a new relationship between the victim and the reference, the user 
 
 <br>
 
-<span style="background-color:#ffcce5">Enter fig_myu.jpg after correction</span>
+<img src="fig_myu.jpg" width="80%">
 
 <br>
 
@@ -1390,7 +1390,7 @@ When defining a new relationship between the victim and the reference, the user 
 
 <br>
 
-<span style="background-color:#ffcce5">Enter fig_maf.jpg after correction</span>
+<img src="fig_maf.jpg" width="80%">
 
 <br>
 
