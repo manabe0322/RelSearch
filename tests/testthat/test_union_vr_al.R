@@ -24,7 +24,7 @@ test_that("union_vr_al pattern 2", {
   # Test
   expect_equal(length(uniq_vr_al), 2)
   expect_equal(uniq_vr_al[1], 11)
-  expect_equal(uniq_vr_al[1], 12)
+  expect_equal(uniq_vr_al[2], 12)
 })
 
 test_that("union_vr_al pattern 3", {
