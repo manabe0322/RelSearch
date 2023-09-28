@@ -624,7 +624,7 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 
 * The relationship of a missing family member should be designated in the column "Relationship". The name of the relationship should be defined in Settings > Relationships.
 
-* If a reference has multiple missing family members, add rows for each relationship of the members (e.g., sibling and parent-child of the sample "Reference7").
+* If a reference has multiple missing family members, add rows for each relationship of the members (e.g., sibling and parent-child of the sample "Reference7" in the above table).
 
 * The marker with two empty cells (e.g., CSF1PO of sample "Reference10" in the above table) is ignored when calculating the likelihood ratio.
 
@@ -1090,7 +1090,7 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 
 * The relationship of a missing family member should be designated in the column "Relationship". The name of the relationship should be defined in Settings > Relationships.
 
-* If a reference has multiple missing family members, add rows for each relationship of the members (e.g., sibling and parent-child of the sample "Reference7").
+* If a reference has multiple missing family members, add rows for each relationship of the members (e.g., sibling and parent-child of the sample "Reference7" in the above table).
 
 * In the marker with more than one allele, each allele must be separated by a comma without any spaces (e.g., DYS385).
 
@@ -1267,7 +1267,7 @@ Click the **"Analysis"** button in the "Load" tab. Then, the following analyses 
 
 * The relationship of a missing family member should be designated in the column "Relationship". The name of the relationship should be defined in Settings > Relationships.
 
-* If a reference has multiple missing family members, add rows for each relationship of the members (e.g., sibling and parent-child of the sample "Reference7").
+* If a reference has multiple missing family members, add rows for each relationship of the members (e.g., sibling and parent-child of the sample "Reference7" in the above table).
 
 <br>
 
