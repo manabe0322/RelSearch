@@ -1,20 +1,21 @@
-##########################################
-# The function to analyze data for mtDNA #
-##########################################
-
+#' analyze_mt
+#'
+#' @description The function to analyze data for mtDNA
+#' @param dt_v_mt A data.table of victim profiles (mtDNA)
+#' @param dt_r_mt A data.table of reference profiles (mtDNA)
+#' @param dt_criteria A data.table of criteria
+#' @param show_progress Whether the progress is shown or not
 analyze_mt <- function(dt_v_mt, dt_r_mt, dt_criteria, show_progress = TRUE){
 
   #############################################
   # Prepare objects to analyze data for mtDNA #
   #############################################
 
-  # Extract required data from victim database
   sn_v_mt <- dt_v_mt[, SampleName]
   range_v_mt <- dt_v_mt[, Range]
   hap_v_mt <- strsplit(dt_v_mt[, Haplotype], " ")
   hap_v_mt <- lapply(hap_v_mt, setdiff, "")
 
-  # Extract required data from reference database
   sn_r_mt <- dt_r_mt[, SampleName]
   range_r_mt <- dt_r_mt[, Range]
   hap_r_mt <- strsplit(dt_r_mt[, Haplotype], " ")
@@ -41,23 +42,15 @@ analyze_mt <- function(dt_v_mt, dt_r_mt, dt_criteria, show_progress = TRUE){
     result_mt <- match_mt_all(hap_v_mt, hap_r_mt, range_v_mt, range_r_mt)
   }
 
-  #######################
-  # Arrange the results #
-  #######################
+  ##################################################
+  # Create the data.table for the results of mtDNA #
+  ##################################################
 
-  # Create a vector for the result of victim names
   result_sn_v_mt <- rep(sn_v_mt, length(sn_r_mt))
-
-  # Create a vector for the result of reference names
   result_sn_r_mt <- as.vector(sapply(sn_r_mt, rep, length(sn_v_mt)))
-
-  # Create a vector for the result of assumed relationships
   result_assumed_rel <- as.vector(sapply(dt_r_mt[, Relationship], rep, length(sn_v_mt)))
 
-  # Create a part of the data.table
   dt_left <- data.table(Victim = result_sn_v_mt, Reference = result_sn_r_mt, AssumedRel = result_assumed_rel)
-
-  # Create the data.table for the results of mtDNA
   result_mt <- unlist(result_mt)
   result_mt <- matrix(result_mt, nrow = length(sn_v_mt) * length(sn_r_mt), ncol = 3, byrow = TRUE)
   dt_right <- as.data.frame(result_mt)
@@ -69,11 +62,9 @@ analyze_mt <- function(dt_v_mt, dt_r_mt, dt_criteria, show_progress = TRUE){
   # Estimate maternal relatives #
   ###############################
 
-  # Extract criteria
   max_mismatch_mt <- dt_criteria$Value[dt_criteria$Criteria == "max_mismatch_mt"]
   min_share_mt <- dt_criteria$Value[dt_criteria$Criteria == "min_share_mt"]
 
-  # Estimate maternal relatives using criteria
   n_data <- nrow(dt_result_mt)
   maternal_all <- rep("Not support", n_data)
   bool_meet_criteria_mt <- matrix(FALSE, n_data, 2)
@@ -82,11 +73,9 @@ analyze_mt <- function(dt_v_mt, dt_r_mt, dt_criteria, show_progress = TRUE){
   pos_meet_criteria_mt <- which(apply(bool_meet_criteria_mt, 1, all))
   maternal_all[pos_meet_criteria_mt] <- "Support"
 
-  # Add the column "Maternal" to the data.table
   options(warn = -1)
   dt_result_mt[, Maternal := maternal_all]
   options(warn = 0)
 
-  # Return
   return(dt_result_mt)
 }

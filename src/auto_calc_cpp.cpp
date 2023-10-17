@@ -1,8 +1,8 @@
 #include "header.h"
 
-/*################################################################################
-# The function to unite the victim alleles with the reference alleles (testthat) #
-################################################################################*/
+/*#####################################################################
+# The function to unite the victim alleles with the reference alleles #
+#####################################################################*/
 
 // [[Rcpp::export]]
 std::vector<double> union_vr_al(std::vector<double> vgt, std::vector<double> rgt){
@@ -14,9 +14,9 @@ std::vector<double> union_vr_al(std::vector<double> vgt, std::vector<double> rgt
 }
 
 
-/*################################################################################
-# The function to calculate likelihoods for pairwise kinship analysis (testthat) #
-################################################################################*/
+/*#####################################################################
+# The function to calculate likelihoods for pairwise kinship analysis #
+#####################################################################*/
 
 // [[Rcpp::export]]
 std::vector<double> calc_kin_like(std::vector<double> vgt, std::vector<double> rgt, std::vector<double> af, std::vector<double> af_al,
@@ -150,31 +150,27 @@ std::vector<double> calc_kin_like(std::vector<double> vgt, std::vector<double> r
 }
 
 
-/*########################################################################
-# The function to make allele frequencies for dummy genotypes (testthat) #
-########################################################################*/
+/*#############################################################
+# The function to make allele frequencies for dummy genotypes #
+#############################################################*/
 
 // [[Rcpp::export]]
 std::vector<std::vector<double>> make_dummy_af(std::vector<double> uniq_vr_al, std::vector<double> af, std::vector<double> af_al){
-
-  /* The number of unique alleles of the victim and the reference genotypes */
   int len = uniq_vr_al.size();
 
-  /* Define a vector for indices of observed alleles */
+  /* Indices of observed alleles */
   std::vector<int> pos_al_obs(len);
   for(int i = 0; i < len; ++i){
     pos_al_obs[i] = search_pos_double(af_al, uniq_vr_al[i]);
   }
 
-  /* Define a vector for indices of unobserved alleles */
+  /* Indices of unobserved alleles */
   std::vector<int> pos_al_all = tousa(0, af_al.size() - 1, 1);
   std::vector<int> pos_al_unobs;
   std::set_difference(pos_al_all.begin(), pos_al_all.end(), pos_al_obs.begin(), pos_al_obs.end(), inserter(pos_al_unobs, pos_al_unobs.end()));
 
-  /* Define a vector for saving dummy allele frequencies */
-  std::vector<std::vector<double>> dummy_af_data(2, std::vector<double>(len + 1));
-
   /* Assign observed allele frequencies */
+  std::vector<std::vector<double>> dummy_af_data(2, std::vector<double>(len + 1));
   for(int i = 0; i < len; ++i){
     int pos1 = pos_al_obs[i];
     dummy_af_data.at(0).at(i) = af[pos1];
@@ -191,125 +187,85 @@ std::vector<std::vector<double>> make_dummy_af(std::vector<double> uniq_vr_al, s
   dummy_af_data.at(0).at(len) = std::accumulate(freq_qal.begin(), freq_qal.end(), 0.0);
   dummy_af_data.at(1).at(len) = 99;
 
-  /* Return */
   return(dummy_af_data);
 }
 
 
-/*##############################################################################
-# The function to make dummy genotypes considering drop-out alleles (testthat) #
-##############################################################################*/
+/*###################################################################
+# The function to make dummy genotypes considering drop-out alleles #
+###################################################################*/
 
 // [[Rcpp::export]]
 std::vector<std::vector<double>> make_dummy_gt(std::vector<double> target_gt, std::vector<double> uniq_vr_al){
-
-  /* The size of target_gt */
   int size_target_gt = target_gt.size();
 
   /* No drop-out */
   if(size_target_gt == 2){
-
-    /* Define a vector for dummy genotypes */
     std::vector<std::vector<double>> dummy_gt(1, std::vector<double>(2));
-
-    /* Assign alleles */
     dummy_gt.at(0).at(0) = target_gt[0];
     dummy_gt.at(0).at(1) = target_gt[1];
 
-    /* Return */
     return(dummy_gt);
 
   /* Possible drop-out */
   }else{
-
-    /* The size of uniq_vr_al */
     int size_uniq_vr_al = uniq_vr_al.size();
-
-    /* Define a vector for dummy genotypes */
     std::vector<std::vector<double>> dummy_gt(size_uniq_vr_al + 1, std::vector<double>(2));
 
-    /* Repetitive execution for other alleles */
     for(int i = 0; i < size_uniq_vr_al; ++i){
-
-      /* Define a vector for a dummy genotype */
       std::vector<double> dummy_gt_one(2);
-
-      /* Assign alleles */
       dummy_gt_one[0] = target_gt[0];
       dummy_gt_one[1] = uniq_vr_al[i];
 
-      /* Sort the dummy genotype */
       std::sort(dummy_gt_one.begin(), dummy_gt_one.end());
-
-      /* Assign the dummy genotype */
       dummy_gt.at(i) = dummy_gt_one;
     }
 
-    /* Assign alleles (allele 99) */
     dummy_gt.at(size_uniq_vr_al).at(0) = target_gt[0];
     dummy_gt.at(size_uniq_vr_al).at(1) = 99;
 
-    /* Return */
     return(dummy_gt);
   }
 }
 
 
-/*#####################################################################################################
-# The function to calculate likelihoods for pairwise kinship analysis considering drop-out (testthat) #
-#####################################################################################################*/
+/*##########################################################################################
+# The function to calculate likelihoods for pairwise kinship analysis considering drop-out #
+##########################################################################################*/
 
 // [[Rcpp::export]]
 std::vector<double> calc_kin_like_drop(std::vector<double> vgt, std::vector<double> rgt, std::vector<double> af, std::vector<double> af_al,
                                        std::vector<double> pibd, bool cons_mu, double myu){
-
-  /* Define the initial likelihood of H1 and H2 in one locus */
   double l_h1 = 0;
   double l_h2 = 0;
 
-  /* Define a vector for unique alleles of the victim and the reference genotypes */
   std::vector<double> uniq_vr_al = union_vr_al(vgt, rgt);
 
-  /* Create dummy genotypes */
   std::vector<std::vector<double>> dummy_vgt = make_dummy_gt(vgt, uniq_vr_al);
   std::vector<std::vector<double>> dummy_rgt = make_dummy_gt(rgt, uniq_vr_al);
 
-  /* Create dummy allele frequencies */
   std::vector<std::vector<double>> dummy_af_data = make_dummy_af(uniq_vr_al, af, af_al);
   std::vector<double> af_dummy = dummy_af_data.at(0);
   std::vector<double> af_al_dummy = dummy_af_data.at(1);
 
-  /* The number of dummy genotypes */
   int size_dummy_vgt = dummy_vgt.size();
   int size_dummy_rgt = dummy_rgt.size();
 
-  /* Repetitive execution for dummy reference genotypes */
   for(int i = 0; i < size_dummy_rgt; ++i){
-
-    /* Extract a reference dummy genotype */
     std::vector<double> drgt1 = dummy_rgt.at(i);
 
-    /* Repetitive execution for dummy victim genotypes */
     for(int j = 0; j < size_dummy_vgt; ++j){
-
-      /* Extract a victim dummy genotype */
       std::vector<double> dvgt1 = dummy_vgt.at(j);
 
-      /* Calculate the likelihood in one genotype combination */
       std::vector<double> l_h12_one = calc_kin_like(dvgt1, drgt1, af_dummy, af_al_dummy, pibd, cons_mu, myu);
-
-      /* Update the likelihood in one locus */
       l_h1 += l_h12_one[0];
       l_h2 += l_h12_one[1];
     }
   }
 
-  /* Define the likelihood of H1 and H2 in one locus */
   std::vector<double> like_h12(2);
   like_h12[0] = l_h1;
   like_h12[1] = l_h2;
-
-  /* Return */
   return(like_h12);
 }
 
@@ -322,42 +278,27 @@ std::vector<double> calc_kin_like_drop(std::vector<double> vgt, std::vector<doub
 std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim, std::vector<double> prof_ref,
                                              std::vector<std::vector<double>> af_list, std::vector<std::vector<double>> af_al_list,
                                              std::vector<double> pibd, bool cons_mu, std::vector<double> myus){
-  /* The number of loci */
   int n_l = prof_victim.size() / 2;
-
-  /* Define an array for saving the likelihood and the LR */
   std::vector<std::vector<double>> ans(3, std::vector<double>(n_l + 1));
-
-  /* Define the initial cumulative likelihood of H1 and H2 */
   double cl_h1 = 1;
   double cl_h2 = 1;
 
-  /* Repetitive execution for loci */
   for(int i = 0; i < n_l; ++i){
-
-    /* Extract the victim's genotype in one locus */
     std::vector<double> vgt(2);
     vgt[0] = prof_victim[2 * i];
     vgt[1] = prof_victim[2 * i + 1];
-
-    /* Remove '-99' (the sign of drop-out) from the victim's genotype */
     auto vgt_end = std::remove(vgt.begin(), vgt.end(), -99);
     vgt.erase(vgt_end, vgt.cend());
 
-    /* Extract the reference's genotype in one locus */
     std::vector<double> rgt(2);
     rgt[0] = prof_ref[2 * i];
     rgt[1] = prof_ref[2 * i + 1];
-
-    /* Remove '-99' (the sign of drop-out) from the reference's genotype */
     auto rgt_end = std::remove(rgt.begin(), rgt.end(), -99);
     vgt.erase(rgt_end, rgt.cend());
 
-    /* Extract the allele frequencies in one locus */
     std::vector<double> af = af_list[i];
     std::vector<double> af_al = af_al_list[i];
 
-    /* Extract the mutation rate in one locus */
     double myu = myus[i];
 
     /* Locus drop-out or no information */
@@ -368,16 +309,12 @@ std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim, st
 
     /* Calculate likelihoods considering drop-out */
     }else{
-
-      /* Calculate the likelihood in one locus considering drop-out*/
       std::vector<double> like_h12 = calc_kin_like_drop(vgt, rgt, af, af_al, pibd, cons_mu, myu);
 
-      /* Assign the likelihood and the LR */
       ans.at(0).at(i) = like_h12[0];
       ans.at(1).at(i) = like_h12[1];
       ans.at(2).at(i) = like_h12[0] / like_h12[1];
 
-      /* Update the cumulative likelihood of H1 and H2 */
       cl_h1 = cl_h1 * like_h12[0];
       cl_h2 = cl_h2 * like_h12[1];
     }
@@ -408,40 +345,24 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
   /* Call the R function "message" */
   Function message("message");
 
-  /* The number of victims */
   int n_v = gt_v_auto.size();
-
-  /* The number of references */
   int n_r = gt_r_auto.size();
-
-  /* The number of loci */
   int n_l = gt_r_auto.at(0).size();
-
-  /* The number of pairs */
   int n_vr = n_v * n_r;
 
-  /* Define an array for saving likelihoods and LRs */
   std::vector<std::vector<std::vector<double>>> result_auto(n_vr, std::vector<std::vector<double>>(3, std::vector<double>(n_l + 1)));
 
-  /* Define the counter for updating the progress bar */
   int counter_base = n_vr * 0.001;
   int counter = counter_base;
 
-  /* Repetitive execution for references */
   for(int i = 0; i < n_r; ++i){
-
-    /* Extract the assumed relationship of one reference */
     std::string assumed_rel = assumed_rel_all[i];
-
-    /* Extract the profile of one reference */
     std::vector<double> prof_ref = gt_r_auto.at(i);
 
-    /* Extract the IBD probabilities */
     std::vector<double> pibd;
     int pos_assumed_rel = search_pos_string(names_rel, assumed_rel);
     pibd = pibds_rel.at(pos_assumed_rel);
 
-    /* Set the consideration of mutations */
     bool cons_mu;
     if(degrees_rel[pos_assumed_rel] == "1st_pc"){
       cons_mu = true;
@@ -449,19 +370,13 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
       cons_mu = false;
     }
 
-    /* Repetitive execution for victims */
     for(int j = 0; j < n_v; ++j){
-
-      /* Extract the profile of one victim */
       std::vector<double> prof_victim = gt_v_auto.at(j);
 
-      /* Calculate the LR for the selected victim and reference */
       std::vector<std::vector<double>> ans = calc_kin_lr(prof_victim, prof_ref, af_list, af_al_list, pibd, cons_mu, myus);
 
-      /* Define the index for assigning the likelihood and the LR */
       int pos = n_v * i + j;
 
-      /* Assign the likelihood and the LR */
       result_auto.at(pos).at(0) = ans.at(0);
       result_auto.at(pos).at(1) = ans.at(1);
       result_auto.at(pos).at(2) = ans.at(2);
@@ -471,13 +386,10 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
         std::string txt_console = "STR_Victim-Reference_ : ";
         txt_console += int_to_str(pos);
         message('\r', txt_console, _["appendLF"] = false);
-
-        /* Update the counter */
         counter += counter_base;
       }
     }
   }
 
-  /* Return */
   return(result_auto);
 }

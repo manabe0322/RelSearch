@@ -5,21 +5,9 @@
 #' @export
 relsearch <- function(){
 
-  ###########################
-  # Set internal parameters #
-  ###########################
-
-  # Software version
   ver_soft <- packageVersion("relsearch")
-
-  # Package path
   path_pack <- path.package("relsearch", quiet = FALSE)
-
   options(shiny.maxRequestSize = 500 * 1024^2)
-
-  ##########
-  # Set ui #
-  ##########
 
   ui <- fluidPage(useShinyjs(),
                   theme = shinytheme("cerulean"),
@@ -352,10 +340,6 @@ relsearch <- function(){
                   )
   )
 
-  ##############
-  # Set server #
-  ##############
-
   server <- function(input, output, session){
 
     disable(selector = '.navbar-nav a[data-value = "Result"]')
@@ -364,45 +348,28 @@ relsearch <- function(){
     # Load initial data.table #
     ###########################
 
-    # Criteria
     init_dt_criteria <- create_dt_criteria(path_pack)
-
-    # Information on the relationship
     init_dt_rel <- create_dt_rel(path_pack)
-
-    # Mutation rates
     init_dt_myu <- create_dt_myu(path_pack)
-
-    # Parameters of autosomal STR
     init_dt_par_auto <- create_dt_par_auto(path_pack)
 
     ################
     # Set criteria #
     ################
 
-    # Autosomal STR
     rv_min_lr_auto <- callModule(numeric_server, "min_lr_auto", "Minimum LR", init_dt_criteria$Value[init_dt_criteria$Criteria == "min_lr_auto"])
 
-    # Y-STR
     rv_max_mismatch_y <- callModule(numeric_server, "max_mismatch_y", "Maximum number of mismatched loci", init_dt_criteria$Value[init_dt_criteria$Criteria == "max_mismatch_y"])
     rv_max_ignore_y <- callModule(numeric_server, "max_ignore_y", "Maximum number of ignored loci", init_dt_criteria$Value[init_dt_criteria$Criteria == "max_ignore_y"])
     rv_max_mustep_y <- callModule(numeric_server, "max_mustep_y", "Maximum total mutational steps", init_dt_criteria$Value[init_dt_criteria$Criteria == "max_mustep_y"])
 
-    # mtDNA
     rv_max_mismatch_mt <- callModule(numeric_server, "max_mismatch_mt", "Maximum number of inconsistency", init_dt_criteria$Value[init_dt_criteria$Criteria == "max_mismatch_mt"])
     rv_min_share_mt <- callModule(numeric_server, "min_share_mt", "Minimum shared length", init_dt_criteria$Value[init_dt_criteria$Criteria == "min_share_mt"])
 
-    # Update the default criteria
     observeEvent(input$act_criteria_update, {
-
-      # Create the data.table
       dt_criteria <- data.table(Criteria = c("min_lr_auto", "max_mismatch_y", "max_ignore_y", "max_mustep_y", "max_mismatch_mt", "min_share_mt"),
                                 Value = c(rv_min_lr_auto(), rv_max_mismatch_y(), rv_max_ignore_y(), rv_max_mustep_y(), rv_max_mismatch_mt(), rv_min_share_mt()))
-
-      # Save the data.table
       write.csv(dt_criteria, paste0(path_pack, "/extdata/parameters/criteria.csv"), row.names = FALSE)
-
-      # Show a message
       showModal(modalDialog(title = "Information", "Default criteria have been updated.", easyClose = TRUE, footer = NULL))
     })
 
@@ -424,16 +391,9 @@ relsearch <- function(){
 
     rv_maf <- callModule(numeric_server, "maf", "Minimum allele frequency", init_dt_par_auto$Value[init_dt_par_auto$Parameter == "maf"])
 
-    # Update the default parameters
     observeEvent(input$act_par_auto_update, {
-
-      # Create the data.table
       dt_par_auto <- data.table(Parameter = c("maf"), Value = c(rv_maf()))
-
-      # Save the data.table
       write.csv(dt_par_auto, paste0(path_pack, "/extdata/parameters/par_auto.csv"), row.names = FALSE)
-
-      # Show a message
       showModal(modalDialog(title = "Information", "The default parameter has been updated.", easyClose = TRUE, footer = NULL))
     })
 
@@ -446,35 +406,25 @@ relsearch <- function(){
       if(is.null(file_input)){
         return(NULL)
       }else{
-
-        # Load data.table
         dt <- fread(file_input$datapath)
-
-        # Initial column names
         col_init <- names(dt)
 
-        # Define temporary column names
         col_tmp <- col_init
         pos_mk <- which(!is.element(col_init, c("SampleName", "Relationship")))
         col_tmp[pos_mk] <- paste0("Col", 1:length(pos_mk))
         names(dt) <- col_tmp
 
-        # Change to numeric in marker columns
         col_numeric <- col_tmp[pos_mk]
         options(warn = -1)
         dt[, (col_numeric) := lapply(.SD, as.numeric), .SDcols = col_numeric]
         options(warn = 0)
 
-        # Change to character in SampleName and Relationship columns
         col_char <- col_tmp[which(is.element(col_init, c("SampleName", "Relationship")))]
         options(warn = -1)
         dt[, (col_char) := lapply(.SD, as.character), .SDcols = col_char]
         options(warn = 0)
 
-        # Reset column names
         names(dt) <- col_init
-
-        # Return
         return(dt)
       }
     })
@@ -484,35 +434,25 @@ relsearch <- function(){
       if(is.null(file_input)){
         return(NULL)
       }else{
-
-        # Load data.table
         dt <- fread(file_input$datapath)
-
-        # Initial column names
         col_init <- names(dt)
 
-        # Define temporary column names
         col_tmp <- col_init
         pos_mk <- which(!is.element(col_init, c("SampleName", "Relationship")))
         col_tmp[pos_mk] <- paste0("Col", 1:length(pos_mk))
         names(dt) <- col_tmp
 
-        # Change to numeric in marker columns
         col_numeric <- col_tmp[pos_mk]
         options(warn = -1)
         dt[, (col_numeric) := lapply(.SD, as.numeric), .SDcols = col_numeric]
         options(warn = 0)
 
-        # Change to character in SampleName and Relationship columns
         col_char <- col_tmp[which(is.element(col_init, c("SampleName", "Relationship")))]
         options(warn = -1)
         dt[, (col_char) := lapply(.SD, as.character), .SDcols = col_char]
         options(warn = 0)
 
-        # Reset column names
         names(dt) <- col_init
-
-        # Return
         return(dt)
       }
     })
@@ -522,17 +462,13 @@ relsearch <- function(){
       if(is.null(file_input)){
         return(NULL)
       }else{
-
-        # Load data.table
         dt <- fread(file_input$datapath)
 
-        # Change to numeric
         col_numeric <- names(dt)
         options(warn = -1)
         dt[, (col_numeric) := lapply(.SD, as.numeric), .SDcols = col_numeric]
         options(warn = 0)
 
-        # Return
         return(dt)
       }
     })
@@ -542,17 +478,13 @@ relsearch <- function(){
       if(is.null(file_input)){
         return(NULL)
       }else{
-
-        # Load data.table
         dt <- fread(file_input$datapath)
 
-        # Change to character
         col_char <- names(dt)
         options(warn = -1)
         dt[, (col_char) := lapply(.SD, as.character), .SDcols = col_char]
         options(warn = 0)
 
-        # Return
         return(dt)
       }
     })
@@ -562,17 +494,13 @@ relsearch <- function(){
       if(is.null(file_input)){
         return(NULL)
       }else{
-
-        # Load data.table
         dt <- fread(file_input$datapath)
 
-        # Change to character
         col_char <- names(dt)
         options(warn = -1)
         dt[, (col_char) := lapply(.SD, as.character), .SDcols = col_char]
         options(warn = 0)
 
-        # Return
         return(dt)
       }
     })
@@ -582,17 +510,13 @@ relsearch <- function(){
       if(is.null(file_input)){
         return(NULL)
       }else{
-
-        # Load data.table
         dt <- fread(file_input$datapath)
 
-        # Change to character
         col_char <- names(dt)
         options(warn = -1)
         dt[, (col_char) := lapply(.SD, as.character), .SDcols = col_char]
         options(warn = 0)
 
-        # Return
         return(dt)
       }
     })
@@ -602,17 +526,13 @@ relsearch <- function(){
       if(is.null(file_input)){
         return(NULL)
       }else{
-
-        # Load data.table
         dt <- fread(file_input$datapath)
 
-        # Change to character
         col_char <- names(dt)
         options(warn = -1)
         dt[, (col_char) := lapply(.SD, as.character), .SDcols = col_char]
         options(warn = 0)
 
-        # Return
         return(dt)
       }
     })
@@ -621,12 +541,9 @@ relsearch <- function(){
     # View database #
     #################
 
-    # Create an object to save file names
     rv_fn <- reactiveValues()
 
-    # STR, victim
     observeEvent(load_v_auto(), {
-
       rv_fn$fn_v_auto <- input$file_v_auto$name
 
       output$view_dt_v_auto <- renderDataTable({
@@ -639,9 +556,7 @@ relsearch <- function(){
       })
     })
 
-    # STR, reference
     observeEvent(load_r_auto(), {
-
       rv_fn$fn_r_auto <- input$file_r_auto$name
 
       output$view_dt_r_auto <- renderDataTable({
@@ -654,9 +569,7 @@ relsearch <- function(){
       })
     })
 
-    # allele frequencies
     observeEvent(load_af(), {
-
       rv_fn$fn_af <- input$file_af$name
 
       output$view_dt_af <- renderDataTable({
@@ -669,9 +582,7 @@ relsearch <- function(){
       })
     })
 
-    # Y-STR, victim
     observeEvent(load_v_y(), {
-
       rv_fn$fn_v_y <- input$file_v_y$name
 
       output$view_dt_v_y <- renderDataTable({
@@ -684,9 +595,7 @@ relsearch <- function(){
       })
     })
 
-    # Y-STR, reference
     observeEvent(load_r_y(), {
-
       rv_fn$fn_r_y <- input$file_r_y$name
 
       output$view_dt_r_y <- renderDataTable({
@@ -699,9 +608,7 @@ relsearch <- function(){
       })
     })
 
-    # mtDNA, victim
     observeEvent(load_v_mt(), {
-
       rv_fn$fn_v_mt <- input$file_v_mt$name
 
       output$view_dt_v_mt <- renderDataTable({
@@ -714,9 +621,7 @@ relsearch <- function(){
       })
     })
 
-    # mtDNA, victim
     observeEvent(load_r_mt(), {
-
       rv_fn$fn_r_mt <- input$file_r_mt$name
 
       output$view_dt_r_mt <- renderDataTable({
@@ -808,21 +713,16 @@ relsearch <- function(){
     # Perform analysis #
     ####################
 
-    # Create the object to call the reactive data.table
     dt_reactive <- reactiveValues()
 
-    # Perform analysis
     observeEvent(input$act_analyze, {
 
       ####################
       # Check parameters #
       ####################
 
-      # Criteria
       if(any(!isTruthy(rv_min_lr_auto()), !isTruthy(rv_max_mismatch_y()), !isTruthy(rv_max_ignore_y()), !isTruthy(rv_max_mustep_y()), !isTruthy(rv_max_mismatch_mt()), !isTruthy(rv_min_share_mt()))){
         showModal(modalDialog(title = "Error", "Set criteria!", easyClose = TRUE, footer = NULL))
-
-      # Parameters for autosomal STR
       }else if(!isTruthy(rv_maf())){
         showModal(modalDialog(title = "Error", "Set the minimum allele frequency!", easyClose = TRUE, footer = NULL))
       }else{
@@ -831,30 +731,17 @@ relsearch <- function(){
         # Define data.table #
         #####################
 
-        # Database for autosomal STR
         dt_v_auto <- load_v_auto()
         dt_r_auto <- load_r_auto()
         dt_af <- load_af()
-
-        # Databae for Y-STR
         dt_v_y <- load_v_y()
         dt_r_y <- load_r_y()
-
-        # Database for mtDNA
         dt_v_mt <- load_v_mt()
         dt_r_mt <- load_r_mt()
-
-        # Criteria
         dt_criteria <- data.table(Criteria = c("min_lr_auto", "max_mismatch_y", "max_ignore_y", "max_mustep_y", "max_mismatch_mt", "min_share_mt"),
                                   Value = c(rv_min_lr_auto(), rv_max_mismatch_y(), rv_max_ignore_y(), rv_max_mustep_y(), rv_max_mismatch_mt(), rv_min_share_mt()))
-
-        # Information on relationships
         dt_rel <- data.table(Name_relationship = rv_rel$name, Degree = rv_rel$degree, Pr_IBD2 = rv_rel$pibd2, Pr_IBD1 = rv_rel$pibd1, Pr_IBD0 = rv_rel$pibd0)
-
-        # Mutation rates
         dt_myu <- data.table(Marker = rv_myu$mk, Myu = rv_myu$val)
-
-        # Parameters for autosomal STR
         dt_par_auto <- data.table(Parameter = c("maf"), Value = c(rv_maf()))
 
         ###################################
@@ -877,35 +764,21 @@ relsearch <- function(){
         if(error_message != ""){
           showModal(modalDialog(title = "Error", error_message, easyClose = TRUE, footer = NULL))
         }else{
-
-          ###############################
-          # Record the calculation time #
-          ###############################
-
           start_time <- proc.time()
-
-          ###############
-          # Show waiter #
-          ###############
-
           waiter_show(html = spin_3k(), color = "white")
 
           ##############################
           # Analysis for autosomal STR #
           ##############################
 
-          # Check all required databases are present
           bool_check_auto <- all(!is.null(dt_v_auto), !is.null(dt_r_auto), !is.null(dt_af))
 
           if(bool_check_auto){
-
-            # Rearrange in order of loci
             tmp <- order_loci_auto(dt_v_auto, dt_r_auto, dt_af)
             dt_v_auto <- tmp[[1]]
             dt_r_auto <- tmp[[2]]
             dt_af <- tmp[[3]]
 
-            # Output rearranged victim database
             output$view_dt_v_auto <- renderDataTable({
               datatable(
                 dt_v_auto,
@@ -915,7 +788,6 @@ relsearch <- function(){
               )
             })
 
-            # Output rearranged reference database
             output$view_dt_r_auto <- renderDataTable({
               datatable(
                 dt_r_auto,
@@ -925,7 +797,6 @@ relsearch <- function(){
               )
             })
 
-            # Output rearranged allele frequencies
             output$view_dt_af <- renderDataTable({
               datatable(
                 dt_af,
@@ -935,7 +806,6 @@ relsearch <- function(){
               )
             })
 
-            # Main analysis
             dt_result_auto <- analyze_auto(dt_v_auto, dt_r_auto, dt_af, dt_rel, dt_myu, dt_par_auto, dt_criteria)
           }else{
             dt_result_auto <- NULL
@@ -945,17 +815,13 @@ relsearch <- function(){
           # Analysis for Y-STR #
           ######################
 
-          # Check all required databases are present
           bool_check_y <- all(!is.null(dt_v_y), !is.null(dt_r_y))
 
           if(bool_check_y){
-
-            # Rearrange in order of loci
             tmp <- order_loci_y(dt_v_y, dt_r_y)
             dt_v_y <- tmp[[1]]
             dt_r_y <- tmp[[2]]
 
-            # Output rearranged victim database
             output$view_dt_v_y <- renderDataTable({
               datatable(
                 dt_v_y,
@@ -965,7 +831,6 @@ relsearch <- function(){
               )
             })
 
-            # Output rearranged reference database
             output$view_dt_r_y <- renderDataTable({
               datatable(
                 dt_r_y,
@@ -975,7 +840,6 @@ relsearch <- function(){
               )
             })
 
-            # Main analysis
             dt_result_y <- analyze_y(dt_v_y, dt_r_y, dt_criteria)
           }else{
             dt_result_y <- NULL
@@ -985,12 +849,9 @@ relsearch <- function(){
           # Analysis for mtDNA #
           ######################
 
-          # Check all required databases are present
           bool_check_mt <- all(!is.null(dt_v_mt), !is.null(dt_r_mt))
 
           if(bool_check_mt){
-
-            # Main analysis
             dt_result_mt <- analyze_mt(dt_v_mt, dt_r_mt, dt_criteria)
           }else{
             dt_result_mt <- NULL
@@ -1007,10 +868,7 @@ relsearch <- function(){
           # Create the combined data #
           ############################
 
-          # Create the combined data
           dt_reactive$dt_combined <- create_combined_data(dt_result_auto, dt_result_y, dt_result_mt, dt_rel)
-
-          # Create the displayed data
           dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined)
 
           #################################
@@ -1040,37 +898,18 @@ relsearch <- function(){
           dt_reactive$fn_v_mt <- fn_v_mt
           dt_reactive$fn_r_mt <- fn_r_mt
 
-          ###############
-          # Hide waiter #
-          ###############
+          ######################
+          # Finish calculation #
+          ######################
 
           waiter_hide()
-
-          ###############################
-          # Record the calculation time #
-          ###############################
-
           run_time <- proc.time() - start_time
           cat(paste0("\n", "Calculation time : ", run_time[3], " sec", "\n"))
 
-          ##################
-          # Update widgets #
-          ##################
-
-          # Enable save project
           enable("name_proj")
           enable("download_proj")
-
-          # Enable result tab
           enable(selector = '.navbar-nav a[data-value = "Result"]')
-
-          # Select result tab
           updateNavbarPage(session, "navbar", selected = "Result")
-
-          #######################################################
-          # Show a message of information on the displayed data #
-          #######################################################
-
           showModal(modalDialog(title = "Information", "Displayed data satisfies at least one of the criteria for STR, Y-STR, and mtDNA.", easyClose = TRUE, footer = NULL))
         }
       }
@@ -1080,38 +919,29 @@ relsearch <- function(){
     # Display summary data #
     ########################
 
-    # Output the widget to enter the minimum LR displayed
     output$summary_min_lr <- renderUI({numericInput("summary_min_lr", label = "Minimum LR displayed", value = rv_min_lr_auto())})
 
-    # Display default data
     observeEvent(input$act_default, {
       dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined)
-
-      # Show a message of information on the displayed data
       showModal(modalDialog(title = "Information", "Displayed data satisfies at least one of the criteria for STR, Y-STR, and mtDNA.", easyClose = TRUE, footer = NULL))
     })
 
-    # Display identified pairs
     observeEvent(input$act_identified, {
       dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "identified")
     })
 
-    # Display multiple candidates
     observeEvent(input$act_multiple, {
       dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "multiple")
     })
 
-    # Display the estimated paternal lineages
     observeEvent(input$act_paternal, {
       dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "paternal")
     })
 
-    # Display the estimated paternal lineages
     observeEvent(input$act_maternal, {
       dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "maternal")
     })
 
-    # Change displayed data which depends on the minimum LR
     observeEvent(input$act_fltr_lr, {
       summary_min_lr <- input$summary_min_lr
       if(isTruthy(summary_min_lr)){
@@ -1121,7 +951,6 @@ relsearch <- function(){
       }
     })
 
-    # Display the data.table
     output$dt_display <- renderDataTable(server = FALSE, {
       datatable(
         dt_reactive$dt_display,
@@ -1149,11 +978,8 @@ relsearch <- function(){
     #########################
 
     observeEvent(ignoreInit = TRUE, input$dt_display_rows_selected, {
-
-      # Fix the selected row
       pos_select <- input$dt_display_rows_selected
 
-      # Extract sample names of the selected data
       sn_v_select <- dt_reactive$dt_display[pos_select, Victim]
       sn_r_select <- dt_reactive$dt_display[pos_select, Reference]
       assumed_rel_select <- dt_reactive$dt_display[pos_select, AssumedRel]
@@ -1170,28 +996,23 @@ relsearch <- function(){
         maternal_select <- "No data"
       }
 
-      # Extract the result of the selected data
       result_selected <- dt_reactive$dt_combined[.(sn_v_select, sn_r_select, assumed_rel_select)]
 
-      # Create the detailed data for autosomal STR
       if(!is.null(dt_reactive$dt_result_auto)){
         dt_detail_auto <- create_detailed_data_auto(dt_reactive$dt_v_auto, dt_reactive$dt_r_auto, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
       }else{
         dt_detail_auto <- NULL
       }
 
-      # Create the detailed data for Y-STR
       if(!is.null(dt_reactive$dt_result_y)){
         dt_detail_y <- create_detailed_data_y(dt_reactive$dt_v_y, dt_reactive$dt_r_y, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
       }else{
         dt_detail_y <- NULL
       }
 
-      # Create the detailed data for mtDNA
       if(!is.null(dt_reactive$dt_result_mt)){
         dt_detail_mt <- create_detailed_data_mt(dt_reactive$dt_v_mt, dt_reactive$dt_r_mt, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
 
-        # Display the detailed data other than the table
         output$num_mismatch_select <- renderText({paste0(result_selected[, MismatchMt])})
         output$share_range_select <- renderText({paste0(result_selected[, ShareRangeMt])})
         output$share_len_select <- renderText({paste0(result_selected[, ShareLengthMt])})
@@ -1199,14 +1020,12 @@ relsearch <- function(){
         dt_detail_mt <- NULL
       }
 
-      # Display the information on the selected pair
       output$sn_v_select <- renderText({paste0(sn_v_select)})
       output$sn_r_select <- renderText({paste0(sn_r_select)})
       output$estimated_rel_select <- renderText({paste0(estimated_rel_select)})
       output$paternal_select <- renderText({paste0(paternal_select)})
       output$maternal_select <- renderText({paste0(maternal_select)})
 
-      # Display the detailed data for autosomal STR
       output$dt_detail_auto <- renderDataTable(server = FALSE, {
         datatable(
           dt_detail_auto,
@@ -1226,7 +1045,6 @@ relsearch <- function(){
         )
       })
 
-      # Display the detailed data for Y-STR
       output$dt_detail_y <- renderDataTable(server = FALSE, {
         datatable(
           dt_detail_y,
@@ -1246,7 +1064,6 @@ relsearch <- function(){
         )
       })
 
-      # Display the detailed data for mtDNA
       output$dt_detail_mt <- renderDataTable(server = FALSE, {
         datatable(
           dt_detail_mt,
@@ -1271,7 +1088,6 @@ relsearch <- function(){
     # Display analysis conditions #
     ###############################
 
-    # Database
     output$result_fn_v_auto <- renderText({paste0(dt_reactive$fn_v_auto)})
     output$result_fn_r_auto <- renderText({paste0(dt_reactive$fn_r_auto)})
     output$result_fn_af <- renderText({paste0(dt_reactive$fn_af)})
@@ -1280,7 +1096,6 @@ relsearch <- function(){
     output$result_fn_v_mt <- renderText({paste0(dt_reactive$fn_v_mt)})
     output$result_fn_r_mt <- renderText({paste0(dt_reactive$fn_r_mt)})
 
-    # Criteria
     output$result_min_lr_auto <- renderText({paste0(dt_reactive$dt_criteria$Value[dt_reactive$dt_criteria$Criteria == "min_lr_auto"])})
     output$result_max_mismatch_y <- renderText({paste0(dt_reactive$dt_criteria$Value[dt_reactive$dt_criteria$Criteria == "max_mismatch_y"])})
     output$result_max_ignore_y <- renderText({paste0(dt_reactive$dt_criteria$Value[dt_reactive$dt_criteria$Criteria == "max_ignore_y"])})
@@ -1288,7 +1103,6 @@ relsearch <- function(){
     output$result_max_mismatch_mt <- renderText({paste0(dt_reactive$dt_criteria$Value[dt_reactive$dt_criteria$Criteria == "max_mismatch_mt"])})
     output$result_min_share_mt <- renderText({paste0(dt_reactive$dt_criteria$Value[dt_reactive$dt_criteria$Criteria == "min_share_mt"])})
 
-    # Assumed relationship
     output$result_assumed_rel <- renderDataTable(server = FALSE, {
       datatable(
         dt_reactive$dt_rel,
@@ -1299,7 +1113,6 @@ relsearch <- function(){
       )
     })
 
-    # Mutation rate
     output$result_myu <- renderDataTable(server = FALSE, {
       datatable(
         dt_reactive$dt_myu,
@@ -1310,7 +1123,6 @@ relsearch <- function(){
       )
     })
 
-    # Parameters
     output$result_maf <- renderText({paste0(dt_reactive$dt_par_auto$Value[dt_reactive$dt_par_auto$Parameter == "maf"])})
 
     ###############
@@ -1339,13 +1151,10 @@ relsearch <- function(){
       if(is.null(proj)){
         showModal(modalDialog(title = "Error", "Select a project file!", easyClose = TRUE, footer = NULL))
       }else{
-
         waiter_show(html = spin_3k(), color = "white")
 
-        # Load project
         load(input$file_proj$datapath)
 
-        # Assign objects to reactiveValues
         dt_reactive$dt_combined <- dt_combined
         dt_reactive$dt_display <- dt_display
         dt_reactive$dt_result_auto <- dt_result_auto
@@ -1371,7 +1180,6 @@ relsearch <- function(){
         dt_reactive$fn_v_mt <- fn_v_mt
         dt_reactive$fn_r_mt <- fn_r_mt
 
-        # Output database
         output$view_dt_v_auto <- renderDataTable({
           datatable(
             dt_v_auto,
@@ -1437,22 +1245,18 @@ relsearch <- function(){
 
         waiter_hide()
 
-        # Enable save project
         enable("name_proj")
         enable("download_proj")
-
-        # Enable result tab
         enable(selector = '.navbar-nav a[data-value = "Result"]')
-
-        # Select result tab
         updateNavbarPage(session, "navbar", selected = "Result")
-
-        # Show a message of information on the displayed data
         showModal(modalDialog(title = "Information", "Displayed data satisfies at least one of the criteria for STR, Y-STR, and mtDNA.", easyClose = TRUE, footer = NULL))
       }
     })
 
-    # Save project
+    ################
+    # Save project #
+    ################
+
     output$download_proj <- downloadHandler(
       filename = function(){
         if(isTruthy(input$name_proj)){
@@ -1503,10 +1307,6 @@ relsearch <- function(){
       }
     )
   }
-
-  ######################
-  # Launch application #
-  ######################
 
   shinyApp(ui, server)
 }

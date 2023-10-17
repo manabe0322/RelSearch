@@ -1,7 +1,6 @@
-############################################################################
-# The function to create the ui module for information on the relationship #
-############################################################################
-
+#' tab_rel_ui
+#'
+#' @description The function to create the ui module for information on the relationship
 tab_rel_ui <- function(id){
   ns <- NS(id)
 
@@ -95,13 +94,12 @@ tab_rel_ui <- function(id){
   )
 }
 
-################################################################################
-# The function to create the server module for information on the relationship #
-################################################################################
-
+#' tab_rel_server
+#'
+#' @description The function to create the server module for information on the relationship
+#' @param init_dt_rel The initial data.table of information on relationship
+#' @param path_pack Package path
 tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
-
-  # Define reactive values for setting information on the relationship
   rv_rel <- reactiveValues()
   rv_rel$name <- init_dt_rel[, Name_relationship]
   rv_rel$degree <- init_dt_rel[, Degree]
@@ -113,16 +111,12 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
   # Edit information on the relationship #
   ########################################
 
-  # Select a relationship
   output$rel_old_edit <- renderUI(selectInput(session$ns("rel_old_edit"), label = "Select a relationship", choices = rv_rel$name, selected = rv_rel$name[1]))
 
-  # Rename a relationship
   output$rel_new_edit <- renderUI(textInput(session$ns("rel_new_edit"), label = "Enter a new name", value = NULL))
 
-  # Button to edit
   output$act_rel_edit <- renderUI(actionButton(session$ns("act_rel_edit"), label = "Edit"))
 
-  # Perform
   observeEvent(input$act_rel_edit, {
 
     rel_old_edit <- input$rel_old_edit
@@ -155,13 +149,10 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
   # Delete information on the relationship #
   ##########################################
 
-  # Select a relationship
   output$rel_del <- renderUI(selectInput(session$ns("rel_del"), label = "Select a relationship", choices = rv_rel$name, selected = rv_rel$name[1]))
 
-  # Button to delete
   output$act_rel_del <- renderUI(actionButton(session$ns("act_rel_del"), label = "Delete"))
 
-  # Perform
   observeEvent(input$act_rel_del, {
 
     pos_del <- which(rv_rel$name == input$rel_del)
@@ -186,10 +177,8 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
   # Reset information on the relationship #
   #########################################
 
-  # Button to reset
   output$act_rel_reset <- renderUI(actionButton(session$ns("act_rel_reset"), label = "Reset"))
 
-  # Perform
   observeEvent(input$act_rel_reset, {
     init_dt_rel <- create_dt_rel(path_pack)
     rv_rel$name <- init_dt_rel[, Name_relationship]
@@ -213,10 +202,8 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
   # Update default information on the relationship #
   ##################################################
 
-  # Button to update
   output$act_rel_update <- renderUI(actionButton(session$ns("act_rel_update"), label = "Update default"))
 
-  # Perform
   observeEvent(input$act_rel_update, {
     write.csv(data.table(Name_relationship = rv_rel$name, Degree = rv_rel$degree, Pr_IBD2 = rv_rel$pibd2, Pr_IBD1 = rv_rel$pibd1, Pr_IBD0 = rv_rel$pibd0),
               paste0(path_pack, "/extdata/parameters/rel.csv"), row.names = FALSE)
@@ -228,7 +215,6 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
   # Add information on the relationship #
   #######################################
 
-  # Define reactive values for setting a family tree
   rv_famtree <- reactiveValues()
   rv_famtree$num_uk <- 0
   rv_famtree$uk <- character(0)
@@ -237,10 +223,8 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
   rv_famtree$mother <- character(0)
   rv_famtree$founder <- character(0)
 
-  # Enter a relationship
   output$rel_add <- renderUI(textInput(session$ns("rel_add"), label = "Enter the name of a defined relationship", value = NULL))
 
-  # Switch between enable and disable for some widgets of the victim
   observeEvent(input$v_founder, {
     v_founder <- input$v_founder
     if(v_founder == "Yes"){
@@ -252,7 +236,6 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
     }
   })
 
-  # Switch between enable and disable for some widgets of the reference
   observeEvent(input$r_founder, {
     r_founder <- input$r_founder
     if(r_founder == "Yes"){
@@ -264,10 +247,8 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
     }
   })
 
-  # Button to add a person
   output$act_famtree_add <- renderUI(actionButton(session$ns("act_famtree_add"), label = "Add a person"))
 
-  # Add a person
   observeEvent(input$act_famtree_add, {
 
     num_uk <- rv_famtree$num_uk + 1
@@ -412,10 +393,8 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
     })
   })
 
-  # Button to delete a person
   output$act_famtree_del <- renderUI(actionButton(session$ns("act_famtree_del"), label = "Delete a person"))
 
-  # Delete a person
   observeEvent(input$act_famtree_del, {
 
     num_uk <- rv_famtree$num_uk
@@ -564,23 +543,17 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
     }
   })
 
-  # Button to view family tree
   output$act_famtree_view <- renderUI(actionButton(session$ns("act_famtree_view"), label = "View family tree"))
 
-  # View family tree
   observeEvent(input$act_famtree_view, {
-
-    # Combine information
     persons <- c("Victim", "Ref", rv_famtree$uk)
     sex_all <- c(input$v_sex, input$r_sex, rv_famtree$sex)
     father_all <- c(input$v_father, input$r_father, rv_famtree$father)
     mother_all <- c(input$v_mother, input$r_mother, rv_famtree$mother)
     founder_all <- c(input$v_founder, input$r_founder, rv_famtree$founder)
 
-    # Check the family tree
     tree <- check_tree(persons, sex_all, father_all, mother_all, founder_all)
 
-    # Check whether the family tree is appropriate or not
     error_famtree <- FALSE
     if(length(class(tree)) > 1){
       error_famtree <- TRUE
@@ -595,35 +568,26 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
         footer = NULL
       ))
     }else{
-
-      # Plot the family tree
       output$famtree <- renderPlot({
         plot(tree, hatched = c("Victim", "Ref"))
       })
     }
   })
 
-  # Button to set family tree
   output$act_famtree_set <- renderUI(actionButton(session$ns("act_famtree_set"), label = "Set"))
 
-  # Set family tree
   observeEvent(input$act_famtree_set, {
     if(isTruthy(input$rel_add)){
-
-      # Added relationship name
       rel_add <- input$rel_add
 
-      # Combine information
       persons <- c("Victim", "Ref", rv_famtree$uk)
       sex_all <- c(input$v_sex, input$r_sex, rv_famtree$sex)
       father_all <- c(input$v_father, input$r_father, rv_famtree$father)
       mother_all <- c(input$v_mother, input$r_mother, rv_famtree$mother)
       founder_all <- c(input$v_founder, input$r_founder, rv_famtree$founder)
 
-      # Check the family tree
       tree <- check_tree(persons, sex_all, father_all, mother_all, founder_all)
 
-      # Check whether the family tree is appropriate or not
       error_famtree <- FALSE
       if(length(class(tree)) > 1){
         error_famtree <- TRUE
@@ -638,11 +602,8 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
           footer = NULL
         ))
       }else{
-
-        # Make the coefficient table
         coeff_tree <- coeffTable(tree)
 
-        # Extract k2, k1, and k0
         pos_row <- intersect(which(is.element(coeff_tree[, "id1"], c("Victim", "Ref")) == TRUE),
                              which(is.element(coeff_tree[, "id2"], c("Victim", "Ref")) == TRUE))
         pibd <- as.numeric(coeff_tree[pos_row, c("k2", "k1", "k0")])
@@ -657,8 +618,6 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
             footer = NULL
           ))
         }else{
-
-          # Make a displayed degree
           deg_display <- make_deg_display(deg, pibd[2])
 
           rv_rel$name <- c(rv_rel$name, rel_add)
@@ -716,10 +675,6 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
       rownames = FALSE
     )
   })
-
-  ###################################################
-  # Return reactive information on the relationship #
-  ###################################################
 
   return(rv_rel)
 }

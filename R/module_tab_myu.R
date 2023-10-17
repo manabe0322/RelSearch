@@ -1,7 +1,6 @@
-###########################################################
-# The function to create the ui module for mutation rates #
-###########################################################
-
+#' tab_myu_ui
+#'
+#' @description The function to create the ui module for mutation rates
 tab_myu_ui <- function(id){
   ns <- NS(id)
 
@@ -42,14 +41,12 @@ tab_myu_ui <- function(id){
   )
 }
 
-
-###############################################################
-# The function to create the server module for mutation rates #
-###############################################################
-
+#' tab_myu_server
+#'
+#' @description The function to create the server module for mutation rates
+#' @param init_dt_myu The initial data.table of mutation rates
+#' @param path_pack Package path
 tab_myu_server <- function(input, output, session, init_dt_myu, path_pack){
-
-  # Define reactive values for setting mutation rates
   rv_myu <- reactiveValues()
   rv_myu$mk <- init_dt_myu[, Marker]
   rv_myu$val <- init_dt_myu[, Myu]
@@ -58,19 +55,14 @@ tab_myu_server <- function(input, output, session, init_dt_myu, path_pack){
   # Edit a mutation rate #
   ########################
 
-  # Select a locus
   output$myu_mk_edit <- renderUI(selectInput(session$ns("myu_mk_edit"), label = "Select a locus", choices = rv_myu$mk, selected = rv_myu$mk[1]))
 
-
-  # Enter a mutation rate
   observeEvent(input$myu_mk_edit, {
     output$myu_val_edit <- renderUI(numericInput(session$ns("myu_val_edit"), label = "Enter a mutation rate", value = rv_myu$val[rv_myu$mk == input$myu_mk_edit]))
   })
 
-  # Button to edit
   output$act_myu_edit <- renderUI(actionButton(session$ns("act_myu_edit"), label = "Edit"))
 
-  # Perform
   observeEvent(input$act_myu_edit, {
 
     myu_mk_edit <- input$myu_mk_edit
@@ -102,16 +94,12 @@ tab_myu_server <- function(input, output, session, init_dt_myu, path_pack){
   # Add a mutation rate #
   #######################
 
-  # Enter a locus name
   output$myu_mk_add <- renderUI(textInput(session$ns("myu_mk_add"), label = "Enter a locus name", value = NULL))
 
-  # Enter a mutation rate
   output$myu_val_add <- renderUI(numericInput(session$ns("myu_val_add"), label = "Mutation rate", value = NULL))
 
-  # Button to add
   output$act_myu_add <- renderUI(actionButton(session$ns("act_myu_add"), label = "Add"))
 
-  # Perform
   observeEvent(input$act_myu_add, {
     myu_mk_add <- input$myu_mk_add
     myu_val_add <- input$myu_val_add
@@ -143,13 +131,10 @@ tab_myu_server <- function(input, output, session, init_dt_myu, path_pack){
   # Delete a mutation rate #
   ##########################
 
-  # Select a locus
   output$myu_mk_del <- renderUI(selectInput(session$ns("myu_mk_del"), label = "Select a locus", choices = rv_myu$mk, selected = rv_myu$mk[1]))
 
-  # Button to delete
   output$act_myu_del <- renderUI(actionButton(session$ns("act_myu_del"), label = "Delete"))
 
-  # Perform
   observeEvent(input$act_myu_del, {
     pos_del <- which(rv_myu$mk == input$myu_mk_del)
     rv_myu$mk <- rv_myu$mk[- pos_del]
@@ -170,10 +155,8 @@ tab_myu_server <- function(input, output, session, init_dt_myu, path_pack){
   # Reset the mutation rates #
   ############################
 
-  # Create a button to reset mutation rates
   output$act_myu_reset <- renderUI(actionButton(session$ns("act_myu_reset"), label = "Reset"))
 
-  # Define the action to reset the mutation rates
   observeEvent(input$act_myu_reset, {
     init_dt_myu <- create_dt_myu(path_pack)
     rv_myu$mk <- init_dt_myu[, Marker]
@@ -194,10 +177,8 @@ tab_myu_server <- function(input, output, session, init_dt_myu, path_pack){
   # Update the default mutation rates #
   #####################################
 
-  # Create a button to update the default mutation rates
   output$act_myu_update <- renderUI(actionButton(session$ns("act_myu_update"), label = "Update default"))
 
-  # Define the action to update the default mutation rates
   observeEvent(input$act_myu_update, {
     write.csv(data.table(Marker = rv_myu$mk, Myu = rv_myu$val), paste0(path_pack, "/extdata/parameters/myu.csv"), row.names = FALSE)
 
@@ -217,10 +198,6 @@ tab_myu_server <- function(input, output, session, init_dt_myu, path_pack){
       rownames = FALSE
     )
   })
-
-  ##################################
-  # Return reactive mutation rates #
-  ##################################
 
   return(rv_myu)
 }

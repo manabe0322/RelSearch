@@ -1,26 +1,24 @@
-#####################################
-# The function to check family tree #
-#####################################
-
+#' check_tree
+#'
+#' @description The function to check family tree
+#' @param persons Names of persons
+#' @param sex_all Sex of all persons
+#' @param father_all Fathers of all persons
+#' @param mother_all Mothers of all persons
+#' @param founder_all Information on founder/offspring of all persons
 check_tree <- function(persons, sex_all, father_all, mother_all, founder_all){
-
-  # create sex IDs
   sex_id <- rep(0, length(sex_all))
   sex_id[sex_all == "M"] <- 1
   sex_id[sex_all == "F"] <- 2
 
-  # Index of founders
   pos_founder <- which(founder_all == "Yes")
 
-  # Create father IDs
   father_id <- father_all
   father_id[pos_founder] <- 0
 
-  # Create mother IDs
   mother_id <- mother_all
   mother_id[pos_founder] <- 0
 
-  # Define a family tree
   tree <- try(ped(id = persons,
                   fid = father_id,
                   mid = mother_id,
@@ -30,11 +28,11 @@ check_tree <- function(persons, sex_all, father_all, mother_all, founder_all){
   return(tree)
 }
 
-
-###########################################
-# The function to make a displayed degree #
-###########################################
-
+#' make_deg_display
+#'
+#' @description The function to make a displayed degree
+#' @param deg Degree of relationship
+#' @param k1 Pr(IBD = 1)
 make_deg_display <- function(deg, k1 = -1){
   if(is.na(deg)){
     deg_display <- "unr"
