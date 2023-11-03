@@ -9,6 +9,7 @@
 #' @importFrom ribd coeffTable
 #' @importFrom shinyjs disable disabled enable refresh useShinyjs
 #' @importFrom shinythemes shinytheme
+#' @importFrom shinyvalidate InputValidator sv_required
 #' @importFrom waiter useWaiter waiter_show waiter_hide spin_3k
 "_PACKAGE"
 

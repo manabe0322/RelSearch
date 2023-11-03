@@ -117,6 +117,8 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
   rv_famtree$error_famtree <- TRUE
   rv_famtree$tree <- NULL
 
+  iv_add <- InputValidator$new()
+
   make_unk_selectbox <- function(num_uk, uks, sexes, fathers, mothers, founders){
 
     output$uks <- renderUI({
@@ -225,11 +227,13 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
       ),
 
       footer = tagList(
-        actionButton(session$ns("act_rel_add_save"), "Save"),
+        disabled(actionButton(session$ns("act_rel_add_save"), "Save")),
         actionButton(session$ns("act_rel_add_cancel"), "Cancel")
       ),
       size = "l"
     ))
+
+    iv_add$disable()
   })
 
   observeEvent(input$v_founder, {
@@ -478,6 +482,7 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
       rv_famtree$error_famtree <- TRUE
     }else{
       rv_famtree$error_famtree <- FALSE
+      state_save_butt()
     }
   })
 
@@ -488,21 +493,36 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
     plot(rv_famtree$tree, hatched = c("Victim", "Ref"))
   })
 
+  state_save_butt <- function(){
+    if(rv_famtree$error_famtree){
+      disable("act_rel_add_save")
+    }else{
+      enable("act_rel_add_save")
+    }
+  }
+
   observeEvent(input$act_rel_add_save, {
+    if(all(c(isTruthy(input$rel_add), isTruthy(input$vic_add), isTruthy(input$ref_add)))){
 
 
+      rv_famtree$num_uk <- 0
+      rv_famtree$uk <- character(0)
+      rv_famtree$sex <- character(0)
+      rv_famtree$father <- character(0)
+      rv_famtree$mother <- character(0)
+      rv_famtree$founder <- character(0)
+      rv_famtree$error_famtree <- TRUE
 
-    rv_famtree$num_uk <- 0
-    rv_famtree$uk <- character(0)
-    rv_famtree$sex <- character(0)
-    rv_famtree$father <- character(0)
-    rv_famtree$mother <- character(0)
-    rv_famtree$founder <- character(0)
-    rv_famtree$error_famtree <- TRUE
+      make_unk_selectbox(rv_famtree$num_uk, rv_famtree$uk, rv_famtree$sex, rv_famtree$father, rv_famtree$mother, rv_famtree$founder)
+      state_save_butt()
 
-    make_unk_selectbox(rv_famtree$num_uk, rv_famtree$uk, rv_famtree$sex, rv_famtree$father, rv_famtree$mother, rv_famtree$founder)
-
-    removeModal()
+      removeModal()
+    }else{
+      iv_add$add_rule("rel_add", sv_required())
+      iv_add$add_rule("vic_add", sv_required())
+      iv_add$add_rule("ref_add", sv_required())
+      iv_add$enable()
+    }
   })
 
   observeEvent(input$act_rel_add_cancel, {
@@ -515,6 +535,7 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
     rv_famtree$error_famtree <- TRUE
 
     make_unk_selectbox(rv_famtree$num_uk, rv_famtree$uk, rv_famtree$sex, rv_famtree$father, rv_famtree$mother, rv_famtree$founder)
+    state_save_butt()
 
     removeModal()
   })

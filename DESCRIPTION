@@ -23,6 +23,7 @@ Imports:
     ribd, 
     shinyjs, 
     shinythemes, 
+    shinyvalidate, 
     waiter
 LinkingTo: 
     Rcpp
