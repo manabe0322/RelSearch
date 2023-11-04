@@ -65,7 +65,7 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
   # Edit the name of a relationship #
   ###################################
 
-  iv_edit <- InputValidator$new()
+  iv_rel_edit <- InputValidator$new()
 
   observeEvent(input$act_rel_edit, {
     showModal(modalDialog(
@@ -79,7 +79,7 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
       size = "l"
     ))
 
-    iv_edit$disable()
+    iv_rel_edit$disable()
   })
 
   observeEvent(input$act_rel_edit_save, {
@@ -112,8 +112,8 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
       removeModal()
 
     }else{
-      iv_edit$add_rule("rel_new_edit", sv_required())
-      iv_edit$enable()
+      iv_rel_edit$add_rule("rel_new_edit", sv_required())
+      iv_rel_edit$enable()
     }
   })
 
@@ -131,7 +131,7 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
   rv_famtree$error_famtree <- TRUE
   rv_famtree$tree <- NULL
 
-  iv_add <- InputValidator$new()
+  iv_rel_add <- InputValidator$new()
 
   make_unk_selectbox <- function(num_uk, uks, sexes, fathers, mothers, founders){
 
@@ -247,7 +247,7 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
       size = "l"
     ))
 
-    iv_add$disable()
+    iv_rel_add$disable()
   })
 
   observeEvent(input$v_founder, {
@@ -605,10 +605,10 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
       state_save_butt()
       removeModal()
     }else{
-      iv_add$add_rule("rel_add", sv_required())
-      iv_add$add_rule("vic_add", sv_required())
-      iv_add$add_rule("ref_add", sv_required())
-      iv_add$enable()
+      iv_rel_add$add_rule("rel_add", sv_required())
+      iv_rel_add$add_rule("vic_add", sv_required())
+      iv_rel_add$add_rule("ref_add", sv_required())
+      iv_rel_add$enable()
     }
   })
 
