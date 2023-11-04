@@ -4,10 +4,12 @@
 \alias{create_dt_rel}
 \title{create_dt_rel}
 \usage{
-create_dt_rel(path_pack)
+create_dt_rel(path_pack, init = TRUE)
 }
 \arguments{
 \item{path_pack}{Package path}
+
+\item{init}{Whether initial creation or not}
 }
 \description{
 The function to create the data.table for information on relationships

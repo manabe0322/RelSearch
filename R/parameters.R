@@ -20,17 +20,152 @@ create_dt_criteria <- function(path_pack){
 #'
 #' @description The function to create the data.table for information on relationships
 #' @param path_pack Package path
-create_dt_rel <- function(path_pack){
+#' @param init Whether initial creation or not
+create_dt_rel <- function(path_pack, init = TRUE){
   fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
 
-  if(is.element("rel.csv", fn_par)){
+  if(init && is.element("rel.csv", fn_par)){
     dt_rel <- fread(paste0(path_pack, "/extdata/parameters/rel.csv"))
   }else{
-    dt_rel <- data.table(Name_relationship = c("parent-child", "sibling", "grandparent-grandchild", "uncle-nephew", "cousin"),
-                         Degree = c("1st_pc", "1st_sib", "2nd", "2nd", "3rd"),
-                         Pr_IBD2 = c(0, 0.25, 0, 0, 0),
-                         Pr_IBD1 = c(1, 0.5, 0.5, 0.5, 0.25),
-                         Pr_IBD0 = c(0, 0.25, 0.5, 0.5, 0.75))
+    victim <- c("Father", "Father", "Mother", "Mother", "Son", "Son", "Daughter", "Daughter",
+                "Brother", "Brother", "Sister", "Sister",
+                "Paternal-uncle", "Paternal-uncle", "Maternal-uncle", "Maternal-uncle",
+                "Paternal-aunt", "Paternal-aunt", "Maternal-aunt", "Maternal-aunt",
+                "Nephew", "Niece", "Nephew", "Niece",
+                "Nephew", "Niece", "Nephew", "Niece",
+                "Paternal-grandfather", "Paternal-grandfather", "Maternal-grandfather", "Maternal-grandfather",
+                "Paternal-grandmother", "Paternal-grandmother", "Maternal-grandmother", "Maternal-grandmother",
+                "Grandson", "Granddaughter", "Grandson", "Granddaughter",
+                "Grandson", "Granddaughter", "Grandson", "Granddaughter")
+
+    reference <- c("Son", "Daughter", "Son", "Daughter", "Father", "Mother", "Father", "Mother",
+                   "Brother", "Sister", "Brother", "Sister",
+                   "Nephew", "Niece", "Nephew", "Niece",
+                   "Nephew", "Niece", "Nephew", "Niece",
+                   "Paternal-uncle", "Paternal-uncle", "Maternal-uncle", "Maternal-uncle",
+                   "Paternal-aunt", "Paternal-aunt", "Maternal-aunt", "Maternal-aunt",
+                   "Grandson", "Granddaughter", "Grandson", "Granddaughter",
+                   "Grandson", "Granddaughter", "Grandson", "Granddaughter",
+                   "Paternal-grandfather", "Paternal-grandfather", "Maternal-grandfather", "Maternal-grandfather",
+                   "Paternal-grandmother", "Paternal-grandmother", "Maternal-grandmother", "Maternal-grandmother")
+
+    name <- mapply(paste, victim, reference, sep = "_")
+
+    pibd2 <- c(0, 0, 0, 0, 0, 0, 0, 0,
+               0.25, 0.25, 0.25, 0.25,
+               0, 0, 0, 0,
+               0, 0, 0, 0,
+               0, 0, 0, 0,
+               0, 0, 0, 0,
+               0, 0, 0, 0,
+               0, 0, 0, 0,
+               0, 0, 0, 0,
+               0, 0, 0, 0)
+
+    pibd1 <- c(1, 1, 1, 1, 1, 1, 1, 1,
+               0.5, 0.5, 0.5, 0.5,
+               0.5, 0.5, 0.5, 0.5,
+               0.5, 0.5, 0.5, 0.5,
+               0.5, 0.5, 0.5, 0.5,
+               0.5, 0.5, 0.5, 0.5,
+               0.5, 0.5, 0.5, 0.5,
+               0.5, 0.5, 0.5, 0.5,
+               0.5, 0.5, 0.5, 0.5,
+               0.5, 0.5, 0.5, 0.5)
+
+    pibd0 <- c(0, 0, 0, 0, 0, 0, 0, 0,
+               0.25, 0.25, 0.25, 0.25,
+               0.5, 0.5, 0.5, 0.5,
+               0.5, 0.5, 0.5, 0.5,
+               0.5, 0.5, 0.5, 0.5,
+               0.5, 0.5, 0.5, 0.5,
+               0.5, 0.5, 0.5, 0.5,
+               0.5, 0.5, 0.5, 0.5,
+               0.5, 0.5, 0.5, 0.5,
+               0.5, 0.5, 0.5, 0.5)
+
+    paternal <- c("Yes", "No", "No", "No", "Yes", "No", "No", "No",
+                  "Yes", "No", "No", "No",
+                  "Yes", "No", "No", "No",
+                  "No", "No", "No", "No",
+                  "Yes", "No", "No", "No",
+                  "No", "No", "No", "No",
+                  "Yes", "No", "No", "No",
+                  "No", "No", "No", "No",
+                  "Yes", "No", "No", "No",
+                  "No", "No", "No", "No")
+
+    maternal <- c("No", "No", "Yes", "Yes", "No", "Yes", "No", "Yes",
+                  "Yes", "Yes", "Yes", "Yes",
+                  "No", "No", "Yes", "Yes",
+                  "No", "No", "Yes", "Yes",
+                  "No", "No", "Yes", "Yes",
+                  "No", "No", "Yes", "Yes",
+                  "No", "No", "No", "No",
+                  "No", "No", "Yes", "Yes",
+                  "No", "No", "No", "No",
+                  "No", "No", "Yes", "Yes")
+
+    tree_persons <- c("Victim, Ref, UK1", "Victim, Ref, UK1", "Victim, Ref, UK1", "Victim, Ref, UK1", "Victim, Ref, UK1", "Victim, Ref, UK1", "Victim, Ref, UK1", "Victim, Ref, UK1",
+                      "Victim, Ref, UK1, UK2", "Victim, Ref, UK1, UK2", "Victim, Ref, UK1, UK2", "Victim, Ref, UK1, UK2",
+                      "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4",
+                      "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4",
+                      "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4",
+                      "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4",
+                      "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3",
+                      "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3",
+                      "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3",
+                      "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3")
+
+    tree_sexes <- c("M, M, F", "M, F, F", "F, M, M", "F, F, M", "M, M, F", "M, F, M", "F, M, F", "F, F, M",
+                    "M, M, M, F", "M, F, M, F", "F, M, M, F", "F, F, M, F",
+                    "M, M, M, F, M, F", "M, F, M, F, M, F", "M, M, M, F, F, M", "M, F, M, F, F, M",
+                    "F, M, M, F, M, F", "F, F, M, F, M, F", "F, M, M, F, F, M", "F, F, M, F, F, M",
+                    "M, M, M, F, M, F", "F, M, M, F, M, F", "M, M, M, F, F, M", "F, M, M, F, F, M",
+                    "M, F, M, F, M, F", "F, F, M, F, M, F", "M, F, M, F, F, M", "F, F, M, F, F, M",
+                    "M, M, F, M, F", "M, F, F, M, F", "M, M, F, F, M", "M, F, F, F, M",
+                    "F, M, M, M, F", "F, F, M, M, F", "F, M, M, F, M", "F, F, M, F, M",
+                    "M, M, F, M, F", "F, M, F, M, F", "M, M, F, F, M", "F, M, F, F, M",
+                    "M, F, M, M, F", "F, F, M, M, F", "M, F, M, F, M", "F, F, M, F, M")
+
+    tree_fathers <- c("0, Victim, 0", "0, Victim, 0", "0, UK1, 0", "0, UK1, 0", "Ref, 0, 0", "UK1, 0, 0", "Ref, 0, 0", "UK1, 0, 0",
+                      "UK1, UK1, 0, 0", "UK1, UK1, 0, 0", "UK1, UK1, 0, 0", "UK1, UK1, 0, 0",
+                      "UK1, UK3, 0, 0, UK1, 0", "UK1, UK3, 0, 0, UK1, 0", "UK1, UK4, 0, 0, UK1, 0", "UK1, UK4, 0, 0, UK1, 0",
+                      "UK1, UK3, 0, 0, UK1, 0", "UK1, UK3, 0, 0, UK1, 0", "UK1, UK4, 0, 0, UK1, 0", "UK1, UK4, 0, 0, UK1, 0",
+                      "UK3, UK1, 0, 0, UK1, 0", "UK3, UK1, 0, 0, UK1, 0", "UK4, UK1, 0, 0, UK1, 0", "UK4, UK1, 0, 0, UK1, 0",
+                      "UK3, UK1, 0, 0, UK1, 0", "UK3, UK1, 0, 0, UK1, 0", "UK4, UK1, 0, 0, UK1, 0", "UK4, UK1, 0, 0, UK1, 0",
+                      "0, UK2, 0, Victim, 0", "0, UK2, 0, Victim, 0", "0, UK3, 0, Victim, 0", "0, UK3, 0, Victim, 0",
+                      "0, UK2, 0, UK1, 0", "0, UK2, 0, UK1, 0", "0, UK3, 0, UK1, 0", "0, UK3, 0, UK1, 0",
+                      "UK2, 0, 0, Ref, 0", "UK2, 0, 0, Ref, 0", "UK3, 0, 0, Ref, 0", "UK3, 0, 0, Ref, 0",
+                      "UK2, 0, 0, UK1, 0", "UK2, 0, 0, UK1, 0", "UK3, 0, 0, UK1, 0", "UK3, 0, 0, UK1, 0")
+
+    tree_mothers <- c("0, UK1, 0", "0, UK1, 0", "0, Victim, 0", "0, Victim, 0", "UK1, 0, 0", "Ref, 0, 0", "UK1, 0, 0", "Ref, 0, 0",
+                      "UK2, UK2, 0, 0", "UK2, UK2, 0, 0", "UK2, UK2, 0, 0", "UK2, UK2, 0, 0",
+                      "UK2, UK4, 0, 0, UK2, 0", "UK2, UK4, 0, 0, UK2, 0", "UK2, UK3, 0, 0, UK2, 0", "UK2, UK3, 0, 0, UK2, 0",
+                      "UK2, UK4, 0, 0, UK2, 0", "UK2, UK4, 0, 0, UK2, 0", "UK2, UK3, 0, 0, UK2, 0", "UK2, UK3, 0, 0, UK2, 0",
+                      "UK4, UK2, 0, 0, UK2, 0", "UK4, UK2, 0, 0, UK2, 0", "UK3, UK2, 0, 0, UK2, 0", "UK3, UK2, 0, 0, UK2, 0",
+                      "UK4, UK2, 0, 0, UK2, 0", "UK4, UK2, 0, 0, UK2, 0", "UK3, UK2, 0, 0, UK2, 0", "UK3, UK2, 0, 0, UK2, 0",
+                      "0, UK3, 0, UK1, 0", "0, UK3, 0, UK1, 0", "0, UK2, 0, UK1, 0", "0, UK2, 0, UK1, 0",
+                      "0, UK3, 0, Victim, 0", "0, UK3, 0, Victim, 0", "0, UK2, 0, Victim, 0", "0, UK2, 0, Victim, 0",
+                      "UK3, 0, 0, UK1, 0", "UK3, 0, 0, UK1, 0", "UK2, 0, 0, UK1, 0", "UK2, 0, 0, UK1, 0",
+                      "UK3, 0, 0, Ref, 0", "UK3, 0, 0, Ref, 0", "UK2, 0, 0, Ref, 0", "UK2, 0, 0, Ref, 0")
+
+    tree_founders <- c("Yes, No, Yes", "Yes, No, Yes", "Yes, No, Yes", "Yes, No, Yes", "No, Yes, Yes", "No, Yes, Yes", "No, Yes, Yes", "No, Yes, Yes",
+                       "No, No, Yes, Yes", "No, No, Yes, Yes", "No, No, Yes, Yes", "No, No, Yes, Yes",
+                       "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes",
+                       "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes",
+                       "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes",
+                       "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes",
+                       "Yes, No, Yes, No, Yes", "Yes, No, Yes, No, Yes", "Yes, No, Yes, No, Yes", "Yes, No, Yes, No, Yes",
+                       "Yes, No, Yes, No, Yes", "Yes, No, Yes, No, Yes", "Yes, No, Yes, No, Yes", "Yes, No, Yes, No, Yes",
+                       "No, Yes, Yes, No, Yes", "No, Yes, Yes, No, Yes", "No, Yes, Yes, No, Yes", "No, Yes, Yes, No, Yes",
+                       "No, Yes, Yes, No, Yes", "No, Yes, Yes, No, Yes", "No, Yes, Yes, No, Yes", "No, Yes, Yes, No, Yes")
+
+    dt_rel <- data.table(Relationship = name, Victim = victim, Reference = reference,
+                         Pr_IBD2 = pibd2, Pr_IBD1 = pibd1, Pr_IBD0 = pibd0,
+                         Paternal = paternal, Maternal = maternal,
+                         Tree_persons = tree_persons, Tree_sexes = tree_sexes, Tree_fathers = tree_fathers, Tree_mothers = tree_mothers, Tree_founders = tree_founders)
+
     write.csv(dt_rel, paste0(path_pack, "/extdata/parameters/rel.csv"), row.names = FALSE)
   }
 
@@ -41,10 +176,11 @@ create_dt_rel <- function(path_pack){
 #'
 #' @description The function to create the data.table for mutation rates
 #' @param path_pack Package path
-create_dt_myu <- function(path_pack){
+#' @param init Whether initial creation or not
+create_dt_myu <- function(path_pack, init = TRUE){
   fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
 
-  if(is.element("myu.csv", fn_par)){
+  if(init && is.element("myu.csv", fn_par)){
     dt_myu <- fread(paste0(path_pack, "/extdata/parameters/myu.csv"))
   }else{
     dt_myu <- data.table(Marker = c("D3S1358", "vWA", "D16S539", "CSF1PO", "TPOX",

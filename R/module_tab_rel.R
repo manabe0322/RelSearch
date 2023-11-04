@@ -553,8 +553,8 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
 
       # Make additional tree data
       sex_info <- sex
-      sex_info[which(sex) == 1] <- "M"
-      sex_info[which(sex) == 2] <- "F"
+      sex_info[which(sex == 1)] <- "M"
+      sex_info[which(sex == 2)] <- "F"
       founder_info <- rep("No", length(id))
       founder_info[which(fid == "0")] <- "Yes"
 
@@ -697,134 +697,21 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
   })
 
   observeEvent(input$act_rel_reset_yes, {
-    rv_rel$victim <- c("Father", "Father", "Mother", "Mother", "Son", "Son", "Daughter", "Daughter",
-                       "Brother", "Brother", "Sister", "Sister",
-                       "Paternal-uncle", "Paternal-uncle", "Maternal-uncle", "Maternal-uncle",
-                       "Paternal-aunt", "Paternal-aunt", "Maternal-aunt", "Maternal-aunt",
-                       "Nephew", "Niece", "Nephew", "Niece",
-                       "Nephew", "Niece", "Nephew", "Niece",
-                       "Paternal-grandfather", "Paternal-grandfather", "Maternal-grandfather", "Maternal-grandfather",
-                       "Paternal-grandmother", "Paternal-grandmother", "Maternal-grandmother", "Maternal-grandmother",
-                       "Grandson", "Granddaughter", "Grandson", "Granddaughter",
-                       "Grandson", "Granddaughter", "Grandson", "Granddaughter")
-    rv_rel$reference <- c("Son", "Daughter", "Son", "Daughter", "Father", "Mother", "Father", "Mother",
-                          "Brother", "Sister", "Brother", "Sister",
-                          "Nephew", "Niece", "Nephew", "Niece",
-                          "Nephew", "Niece", "Nephew", "Niece",
-                          "Paternal-uncle", "Paternal-uncle", "Maternal-uncle", "Maternal-uncle",
-                          "Paternal-aunt", "Paternal-aunt", "Maternal-aunt", "Maternal-aunt",
-                          "Grandson", "Granddaughter", "Grandson", "Granddaughter",
-                          "Grandson", "Granddaughter", "Grandson", "Granddaughter",
-                          "Paternal-grandfather", "Paternal-grandfather", "Maternal-grandfather", "Maternal-grandfather",
-                          "Paternal-grandmother", "Paternal-grandmother", "Maternal-grandmother", "Maternal-grandmother")
-    rv_rel$name <- mapply(paste, rv_rel$victim, rv_rel$reference, sep = "_")
-    rv_rel$pibd2 <- c(0, 0, 0, 0, 0, 0, 0, 0,
-                      0.25, 0.25, 0.25, 0.25,
-                      0, 0, 0, 0,
-                      0, 0, 0, 0,
-                      0, 0, 0, 0,
-                      0, 0, 0, 0,
-                      0, 0, 0, 0,
-                      0, 0, 0, 0,
-                      0, 0, 0, 0,
-                      0, 0, 0, 0)
-    rv_rel$pibd1 <- c(1, 1, 1, 1, 1, 1, 1, 1,
-                      0.5, 0.5, 0.5, 0.5,
-                      0.5, 0.5, 0.5, 0.5,
-                      0.5, 0.5, 0.5, 0.5,
-                      0.5, 0.5, 0.5, 0.5,
-                      0.5, 0.5, 0.5, 0.5,
-                      0.5, 0.5, 0.5, 0.5,
-                      0.5, 0.5, 0.5, 0.5,
-                      0.5, 0.5, 0.5, 0.5,
-                      0.5, 0.5, 0.5, 0.5)
-    rv_rel$pibd0 <- c(0, 0, 0, 0, 0, 0, 0, 0,
-                      0.25, 0.25, 0.25, 0.25,
-                      0.5, 0.5, 0.5, 0.5,
-                      0.5, 0.5, 0.5, 0.5,
-                      0.5, 0.5, 0.5, 0.5,
-                      0.5, 0.5, 0.5, 0.5,
-                      0.5, 0.5, 0.5, 0.5,
-                      0.5, 0.5, 0.5, 0.5,
-                      0.5, 0.5, 0.5, 0.5,
-                      0.5, 0.5, 0.5, 0.5)
-    rv_rel$paternal <- c("Yes", "No", "No", "No", "Yes", "No", "No", "No",
-                         "Yes", "No", "No", "No",
-                         "Yes", "No", "No", "No",
-                         "No", "No", "No", "No",
-                         "Yes", "No", "No", "No",
-                         "No", "No", "No", "No",
-                         "Yes", "No", "No", "No",
-                         "No", "No", "No", "No",
-                         "Yes", "No", "No", "No",
-                         "No", "No", "No", "No")
-    rv_rel$maternal <- c("No", "No", "Yes", "Yes", "No", "Yes", "No", "Yes",
-                         "Yes", "Yes", "Yes", "Yes",
-                         "No", "No", "Yes", "Yes",
-                         "No", "No", "Yes", "Yes",
-                         "No", "No", "Yes", "Yes",
-                         "No", "No", "Yes", "Yes",
-                         "No", "No", "No", "No",
-                         "No", "No", "Yes", "Yes",
-                         "No", "No", "No", "No",
-                         "No", "No", "Yes", "Yes")
-    rv_rel$tree_persons <- c("Victim, Ref, UK1", "Victim, Ref, UK1", "Victim, Ref, UK1", "Victim, Ref, UK1", "Victim, Ref, UK1", "Victim, Ref, UK1", "Victim, Ref, UK1", "Victim, Ref, UK1",
-                             "Victim, Ref, UK1, UK2", "Victim, Ref, UK1, UK2", "Victim, Ref, UK1, UK2", "Victim, Ref, UK1, UK2",
-                             "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4",
-                             "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4",
-                             "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4",
-                             "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4", "Victim, Ref, UK1, UK2, UK3, UK4",
-                             "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3",
-                             "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3",
-                             "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3",
-                             "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3", "Victim, Ref, UK1, UK2, UK3")
-    rv_rel$tree_sexes <- c("M, M, F", "M, F, F", "F, M, M", "F, F, M", "M, M, F", "M, F, M", "F, M, F", "F, F, M",
-                           "M, M, M, F", "M, F, M, F", "F, M, M, F", "F, F, M, F",
-                           "M, M, M, F, M, F", "M, F, M, F, M, F", "M, M, M, F, F, M", "M, F, M, F, F, M",
-                           "F, M, M, F, M, F", "F, F, M, F, M, F", "F, M, M, F, F, M", "F, F, M, F, F, M",
-                           "M, M, M, F, M, F", "F, M, M, F, M, F", "M, M, M, F, F, M", "F, M, M, F, F, M",
-                           "M, F, M, F, M, F", "F, F, M, F, M, F", "M, F, M, F, F, M", "F, F, M, F, F, M",
-                           "M, M, F, M, F", "M, F, F, M, F", "M, M, F, F, M", "M, F, F, F, M",
-                           "F, M, M, M, F", "F, F, M, M, F", "F, M, M, F, M", "F, F, M, F, M",
-                           "M, M, F, M, F", "F, M, F, M, F", "M, M, F, F, M", "F, M, F, F, M",
-                           "M, F, M, M, F", "F, F, M, M, F", "M, F, M, F, M", "F, F, M, F, M")
-    rv_rel$tree_fathers <- c("0, Victim, 0", "0, Victim, 0", "0, UK1, 0", "0, UK1, 0", "Ref, 0, 0", "UK1, 0, 0", "Ref, 0, 0", "UK1, 0, 0",
-                             "UK1, UK1, 0, 0", "UK1, UK1, 0, 0", "UK1, UK1, 0, 0", "UK1, UK1, 0, 0",
-                             "UK1, UK3, 0, 0, UK1, 0", "UK1, UK3, 0, 0, UK1, 0", "UK1, UK4, 0, 0, UK1, 0", "UK1, UK4, 0, 0, UK1, 0",
-                             "UK1, UK3, 0, 0, UK1, 0", "UK1, UK3, 0, 0, UK1, 0", "UK1, UK4, 0, 0, UK1, 0", "UK1, UK4, 0, 0, UK1, 0",
-                             "UK3, UK1, 0, 0, UK1, 0", "UK3, UK1, 0, 0, UK1, 0", "UK4, UK1, 0, 0, UK1, 0", "UK4, UK1, 0, 0, UK1, 0",
-                             "UK3, UK1, 0, 0, UK1, 0", "UK3, UK1, 0, 0, UK1, 0", "UK4, UK1, 0, 0, UK1, 0", "UK4, UK1, 0, 0, UK1, 0",
-                             "0, UK2, 0, Victim, 0", "0, UK2, 0, Victim, 0", "0, UK3, 0, Victim, 0", "0, UK3, 0, Victim, 0",
-                             "0, UK2, 0, UK1, 0", "0, UK2, 0, UK1, 0", "0, UK3, 0, UK1, 0", "0, UK3, 0, UK1, 0",
-                             "UK2, 0, 0, Ref, 0", "UK2, 0, 0, Ref, 0", "UK3, 0, 0, Ref, 0", "UK3, 0, 0, Ref, 0",
-                             "UK2, 0, 0, UK1, 0", "UK2, 0, 0, UK1, 0", "UK3, 0, 0, UK1, 0", "UK3, 0, 0, UK1, 0")
-    rv_rel$tree_mothers <- c("0, UK1, 0", "0, UK1, 0", "0, Victim, 0", "0, Victim, 0", "UK1, 0, 0", "Ref, 0, 0", "UK1, 0, 0", "Ref, 0, 0",
-                             "UK2, UK2, 0, 0", "UK2, UK2, 0, 0", "UK2, UK2, 0, 0", "UK2, UK2, 0, 0",
-                             "UK2, UK4, 0, 0, UK2, 0", "UK2, UK4, 0, 0, UK2, 0", "UK2, UK3, 0, 0, UK2, 0", "UK2, UK3, 0, 0, UK2, 0",
-                             "UK2, UK4, 0, 0, UK2, 0", "UK2, UK4, 0, 0, UK2, 0", "UK2, UK3, 0, 0, UK2, 0", "UK2, UK3, 0, 0, UK2, 0",
-                             "UK4, UK2, 0, 0, UK2, 0", "UK4, UK2, 0, 0, UK2, 0", "UK3, UK2, 0, 0, UK2, 0", "UK3, UK2, 0, 0, UK2, 0",
-                             "UK4, UK2, 0, 0, UK2, 0", "UK4, UK2, 0, 0, UK2, 0", "UK3, UK2, 0, 0, UK2, 0", "UK3, UK2, 0, 0, UK2, 0",
-                             "0, UK3, 0, UK1, 0", "0, UK3, 0, UK1, 0", "0, UK2, 0, UK1, 0", "0, UK2, 0, UK1, 0",
-                             "0, UK3, 0, Victim, 0", "0, UK3, 0, Victim, 0", "0, UK2, 0, Victim, 0", "0, UK2, 0, Victim, 0",
-                             "UK3, 0, 0, UK1, 0", "UK3, 0, 0, UK1, 0", "UK2, 0, 0, UK1, 0", "UK2, 0, 0, UK1, 0",
-                             "UK3, 0, 0, Ref, 0", "UK3, 0, 0, Ref, 0", "UK2, 0, 0, Ref, 0", "UK2, 0, 0, Ref, 0")
-    rv_rel$tree_founders <- c("Yes, No, Yes", "Yes, No, Yes", "Yes, No, Yes", "Yes, No, Yes", "No, Yes, Yes", "No, Yes, Yes", "No, Yes, Yes", "No, Yes, Yes",
-                              "No, No, Yes, Yes", "No, No, Yes, Yes", "No, No, Yes, Yes", "No, No, Yes, Yes",
-                              "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes",
-                              "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes",
-                              "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes",
-                              "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes", "No, No, Yes, Yes, No, Yes",
-                              "Yes, No, Yes, No, Yes", "Yes, No, Yes, No, Yes", "Yes, No, Yes, No, Yes", "Yes, No, Yes, No, Yes",
-                              "Yes, No, Yes, No, Yes", "Yes, No, Yes, No, Yes", "Yes, No, Yes, No, Yes", "Yes, No, Yes, No, Yes",
-                              "No, Yes, Yes, No, Yes", "No, Yes, Yes, No, Yes", "No, Yes, Yes, No, Yes", "No, Yes, Yes, No, Yes",
-                              "No, Yes, Yes, No, Yes", "No, Yes, Yes, No, Yes", "No, Yes, Yes, No, Yes", "No, Yes, Yes, No, Yes")
+    new_dt_rel <- create_dt_rel(path_pack, FALSE)
 
-    new_dt_rel <- data.table(Relationship = rv_rel$name, Victim = rv_rel$victim, Reference = rv_rel$reference,
-                             Pr_IBD2 = rv_rel$pibd2, Pr_IBD1 = rv_rel$pibd1, Pr_IBD0 = rv_rel$pibd0,
-                             Paternal = rv_rel$paternal, Maternal = rv_rel$maternal,
-                             Tree_persons = rv_rel$tree_persons, Tree_sexes = rv_rel$tree_sexes, Tree_fathers = rv_rel$tree_fathers, Tree_mothers = rv_rel$tree_mothers, Tree_founders = rv_rel$tree_founders)
-
-    write.csv(new_dt_rel, paste0(path_pack, "/extdata/parameters/rel.csv"), row.names = FALSE)
+    rv_rel$name <- new_dt_rel[, Relationship]
+    rv_rel$victim <- new_dt_rel[, Victim]
+    rv_rel$reference <- new_dt_rel[, Reference]
+    rv_rel$pibd2 <- new_dt_rel[, Pr_IBD2]
+    rv_rel$pibd1 <- new_dt_rel[, Pr_IBD1]
+    rv_rel$pibd0 <- new_dt_rel[, Pr_IBD0]
+    rv_rel$paternal <- new_dt_rel[, Paternal]
+    rv_rel$maternal <- new_dt_rel[, Maternal]
+    rv_rel$tree_persons <- new_dt_rel[, Tree_persons]
+    rv_rel$tree_sexes <- new_dt_rel[, Tree_sexes]
+    rv_rel$tree_fathers <- new_dt_rel[, Tree_fathers]
+    rv_rel$tree_mothers <- new_dt_rel[, Tree_mothers]
+    rv_rel$tree_founders <- new_dt_rel[, Tree_founders]
 
     output$dt_rel <- renderDataTable({
       datatable(
