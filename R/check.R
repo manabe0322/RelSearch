@@ -41,7 +41,7 @@ check_error <- function(dt_v_auto, dt_r_auto, dt_af,
       bool_locus_1 <- setequal(locus_v_auto, locus_r_auto)
       bool_locus_2 <- setequal(locus_v_auto, locus_af)
       bool_locus_3 <- all(is.element(locus_v_auto, locus_myu))
-      bool_rel_1 <- all(is.element(unique(dt_r_auto[, Relationship]), dt_rel[, Name_relationship]))
+      bool_rel_1 <- all(is.element(unique(dt_r_auto[, Relationship]), dt_rel[, Relationship]))
 
       if(!bool_locus_1){
         error_message <- "Locus set is not the same between victim database and reference database!"

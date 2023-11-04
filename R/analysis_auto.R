@@ -71,6 +71,42 @@ order_loci_auto <- function(dt_v_auto, dt_r_auto, dt_af){
   return(list(dt_v_auto, dt_r_auto, dt_af))
 }
 
+#' define_action_myu
+#'
+#' @description The function to define actions for considering mutation rates
+#' @param dt_rel A data.table of information on relationships
+define_action_myu <- function(dt_rel){
+  index_pc <- which(dt_rel[, Pr_IBD1] == 1)
+
+  cons_mutations <- rep(FALSE, nrow(dt_rel))
+  cons_mutations[index_pc] <- TRUE
+
+  tree_persons <- dt_rel[, Tree_persons]
+  tree_persons_pc <- tree_persons[index_pc]
+  tree_persons_pc_split <- strsplit(tree_persons_pc, ", ")
+
+  tree_fathers <- dt_rel[, Tree_fathers]
+  tree_fathers_pc <- tree_fathers[index_pc]
+  tree_fathers_pc_split <- strsplit(tree_fathers_pc, ", ")
+
+  tree_mothers <- dt_rel[, Tree_mothers]
+  tree_mothers_pc <- tree_mothers[index_pc]
+  tree_mothers_pc_split <- strsplit(tree_mothers_pc, ", ")
+
+  n_pc <- length(index_pc)
+  parent_victim <- rep(FALSE, nrow(dt_rel))
+  for(i in 1:n_pc){
+    index_victim <- which(tree_persons_pc_split[[i]] == "Victim")
+    victim_father <- tree_fathers_pc_split[[i]][index_victim]
+    victim_mother <- tree_mothers_pc_split[[i]][index_victim]
+    if(victim_father != "Ref" && victim_mother != "Ref"){
+      parent_victim[index_pc[i]] <- TRUE
+    }
+  }
+
+  return(list(cons_mutations, parent_victim))
+}
+
 #' analyze_auto
 #'
 #' @description The function to analyze data for autosomal STR
@@ -90,15 +126,18 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
   # Prepare objects to calculate likelihood ratios #
   ##################################################
 
+  # Locus
   locus_auto <- setdiff(names(dt_v_auto), c("SampleName", "Relationship"))
-
   n_l <- length(locus_auto)
 
+  # Parameters
   maf <- dt_par_auto$Value[dt_par_auto$Parameter == "maf"]
 
+  # Sample names
   sn_v_auto <- dt_v_auto[, SampleName]
   sn_r_auto <- dt_r_auto[, SampleName]
 
+  # Genotypes
   options(warn = -1)
   gt_v_auto <- as.matrix(dt_v_auto[, -c("SampleName", "Relationship")])
   gt_r_auto <- as.matrix(dt_r_auto[, -c("SampleName", "Relationship")])
@@ -112,17 +151,20 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
   gt_v_auto <- asplit(gt_v_auto, 1)
   gt_r_auto <- asplit(gt_r_auto, 1)
 
+  # Assumed relationships
   assumed_rel_all <- dt_r_auto[, Relationship]
 
+  # Allele frequencies
   tmp <- set_af(dt_v_auto, dt_r_auto, dt_af, maf)
   af_list <- tmp[[1]]
   af_al_list <- tmp[[2]]
 
-  names_rel <- dt_rel[, Name_relationship]
-  degrees_rel <- dt_rel[, Degree]
+  # IBD probabilities
+  names_rel <- dt_rel[, Relationship]
   pibds_rel <- as.matrix(dt_rel[, list(Pr_IBD2, Pr_IBD1, Pr_IBD0)])
   pibds_rel <- asplit(pibds_rel, 1)
 
+  # Mutation rates
   locus_myu <- dt_myu[, Marker]
   myu_all <- dt_myu[, Myu]
   myus <- rep(0, n_l)
@@ -131,6 +173,11 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
   }
   names(myus) <- locus_auto
 
+  # Consideration of mutations
+  tmp <- define_action_myu(dt_rel)
+  cons_mutations <- tmp[[1]]
+  parent_victim <- tmp[[2]]
+
   ###############################
   # Calculate likelihood ratios #
   ###############################
@@ -138,7 +185,7 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
   if(show_progress){
     withProgress(
       withCallingHandlers(
-        result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus),
+        result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel, myus, cons_mutations, parent_victim),
         message = function(m) if(grepl("STR_Victim-Reference_ : ", m$message)){
           val <- as.numeric(gsub("STR_Victim-Reference_ : ", "", m$message))
           setProgress(value = val)
@@ -149,7 +196,7 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
       value = 0
     )
   }else{
-    result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, degrees_rel, pibds_rel, myus)
+    result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel, myus, cons_mutations, parent_victim)
   }
 
   ##########################################################
