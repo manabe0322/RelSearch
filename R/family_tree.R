@@ -28,28 +28,121 @@ check_tree <- function(persons, sex_all, father_all, mother_all, founder_all){
   return(tree)
 }
 
-#' make_deg_display
+#' judge_paternal
 #'
-#' @description The function to make a displayed degree
-#' @param deg Degree of relationship
-#' @param k1 Pr(IBD = 1)
-make_deg_display <- function(deg, k1 = -1){
-  if(is.na(deg)){
-    deg_display <- "unr"
-  }else if(deg == 1 && k1 == 1){
-    deg_display <- "1st_pc"
-  }else if(deg == 1 && k1 == 0.5){
-    deg_display <- "1st_sib"
-  }else if(is.element(deg, c(11, 12, 13))){
-    deg_display <- paste0(deg, "th")
-  }else if(deg %% 10 == 1){
-    deg_display <- paste0(deg, "st")
-  }else if(deg %% 10 == 2){
-    deg_display <- paste0(deg, "nd")
-  }else if(deg %% 10 == 3){
-    deg_display <- paste0(deg, "rd")
-  }else{
-    deg_display <- paste0(deg, "th")
+#' @description The function to judge paternal lineage
+#' @param p1 The name of person 1
+#' @param p2 The name of person 2
+#' @param id All names of persons
+#' @param fid Fathers of all persons
+#' @param sex Sex of all persons
+judge_paternal <- function(p1, p2, id, fid, sex){
+
+  # The function to search paternal founder
+  search_paternal_founder <- function(pos_start, pos_another){
+    id_target <- pos_start
+    bool_founder <- FALSE
+
+    while(!bool_founder){
+      father <- fid[id_target]
+
+      # Lineal relationship
+      if(father == id[pos_another]){
+        bool_founder <- TRUE
+        result <- "lineal"
+
+      # Reach a founder
+      }else if(father == 0){
+        bool_founder <- TRUE
+        result <- id[id_target]
+
+      }else{
+        id_target <- which(id == father)
+      }
+    }
+    return(result)
   }
-  return(deg_display)
+
+  pos_p1 <- match(p1, id)
+  pos_p2 <- match(p2, id)
+
+  if((sex[pos_p1] == 1) && (sex[pos_p2] == 1)){
+    if((fid[pos_p1] == 0) && (fid[pos_p2] == 0)){
+      result <- "not paternal"
+    }else{
+      # Search the paternal founder of p1
+      founder_p1 <- search_paternal_founder(pos_p1, pos_p2)
+
+      # Search the paternal founder of p2
+      founder_p2 <- search_paternal_founder(pos_p2, pos_p1)
+
+      if((founder_p1 == "lineal") || (founder_p2 == "lineal")){
+        result <- "lineal"
+      }else if(founder_p1 == founder_p2){
+        result <- "collateral"
+      }else{
+        result <- "not paternal"
+      }
+    }
+  }else{
+    result <- "not paternal"
+  }
+  return(result)
+}
+
+#' judge_maternal
+#'
+#' @description The function to judge maternal lineage
+#' @param p1 The name of person 1
+#' @param p2 The name of person 2
+#' @param id All names of persons
+#' @param mid Mothers of all persons
+judge_maternal <- function(p1, p2, id, mid){
+
+  # The function to search maternal founder
+  search_maternal_founder <- function(pos_start, pos_another){
+    id_target <- pos_start
+    bool_founder <- FALSE
+
+    while(!bool_founder){
+      mother <- mid[id_target]
+
+      # Lineal relationship
+      if(mother == id[pos_another]){
+        bool_founder <- TRUE
+        result <- "lineal"
+
+      # Reach a founder
+      }else if(mother == 0){
+        bool_founder <- TRUE
+        result <- id[id_target]
+
+      }else{
+        id_target <- which(id == mother)
+      }
+    }
+    return(result)
+  }
+
+  pos_p1 <- match(p1, id)
+  pos_p2 <- match(p2, id)
+
+  if((mid[pos_p1] == 0) && (mid[pos_p2] == 0)){
+    result <- "not maternal"
+  }else{
+    # Search the maternal founder of p1
+    founder_p1 <- search_maternal_founder(pos_p1, pos_p2)
+
+    # Search the maternal founder of p2
+    founder_p2 <- search_maternal_founder(pos_p2, pos_p1)
+
+    if((founder_p1 == "lineal") || (founder_p2 == "lineal")){
+      result <- "lineal"
+    }else if(founder_p1 == founder_p2){
+      result <- "collateral"
+    }else{
+      result <- "not maternal"
+    }
+  }
+  return(result)
 }

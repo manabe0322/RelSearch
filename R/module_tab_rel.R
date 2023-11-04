@@ -57,6 +57,8 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
   # Edit the name of a relationship #
   ###################################
 
+  iv_edit <- InputValidator$new()
+
   observeEvent(input$act_rel_edit, {
     showModal(modalDialog(
       title = "Edit the name of the relationship",
@@ -68,6 +70,8 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
       ),
       size = "l"
     ))
+
+    iv_edit$disable()
   })
 
   observeEvent(input$act_rel_edit_save, {
@@ -93,13 +97,11 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
         )
       })
 
+      removeModal()
+
     }else{
-      showModal(modalDialog(
-        title = "Error",
-        "Enter the relationship name!",
-        easyClose = TRUE,
-        footer = NULL
-      ))
+      iv_edit$add_rule("rel_new_edit", sv_required())
+      iv_edit$enable()
     }
   })
 
@@ -503,8 +505,67 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
 
   observeEvent(input$act_rel_add_save, {
     if(all(c(isTruthy(input$rel_add), isTruthy(input$vic_add), isTruthy(input$ref_add)))){
+      tree <- rv_famtree$tree
 
+      # Kinship coefficient
+      coeff_tree <- coeffTable(tree)
+      pos_row <- intersect(which(is.element(coeff_tree[, "id1"], c("Victim", "Ref")) == TRUE),
+                           which(is.element(coeff_tree[, "id2"], c("Victim", "Ref")) == TRUE))
+      pibd <- as.numeric(coeff_tree[pos_row, c("k2", "k1", "k0")])
+      deg <- as.numeric(coeff_tree[pos_row, "deg"])
 
+      # Extract tree data
+      tree_list <- unclass(tree)
+      id <- tree_list$ID
+      fid <- tree_list$FIDX
+      fid[fid != 0] <- id[fid[fid != 0]]
+      mid <- tree_list$MIDX
+      mid[mid != 0] <- id[mid[mid != 0]]
+      sex <- tree_list$SEX
+
+      # Judge paternal lineage
+      rel_paternal <- judge_paternal("Victim", "Ref", id, fid, sex)
+      if(is.element(rel_paternal, c("lineal", "collateral"))){
+        paternal_add <- "Yes"
+      }else{
+        paternal_add <- "No"
+      }
+
+      # Judge maternal lineage
+      rel_maternal <- judge_maternal("Victim", "Ref", id, mid)
+      if(is.element(rel_maternal, c("lineal", "collateral"))){
+        maternal_add <- "Yes"
+      }else{
+        maternal_add <- "No"
+      }
+
+      # Update information on the relationship
+      rv_rel$name <- c(rv_rel$name, input$rel_add)
+      rv_rel$victim <- c(rv_rel$victim, input$vic_add)
+      rv_rel$reference <- c(rv_rel$reference, input$ref_add)
+      rv_rel$pibd2 <- c(rv_rel$pibd2, pibd[1])
+      rv_rel$pibd1 <- c(rv_rel$pibd1, pibd[2])
+      rv_rel$pibd0 <- c(rv_rel$pibd0, pibd[3])
+      rv_rel$paternal <- c(rv_rel$paternal, paternal_add)
+      rv_rel$maternal <- c(rv_rel$maternal, maternal_add)
+
+      new_dt_rel <- data.table(Relationship = rv_rel$name, Victim = rv_rel$victim, Reference = rv_rel$reference,
+                               Pr_IBD2 = rv_rel$pibd2, Pr_IBD1 = rv_rel$pibd1, Pr_IBD0 = rv_rel$pibd0,
+                               Paternal = rv_rel$paternal, Maternal = rv_rel$maternal)
+
+      write.csv(new_dt_rel, paste0(path_pack, "/extdata/parameters/rel.csv"), row.names = FALSE)
+
+      output$dt_rel <- renderDataTable({
+        datatable(
+          new_dt_rel,
+          colnames = c("Relationship", "Victim", "Reference", "Pr (IBD = 2)", "Pr (IBD = 1)", "Pr (IBD = 0)", "Paternal lineage", "Maternal lineage"),
+          selection = "none",
+          options = list(iDisplayLength = 50, ordering = FALSE),
+          rownames = FALSE
+        )
+      })
+
+      # Reset family tree
       rv_famtree$num_uk <- 0
       rv_famtree$uk <- character(0)
       rv_famtree$sex <- character(0)
@@ -512,10 +573,8 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
       rv_famtree$mother <- character(0)
       rv_famtree$founder <- character(0)
       rv_famtree$error_famtree <- TRUE
-
       make_unk_selectbox(rv_famtree$num_uk, rv_famtree$uk, rv_famtree$sex, rv_famtree$father, rv_famtree$mother, rv_famtree$founder)
       state_save_butt()
-
       removeModal()
     }else{
       iv_add$add_rule("rel_add", sv_required())
@@ -526,6 +585,7 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
   })
 
   observeEvent(input$act_rel_add_cancel, {
+    # Reset family tree
     rv_famtree$num_uk <- 0
     rv_famtree$uk <- character(0)
     rv_famtree$sex <- character(0)
@@ -533,10 +593,8 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
     rv_famtree$mother <- character(0)
     rv_famtree$founder <- character(0)
     rv_famtree$error_famtree <- TRUE
-
     make_unk_selectbox(rv_famtree$num_uk, rv_famtree$uk, rv_famtree$sex, rv_famtree$father, rv_famtree$mother, rv_famtree$founder)
     state_save_butt()
-
     removeModal()
   })
 
@@ -582,6 +640,8 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
         rownames = FALSE
       )
     })
+
+    removeModal()
   })
 
   #########################################
@@ -659,6 +719,8 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
         rownames = FALSE
       )
     })
+
+    removeModal()
   })
 
   #######################################################
