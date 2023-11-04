@@ -19,7 +19,7 @@ tab_rel_ui <- function(id){
                           actionButton(ns("act_rel_add"), "Add"),
                           br(),
                           br(),
-                          actionButton(ns("act_rel_delete"), "Delete"),
+                          actionButton(ns("act_rel_del"), "Delete"),
                           br(),
                           br(),
                           actionButton(ns("act_rel_reset"), "Reset"),
@@ -630,19 +630,19 @@ tab_rel_server <- function(input, output, session, init_dt_rel, path_pack){
   # Delete information on a relationship #
   ########################################
 
-  observeEvent(input$act_rel_delete, {
+  observeEvent(input$act_rel_del, {
     showModal(modalDialog(
       title = "Delete information on a relationship",
       selectInput(session$ns("rel_del"), label = "Select a relationship", choices = rv_rel$name, selected = rv_rel$name[1]),
       footer = tagList(
-        actionButton(session$ns("act_rel_delete_save"), "Save"),
+        actionButton(session$ns("act_rel_del_save"), "Save"),
         modalButton("Cancel")
       ),
       size = "l"
     ))
   })
 
-  observeEvent(input$act_rel_delete_save, {
+  observeEvent(input$act_rel_del_save, {
     pos_del <- which(rv_rel$name == input$rel_del)
     rv_rel$name <- rv_rel$name[- pos_del]
     rv_rel$victim <- rv_rel$victim[- pos_del]
