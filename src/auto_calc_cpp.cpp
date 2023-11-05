@@ -82,19 +82,39 @@ std::vector<double> calc_kin_like(std::vector<double> vgt, std::vector<double> r
     if(cons_mu){
       if(size_vgt == 1){
         if(size_rgt == 1){
-          like_h12[0] = c * c * myu * a;
-          like_h12[1] = c * c * a * a;
+          if(par_vic){
+            like_h12[0] = a * a * myu * c;
+            like_h12[1] = a * a * c * c;
+          }else{
+            like_h12[0] = c * c * myu * a;
+            like_h12[1] = c * c * a * a;
+          }
         }else{
-          like_h12[0] = 2 * c * d * myu * a;
-          like_h12[1] = 2 * c * d * a * a;
+          if(par_vic){
+            like_h12[0] = a * a * myu * (c + d);
+            like_h12[1] =  a * a * 2 * c * d;
+          }else{
+            like_h12[0] = 2 * c * d * myu * a;
+            like_h12[1] = 2 * c * d * a * a;
+          }
         }
       }else{
         if(size_rgt == 1){
-          like_h12[0] = c * c * myu * (a + b);
-          like_h12[1] = c * c * 2 * a * b;
+          if(par_vic){
+            like_h12[0] = 2 * a * b * myu * c;
+            like_h12[1] = 2 * a * b * c * c;
+          }else{
+            like_h12[0] = c * c * myu * (a + b);
+            like_h12[1] = c * c * 2 * a * b;
+          }
         }else{
-          like_h12[0] = 2 * c * d * myu * (a + b);
-          like_h12[1] = 2 * c * d * 2 * a * b;
+          if(par_vic){
+            like_h12[0] = 2 * a * b * myu * (c + d);
+            like_h12[1] = 2 * a * b * 2 * c * d;
+          }else{
+            like_h12[0] = 2 * c * d * myu * (a + b);
+            like_h12[1] = 2 * c * d * 2 * a * b;
+          }
         }
       }
     }else{
