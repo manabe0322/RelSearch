@@ -7,6 +7,7 @@ relsearch <- function(){
 
   ver_soft <- packageVersion("relsearch")
   path_pack <- path.package("relsearch", quiet = FALSE)
+  max_data <- 10000
   options(shiny.maxRequestSize = 500 * 1024^2)
 
   ui <- fluidPage(useShinyjs(),
@@ -75,10 +76,7 @@ relsearch <- function(){
                                                                actionButton("act_multiple", label = "Multiple candidates", class = "btn btn-warning"),
                                                                br(),
                                                                br(),
-                                                               actionButton("act_paternal", label = "Paternal lineages", class = "btn btn-info"),
-                                                               br(),
-                                                               br(),
-                                                               actionButton("act_maternal", label = "Maternal lineages", class="btn btn-danger"),
+                                                               actionButton("act_alert", label = "Alert", class = "btn btn-danger"),
                                                                br(),
                                                                br(),
                                                                uiOutput("summary_min_lr"),
@@ -913,7 +911,9 @@ relsearch <- function(){
           enable("download_proj")
           enable(selector = '.navbar-nav a[data-value = "Result"]')
           updateNavbarPage(session, "navbar", selected = "Result")
-          showModal(modalDialog(title = "Information", "Displayed data satisfies at least one of the criteria for STR, Y-STR, and mtDNA.", easyClose = TRUE, footer = NULL))
+          if(nrow(dt_reactive$dt_display) > max_data){
+            showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
+          }
         }
       }
     })
@@ -926,7 +926,9 @@ relsearch <- function(){
 
     observeEvent(input$act_default, {
       dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined)
-      showModal(modalDialog(title = "Information", "Displayed data satisfies at least one of the criteria for STR, Y-STR, and mtDNA.", easyClose = TRUE, footer = NULL))
+      if(nrow(dt_reactive$dt_display) > max_data){
+        showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
+      }
     })
 
     observeEvent(input$act_identified, {
@@ -937,12 +939,8 @@ relsearch <- function(){
       dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "multiple")
     })
 
-    observeEvent(input$act_paternal, {
-      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "paternal")
-    })
-
-    observeEvent(input$act_maternal, {
-      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "maternal")
+    observeEvent(input$act_alert, {
+      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "alert")
     })
 
     observeEvent(input$act_fltr_lr, {
@@ -954,10 +952,30 @@ relsearch <- function(){
       }
     })
 
+    make_style_color_alert <- function(target_col){
+      index_alert <- which(target_col == 2)
+      color_display <- "red"
+      if(length(index_alert) == 0){
+        index_alert <- 1:length(target_col)
+        color_display <- "black"
+      }
+      return(list(index_alert, color_display))
+    }
+
     output$dt_display <- renderDataTable(server = FALSE, {
+      dt_display <- dt_reactive$dt_display
+
+      tmp <- make_style_color_alert(dt_display[, ColorY])
+      index_alert_y <- tmp[[1]]
+      color_display_y <- tmp[[2]]
+
+      tmp <- make_style_color_alert(dt_display[, ColorMt])
+      index_alert_mt <- tmp[[1]]
+      color_display_mt <- tmp[[2]]
+
       datatable(
-        dt_reactive$dt_display,
-        colnames = c("Victim", "Reference", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage", "NumCand", "ColorY", "ColorMt"),
+        dt_display,
+        colnames = c("Victim", "Reference", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage", "ColorBack", "ColorY", "ColorMt"),
         filter = "top",
         extensions = "Buttons",
         selection = list(mode = "single", target = "row"),
@@ -973,8 +991,10 @@ relsearch <- function(){
                        columnDefs = list(list(targets = 3, searchable = FALSE), list(targets = 7:9, visible = FALSE))
                        ),
         rownames = FALSE
-      ) %>% formatStyle("NumCand", target = "row", backgroundColor = styleEqual(c(1, 2), c("#e0ffe0", "#ffffe0")))
-        %>% formatStyle("ColorY", color = styleEqual(c(1, 2), c("blue", "red")))
+      ) %>%
+        formatStyle(columns = "ColorBack", target = "row", backgroundColor = styleEqual(c(0, 1, 2), c("#ffe0ef", "#e0ffe0", "#ffffe0"))) %>%
+        formatStyle(columns = "Paternal", target = "cell", color = styleRow(index_alert_y, color_display_y)) %>%
+        formatStyle(columns = "Maternal", target = "cell", color = styleRow(index_alert_mt, color_display_mt))
     })
 
     #########################
@@ -1110,9 +1130,12 @@ relsearch <- function(){
     output$result_assumed_rel <- renderDataTable(server = FALSE, {
       datatable(
         dt_reactive$dt_rel,
-        colnames = c("Relationship name", "Degree", "Pr (IBD = 2)", "Pr (IBD = 1)", "Pr (IBD = 0)"),
-        selection = "none",
-        options = list(iDisplayLength = 10, ordering = FALSE),
+        colnames = c("Relationship", "Victim", "Reference", "Pr (IBD = 2)", "Pr (IBD = 1)", "Pr (IBD = 0)", "Paternal lineage", "Maternal lineage",
+                     "Tree_persons", "Tree_sexes", "Tree_fathers", "Tree_mothers", "Tree_founders"),
+        selection = list(mode = "single", target = "row"),
+        options = list(iDisplayLength = 10, ordering = FALSE,
+                       columnDefs = list(list(targets = 8:12, visible = FALSE))
+        ),
         rownames = FALSE
       )
     })

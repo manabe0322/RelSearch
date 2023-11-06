@@ -4,12 +4,19 @@
 \alias{create_displayed_data}
 \title{create_displayed_data}
 \usage{
-create_displayed_data(dt_combined, fltr_type = "default", min_lr = NULL)
+create_displayed_data(
+  dt_combined,
+  fltr_type = "default",
+  max_data = 10000,
+  min_lr = NULL
+)
 }
 \arguments{
 \item{dt_combined}{A data.table of the combined data}
 
 \item{fltr_type}{The filtering method}
+
+\item{max_data}{The maximum data displayed}
 
 \item{min_lr}{The minimum LR displayed}
 }
