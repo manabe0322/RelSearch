@@ -911,7 +911,7 @@ relsearch <- function(){
           enable("download_proj")
           enable(selector = '.navbar-nav a[data-value = "Result"]')
           updateNavbarPage(session, "navbar", selected = "Result")
-          if(nrow(dt_reactive$dt_display) > max_data){
+          if(nrow(dt_reactive$dt_combined) > max_data){
             showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
           }
         }
@@ -926,7 +926,7 @@ relsearch <- function(){
 
     observeEvent(input$act_default, {
       dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined)
-      if(nrow(dt_reactive$dt_display) > max_data){
+      if(nrow(dt_reactive$dt_combined) > max_data){
         showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
       }
     })
