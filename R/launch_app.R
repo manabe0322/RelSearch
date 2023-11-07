@@ -7,6 +7,7 @@ relsearch <- function(){
 
   ver_soft <- packageVersion("relsearch")
   path_pack <- path.package("relsearch", quiet = FALSE)
+  max_data <- 50000
   options(shiny.maxRequestSize = 500 * 1024^2)
 
   ui <- fluidPage(useShinyjs(),
@@ -17,7 +18,6 @@ relsearch <- function(){
                              tags$style(type = "text/css", "body{padding-top: 70px;}"),
 
                              tabPanel("Load",
-
                                       useWaiter(),
 
                                       fluidRow(
@@ -53,6 +53,7 @@ relsearch <- function(){
                              ),
 
                              tabPanel("Result",
+                                      useWaiter(),
                                       titlePanel("Result"),
 
                                       br(),
@@ -902,7 +903,6 @@ relsearch <- function(){
           # Finish calculation #
           ######################
 
-          waiter_hide()
           run_time <- proc.time() - start_time
           cat(paste0("\n", "Calculation time : ", run_time[3], " sec", "\n"))
 
@@ -910,6 +910,12 @@ relsearch <- function(){
           enable("download_proj")
           enable(selector = '.navbar-nav a[data-value = "Result"]')
           updateNavbarPage(session, "navbar", selected = "Result")
+
+          waiter_hide()
+
+          if(nrow(dt_reactive$dt_display) == max_data){
+            showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
+          }
         }
       }
     })
@@ -921,25 +927,50 @@ relsearch <- function(){
     output$summary_min_lr <- renderUI({numericInput("summary_min_lr", label = "Minimum LR displayed", value = rv_min_lr_auto())})
 
     observeEvent(input$act_default, {
+      waiter_show(html = spin_3k(), color = "white")
       dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined)
+      waiter_hide()
+      if(nrow(dt_reactive$dt_display) == max_data){
+        showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
+      }
     })
 
     observeEvent(input$act_identified, {
+      waiter_show(html = spin_3k(), color = "white")
       dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "identified")
+      waiter_hide()
+      if(nrow(dt_reactive$dt_display) == max_data){
+        showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
+      }
     })
 
     observeEvent(input$act_multiple, {
+      waiter_show(html = spin_3k(), color = "white")
       dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "multiple")
+      waiter_hide()
+      if(nrow(dt_reactive$dt_display) == max_data){
+        showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
+      }
     })
 
     observeEvent(input$act_alert, {
+      waiter_show(html = spin_3k(), color = "white")
       dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "alert")
+      waiter_hide()
+      if(nrow(dt_reactive$dt_display) == max_data){
+        showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
+      }
     })
 
     observeEvent(input$act_fltr_lr, {
       summary_min_lr <- input$summary_min_lr
       if(isTruthy(summary_min_lr)){
+        waiter_show(html = spin_3k(), color = "white")
         dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "min_lr", min_lr = summary_min_lr)
+        waiter_hide()
+        if(nrow(dt_reactive$dt_display) == max_data){
+          showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
+        }
       }else{
         showModal(modalDialog(title = "Error", "Enter the minimum LR displayed!", easyClose = TRUE, footer = NULL))
       }
