@@ -7,7 +7,6 @@ relsearch <- function(){
 
   ver_soft <- packageVersion("relsearch")
   path_pack <- path.package("relsearch", quiet = FALSE)
-  max_data <- 10000
   options(shiny.maxRequestSize = 500 * 1024^2)
 
   ui <- fluidPage(useShinyjs(),
@@ -911,9 +910,6 @@ relsearch <- function(){
           enable("download_proj")
           enable(selector = '.navbar-nav a[data-value = "Result"]')
           updateNavbarPage(session, "navbar", selected = "Result")
-          if(nrow(dt_reactive$dt_combined) > max_data){
-            showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
-          }
         }
       }
     })
@@ -926,9 +922,6 @@ relsearch <- function(){
 
     observeEvent(input$act_default, {
       dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined)
-      if(nrow(dt_reactive$dt_combined) > max_data){
-        showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
-      }
     })
 
     observeEvent(input$act_identified, {
