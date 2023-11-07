@@ -18,3 +18,6 @@ int search_pos_int(std::vector<int> vec, int target);
 int search_pos_string(std::vector<std::string> vec, std::string target);
 int extract_integer(std::string target);
 bool is_integer(double x);
+std::vector<std::string> setdiff_string(std::vector<std::string> vec_str1, std::vector<std::string> vec_str2);
+std::vector<int> setdiff_int(std::vector<int> vec_int1, std::vector<int> vec_int2);
+std::vector<double> setdiff_double(std::vector<double> vec_num1, std::vector<double> vec_num2);

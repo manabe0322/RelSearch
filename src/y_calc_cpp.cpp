@@ -148,10 +148,18 @@ std::vector<std::vector<int>> match_y(std::vector<std::string> prof_victim, std:
       /* If the victim's alleles are not the same as the reference's alleles */
       if(same_vr == false){
         std::vector<double> only_v_al;
-        std::set_difference(v_al.begin(), v_al.end(), r_al.begin(), r_al.end(), inserter(only_v_al, only_v_al.end()));
+        only_v_al = setdiff_double(v_al, r_al);
+
+        std::vector<double> only_r_al;
+        only_r_al = setdiff_double(r_al, v_al);
 
         /* Ignored locus (explained by allelic drop-out) */
         if(only_v_al.size() == 0){
+          ans.at(1).at(i) = 1;
+          sum_l_1 += 1;
+
+        /* Ignored locus (explained by allelic drop-out) */
+        }else if(only_r_al.size() == 0){
           ans.at(1).at(i) = 1;
           sum_l_1 += 1;
 

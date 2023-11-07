@@ -90,3 +90,41 @@ test_that("match_mt pattern 5", {
   expect_equal(result[2], "73")
   expect_equal(result[3], "1")
 })
+
+test_that("match_mt pattern 6 (231107)", {
+
+  # Condition
+  v_hap <- "73N 152N 164N 200N 235N 263N 292N 16223N 16254N 16290N 16319N 16362N"
+  v_hap <- strsplit(v_hap, " ")[[1]]
+  v_range <- "73-340 16024-16365"
+  r_hap <- "73N 152N 164N 200N 235N 263N 16223N 16254N 16290N 16319N 16362N"
+  r_hap <- strsplit(r_hap, " ")[[1]]
+  r_range <- "73-340 16024-16365"
+
+  # Run
+  result <- match_mt(v_hap, v_range, r_hap, r_range)
+
+  # Test
+  expect_equal(result[1], "1")
+  expect_equal(result[2], "73-340 16024-16365")
+  expect_equal(result[3], "610")
+})
+
+test_that("match_mt pattern 7 (231107)", {
+
+  # Condition
+  v_hap <- "73N 152N 164N 200N 235N 263N 292N 16223N 16254N 16290N 16319N 16362N"
+  v_hap <- strsplit(v_hap, " ")[[1]]
+  v_range <- "73-340 16024-16365"
+  r_hap <- "73N 152N 164N 200N 235N 263N 293N 16223N 16254N 16290N 16319N 16362N"
+  r_hap <- strsplit(r_hap, " ")[[1]]
+  r_range <- "73-340 16024-16365"
+
+  # Run
+  result <- match_mt(v_hap, v_range, r_hap, r_range)
+
+  # Test
+  expect_equal(result[1], "2")
+  expect_equal(result[2], "73-340 16024-16365")
+  expect_equal(result[3], "610")
+})

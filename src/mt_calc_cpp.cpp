@@ -134,11 +134,11 @@ std::vector<std::string> match_mt(std::vector<std::string> prof_victim, std::str
 
     /* Investigate the victim's specific type within the shared range */
     std::vector<std::string> only_v_type;
-    std::set_difference(v_type_new.begin(), v_type_new.end(), r_type_new.begin(), r_type_new.end(), inserter(only_v_type, only_v_type.end()));
+    only_v_type = setdiff_string(v_type_new, r_type_new);
 
     /* Investigate the reference's specific type within the shared range */
     std::vector<std::string> only_r_type;
-    std::set_difference(r_type_new.begin(), r_type_new.end(), v_type_new.begin(), v_type_new.end(), inserter(only_r_type, only_r_type.end()));
+    only_r_type = setdiff_string(r_type_new, v_type_new);
 
     /* Investigate the number of mismatches */
     int n_mismatch = only_v_type.size() + only_r_type.size();

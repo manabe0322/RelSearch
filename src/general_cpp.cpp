@@ -139,3 +139,84 @@ int extract_integer(std::string target){
 bool is_integer(double x){
   return(std::floor(x) == x);
 }
+
+
+/*#################################
+# The setdiff function for string #
+#################################*/
+
+// [[Rcpp::export]]
+std::vector<std::string> setdiff_string(std::vector<std::string> vec_str1, std::vector<std::string> vec_str2){
+  std::vector<std::string> only_vec_str1;
+  int n_str1 = vec_str1.size();
+  int n_str2 = vec_str2.size();
+  for(int i = 0; i < n_str1; ++i){
+    std::string str1_1 = vec_str1[i];
+    bool only = true;
+    for(int j = 0; j < n_str2; ++j){
+      std::string str2_1 = vec_str2[j];
+      if(str1_1 == str2_1){
+        only = false;
+        break;
+      }
+    }
+    if(only){
+      only_vec_str1.push_back(str1_1);
+    }
+  }
+  return(only_vec_str1);
+}
+
+
+/*##############################
+# The setdiff function for int #
+################################*/
+
+// [[Rcpp::export]]
+std::vector<int> setdiff_int(std::vector<int> vec_int1, std::vector<int> vec_int2){
+  std::vector<int> only_vec_int1;
+  int n_str1 = vec_int1.size();
+  int n_str2 = vec_int2.size();
+  for(int i = 0; i < n_str1; ++i){
+    int str1_1 = vec_int1[i];
+    bool only = true;
+    for(int j = 0; j < n_str2; ++j){
+      int str2_1 = vec_int2[j];
+      if(str1_1 == str2_1){
+        only = false;
+        break;
+      }
+    }
+    if(only){
+      only_vec_int1.push_back(str1_1);
+    }
+  }
+  return(only_vec_int1);
+}
+
+
+/*#################################
+# The setdiff function for double #
+#################################*/
+
+// [[Rcpp::export]]
+std::vector<double> setdiff_double(std::vector<double> vec_num1, std::vector<double> vec_num2){
+  std::vector<double> only_vec_num1;
+  int n_str1 = vec_num1.size();
+  int n_str2 = vec_num2.size();
+  for(int i = 0; i < n_str1; ++i){
+    double str1_1 = vec_num1[i];
+    bool only = true;
+    for(int j = 0; j < n_str2; ++j){
+      double str2_1 = vec_num2[j];
+      if(str1_1 == str2_1){
+        only = false;
+        break;
+      }
+    }
+    if(only){
+      only_vec_num1.push_back(str1_1);
+    }
+  }
+  return(only_vec_num1);
+}

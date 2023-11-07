@@ -65,6 +65,18 @@ is_integer <- function(x) {
     .Call(`_relsearch_is_integer`, x)
 }
 
+setdiff_string <- function(vec_str1, vec_str2) {
+    .Call(`_relsearch_setdiff_string`, vec_str1, vec_str2)
+}
+
+setdiff_int <- function(vec_int1, vec_int2) {
+    .Call(`_relsearch_setdiff_int`, vec_int1, vec_int2)
+}
+
+setdiff_double <- function(vec_num1, vec_num2) {
+    .Call(`_relsearch_setdiff_double`, vec_num1, vec_num2)
+}
+
 extract_pos_mt <- function(range) {
     .Call(`_relsearch_extract_pos_mt`, range)
 }

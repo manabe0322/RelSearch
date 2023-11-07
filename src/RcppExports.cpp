@@ -226,6 +226,42 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// setdiff_string
+std::vector<std::string> setdiff_string(std::vector<std::string> vec_str1, std::vector<std::string> vec_str2);
+RcppExport SEXP _relsearch_setdiff_string(SEXP vec_str1SEXP, SEXP vec_str2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type vec_str1(vec_str1SEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type vec_str2(vec_str2SEXP);
+    rcpp_result_gen = Rcpp::wrap(setdiff_string(vec_str1, vec_str2));
+    return rcpp_result_gen;
+END_RCPP
+}
+// setdiff_int
+std::vector<int> setdiff_int(std::vector<int> vec_int1, std::vector<int> vec_int2);
+RcppExport SEXP _relsearch_setdiff_int(SEXP vec_int1SEXP, SEXP vec_int2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<int> >::type vec_int1(vec_int1SEXP);
+    Rcpp::traits::input_parameter< std::vector<int> >::type vec_int2(vec_int2SEXP);
+    rcpp_result_gen = Rcpp::wrap(setdiff_int(vec_int1, vec_int2));
+    return rcpp_result_gen;
+END_RCPP
+}
+// setdiff_double
+std::vector<double> setdiff_double(std::vector<double> vec_num1, std::vector<double> vec_num2);
+RcppExport SEXP _relsearch_setdiff_double(SEXP vec_num1SEXP, SEXP vec_num2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<double> >::type vec_num1(vec_num1SEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type vec_num2(vec_num2SEXP);
+    rcpp_result_gen = Rcpp::wrap(setdiff_double(vec_num1, vec_num2));
+    return rcpp_result_gen;
+END_RCPP
+}
 // extract_pos_mt
 std::vector<int> extract_pos_mt(std::string range);
 RcppExport SEXP _relsearch_extract_pos_mt(SEXP rangeSEXP) {
@@ -353,6 +389,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_relsearch_search_pos_string", (DL_FUNC) &_relsearch_search_pos_string, 2},
     {"_relsearch_extract_integer", (DL_FUNC) &_relsearch_extract_integer, 1},
     {"_relsearch_is_integer", (DL_FUNC) &_relsearch_is_integer, 1},
+    {"_relsearch_setdiff_string", (DL_FUNC) &_relsearch_setdiff_string, 2},
+    {"_relsearch_setdiff_int", (DL_FUNC) &_relsearch_setdiff_int, 2},
+    {"_relsearch_setdiff_double", (DL_FUNC) &_relsearch_setdiff_double, 2},
     {"_relsearch_extract_pos_mt", (DL_FUNC) &_relsearch_extract_pos_mt, 1},
     {"_relsearch_extract_pos_mt_vr", (DL_FUNC) &_relsearch_extract_pos_mt_vr, 2},
     {"_relsearch_make_share_range", (DL_FUNC) &_relsearch_make_share_range, 1},

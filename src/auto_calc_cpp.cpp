@@ -187,7 +187,7 @@ std::vector<std::vector<double>> make_dummy_af(std::vector<double> uniq_vr_al, s
   /* Indices of unobserved alleles */
   std::vector<int> pos_al_all = tousa(0, af_al.size() - 1, 1);
   std::vector<int> pos_al_unobs;
-  std::set_difference(pos_al_all.begin(), pos_al_all.end(), pos_al_obs.begin(), pos_al_obs.end(), inserter(pos_al_unobs, pos_al_unobs.end()));
+  pos_al_unobs = setdiff_int(pos_al_all, pos_al_obs);
 
   /* Assign observed allele frequencies */
   std::vector<std::vector<double>> dummy_af_data(2, std::vector<double>(len + 1));
