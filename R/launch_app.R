@@ -7,7 +7,7 @@ relsearch <- function(){
 
   ver_soft <- packageVersion("relsearch")
   path_pack <- path.package("relsearch", quiet = FALSE)
-  max_data <- 20000
+  max_data <- 10000
   options(shiny.maxRequestSize = 500 * 1024^2)
 
   ui <- fluidPage(useShinyjs(),
@@ -21,31 +21,25 @@ relsearch <- function(){
                                       useWaiter(),
 
                                       fluidRow(
-
                                         column(4,
                                                h2("STR"),
                                                fileInput("file_v_auto", label = h4("Victim database"), accept = ".csv"),
                                                fileInput("file_r_auto", label = h4("Reference database"), accept = ".csv"),
                                                fileInput("file_af", label = h4("Allele frequencies"), accept = ".csv"),
                                         ),
-
                                         column(4,
                                                h2("Y-STR"),
                                                fileInput("file_v_y", label = h4("Victim database"), accept = ".csv"),
                                                fileInput("file_r_y", label = h4("Reference database"), accept = ".csv")
                                         ),
-
                                         column(4,
                                                h2("mtDNA"),
                                                fileInput("file_v_mt", label = h4("Victim database"), accept = ".csv"),
                                                fileInput("file_r_mt", label = h4("Reference database"), accept = ".csv")
                                         )
                                       ),
-
                                       br(),
-
                                       fluidRow(
-
                                         column(12,
                                                actionButton("act_analyze", label = "Analyze", class = "btn btn-primary btn-lg")
                                         )
@@ -53,16 +47,11 @@ relsearch <- function(){
                              ),
 
                              tabPanel("Result",
-                                      useWaiter(),
                                       titlePanel("Result"),
-
                                       br(),
-
                                       tabsetPanel(id = "tab_result",
-
                                                   tabPanel("Summary",
                                                            br(),
-
                                                            sidebarLayout(
                                                              sidebarPanel(
                                                                h4("Display setting"),
@@ -76,7 +65,7 @@ relsearch <- function(){
                                                                actionButton("act_multiple", label = "Multiple candidates", class = "btn btn-warning"),
                                                                br(),
                                                                br(),
-                                                               actionButton("act_alert", label = "Alert", class = "btn btn-danger"),
+                                                               actionButton("act_warning", label = "Warning", class = "btn btn-danger"),
                                                                br(),
                                                                br(),
                                                                uiOutput("summary_min_lr"),
@@ -90,10 +79,8 @@ relsearch <- function(){
                                                              )
                                                            )
                                                   ),
-
                                                   tabPanel("Selected data in detail",
                                                            br(),
-
                                                            sidebarLayout(
                                                              sidebarPanel(
                                                                h4("Victim"),
@@ -146,10 +133,8 @@ relsearch <- function(){
                                                              )
                                                            )
                                                   ),
-
                                                   tabPanel("Analysis conditions",
                                                            br(),
-
                                                            tabsetPanel(
                                                              tabPanel("Database",
                                                                       br(),
@@ -315,7 +300,6 @@ relsearch <- function(){
                                                  actionButton("act_par_auto_update", label = "Update default")
                                         )
                              ),
-
                              tabPanel("Example files",
                                       titlePanel("Example files"),
                                       downloadButton("download_v_auto", "STR victim database"),
@@ -338,7 +322,6 @@ relsearch <- function(){
                                       br(),
                                       downloadButton("download_r_mt", "mtDNA reference database")
                              ),
-
                              tabPanel("Manual",
                                       includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual.md"))
                              )
@@ -877,7 +860,13 @@ relsearch <- function(){
           ############################
 
           dt_reactive$dt_combined <- create_combined_data(dt_result_auto, dt_result_y, dt_result_mt, dt_rel)
-          dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined)
+
+          #############################
+          # Create the displayed data #
+          #############################
+
+          min_lr_auto <- dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"]
+          dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, min_lr = min_lr_auto)
 
           #################################
           # Assign objects to dt_reactive #
@@ -923,6 +912,8 @@ relsearch <- function(){
 
           if(nrow(dt_reactive$dt_display) == max_data){
             showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
+          }else if(bool_check_auto){
+            showModal(modalDialog(title = "Information", "Data that satisfies the criterion of the minimum LR is displayed.", easyClose = TRUE, footer = NULL))
           }
         }
       }
@@ -932,39 +923,34 @@ relsearch <- function(){
     # Display summary data #
     ########################
 
-    output$summary_min_lr <- renderUI({numericInput("summary_min_lr", label = "Minimum LR displayed", value = rv_min_lr_auto())})
+    output$summary_min_lr <- renderUI({numericInput("summary_min_lr", label = "Minimum LR displayed", value = dt_reactive$dt_criteria$Value[dt_reactive$dt_criteria$Criteria == "min_lr_auto"])})
 
     observeEvent(input$act_default, {
-      waiter_show(html = spin_3k(), color = "white")
-      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined)
-      waiter_hide()
+      dt_criteria <- dt_reactive$dt_criteria
+      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, min_lr = dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"])
       if(nrow(dt_reactive$dt_display) == max_data){
         showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
+      }else if(all(!is.null(dt_reactive$dt_v_auto), !is.null(dt_reactive$dt_r_auto), !is.null(dt_reactive$dt_af))){
+        showModal(modalDialog(title = "Information", "Data that satisfies the criterion of the minimum LR is displayed.", easyClose = TRUE, footer = NULL))
       }
     })
 
     observeEvent(input$act_identified, {
-      waiter_show(html = spin_3k(), color = "white")
       dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "identified")
-      waiter_hide()
       if(nrow(dt_reactive$dt_display) == max_data){
         showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
       }
     })
 
     observeEvent(input$act_multiple, {
-      waiter_show(html = spin_3k(), color = "white")
       dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "multiple")
-      waiter_hide()
       if(nrow(dt_reactive$dt_display) == max_data){
         showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
       }
     })
 
-    observeEvent(input$act_alert, {
-      waiter_show(html = spin_3k(), color = "white")
-      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "alert")
-      waiter_hide()
+    observeEvent(input$act_warning, {
+      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "warning")
       if(nrow(dt_reactive$dt_display) == max_data){
         showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
       }
@@ -973,9 +959,7 @@ relsearch <- function(){
     observeEvent(input$act_fltr_lr, {
       summary_min_lr <- input$summary_min_lr
       if(isTruthy(summary_min_lr)){
-        waiter_show(html = spin_3k(), color = "white")
-        dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "min_lr", min_lr = summary_min_lr)
-        waiter_hide()
+        dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, min_lr = summary_min_lr)
         if(nrow(dt_reactive$dt_display) == max_data){
           showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
         }
@@ -984,25 +968,25 @@ relsearch <- function(){
       }
     })
 
-    make_style_color_alert <- function(target_col){
-      index_alert <- which(target_col == 2)
+    make_style_color_warning <- function(target_col){
+      index_warning <- which(target_col == 2)
       color_display <- "red"
-      if(length(index_alert) == 0){
-        index_alert <- 1:length(target_col)
+      if(length(index_warning) == 0){
+        index_warning <- 1:length(target_col)
         color_display <- "black"
       }
-      return(list(index_alert, color_display))
+      return(list(index_warning, color_display))
     }
 
     output$dt_display <- renderDataTable(server = FALSE, {
       dt_display <- dt_reactive$dt_display
 
-      tmp <- make_style_color_alert(dt_display[, ColorY])
-      index_alert_y <- tmp[[1]]
+      tmp <- make_style_color_warning(dt_display[, ColorY])
+      index_warning_y <- tmp[[1]]
       color_display_y <- tmp[[2]]
 
-      tmp <- make_style_color_alert(dt_display[, ColorMt])
-      index_alert_mt <- tmp[[1]]
+      tmp <- make_style_color_warning(dt_display[, ColorMt])
+      index_warning_mt <- tmp[[1]]
       color_display_mt <- tmp[[2]]
 
       datatable(
@@ -1025,8 +1009,8 @@ relsearch <- function(){
         rownames = FALSE
       ) %>%
         formatStyle(columns = "ColorBack", target = "row", backgroundColor = styleEqual(c(0, 1, 2), c("#ffe0ef", "#e0ffe0", "#ffffe0"))) %>%
-        formatStyle(columns = "Paternal", target = "cell", color = styleRow(index_alert_y, color_display_y)) %>%
-        formatStyle(columns = "Maternal", target = "cell", color = styleRow(index_alert_mt, color_display_mt))
+        formatStyle(columns = "Paternal", target = "cell", color = styleRow(index_warning_y, color_display_y)) %>%
+        formatStyle(columns = "Maternal", target = "cell", color = styleRow(index_warning_mt, color_display_mt))
     })
 
     #########################

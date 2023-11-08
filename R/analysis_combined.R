@@ -2,8 +2,8 @@
 #'
 #' @description The function to create the sign of the number of candidates
 #' @param dt_combined A data.table of the combined data
-#' @param index_alert Indices of not-supporting paternal or maternal lineage with LR >= 100
-create_background_color <- function(dt_combined, index_alert){
+#' @param index_warning Indices of not-supporting paternal or maternal lineage with LR >= 100
+create_background_color <- function(dt_combined, index_warning){
   background_color <- rep(-1, nrow(dt_combined))
 
   pos_est_rel <- which(dt_combined[, EstimatedRel] != "")
@@ -24,7 +24,7 @@ create_background_color <- function(dt_combined, index_alert){
     }
   }
 
-  background_color[index_alert] <- 0
+  background_color[index_warning] <- 0
 
   return(background_color)
 }
@@ -100,8 +100,8 @@ create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_r
   # Update estimated relationships
   index_satisfy_lr <- which(!is.na(est_rel_all))
   index_unexpected_y_mt <- sort(unique(c(index_unexpected_y, index_unexpected_mt)))
-  index_alert <- intersect(index_satisfy_lr, index_unexpected_y_mt)
-  est_rel_all[index_alert] <- NA
+  index_warning <- intersect(index_satisfy_lr, index_unexpected_y_mt)
+  est_rel_all[index_warning] <- NA
   dt_combined[, EstimatedRel := est_rel_all]
 
   # Change data type
@@ -115,7 +115,7 @@ create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_r
   dt_combined$Maternal <- factor(dt_combined$Maternal, levels = c("Support", "Not support"), labels = c("Support", "Not support"))
 
   # Create the sign of the number of candidates
-  background_color <- create_background_color(dt_combined, index_alert)
+  background_color <- create_background_color(dt_combined, index_warning)
 
   # Additional columns
   options(warn = -1)
@@ -132,23 +132,21 @@ create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_r
 #' @description The function to create the displayed data
 #' @param dt_combined A data.table of the combined data
 #' @param fltr_type The filtering method
-#' @param max_data The maximum data displayed
 #' @param min_lr The minimum LR displayed
-create_displayed_data <- function(dt_combined, fltr_type = "default", max_data = 20000, min_lr = NULL){
+create_displayed_data <- function(dt_combined, fltr_type = "", min_lr = 100, max_data = 10000){
   setkey(dt_combined, Victim, Reference, AssumedRel)
 
   dt_display <- dt_combined[, list(Victim, Reference, AssumedRel, LR_Total, EstimatedRel, Paternal, Maternal, ColorBack, ColorY, ColorMt)]
   setorder(dt_display, - LR_Total, Paternal, Maternal, na.last = TRUE)
   dt_display$LR_Total <- signif(dt_display$LR_Total, 3)
+  dt_display <- dt_display[LR_Total >= min_lr]
 
   if(fltr_type == "identified"){
     dt_display <- dt_display[ColorBack == 1]
   }else if(fltr_type == "multiple"){
     dt_display <- dt_display[ColorBack == 2]
-  }else if(fltr_type == "alert"){
+  }else if(fltr_type == "warning"){
     dt_display <- dt_display[ColorBack == 0]
-  }else if(fltr_type == "min_lr"){
-    dt_display <- dt_display[LR_Total >= min_lr]
   }
 
   if(nrow(dt_display) > max_data){
