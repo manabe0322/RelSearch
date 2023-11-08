@@ -7,7 +7,7 @@ relsearch <- function(){
 
   ver_soft <- packageVersion("relsearch")
   path_pack <- path.package("relsearch", quiet = FALSE)
-  max_data <- 50000
+  max_data <- 20000
   options(shiny.maxRequestSize = 500 * 1024^2)
 
   ui <- fluidPage(useShinyjs(),
@@ -871,6 +871,7 @@ relsearch <- function(){
 
           dt_reactive$dt_combined <- create_combined_data(dt_result_auto, dt_result_y, dt_result_mt, dt_rel)
           dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined)
+          display_summary_data(dt_reactive$dt_display)
 
           #################################
           # Assign objects to dt_reactive #
@@ -924,11 +925,49 @@ relsearch <- function(){
     # Display summary data #
     ########################
 
+    display_summary_data <- function(dt_display){
+      output$dt_display <- renderDataTable(server = FALSE, {
+        #dt_display <- dt_reactive$dt_display
+
+        tmp <- make_style_color_alert(dt_display[, ColorY])
+        index_alert_y <- tmp[[1]]
+        color_display_y <- tmp[[2]]
+
+        tmp <- make_style_color_alert(dt_display[, ColorMt])
+        index_alert_mt <- tmp[[1]]
+        color_display_mt <- tmp[[2]]
+
+        datatable(
+          dt_display,
+          colnames = c("Victim", "Reference", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage", "ColorBack", "ColorY", "ColorMt"),
+          filter = "top",
+          extensions = "Buttons",
+          selection = list(mode = "single", target = "row"),
+          options = list(iDisplayLength = 10, ordering = FALSE, autoWidth = TRUE,
+                         dom = "Bfrtip",
+                         buttons = list(list(extend = "csv",
+                                             text = "Download",
+                                             filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_relsearch_result"),
+                                             exportOptions = list(modifier = list(page = "all"),
+                                                                  columns = c(0:6))
+                         )
+                         ),
+                         columnDefs = list(list(targets = 3, searchable = FALSE), list(targets = 7:9, visible = FALSE))
+          ),
+          rownames = FALSE
+        ) %>%
+          formatStyle(columns = "ColorBack", target = "row", backgroundColor = styleEqual(c(0, 1, 2), c("#ffe0ef", "#e0ffe0", "#ffffe0"))) %>%
+          formatStyle(columns = "Paternal", target = "cell", color = styleRow(index_alert_y, color_display_y)) %>%
+          formatStyle(columns = "Maternal", target = "cell", color = styleRow(index_alert_mt, color_display_mt))
+      })
+    }
+
     output$summary_min_lr <- renderUI({numericInput("summary_min_lr", label = "Minimum LR displayed", value = rv_min_lr_auto())})
 
     observeEvent(input$act_default, {
       waiter_show(html = spin_3k(), color = "white")
       dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined)
+      display_summary_data(dt_reactive$dt_display)
       waiter_hide()
       if(nrow(dt_reactive$dt_display) == max_data){
         showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
@@ -938,6 +977,7 @@ relsearch <- function(){
     observeEvent(input$act_identified, {
       waiter_show(html = spin_3k(), color = "white")
       dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "identified")
+      display_summary_data(dt_reactive$dt_display)
       waiter_hide()
       if(nrow(dt_reactive$dt_display) == max_data){
         showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
@@ -947,6 +987,7 @@ relsearch <- function(){
     observeEvent(input$act_multiple, {
       waiter_show(html = spin_3k(), color = "white")
       dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "multiple")
+      display_summary_data(dt_reactive$dt_display)
       waiter_hide()
       if(nrow(dt_reactive$dt_display) == max_data){
         showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
@@ -956,6 +997,7 @@ relsearch <- function(){
     observeEvent(input$act_alert, {
       waiter_show(html = spin_3k(), color = "white")
       dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "alert")
+      display_summary_data(dt_reactive$dt_display)
       waiter_hide()
       if(nrow(dt_reactive$dt_display) == max_data){
         showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
@@ -967,6 +1009,7 @@ relsearch <- function(){
       if(isTruthy(summary_min_lr)){
         waiter_show(html = spin_3k(), color = "white")
         dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "min_lr", min_lr = summary_min_lr)
+        display_summary_data(dt_reactive$dt_display)
         waiter_hide()
         if(nrow(dt_reactive$dt_display) == max_data){
           showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
@@ -985,41 +1028,6 @@ relsearch <- function(){
       }
       return(list(index_alert, color_display))
     }
-
-    output$dt_display <- renderDataTable(server = FALSE, {
-      dt_display <- dt_reactive$dt_display
-
-      tmp <- make_style_color_alert(dt_display[, ColorY])
-      index_alert_y <- tmp[[1]]
-      color_display_y <- tmp[[2]]
-
-      tmp <- make_style_color_alert(dt_display[, ColorMt])
-      index_alert_mt <- tmp[[1]]
-      color_display_mt <- tmp[[2]]
-
-      datatable(
-        dt_display,
-        colnames = c("Victim", "Reference", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage", "ColorBack", "ColorY", "ColorMt"),
-        filter = "top",
-        extensions = "Buttons",
-        selection = list(mode = "single", target = "row"),
-        options = list(iDisplayLength = 10, ordering = FALSE, autoWidth = TRUE,
-                       dom = "Bfrtip",
-                       buttons = list(list(extend = "csv",
-                                           text = "Download",
-                                           filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_relsearch_result"),
-                                           exportOptions = list(modifier = list(page = "all"),
-                                                                columns = c(0:6))
-                                           )
-                                      ),
-                       columnDefs = list(list(targets = 3, searchable = FALSE), list(targets = 7:9, visible = FALSE))
-                       ),
-        rownames = FALSE
-      ) %>%
-        formatStyle(columns = "ColorBack", target = "row", backgroundColor = styleEqual(c(0, 1, 2), c("#ffe0ef", "#e0ffe0", "#ffffe0"))) %>%
-        formatStyle(columns = "Paternal", target = "cell", color = styleRow(index_alert_y, color_display_y)) %>%
-        formatStyle(columns = "Maternal", target = "cell", color = styleRow(index_alert_mt, color_display_mt))
-    })
 
     #########################
     # Display detailed data #

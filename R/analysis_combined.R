@@ -134,7 +134,7 @@ create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_r
 #' @param fltr_type The filtering method
 #' @param max_data The maximum data displayed
 #' @param min_lr The minimum LR displayed
-create_displayed_data <- function(dt_combined, fltr_type = "default", max_data = 50000, min_lr = NULL){
+create_displayed_data <- function(dt_combined, fltr_type = "default", max_data = 20000, min_lr = NULL){
   setkey(dt_combined, Victim, Reference, AssumedRel)
 
   dt_display <- dt_combined[, list(Victim, Reference, AssumedRel, LR_Total, EstimatedRel, Paternal, Maternal, ColorBack, ColorY, ColorMt)]
