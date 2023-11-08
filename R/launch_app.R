@@ -220,7 +220,14 @@ relsearch <- function(){
                                                              ),
                                                              tabPanel("Assumed relationship",
                                                                       br(),
-                                                                      dataTableOutput("result_assumed_rel")
+                                                                      sidebarLayout(
+                                                                        sidebarPanel(width = 2,
+                                                                                     actionButton("act_assumed_rel_famtree", "Family tree")
+                                                                        ),
+                                                                        mainPanel(width = 10,
+                                                                                  dataTableOutput("result_assumed_rel")
+                                                                        )
+                                                                      )
                                                              ),
                                                              tabPanel("Mutation rate",
                                                                       br(),
@@ -1163,6 +1170,41 @@ relsearch <- function(){
         ),
         rownames = FALSE
       )
+    })
+
+    observeEvent(input$act_assumed_rel_famtree, {
+      dt_rel <- dt_reactive$dt_rel
+      pos_select <- input$result_assumed_rel_rows_selected
+      if(isTruthy(pos_select)){
+        names_all <- dt_rel[, Relationship]
+        persons_all <- dt_rel[, Tree_persons]
+        sexes_all <- dt_rel[, Tree_sexes]
+        fathers_all <- dt_rel[, Tree_fathers]
+        mothers_all <- dt_rel[, Tree_mothers]
+        founders_all <- dt_rel[, Tree_founders]
+
+        name_select <- names_all[pos_select]
+        person_select <- strsplit(persons_all[pos_select], ", ")[[1]]
+        sex_select <- strsplit(sexes_all[pos_select], ", ")[[1]]
+        father_select <- strsplit(fathers_all[pos_select], ", ")[[1]]
+        mother_select <- strsplit(mothers_all[pos_select], ", ")[[1]]
+        founder_select <- strsplit(founders_all[pos_select], ", ")[[1]]
+        tree <- check_tree(person_select, sex_select, father_select, mother_select, founder_select)
+
+        showModal(modalDialog(
+          title = paste0("Relationship: ", name_select),
+          plotOutput("tree_check"),
+          footer = tagList(
+            modalButton("Close")
+          )
+        ))
+
+        output$tree_check <- renderPlot({
+          plot(tree, hatched = c("Victim", "Ref"))
+        })
+      }else{
+        showModal(modalDialog(title = "Error", "Select a relationship!", easyClose = TRUE, footer = NULL))
+      }
     })
 
     output$result_myu <- renderDataTable(server = FALSE, {
