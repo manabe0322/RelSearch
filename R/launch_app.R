@@ -872,16 +872,20 @@ relsearch <- function(){
           # Assign objects to dt_reactive #
           #################################
 
-          dt_reactive$dt_result_auto <- dt_result_auto
+          dt_reactive$bool_check_auto <- bool_check_auto
+          dt_reactive$bool_check_y <- bool_check_y
+          dt_reactive$bool_check_mt <- bool_check_mt
+
           dt_reactive$dt_v_auto <- dt_v_auto
           dt_reactive$dt_r_auto <- dt_r_auto
           dt_reactive$dt_af <- dt_af
-          dt_reactive$dt_result_y <- dt_result_y
+
           dt_reactive$dt_v_y <- dt_v_y
           dt_reactive$dt_r_y <- dt_r_y
-          dt_reactive$dt_result_mt <- dt_result_mt
+
           dt_reactive$dt_v_mt <- dt_v_mt
           dt_reactive$dt_r_mt <- dt_r_mt
+
           dt_reactive$dt_criteria <- dt_criteria
           dt_reactive$dt_rel <- dt_rel
           dt_reactive$dt_myu <- dt_myu
@@ -930,7 +934,7 @@ relsearch <- function(){
       dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, min_lr = dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"])
       if(nrow(dt_reactive$dt_display) == max_data){
         showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
-      }else if(all(!is.null(dt_reactive$dt_v_auto), !is.null(dt_reactive$dt_r_auto), !is.null(dt_reactive$dt_af))){
+      }else if(dt_reactive$bool_check_auto){
         showModal(modalDialog(title = "Information", "Data that satisfies the criterion of the minimum LR is displayed.", easyClose = TRUE, footer = NULL))
       }
     })
@@ -956,15 +960,19 @@ relsearch <- function(){
       }
     })
 
+    iv_fltr_lr <- InputValidator$new()
+
     observeEvent(input$act_fltr_lr, {
       summary_min_lr <- input$summary_min_lr
+      iv_fltr_lr$disable()
       if(isTruthy(summary_min_lr)){
         dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, min_lr = summary_min_lr)
         if(nrow(dt_reactive$dt_display) == max_data){
           showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
         }
       }else{
-        showModal(modalDialog(title = "Error", "Enter the minimum LR displayed!", easyClose = TRUE, footer = NULL))
+        iv_fltr_lr$add_rule("summary_min_lr", sv_numeric())
+        iv_fltr_lr$enable()
       }
     })
 
@@ -1038,19 +1046,19 @@ relsearch <- function(){
 
       result_selected <- dt_reactive$dt_combined[.(sn_v_select, sn_r_select, assumed_rel_select)]
 
-      if(!is.null(dt_reactive$dt_result_auto)){
+      if(dt_reactive$bool_check_auto){
         dt_detail_auto <- create_detailed_data_auto(dt_reactive$dt_v_auto, dt_reactive$dt_r_auto, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
       }else{
         dt_detail_auto <- NULL
       }
 
-      if(!is.null(dt_reactive$dt_result_y)){
+      if(dt_reactive$bool_check_y){
         dt_detail_y <- create_detailed_data_y(dt_reactive$dt_v_y, dt_reactive$dt_r_y, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
       }else{
         dt_detail_y <- NULL
       }
 
-      if(!is.null(dt_reactive$dt_result_mt)){
+      if(dt_reactive$bool_check_mt){
         dt_detail_mt <- create_detailed_data_mt(dt_reactive$dt_v_mt, dt_reactive$dt_r_mt, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
 
         output$num_mismatch_select <- renderText({paste0(result_selected[, MismatchMt])})
@@ -1235,16 +1243,21 @@ relsearch <- function(){
 
         dt_reactive$dt_combined <- dt_combined
         dt_reactive$dt_display <- dt_display
-        dt_reactive$dt_result_auto <- dt_result_auto
+
+        dt_reactive$bool_check_auto <- bool_check_auto
+        dt_reactive$bool_check_y <- bool_check_y
+        dt_reactive$bool_check_mt <- bool_check_mt
+
         dt_reactive$dt_v_auto <- dt_v_auto
         dt_reactive$dt_r_auto <- dt_r_auto
         dt_reactive$dt_af <- dt_af
-        dt_reactive$dt_result_y <- dt_result_y
+
         dt_reactive$dt_v_y <- dt_v_y
         dt_reactive$dt_r_y <- dt_r_y
-        dt_reactive$dt_result_mt <- dt_result_mt
+
         dt_reactive$dt_v_mt <- dt_v_mt
         dt_reactive$dt_r_mt <- dt_r_mt
+
         dt_reactive$dt_criteria <- dt_criteria
         dt_reactive$dt_rel <- dt_rel
         dt_reactive$dt_myu <- dt_myu
@@ -1350,16 +1363,21 @@ relsearch <- function(){
 
         dt_combined <- dt_reactive$dt_combined
         dt_display <- dt_reactive$dt_display
-        dt_result_auto <- dt_reactive$dt_result_auto
+
+        bool_check_auto <- dt_reactive$bool_check_auto
+        bool_check_y <- dt_reactive$bool_check_y
+        bool_check_mt <- dt_reactive$bool_check_mt
+
         dt_v_auto <- dt_reactive$dt_v_auto
         dt_r_auto <- dt_reactive$dt_r_auto
         dt_af <- dt_reactive$dt_af
-        dt_result_y <- dt_reactive$dt_result_y
+
         dt_v_y <- dt_reactive$dt_v_y
         dt_r_y <- dt_reactive$dt_r_y
-        dt_result_mt <- dt_reactive$dt_result_mt
+
         dt_v_mt <- dt_reactive$dt_v_mt
         dt_r_mt <- dt_reactive$dt_r_mt
+
         dt_criteria <- dt_reactive$dt_criteria
         dt_rel <- dt_reactive$dt_rel
         dt_myu <- dt_reactive$dt_myu
@@ -1374,9 +1392,9 @@ relsearch <- function(){
         fn_r_mt <- dt_reactive$fn_r_mt
 
         save(list = c("dt_combined", "dt_display",
-                      "dt_result_auto", "dt_v_auto", "dt_r_auto", "dt_af",
-                      "dt_result_y", "dt_v_y", "dt_r_y",
-                      "dt_result_mt", "dt_v_mt", "dt_r_mt",
+                      "dt_v_auto", "dt_r_auto", "dt_af",
+                      "dt_v_y", "dt_r_y",
+                      "dt_v_mt", "dt_r_mt",
                       "dt_criteria", "dt_rel", "dt_myu", "dt_par_auto",
                       "fn_v_auto", "fn_r_auto", "fn_af",
                       "fn_v_y", "fn_r_y",
