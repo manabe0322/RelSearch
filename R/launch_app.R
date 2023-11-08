@@ -866,7 +866,11 @@ relsearch <- function(){
           #############################
 
           min_lr_auto <- dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"]
-          dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, min_lr = min_lr_auto)
+          if(bool_check_auto){
+            dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "with_auto", min_lr = min_lr_auto)
+          }else{
+            dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "without_auto")
+          }
 
           #################################
           # Assign objects to dt_reactive #
@@ -931,7 +935,11 @@ relsearch <- function(){
 
     observeEvent(input$act_default, {
       dt_criteria <- dt_reactive$dt_criteria
-      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, min_lr = dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"])
+      if(dt_reactive$bool_check_auto){
+        dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "with_auto", min_lr = dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"])
+      }else{
+        dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "without_auto")
+      }
       if(nrow(dt_reactive$dt_display) == max_data){
         showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
       }else if(dt_reactive$bool_check_auto){
@@ -966,7 +974,7 @@ relsearch <- function(){
       summary_min_lr <- input$summary_min_lr
       iv_fltr_lr$disable()
       if(isTruthy(summary_min_lr)){
-        dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, min_lr = summary_min_lr)
+        dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "with_auto", min_lr = summary_min_lr)
         if(nrow(dt_reactive$dt_display) == max_data){
           showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
         }

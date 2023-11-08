@@ -133,15 +133,16 @@ create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_r
 #' @param dt_combined A data.table of the combined data
 #' @param fltr_type The filtering method
 #' @param min_lr The minimum LR displayed
-create_displayed_data <- function(dt_combined, fltr_type = "", min_lr = 100, max_data = 10000){
+create_displayed_data <- function(dt_combined, fltr_type = "with_auto", min_lr = 100, max_data = 10000){
   setkey(dt_combined, Victim, Reference, AssumedRel)
 
   dt_display <- dt_combined[, list(Victim, Reference, AssumedRel, LR_Total, EstimatedRel, Paternal, Maternal, ColorBack, ColorY, ColorMt)]
   setorder(dt_display, - LR_Total, Paternal, Maternal, na.last = TRUE)
   dt_display$LR_Total <- signif(dt_display$LR_Total, 3)
-  dt_display <- dt_display[LR_Total >= min_lr]
 
-  if(fltr_type == "identified"){
+  if(fltr_type == "with_auto"){
+    dt_display <- dt_display[LR_Total >= min_lr]
+  }else if(fltr_type == "identified"){
     dt_display <- dt_display[ColorBack == 1]
   }else if(fltr_type == "multiple"){
     dt_display <- dt_display[ColorBack == 2]
