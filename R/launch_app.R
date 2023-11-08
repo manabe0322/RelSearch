@@ -1400,6 +1400,7 @@ relsearch <- function(){
         fn_r_mt <- dt_reactive$fn_r_mt
 
         save(list = c("dt_combined", "dt_display",
+                      "bool_check_auto", "bool_check_y", "bool_check_mt",
                       "dt_v_auto", "dt_r_auto", "dt_af",
                       "dt_v_y", "dt_r_y",
                       "dt_v_mt", "dt_r_mt",
