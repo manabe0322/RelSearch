@@ -909,6 +909,7 @@ relsearch <- function(){
           enable("name_proj")
           enable("download_proj")
           enable(selector = '.navbar-nav a[data-value = "Result"]')
+          disable(selector = '.navbar-nav a[data-value = "Settings"]')
           updateNavbarPage(session, "navbar", selected = "Result")
 
           waiter_hide()
@@ -1299,6 +1300,7 @@ relsearch <- function(){
         enable("name_proj")
         enable("download_proj")
         enable(selector = '.navbar-nav a[data-value = "Result"]')
+        disable(selector = '.navbar-nav a[data-value = "Settings"]')
         updateNavbarPage(session, "navbar", selected = "Result")
         showModal(modalDialog(title = "Information", "Displayed data satisfies at least one of the criteria for STR, Y-STR, and mtDNA.", easyClose = TRUE, footer = NULL))
       }
