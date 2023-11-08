@@ -5,13 +5,9 @@ tab_myu_ui <- function(id){
   ns <- NS(id)
 
   tabPanel("Mutation rates",
-
            titlePanel("Mutation rates"),
-
            br(),
-
            sidebarLayout(
-
              sidebarPanel(
                actionButton(ns("act_myu_edit"), label = "Edit"),
                br(),
@@ -24,7 +20,6 @@ tab_myu_ui <- function(id){
                br(),
                actionButton(ns("act_myu_reset"), label = "Reset")
              ),
-
              mainPanel(
                dataTableOutput(ns("dt_myu"))
              )
