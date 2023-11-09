@@ -4,7 +4,13 @@
 \alias{create_combined_data}
 \title{create_combined_data}
 \usage{
-create_combined_data(dt_result_auto, dt_result_y, dt_result_mt, dt_rel)
+create_combined_data(
+  dt_result_auto,
+  dt_result_y,
+  dt_result_mt,
+  dt_rel,
+  keep_min_lr = 1
+)
 }
 \arguments{
 \item{dt_result_auto}{A data.table of the result for the autosomal STR}

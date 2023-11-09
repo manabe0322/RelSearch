@@ -4,10 +4,10 @@
 #' @usage relsearch()
 #' @export
 relsearch <- function(){
-
   ver_soft <- packageVersion("relsearch")
   path_pack <- path.package("relsearch", quiet = FALSE)
   max_data <- 10000
+  keep_min_lr <- 1
   options(shiny.maxRequestSize = 500 * 1024^2)
 
   ui <- fluidPage(useShinyjs(),
@@ -859,7 +859,7 @@ relsearch <- function(){
           # Create the combined data #
           ############################
 
-          dt_reactive$dt_combined <- create_combined_data(dt_result_auto, dt_result_y, dt_result_mt, dt_rel)
+          dt_reactive$dt_combined <- create_combined_data(dt_result_auto, dt_result_y, dt_result_mt, dt_rel, keep_min_lr)
 
           #############################
           # Create the displayed data #
@@ -922,6 +922,8 @@ relsearch <- function(){
             showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
           }else if(bool_check_auto){
             showModal(modalDialog(title = "Information", "Data that satisfies the criterion of the minimum LR is displayed.", easyClose = TRUE, footer = NULL))
+          }else{
+            showModal(modalDialog(title = "Information", "Data that satisfies the criteria for Y-STR or mtDNA is displayed.", easyClose = TRUE, footer = NULL))
           }
         }
       }
@@ -944,6 +946,8 @@ relsearch <- function(){
         showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
       }else if(dt_reactive$bool_check_auto){
         showModal(modalDialog(title = "Information", "Data that satisfies the criterion of the minimum LR is displayed.", easyClose = TRUE, footer = NULL))
+      }else{
+        showModal(modalDialog(title = "Information", "Data that satisfies the criteria for Y-STR or mtDNA is displayed.", easyClose = TRUE, footer = NULL))
       }
     })
 
@@ -969,18 +973,21 @@ relsearch <- function(){
     })
 
     iv_fltr_lr <- InputValidator$new()
+    iv_fltr_lr$enable()
+
+    observeEvent(input$summary_min_lr, {
+      iv_fltr_lr$add_rule("summary_min_lr", sv_gte(keep_min_lr))
+    })
 
     observeEvent(input$act_fltr_lr, {
       summary_min_lr <- input$summary_min_lr
-      iv_fltr_lr$disable()
       if(isTruthy(summary_min_lr)){
-        dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "with_auto", min_lr = summary_min_lr)
-        if(nrow(dt_reactive$dt_display) == max_data){
-          showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
+        if(summary_min_lr >= keep_min_lr){
+          dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "with_auto", min_lr = summary_min_lr)
+          if(nrow(dt_reactive$dt_display) == max_data){
+            showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
+          }
         }
-      }else{
-        iv_fltr_lr$add_rule("summary_min_lr", sv_numeric())
-        iv_fltr_lr$enable()
       }
     })
 

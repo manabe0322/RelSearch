@@ -2,7 +2,7 @@
 #'
 #' @description The function to create the sign of the number of candidates
 #' @param dt_combined A data.table of the combined data
-#' @param index_warning Indices of not-supporting paternal or maternal lineage with LR >= 100
+#' @param index_warning Indices of not-supporting paternal or maternal lineage with LR >= min_lr_auto
 create_background_color <- function(dt_combined, index_warning){
   background_color <- rep(-1, nrow(dt_combined))
 
@@ -36,7 +36,7 @@ create_background_color <- function(dt_combined, index_warning){
 #' @param dt_result_y A data.table of the result for the Y-STR
 #' @param dt_result_mt A data.table of the result for the mtDNA
 #' @param dt_rel A data.table of information on relationships
-create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_rel){
+create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_rel, keep_min_lr = 1){
   # Combine data.table
   dt_combined <- NULL
   if(!is.null(dt_result_auto)){
@@ -123,6 +123,13 @@ create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_r
   dt_combined[, ColorY := color_y]
   dt_combined[, ColorMt := color_mt]
   options(warn = 0)
+
+  # Keep only important data
+  if(!is.null(dt_result_auto)){
+    dt_combined <- dt_combined[LR_Total >= keep_min_lr]
+  }else{
+    dt_combined[Paternal == "Support" || Maternal == "Support"]
+  }
 
   return(dt_combined)
 }
