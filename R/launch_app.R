@@ -10,12 +10,13 @@ relsearch <- function(){
   keep_min_lr <- 1
   options(shiny.maxRequestSize = 500 * 1024^2)
 
+  options(warn = -1)
   ui <- fluidPage(useShinyjs(),
                   theme = shinytheme("cerulean"),
                   navbarPage(title = paste0("relsearch ver. ", ver_soft),
                              id = "navbar",
                              position = c("fixed-top"),
-                             tags$style(type = "text/css", "body{padding-top: 70px;}"),
+                             tags$style(type = "text/css", "body{padding-top: 70px;}"), #Warning
 
                              tabPanel("Load",
                                       useWaiter(),
@@ -323,10 +324,27 @@ relsearch <- function(){
                                       downloadButton("download_r_mt", "mtDNA reference database")
                              ),
                              tabPanel("Manual",
-                                      includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual.md"))
+                                      tabsetPanel(
+                                        tabPanel("Getting started",
+                                                 includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual_getting-started.md"))
+                                        ),
+                                        tabPanel("Overall flow",
+                                                 includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual_overall-flow.md"))
+                                        ),
+                                        tabPanel("File format",
+                                                 includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual_file-format.md"))
+                                        ),
+                                        tabPanel("Settings",
+                                                 includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual_settings.md"))
+                                        ),
+                                        tabPanel("Calculation principle",
+                                                 includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual_calculation-principle.md"))
+                                        )
+                                      )
                              )
                   )
   )
+  options(warn = 0)
 
   server <- function(input, output, session){
 
