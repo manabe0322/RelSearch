@@ -6,7 +6,7 @@
 create_background_color <- function(dt_combined, index_warning){
   background_color <- rep(-1, nrow(dt_combined))
 
-  pos_est_rel <- which(dt_combined[, EstimatedRel] != "")
+  pos_est_rel <- which(!is.na(dt_combined[, EstimatedRel]))
   n_est_rel <- length(pos_est_rel)
 
   if(n_est_rel > 0){
