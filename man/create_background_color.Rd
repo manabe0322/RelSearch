@@ -9,7 +9,7 @@ create_background_color(dt_combined, index_warning)
 \arguments{
 \item{dt_combined}{A data.table of the combined data}
 
-\item{index_warning}{Indices of not-supporting paternal or maternal lineage with LR >= 100}
+\item{index_warning}{Indices of not-supporting paternal or maternal lineage with LR >= min_lr_auto}
 }
 \description{
 The function to create the sign of the number of candidates

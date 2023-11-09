@@ -20,6 +20,8 @@ create_combined_data(
 \item{dt_result_mt}{A data.table of the result for the mtDNA}
 
 \item{dt_rel}{A data.table of information on relationships}
+
+\item{keep_min_lr}{The minimum LR to keep data in dt_combined}
 }
 \description{
 The function to create combined data

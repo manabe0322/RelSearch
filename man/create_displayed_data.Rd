@@ -17,6 +17,8 @@ create_displayed_data(
 \item{fltr_type}{The filtering method}
 
 \item{min_lr}{The minimum LR displayed}
+
+\item{max_data}{The maximum data displayed}
 }
 \description{
 The function to create the displayed data
