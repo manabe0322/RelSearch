@@ -2,7 +2,7 @@
 #'
 #' @importFrom Rcpp sourceCpp
 #' @importFrom data.table data.table copy fread setDT setkey setorder
-#' @importFrom dplyr full_join
+#' @importFrom dplyr full_join mutate_all
 #' @importFrom DT datatable dataTableOutput formatStyle styleEqual styleRow renderDataTable
 #' @importFrom magrittr "%>%"
 #' @importFrom pedtools ped

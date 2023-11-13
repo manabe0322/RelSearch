@@ -314,7 +314,7 @@ std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim, st
     rgt[0] = prof_ref[2 * i];
     rgt[1] = prof_ref[2 * i + 1];
     auto rgt_end = std::remove(rgt.begin(), rgt.end(), -99);
-    vgt.erase(rgt_end, rgt.cend());
+    rgt.erase(rgt_end, rgt.cend());
 
     std::vector<double> af = af_list[i];
     std::vector<double> af_al = af_al_list[i];

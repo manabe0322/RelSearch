@@ -129,7 +129,7 @@ create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_r
   if(!is.null(dt_result_auto)){
     dt_combined <- dt_combined[LR_Total >= keep_min_lr]
   }else{
-    dt_combined[Paternal == "Support" || Maternal == "Support"]
+    dt_combined <- dt_combined[Paternal == "Support" | Maternal == "Support"]
   }
 
   return(dt_combined)
