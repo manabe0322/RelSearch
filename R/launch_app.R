@@ -10,13 +10,13 @@ relsearch <- function(){
   keep_min_lr <- 1
   options(shiny.maxRequestSize = 500 * 1024^2)
 
-  options(warn = -1)
+  options(warn = -1) # Suppress a warning message according to "tags$style(type = "text/css", "body{padding-top: 70px;}")"
   ui <- fluidPage(useShinyjs(),
                   theme = shinytheme("cerulean"),
                   navbarPage(title = paste0("relsearch ver. ", ver_soft),
                              id = "navbar",
                              position = c("fixed-top"),
-                             tags$style(type = "text/css", "body{padding-top: 70px;}"), #Warning
+                             tags$style(type = "text/css", "body{padding-top: 70px;}"),
 
                              tabPanel("Load",
                                       useWaiter(),
@@ -66,7 +66,7 @@ relsearch <- function(){
                                                                actionButton("act_multiple", label = "Multiple candidates", class = "btn btn-warning"),
                                                                br(),
                                                                br(),
-                                                               actionButton("act_warning", label = "Warning", class = "btn btn-danger"),
+                                                               actionButton("act_warning", label = "Not support lineage", class = "btn btn-danger"),
                                                                br(),
                                                                br(),
                                                                uiOutput("summary_min_lr"),
@@ -892,6 +892,7 @@ relsearch <- function(){
 
           waiter_hide()
 
+          # Show a message for displayed data
           if(nrow(dt_display) == max_data){
             showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
           }else if(bool_check_auto){
@@ -982,19 +983,20 @@ relsearch <- function(){
     output$dt_display <- renderDataTable(server = FALSE, {
       dt_display <- data_list$dt_display
 
-      index_warning_y <- which(dt_display[, ColorY] == 2)
-      color_display_y <- "red"
-      if(length(index_warning_y) == 0){
-        index_warning_y <- 1
-        color_display_y <- "#333333"
-      }
+      # The function to change colors does not work when dealing with big data
+      #index_warning_y <- which(dt_display[, ColorY] == 2)
+      #color_display_y <- "red"
+      #if(length(index_warning_y) == 0){
+      #  index_warning_y <- 1
+      #  color_display_y <- "#333333"
+      #}
 
-      index_warning_mt <- which(dt_display[, ColorMt] == 2)
-      color_display_mt <- "red"
-      if(length(index_warning_mt) == 0){
-        index_warning_mt <- 1
-        color_display_mt <- "#333333"
-      }
+      #index_warning_mt <- which(dt_display[, ColorMt] == 2)
+      #color_display_mt <- "red"
+      #if(length(index_warning_mt) == 0){
+      #  index_warning_mt <- 1
+      #  color_display_mt <- "#333333"
+      #}
 
       datatable(
         dt_display,
@@ -1015,9 +1017,9 @@ relsearch <- function(){
         ),
         rownames = FALSE
       ) %>%
-        formatStyle(columns = "ColorBack", target = "row", backgroundColor = styleEqual(c(0, 1, 2), c("#ffe0ef", "#e0ffe0", "#ffffe0"))) %>%
-        formatStyle(columns = "Paternal", target = "cell", color = styleRow(index_warning_y, color_display_y)) %>%
-        formatStyle(columns = "Maternal", target = "cell", color = styleRow(index_warning_mt, color_display_mt))
+        formatStyle(columns = "ColorBack", target = "row", backgroundColor = styleEqual(c(0, 1, 2), c("#ffe0ef", "#e0ffe0", "#ffffe0"))) #%>%
+        #formatStyle(columns = "Paternal", target = "cell", color = styleRow(index_warning_y, color_display_y)) %>%
+        #formatStyle(columns = "Maternal", target = "cell", color = styleRow(index_warning_mt, color_display_mt))
     })
 
     #########################
