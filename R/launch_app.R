@@ -561,11 +561,7 @@ relsearch <- function(){
     # View database #
     #################
 
-    rv_fn <- reactiveValues()
-
     observeEvent(load_v_auto(), {
-      rv_fn$fn_v_auto <- input$file_v_auto$name
-
       output$view_dt_v_auto <- renderDataTable({
         datatable(
           load_v_auto(),
@@ -577,8 +573,6 @@ relsearch <- function(){
     })
 
     observeEvent(load_r_auto(), {
-      rv_fn$fn_r_auto <- input$file_r_auto$name
-
       output$view_dt_r_auto <- renderDataTable({
         datatable(
           load_r_auto(),
@@ -590,8 +584,6 @@ relsearch <- function(){
     })
 
     observeEvent(load_af(), {
-      rv_fn$fn_af <- input$file_af$name
-
       output$view_dt_af <- renderDataTable({
         datatable(
           load_af(),
@@ -603,8 +595,6 @@ relsearch <- function(){
     })
 
     observeEvent(load_v_y(), {
-      rv_fn$fn_v_y <- input$file_v_y$name
-
       output$view_dt_v_y <- renderDataTable({
         datatable(
           load_v_y(),
@@ -616,8 +606,6 @@ relsearch <- function(){
     })
 
     observeEvent(load_r_y(), {
-      rv_fn$fn_r_y <- input$file_r_y$name
-
       output$view_dt_r_y <- renderDataTable({
         datatable(
           load_r_y(),
@@ -629,8 +617,6 @@ relsearch <- function(){
     })
 
     observeEvent(load_v_mt(), {
-      rv_fn$fn_v_mt <- input$file_v_mt$name
-
       output$view_dt_v_mt <- renderDataTable({
         datatable(
           load_v_mt(),
@@ -642,8 +628,6 @@ relsearch <- function(){
     })
 
     observeEvent(load_r_mt(), {
-      rv_fn$fn_r_mt <- input$file_r_mt$name
-
       output$view_dt_r_mt <- renderDataTable({
         datatable(
           load_r_mt(),
@@ -771,13 +755,13 @@ relsearch <- function(){
         # Fix file names of each database #
         ###################################
 
-        fn_v_auto <- rv_fn$fn_v_auto
-        fn_r_auto <- rv_fn$fn_r_auto
-        fn_af <- rv_fn$fn_af
-        fn_v_y <- rv_fn$fn_v_y
-        fn_r_y <- rv_fn$fn_r_y
-        fn_v_mt <- rv_fn$fn_v_mt
-        fn_r_mt <- rv_fn$fn_r_mt
+        fn_v_auto <- input$file_v_auto$name
+        fn_r_auto <- input$file_r_auto$name
+        fn_af <- input$file_af$name
+        fn_v_y <- input$file_v_y$name
+        fn_r_y <- input$file_r_y$name
+        fn_v_mt <- input$file_v_mt$name
+        fn_r_mt <- input$file_r_mt$name
 
         ####################
         # Check data.table #
