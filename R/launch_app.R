@@ -264,30 +264,7 @@ relsearch <- function(){
                              ),
 
                              navbarMenu("Settings",
-                                        tabPanel("Criteria",
-                                                 titlePanel("Criteria"),
-                                                 br(),
-                                                 fluidRow(
-                                                   column(4,
-                                                          h4("STR"),
-                                                          numeric_ui("min_lr_auto")
-                                                   ),
-                                                   column(4,
-                                                          h4("Y-STR"),
-                                                          numeric_ui("max_mismatch_y"),
-                                                          numeric_ui("max_ignore_y"),
-                                                          numeric_ui("max_mustep_y")
-                                                   ),
-                                                   column(4,
-                                                          h4("mtDNA"),
-                                                          numeric_ui("max_mismatch_mt"),
-                                                          numeric_ui("min_share_mt")
-                                                   )
-                                                 ),
-                                                 br(),
-                                                 h4("Update default"),
-                                                 actionButton("act_criteria_update", label = "Update default")
-                                        ),
+                                        tab_criteria_ui("tab_criteria"),
 
                                         tab_rel_ui("tab_rel"),
 
@@ -363,21 +340,7 @@ relsearch <- function(){
     # Set criteria #
     ################
 
-    rv_min_lr_auto <- callModule(numeric_server, "min_lr_auto", "Minimum LR", init_dt_criteria$Value[init_dt_criteria$Criteria == "min_lr_auto"])
-
-    rv_max_mismatch_y <- callModule(numeric_server, "max_mismatch_y", "Maximum number of mismatched loci", init_dt_criteria$Value[init_dt_criteria$Criteria == "max_mismatch_y"])
-    rv_max_ignore_y <- callModule(numeric_server, "max_ignore_y", "Maximum number of ignored loci", init_dt_criteria$Value[init_dt_criteria$Criteria == "max_ignore_y"])
-    rv_max_mustep_y <- callModule(numeric_server, "max_mustep_y", "Maximum total mutational steps", init_dt_criteria$Value[init_dt_criteria$Criteria == "max_mustep_y"])
-
-    rv_max_mismatch_mt <- callModule(numeric_server, "max_mismatch_mt", "Maximum number of inconsistency", init_dt_criteria$Value[init_dt_criteria$Criteria == "max_mismatch_mt"])
-    rv_min_share_mt <- callModule(numeric_server, "min_share_mt", "Minimum shared length", init_dt_criteria$Value[init_dt_criteria$Criteria == "min_share_mt"])
-
-    observeEvent(input$act_criteria_update, {
-      dt_criteria <- data.table(Criteria = c("min_lr_auto", "max_mismatch_y", "max_ignore_y", "max_mustep_y", "max_mismatch_mt", "min_share_mt"),
-                                Value = c(rv_min_lr_auto(), rv_max_mismatch_y(), rv_max_ignore_y(), rv_max_mustep_y(), rv_max_mismatch_mt(), rv_min_share_mt()))
-      write.csv(dt_criteria, paste0(path_pack, "/extdata/parameters/criteria.csv"), row.names = FALSE)
-      showModal(modalDialog(title = "Information", "Default criteria have been updated.", easyClose = TRUE, footer = NULL))
-    })
+    rv_criteria <- callModule(tab_criteria_server, "tab_criteria", init_dt_criteria, path_pack)
 
     #######################################
     # Set information on the relationship #
@@ -725,7 +688,7 @@ relsearch <- function(){
       # Check parameters #
       ####################
 
-      if(any(!isTruthy(rv_min_lr_auto()), !isTruthy(rv_max_mismatch_y()), !isTruthy(rv_max_ignore_y()), !isTruthy(rv_max_mustep_y()), !isTruthy(rv_max_mismatch_mt()), !isTruthy(rv_min_share_mt()))){
+      if(!isTruthy(rv_criteria)){
         showModal(modalDialog(title = "Error", "Set criteria!", easyClose = TRUE, footer = NULL))
       }else if(!isTruthy(rv_maf())){
         showModal(modalDialog(title = "Error", "Set the minimum allele frequency!", easyClose = TRUE, footer = NULL))
@@ -743,7 +706,7 @@ relsearch <- function(){
         dt_v_mt <- load_v_mt()
         dt_r_mt <- load_r_mt()
         dt_criteria <- data.table(Criteria = c("min_lr_auto", "max_mismatch_y", "max_ignore_y", "max_mustep_y", "max_mismatch_mt", "min_share_mt"),
-                                  Value = c(rv_min_lr_auto(), rv_max_mismatch_y(), rv_max_ignore_y(), rv_max_mustep_y(), rv_max_mismatch_mt(), rv_min_share_mt()))
+                                  Value = c(rv_criteria$min_lr_auto, rv_criteria$max_mismatch_y, rv_criteria$max_ignore_y, rv_criteria$max_mustep_y, rv_criteria$max_mismatch_mt, rv_criteria$min_share_mt))
         dt_rel <- data.table(Relationship = rv_rel$name, Victim = rv_rel$victim, Reference = rv_rel$reference,
                              Pr_IBD2 = rv_rel$pibd2, Pr_IBD1 = rv_rel$pibd1, Pr_IBD0 = rv_rel$pibd0,
                              Paternal = rv_rel$paternal, Maternal = rv_rel$maternal,

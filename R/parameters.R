@@ -2,10 +2,10 @@
 #'
 #' @description The function to create the data.table for criteria
 #' @param path_pack Package path
-create_dt_criteria <- function(path_pack){
+create_dt_criteria <- function(path_pack, init = TRUE){
   fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
 
-  if(is.element("criteria.csv", fn_par)){
+  if(init && is.element("criteria.csv", fn_par)){
     dt_criteria <- fread(paste0(path_pack, "/extdata/parameters/criteria.csv"))
   }else{
     dt_criteria <- data.table(Criteria = c("min_lr_auto", "max_mismatch_y", "max_ignore_y", "max_mustep_y", "max_mismatch_mt", "min_share_mt"),
