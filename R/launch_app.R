@@ -717,7 +717,7 @@ relsearch <- function(){
     # Perform analysis #
     ####################
 
-    dt_reactive <- reactiveValues()
+    data_list <- reactiveValues()
 
     observeEvent(input$act_analyze, {
 
@@ -830,7 +830,7 @@ relsearch <- function(){
           # Create the combined data #
           ############################
 
-          dt_reactive$dt_combined <- create_combined_data(dt_result_auto, dt_result_y, dt_result_mt, dt_rel, keep_min_lr)
+          dt_combined <- create_combined_data(dt_result_auto, dt_result_y, dt_result_mt, dt_rel, keep_min_lr)
 
           #############################
           # Create the displayed data #
@@ -838,41 +838,44 @@ relsearch <- function(){
 
           min_lr_auto <- dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"]
           if(bool_check_auto){
-            dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "with_auto", min_lr = min_lr_auto)
+            dt_display <- create_displayed_data(dt_combined, fltr_type = "with_auto", min_lr = min_lr_auto, max_data = max_data)
           }else{
-            dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "without_auto")
+            dt_display <- create_displayed_data(dt_combined, fltr_type = "without_auto", max_data = max_data)
           }
 
-          #################################
-          # Assign objects to dt_reactive #
-          #################################
+          ###############################
+          # Assign objects to data_list #
+          ###############################
 
-          dt_reactive$bool_check_auto <- bool_check_auto
-          dt_reactive$bool_check_y <- bool_check_y
-          dt_reactive$bool_check_mt <- bool_check_mt
+          isolate(data_list$bool_check_auto <- bool_check_auto)
+          isolate(data_list$bool_check_y <- bool_check_y)
+          isolate(data_list$bool_check_mt <- bool_check_mt)
 
-          dt_reactive$dt_v_auto <- dt_v_auto
-          dt_reactive$dt_r_auto <- dt_r_auto
-          dt_reactive$dt_af <- dt_af
+          isolate(data_list$dt_combined <- dt_combined)
+          isolate(data_list$dt_display <- dt_display)
 
-          dt_reactive$dt_v_y <- dt_v_y
-          dt_reactive$dt_r_y <- dt_r_y
+          isolate(data_list$dt_v_auto <- dt_v_auto)
+          isolate(data_list$dt_r_auto <- dt_r_auto)
+          isolate(data_list$dt_af <- dt_af)
 
-          dt_reactive$dt_v_mt <- dt_v_mt
-          dt_reactive$dt_r_mt <- dt_r_mt
+          isolate(data_list$dt_v_y <- dt_v_y)
+          isolate(data_list$dt_r_y <- dt_r_y)
 
-          dt_reactive$dt_criteria <- dt_criteria
-          dt_reactive$dt_rel <- dt_rel
-          dt_reactive$dt_myu <- dt_myu
-          dt_reactive$dt_par_auto <- dt_par_auto
+          isolate(data_list$dt_v_mt <- dt_v_mt)
+          isolate(data_list$dt_r_mt <- dt_r_mt)
 
-          dt_reactive$fn_v_auto <- fn_v_auto
-          dt_reactive$fn_r_auto <- fn_r_auto
-          dt_reactive$fn_af <- fn_af
-          dt_reactive$fn_v_y <- fn_v_y
-          dt_reactive$fn_r_y <- fn_r_y
-          dt_reactive$fn_v_mt <- fn_v_mt
-          dt_reactive$fn_r_mt <- fn_r_mt
+          isolate(data_list$dt_criteria <- dt_criteria)
+          isolate(data_list$dt_rel <- dt_rel)
+          isolate(data_list$dt_myu <- dt_myu)
+          isolate(data_list$dt_par_auto <- dt_par_auto)
+
+          isolate(data_list$fn_v_auto <- fn_v_auto)
+          isolate(data_list$fn_r_auto <- fn_r_auto)
+          isolate(data_list$fn_af <- fn_af)
+          isolate(data_list$fn_v_y <- fn_v_y)
+          isolate(data_list$fn_r_y <- fn_r_y)
+          isolate(data_list$fn_v_mt <- fn_v_mt)
+          isolate(data_list$fn_r_mt <- fn_r_mt)
 
           ######################
           # Finish calculation #
@@ -889,7 +892,7 @@ relsearch <- function(){
 
           waiter_hide()
 
-          if(nrow(dt_reactive$dt_display) == max_data){
+          if(nrow(dt_display) == max_data){
             showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
           }else if(bool_check_auto){
             showModal(modalDialog(title = "Information", "Data that satisfies the criterion of the minimum LR is displayed.", easyClose = TRUE, footer = NULL))
@@ -904,18 +907,24 @@ relsearch <- function(){
     # Display summary data #
     ########################
 
-    output$summary_min_lr <- renderUI({numericInput("summary_min_lr", label = "Minimum LR displayed", value = dt_reactive$dt_criteria$Value[dt_reactive$dt_criteria$Criteria == "min_lr_auto"])})
+    output$summary_min_lr <- renderUI({
+      isolate(dt_criteria <- data_list$dt_criteria)
+      numericInput("summary_min_lr", label = "Minimum LR displayed", value = dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"])
+    })
 
     observeEvent(input$act_default, {
-      dt_criteria <- dt_reactive$dt_criteria
-      if(dt_reactive$bool_check_auto){
-        dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "with_auto", min_lr = dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"])
+      isolate(bool_check_auto <- data_list$bool_check_auto)
+      isolate(dt_criteria <- data_list$dt_criteria)
+      isolate(dt_combined <- data_list$dt_combined)
+      if(bool_check_auto){
+        dt_display <- create_displayed_data(dt_combined, fltr_type = "with_auto", min_lr = dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"], max_data = max_data)
       }else{
-        dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "without_auto")
+        dt_display <- create_displayed_data(dt_combined, fltr_type = "without_auto", max_data = max_data)
       }
-      if(nrow(dt_reactive$dt_display) == max_data){
+      isolate(data_list$dt_display <- dt_display)
+      if(nrow(dt_display) == max_data){
         showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
-      }else if(dt_reactive$bool_check_auto){
+      }else if(bool_check_auto){
         showModal(modalDialog(title = "Information", "Data that satisfies the criterion of the minimum LR is displayed.", easyClose = TRUE, footer = NULL))
       }else{
         showModal(modalDialog(title = "Information", "Data that satisfies the criteria for Y-STR or mtDNA is displayed.", easyClose = TRUE, footer = NULL))
@@ -923,22 +932,28 @@ relsearch <- function(){
     })
 
     observeEvent(input$act_identified, {
-      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "identified")
-      if(nrow(dt_reactive$dt_display) == max_data){
+      isolate(dt_combined <- data_list$dt_combined)
+      dt_display <- create_displayed_data(dt_combined, fltr_type = "identified", max_data = max_data)
+      isolate(data_list$dt_display <- dt_display)
+      if(nrow(dt_display) == max_data){
         showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
       }
     })
 
     observeEvent(input$act_multiple, {
-      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "multiple")
-      if(nrow(dt_reactive$dt_display) == max_data){
+      isolate(dt_combined <- data_list$dt_combined)
+      dt_display <- create_displayed_data(dt_combined, fltr_type = "multiple", max_data = max_data)
+      isolate(data_list$dt_display <- dt_display)
+      if(nrow(dt_display) == max_data){
         showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
       }
     })
 
     observeEvent(input$act_warning, {
-      dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "warning")
-      if(nrow(dt_reactive$dt_display) == max_data){
+      isolate(dt_combined <- data_list$dt_combined)
+      dt_display <- create_displayed_data(dt_combined, fltr_type = "warning", max_data = max_data)
+      isolate(data_list$dt_display <- dt_display)
+      if(nrow(dt_display) == max_data){
         showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
       }
     })
@@ -954,34 +969,32 @@ relsearch <- function(){
       summary_min_lr <- input$summary_min_lr
       if(isTruthy(summary_min_lr)){
         if(summary_min_lr >= keep_min_lr){
-          dt_reactive$dt_display <- create_displayed_data(dt_reactive$dt_combined, fltr_type = "with_auto", min_lr = summary_min_lr)
-          if(nrow(dt_reactive$dt_display) == max_data){
+          isolate(dt_combined <- data_list$dt_combined)
+          dt_display <- create_displayed_data(dt_combined, fltr_type = "with_auto", min_lr = summary_min_lr, max_data = max_data)
+          isolate(data_list$dt_display <- dt_display)
+          if(nrow(dt_display) == max_data){
             showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
           }
         }
       }
     })
 
-    make_style_color_warning <- function(target_col){
-      index_warning <- which(target_col == 2)
-      color_display <- "red"
-      if(length(index_warning) == 0){
-        index_warning <- 1:length(target_col)
-        color_display <- "black"
-      }
-      return(list(index_warning, color_display))
-    }
-
     output$dt_display <- renderDataTable(server = FALSE, {
-      dt_display <- dt_reactive$dt_display
+      dt_display <- data_list$dt_display
 
-      tmp <- make_style_color_warning(dt_display[, ColorY])
-      index_warning_y <- tmp[[1]]
-      color_display_y <- tmp[[2]]
+      index_warning_y <- which(dt_display[, ColorY] == 2)
+      color_display_y <- "red"
+      if(length(index_warning_y) == 0){
+        index_warning_y <- 1
+        color_display_y <- "#333333"
+      }
 
-      tmp <- make_style_color_warning(dt_display[, ColorMt])
-      index_warning_mt <- tmp[[1]]
-      color_display_mt <- tmp[[2]]
+      index_warning_mt <- which(dt_display[, ColorMt] == 2)
+      color_display_mt <- "red"
+      if(length(index_warning_mt) == 0){
+        index_warning_mt <- 1
+        color_display_mt <- "#333333"
+      }
 
       datatable(
         dt_display,
@@ -1014,38 +1027,48 @@ relsearch <- function(){
     observeEvent(ignoreInit = TRUE, input$dt_display_rows_selected, {
       pos_select <- input$dt_display_rows_selected
 
-      sn_v_select <- dt_reactive$dt_display[pos_select, Victim]
-      sn_r_select <- dt_reactive$dt_display[pos_select, Reference]
-      assumed_rel_select <- dt_reactive$dt_display[pos_select, AssumedRel]
-      estimated_rel_select <- dt_reactive$dt_display[pos_select, EstimatedRel]
+      isolate(bool_check_auto <- data_list$bool_check_auto)
+      isolate(dt_combined <- data_list$dt_combined)
+      isolate(dt_display <- data_list$dt_display)
+      isolate(dt_v_auto <- data_list$dt_v_auto)
+      isolate(dt_r_auto <- data_list$dt_r_auto)
+      isolate(dt_v_y <- data_list$dt_v_y)
+      isolate(dt_r_y <- data_list$dt_r_y)
+      isolate(dt_v_mt <- data_list$dt_v_mt)
+      isolate(dt_r_mt <- data_list$dt_r_mt)
+
+      sn_v_select <- dt_display[pos_select, Victim]
+      sn_r_select <- dt_display[pos_select, Reference]
+      assumed_rel_select <- dt_display[pos_select, AssumedRel]
+      estimated_rel_select <- dt_display[pos_select, EstimatedRel]
       if(is.na(estimated_rel_select)){
         estimated_rel_select <- "Not identified"
       }
-      paternal_select <- dt_reactive$dt_display[pos_select, Paternal]
+      paternal_select <- dt_display[pos_select, Paternal]
       if(is.na(paternal_select)){
         paternal_select <- "No data"
       }
-      maternal_select <- dt_reactive$dt_display[pos_select, Maternal]
+      maternal_select <- dt_display[pos_select, Maternal]
       if(is.na(maternal_select)){
         maternal_select <- "No data"
       }
 
-      result_selected <- dt_reactive$dt_combined[.(sn_v_select, sn_r_select, assumed_rel_select)]
+      result_selected <- dt_combined[.(sn_v_select, sn_r_select, assumed_rel_select)]
 
-      if(dt_reactive$bool_check_auto){
-        dt_detail_auto <- create_detailed_data_auto(dt_reactive$dt_v_auto, dt_reactive$dt_r_auto, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
+      if(bool_check_auto){
+        dt_detail_auto <- create_detailed_data_auto(dt_v_auto, dt_r_auto, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
       }else{
         dt_detail_auto <- NULL
       }
 
-      if(dt_reactive$bool_check_y){
-        dt_detail_y <- create_detailed_data_y(dt_reactive$dt_v_y, dt_reactive$dt_r_y, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
+      if(data_list$bool_check_y){
+        dt_detail_y <- create_detailed_data_y(dt_v_y, dt_r_y, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
       }else{
         dt_detail_y <- NULL
       }
 
-      if(dt_reactive$bool_check_mt){
-        dt_detail_mt <- create_detailed_data_mt(dt_reactive$dt_v_mt, dt_reactive$dt_r_mt, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
+      if(data_list$bool_check_mt){
+        dt_detail_mt <- create_detailed_data_mt(dt_v_mt, dt_r_mt, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
 
         output$num_mismatch_select <- renderText({paste0(result_selected[, MismatchMt])})
         output$share_range_select <- renderText({paste0(result_selected[, ShareRangeMt])})
@@ -1122,24 +1145,43 @@ relsearch <- function(){
     # Display analysis conditions #
     ###############################
 
-    output$result_fn_v_auto <- renderText({paste0(dt_reactive$fn_v_auto)})
-    output$result_fn_r_auto <- renderText({paste0(dt_reactive$fn_r_auto)})
-    output$result_fn_af <- renderText({paste0(dt_reactive$fn_af)})
-    output$result_fn_v_y <- renderText({paste0(dt_reactive$fn_v_y)})
-    output$result_fn_r_y <- renderText({paste0(dt_reactive$fn_r_y)})
-    output$result_fn_v_mt <- renderText({paste0(dt_reactive$fn_v_mt)})
-    output$result_fn_r_mt <- renderText({paste0(dt_reactive$fn_r_mt)})
+    output$result_fn_v_auto <- renderText({isolate(paste0(data_list$fn_v_auto))})
+    output$result_fn_r_auto <- renderText({isolate(paste0(data_list$fn_r_auto))})
+    output$result_fn_af <- renderText({isolate(paste0(data_list$fn_af))})
+    output$result_fn_v_y <- renderText({isolate(paste0(data_list$fn_v_y))})
+    output$result_fn_r_y <- renderText({isolate(paste0(data_list$fn_r_y))})
+    output$result_fn_v_mt <- renderText({isolate(paste0(data_list$fn_v_mt))})
+    output$result_fn_r_mt <- renderText({isolate(paste0(data_list$fn_r_mt))})
 
-    output$result_min_lr_auto <- renderText({paste0(dt_reactive$dt_criteria$Value[dt_reactive$dt_criteria$Criteria == "min_lr_auto"])})
-    output$result_max_mismatch_y <- renderText({paste0(dt_reactive$dt_criteria$Value[dt_reactive$dt_criteria$Criteria == "max_mismatch_y"])})
-    output$result_max_ignore_y <- renderText({paste0(dt_reactive$dt_criteria$Value[dt_reactive$dt_criteria$Criteria == "max_ignore_y"])})
-    output$result_max_mustep_y <- renderText({paste0(dt_reactive$dt_criteria$Value[dt_reactive$dt_criteria$Criteria == "max_mustep_y"])})
-    output$result_max_mismatch_mt <- renderText({paste0(dt_reactive$dt_criteria$Value[dt_reactive$dt_criteria$Criteria == "max_mismatch_mt"])})
-    output$result_min_share_mt <- renderText({paste0(dt_reactive$dt_criteria$Value[dt_reactive$dt_criteria$Criteria == "min_share_mt"])})
+    output$result_min_lr_auto <- renderText({
+      isolate(dt_criteria <- data_list$dt_criteria)
+      paste0(dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"])
+    })
+    output$result_max_mismatch_y <- renderText({
+      isolate(dt_criteria <- data_list$dt_criteria)
+      paste0(dt_criteria$Value[dt_criteria$Criteria == "max_mismatch_y"])
+    })
+    output$result_max_ignore_y <- renderText({
+      isolate(dt_criteria <- data_list$dt_criteria)
+      paste0(dt_criteria$Value[dt_criteria$Criteria == "max_ignore_y"])
+    })
+    output$result_max_mustep_y <- renderText({
+      isolate(dt_criteria <- data_list$dt_criteria)
+      paste0(dt_criteria$Value[dt_criteria$Criteria == "max_mustep_y"])
+    })
+    output$result_max_mismatch_mt <- renderText({
+      isolate(dt_criteria <- data_list$dt_criteria)
+      paste0(dt_criteria$Value[dt_criteria$Criteria == "max_mismatch_mt"])
+    })
+    output$result_min_share_mt <- renderText({
+      isolate(dt_criteria <- data_list$dt_criteria)
+      paste0(dt_criteria$Value[dt_criteria$Criteria == "min_share_mt"])
+    })
 
     output$result_assumed_rel <- renderDataTable(server = FALSE, {
+      isolate(dt_rel <- data_list$dt_rel)
       datatable(
-        dt_reactive$dt_rel,
+        dt_rel,
         colnames = c("Relationship", "Victim", "Reference", "Pr (IBD = 2)", "Pr (IBD = 1)", "Pr (IBD = 0)", "Paternal lineage", "Maternal lineage",
                      "Tree_persons", "Tree_sexes", "Tree_fathers", "Tree_mothers", "Tree_founders"),
         selection = list(mode = "single", target = "row"),
@@ -1151,7 +1193,7 @@ relsearch <- function(){
     })
 
     observeEvent(input$act_assumed_rel_famtree, {
-      dt_rel <- dt_reactive$dt_rel
+      isolate(dt_rel <- data_list$dt_rel)
       pos_select <- input$result_assumed_rel_rows_selected
       if(isTruthy(pos_select)){
         names_all <- dt_rel[, Relationship]
@@ -1186,8 +1228,9 @@ relsearch <- function(){
     })
 
     output$result_myu <- renderDataTable(server = FALSE, {
+      isolate(dt_myu <- data_list$dt_myu)
       datatable(
-        dt_reactive$dt_myu,
+        dt_myu,
         colnames = c("Locus", "Mutation rates"),
         selection = "none",
         options = list(iDisplayLength = 50, ordering = FALSE),
@@ -1195,7 +1238,7 @@ relsearch <- function(){
       )
     })
 
-    output$result_maf <- renderText({paste0(dt_reactive$dt_par_auto$Value[dt_reactive$dt_par_auto$Parameter == "maf"])})
+    output$result_maf <- renderText({paste0(data_list$dt_par_auto$Value[data_list$dt_par_auto$Parameter == "maf"])})
 
     ###############
     # New project #
@@ -1227,35 +1270,35 @@ relsearch <- function(){
 
         load(input$file_proj$datapath)
 
-        dt_reactive$dt_combined <- dt_combined
-        dt_reactive$dt_display <- dt_display
+        isolate(data_list$dt_combined <- dt_combined)
+        isolate(data_list$dt_display <- dt_display)
 
-        dt_reactive$bool_check_auto <- bool_check_auto
-        dt_reactive$bool_check_y <- bool_check_y
-        dt_reactive$bool_check_mt <- bool_check_mt
+        isolate(data_list$bool_check_auto <- bool_check_auto)
+        isolate(data_list$bool_check_y <- bool_check_y)
+        isolate(data_list$bool_check_mt <- bool_check_mt)
 
-        dt_reactive$dt_v_auto <- dt_v_auto
-        dt_reactive$dt_r_auto <- dt_r_auto
-        dt_reactive$dt_af <- dt_af
+        isolate(data_list$dt_v_auto <- dt_v_auto)
+        isolate(data_list$dt_r_auto <- dt_r_auto)
+        isolate(data_list$dt_af <- dt_af)
 
-        dt_reactive$dt_v_y <- dt_v_y
-        dt_reactive$dt_r_y <- dt_r_y
+        isolate(data_list$dt_v_y <- dt_v_y)
+        isolate(data_list$dt_r_y <- dt_r_y)
 
-        dt_reactive$dt_v_mt <- dt_v_mt
-        dt_reactive$dt_r_mt <- dt_r_mt
+        isolate(data_list$dt_v_mt <- dt_v_mt)
+        isolate(data_list$dt_r_mt <- dt_r_mt)
 
-        dt_reactive$dt_criteria <- dt_criteria
-        dt_reactive$dt_rel <- dt_rel
-        dt_reactive$dt_myu <- dt_myu
-        dt_reactive$dt_par_auto <- dt_par_auto
+        isolate(data_list$dt_criteria <- dt_criteria)
+        isolate(data_list$dt_rel <- dt_rel)
+        isolate(data_list$dt_myu <- dt_myu)
+        isolate(data_list$dt_par_auto <- dt_par_auto)
 
-        dt_reactive$fn_v_auto <- fn_v_auto
-        dt_reactive$fn_r_auto <- fn_r_auto
-        dt_reactive$fn_af <- fn_af
-        dt_reactive$fn_v_y <- fn_v_y
-        dt_reactive$fn_r_y <- fn_r_y
-        dt_reactive$fn_v_mt <- fn_v_mt
-        dt_reactive$fn_r_mt <- fn_r_mt
+        isolate(data_list$fn_v_auto <- fn_v_auto)
+        isolate(data_list$fn_r_auto <- fn_r_auto)
+        isolate(data_list$fn_af <- fn_af)
+        isolate(data_list$fn_v_y <- fn_v_y)
+        isolate(data_list$fn_r_y <- fn_r_y)
+        isolate(data_list$fn_v_mt <- fn_v_mt)
+        isolate(data_list$fn_r_mt <- fn_r_mt)
 
         output$view_dt_v_auto <- renderDataTable({
           datatable(
@@ -1347,35 +1390,35 @@ relsearch <- function(){
       content = function(file){
         waiter_show(html = spin_3k(), color = "white")
 
-        dt_combined <- dt_reactive$dt_combined
-        dt_display <- dt_reactive$dt_display
+        isolate(dt_combined <- data_list$dt_combined)
+        isolate(dt_display <- data_list$dt_display)
 
-        bool_check_auto <- dt_reactive$bool_check_auto
-        bool_check_y <- dt_reactive$bool_check_y
-        bool_check_mt <- dt_reactive$bool_check_mt
+        isolate(bool_check_auto <- data_list$bool_check_auto)
+        isolate(bool_check_y <- data_list$bool_check_y)
+        isolate(bool_check_mt <- data_list$bool_check_mt)
 
-        dt_v_auto <- dt_reactive$dt_v_auto
-        dt_r_auto <- dt_reactive$dt_r_auto
-        dt_af <- dt_reactive$dt_af
+        isolate(dt_v_auto <- data_list$dt_v_auto)
+        isolate(dt_r_auto <- data_list$dt_r_auto)
+        isolate(dt_af <- data_list$dt_af)
 
-        dt_v_y <- dt_reactive$dt_v_y
-        dt_r_y <- dt_reactive$dt_r_y
+        isolate(dt_v_y <- data_list$dt_v_y)
+        isolate(dt_r_y <- data_list$dt_r_y)
 
-        dt_v_mt <- dt_reactive$dt_v_mt
-        dt_r_mt <- dt_reactive$dt_r_mt
+        isolate(dt_v_mt <- data_list$dt_v_mt)
+        isolate(dt_r_mt <- data_list$dt_r_mt)
 
-        dt_criteria <- dt_reactive$dt_criteria
-        dt_rel <- dt_reactive$dt_rel
-        dt_myu <- dt_reactive$dt_myu
-        dt_par_auto <- dt_reactive$dt_par_auto
+        isolate(dt_criteria <- data_list$dt_criteria)
+        isolate(dt_rel <- data_list$dt_rel)
+        isolate(dt_myu <- data_list$dt_myu)
+        isolate(dt_par_auto <- data_list$dt_par_auto)
 
-        fn_v_auto <- dt_reactive$fn_v_auto
-        fn_r_auto <- dt_reactive$fn_r_auto
-        fn_af <- dt_reactive$fn_af
-        fn_v_y <- dt_reactive$fn_v_y
-        fn_r_y <- dt_reactive$fn_r_y
-        fn_v_mt <- dt_reactive$fn_v_mt
-        fn_r_mt <- dt_reactive$fn_r_mt
+        isolate(fn_v_auto <- data_list$fn_v_auto)
+        isolate(fn_r_auto <- data_list$fn_r_auto)
+        isolate(fn_af <- data_list$fn_af)
+        isolate(fn_v_y <- data_list$fn_v_y)
+        isolate(fn_r_y <- data_list$fn_r_y)
+        isolate(fn_v_mt <- data_list$fn_v_mt)
+        isolate(fn_r_mt <- data_list$fn_r_mt)
 
         save(list = c("dt_combined", "dt_display",
                       "bool_check_auto", "bool_check_y", "bool_check_mt",
