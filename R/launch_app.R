@@ -786,33 +786,6 @@ relsearch <- function(){
             dt_r_auto <- tmp[[2]]
             dt_af <- tmp[[3]]
 
-            output$view_dt_v_auto <- renderDataTable({
-              datatable(
-                dt_v_auto,
-                selection = "none",
-                options = list(iDisplayLength = 50, ordering = FALSE),
-                rownames = FALSE
-              )
-            })
-
-            output$view_dt_r_auto <- renderDataTable({
-              datatable(
-                dt_r_auto,
-                selection = "none",
-                options = list(iDisplayLength = 50, ordering = FALSE),
-                rownames = FALSE
-              )
-            })
-
-            output$view_dt_af <- renderDataTable({
-              datatable(
-                dt_af,
-                selection = "none",
-                options = list(iDisplayLength = 50, ordering = FALSE),
-                rownames = FALSE
-              )
-            })
-
             dt_result_auto <- analyze_auto(dt_v_auto, dt_r_auto, dt_af, dt_rel, dt_myu, dt_par_auto, dt_criteria)
           }else{
             dt_result_auto <- NULL
@@ -828,24 +801,6 @@ relsearch <- function(){
             tmp <- order_loci_y(dt_v_y, dt_r_y)
             dt_v_y <- tmp[[1]]
             dt_r_y <- tmp[[2]]
-
-            output$view_dt_v_y <- renderDataTable({
-              datatable(
-                dt_v_y,
-                selection = "none",
-                options = list(iDisplayLength = 50, ordering = FALSE),
-                rownames = FALSE
-              )
-            })
-
-            output$view_dt_r_y <- renderDataTable({
-              datatable(
-                dt_r_y,
-                selection = "none",
-                options = list(iDisplayLength = 50, ordering = FALSE),
-                rownames = FALSE
-              )
-            })
 
             dt_result_y <- analyze_y(dt_v_y, dt_r_y, dt_criteria)
           }else{
