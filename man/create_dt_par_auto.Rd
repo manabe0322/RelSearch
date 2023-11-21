@@ -4,7 +4,7 @@
 \alias{create_dt_par_auto}
 \title{create_dt_par_auto}
 \usage{
-create_dt_par_auto(path_pack)
+create_dt_par_auto(path_pack, init = TRUE)
 }
 \arguments{
 \item{path_pack}{Package path}

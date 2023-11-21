@@ -53,12 +53,20 @@ tab_criteria_server <- function(input, output, session, init_dt_criteria, path_p
   rv_criteria$max_mismatch_mt <- init_dt_criteria$Value[init_dt_criteria$Criteria == "max_mismatch_mt"]
   rv_criteria$min_share_mt <- init_dt_criteria$Value[init_dt_criteria$Criteria == "min_share_mt"]
 
+  #############
+  # Output UI #
+  #############
+
   output$min_lr_auto <- renderUI({numericInput(session$ns("min_lr_auto"), label = "Minimum LR", value = rv_criteria$min_lr_auto)})
   output$max_mismatch_y <- renderUI({numericInput(session$ns("max_mismatch_y"), label = "Maximum number of mismatched loci", value = rv_criteria$max_mismatch_y)})
   output$max_ignore_y <- renderUI({numericInput(session$ns("max_ignore_y"), label = "Maximum number of ignored loci", value = rv_criteria$max_ignore_y)})
   output$max_mustep_y <- renderUI({numericInput(session$ns("max_mustep_y"), label = "Maximum total mutational steps", value = rv_criteria$max_mustep_y)})
   output$max_mismatch_mt <- renderUI({numericInput(session$ns("max_mismatch_mt"), label = "Maximum number of inconsistency", value = rv_criteria$max_mismatch_mt)})
   output$min_share_mt <- renderUI({numericInput(session$ns("min_share_mt"), label = "Minimum shared length", value = rv_criteria$min_share_mt)})
+
+  #####################################
+  # Define the input rule of criteria #
+  #####################################
 
   iv_min_lr_auto <- InputValidator$new()
   iv_min_lr_auto$add_rule("min_lr_auto", sv_numeric())

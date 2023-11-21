@@ -4,7 +4,7 @@
 \alias{create_dt_criteria}
 \title{create_dt_criteria}
 \usage{
-create_dt_criteria(path_pack)
+create_dt_criteria(path_pack, init = TRUE)
 }
 \arguments{
 \item{path_pack}{Package path}

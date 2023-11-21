@@ -751,7 +751,6 @@ relsearch <- function(){
 
         message('\r', paste0(rep(" ", 100), collapse = ""), appendLF = FALSE)
 
-
         ############################
         # Create the combined data #
         ############################

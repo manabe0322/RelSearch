@@ -9,7 +9,7 @@
 3. Execute the following command in R to install required packages.
 
 ```
-install.packages(c("shiny", "Rcpp", "data.table", "dplyr", "DT", "magrittr", "markdown", "pedtools", "ribd", "shinyjs", "shinythemes", "waiter"))
+install.packages(c("markdown", "shiny", "Rcpp", "data.table", "dplyr", "DT", "magrittr", "pedtools", "ribd", "shinyjs", "shinythemes", "shinyvalidate", "waiter"))
 ```
 
 4. Download ”relsearch_1.0.0.zip” from the <a href="https://github.com/manabe0322/relsearch/releases" target="_blank">GitHub repository page</a>.

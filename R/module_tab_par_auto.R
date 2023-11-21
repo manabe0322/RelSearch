@@ -24,14 +24,31 @@ tab_par_auto_ui <- function(id){
 #' @param init_dt_par_auto The initial data.table of the parameter
 #' @param path_pack Package path
 tab_par_auto_server <- function(input, output, session, init_dt_par_auto, path_pack){
+
+  ######################################
+  # Define the initial reactive values #
+  ######################################
+
   rv_par_auto <- reactiveValues()
   rv_par_auto$maf <- init_dt_par_auto$Value[init_dt_par_auto$Parameter == "maf"]
 
+  #############
+  # Output UI #
+  #############
+
   output$maf <- renderUI({numericInput(session$ns("maf"), label = "Minimum allele frequency", value = rv_par_auto$maf)})
+
+  ##########################################
+  # Define the input rule of the parameter #
+  ##########################################
 
   iv_maf <- InputValidator$new()
   iv_maf$add_rule("maf", sv_numeric())
   iv_maf$enable()
+
+  ##################
+  # Save parameter #
+  ##################
 
   observeEvent(input$act_par_auto_save, {
     if(isTruthy(input$maf)){
@@ -46,6 +63,10 @@ tab_par_auto_server <- function(input, output, session, init_dt_par_auto, path_p
       showModal(modalDialog(title = "Error", "Set the parameter!", easyClose = TRUE, footer = NULL))
     }
   })
+
+  ###################
+  # Reset parameter #
+  ###################
 
   observeEvent(input$act_par_auto_reset, {
     new_dt_par_auto <- create_dt_par_auto(path_pack, FALSE)
