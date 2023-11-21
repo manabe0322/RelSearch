@@ -458,8 +458,15 @@ relsearch <- function(){
         return(NULL)
       }else{
         dt <- fread(file_input$datapath)
-
         col_char <- names(dt)
+
+        pos_left <- which(is.element(col_char, c("SampleName", "Relationship")))
+        pos_right <- which(!is.element(col_char, c("SampleName", "Relationship")))
+        dt_left <- dt[, pos_left, with = FALSE]
+        dt_right <- dt[, pos_right, with = FALSE]
+        dt_right <- mutate_all(dt_right, ~ifelse(.=="-", "",.))
+        dt <- cbind(dt_left, dt_right)
+
         options(warn = -1)
         dt[, (col_char) := lapply(.SD, as.character), .SDcols = col_char]
         options(warn = 0)
@@ -474,8 +481,15 @@ relsearch <- function(){
         return(NULL)
       }else{
         dt <- fread(file_input$datapath)
-
         col_char <- names(dt)
+
+        pos_left <- which(is.element(col_char, c("SampleName", "Relationship")))
+        pos_right <- which(!is.element(col_char, c("SampleName", "Relationship")))
+        dt_left <- dt[, pos_left, with = FALSE]
+        dt_right <- dt[, pos_right, with = FALSE]
+        dt_right <- mutate_all(dt_right, ~ifelse(.=="-", "",.))
+        dt <- cbind(dt_left, dt_right)
+
         options(warn = -1)
         dt[, (col_char) := lapply(.SD, as.character), .SDcols = col_char]
         options(warn = 0)

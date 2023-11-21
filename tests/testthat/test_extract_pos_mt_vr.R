@@ -78,3 +78,29 @@ test_that("extract_pos_mt_vr pattern 4", {
   expect_equal(pos_mt_vr[125], 16209)
   expect_equal(pos_mt_vr[166], 16250)
 })
+
+test_that("extract_pos_mt_vr pattern 5", {
+
+  # Condition
+  v_range <- ""
+  r_range <- "16050-16250"
+
+  # Run
+  pos_mt_vr <- extract_pos_mt_vr(v_range, r_range)
+
+  # Test
+  expect_equal(length(pos_mt_vr), 0)
+})
+
+test_that("extract_pos_mt_vr pattern 6", {
+
+  # Condition
+  v_range <- ""
+  r_range <- ""
+
+  # Run
+  pos_mt_vr <- extract_pos_mt_vr(v_range, r_range)
+
+  # Test
+  expect_equal(length(pos_mt_vr), 0)
+})

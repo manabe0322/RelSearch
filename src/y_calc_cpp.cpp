@@ -47,54 +47,50 @@ std::vector<double> obtain_al(std::string hap){
 
 // [[Rcpp::export]]
 int calc_mu_step(std::vector<double> v_al, std::vector<double> r_al){
-  int mu_step = 0;
-  int v_al_size = v_al.size();
-  int r_al_size = r_al.size();
+  int mu_step = 99;
 
-  /* Check whether the victim's alleles are the same as the reference's alleles or not */
-  bool same_vr = true;
-  if(v_al_size == r_al_size){
-    for(int i = 0; i < v_al_size; ++i){
-      bool same_al = v_al[i] == r_al[i];
-      if(!same_al){
-        same_vr = false;
-        break;
-      }
-    }
-  }else{
-    same_vr = false;
+  /* Investigate unique alleles */
+  std::vector<double> only_v_al = setdiff_double(v_al, r_al);
+  std::vector<double> only_r_al = setdiff_double(r_al, v_al);
+  int only_v_al_size = only_v_al.size();
+  int only_r_al_size = only_r_al.size();
+
+  /* No mutation or inconsistency explained by allelic drop-out */
+  if(only_v_al_size == 0 || only_r_al_size == 0){
+    mu_step = 0;
   }
 
-  if(same_vr == false){
-    std::vector<int> diff(v_al_size * r_al_size, 99);
-    int pos = 0;
+  if(mu_step == 99){
+    if(only_v_al_size == 1 || only_r_al_size == 1){
+      std::vector<int> diff(only_v_al_size * only_r_al_size, 99);
+      int pos = 0;
 
-    for(int i = 0; i < v_al_size; ++i){
-      double v1 = v_al[i];
+      for(int i = 0; i < only_v_al_size; ++i){
+        double v1 = only_v_al[i];
 
-      for(int j = 0; j < r_al_size; ++j){
+        for(int j = 0; j < only_r_al_size; ++j){
+          double r1 = only_r_al[j];
 
-        double r1 = r_al[j];
+          /* Calculate the mutational step */
+          double d = 99;
+          if(v1 > r1){
+            d = v1 - r1;
+          }else if(v1 < r1){
+            d = r1 - v1;
+          }
 
-        /* Calculate the mutational step */
-        double d = 99;
-        if(v1 > r1){
-          d = v1 - r1;
-        }else if(v1 < r1){
-          d = r1 - v1;
+          /* Record the step if it is the integer */
+          if(is_integer(d)){
+            diff[pos] = (int)d;
+          }
+
+          pos = pos + 1;
         }
-
-        /* Record the step if it is the integer */
-        if(is_integer(d)){
-          diff[pos] = (int)d;
-        }
-
-        pos = pos + 1;
       }
-    }
 
-    /* Investigate the minimum value of mutational steps */
-    mu_step = *min_element(diff.begin(), diff.end());
+      /* Investigate the minimum value of mutational steps */
+      mu_step = *min_element(diff.begin(), diff.end());
+    }
   }
 
   return(mu_step);

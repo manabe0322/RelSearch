@@ -94,7 +94,7 @@ create_detailed_data_y <- function(dt_v_y, dt_r_y, sn_v_select, sn_r_select, ass
     mustep_y_display <- result_selected[, grep("MuStep_", cn_result), with = FALSE]
     pos99 <- which(mustep_y_display >= 99)
     mustep_y_display <- as.character(mustep_y_display)
-    mustep_y_display[pos99] <- "Not integer"
+    mustep_y_display[pos99] <- "Unable to calculate"
 
     dt_detail_y <- data.table(Locus = locus_display, Profile_V = prof_v_display, Profile_R = prof_r_display, Ignore = ignore_y_display, Mismatch = mismatch_y_display, MuStep = mustep_y_display)
   }else{

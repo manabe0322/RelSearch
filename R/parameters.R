@@ -7,6 +7,16 @@ create_dt_criteria <- function(path_pack, init = TRUE){
 
   if(init && is.element("criteria.csv", fn_par)){
     dt_criteria <- fread(paste0(path_pack, "/extdata/parameters/criteria.csv"))
+
+    col_char <- c("Criteria")
+    options(warn = -1)
+    dt_criteria[, (col_char) := lapply(.SD, as.character), .SDcols = col_char]
+    options(warn = 0)
+
+    col_numeric <- c("Value")
+    options(warn = -1)
+    dt_criteria[, (col_numeric) := lapply(.SD, as.numeric), .SDcols = col_numeric]
+    options(warn = 0)
   }else{
     dt_criteria <- data.table(Criteria = c("min_lr_auto", "max_mismatch_y", "max_ignore_y", "max_mustep_y", "max_mismatch_mt", "min_share_mt"),
                               Value = c(100, 2, 10, 2, 1, 300))
@@ -26,6 +36,16 @@ create_dt_rel <- function(path_pack, init = TRUE){
 
   if(init && is.element("rel.csv", fn_par)){
     dt_rel <- fread(paste0(path_pack, "/extdata/parameters/rel.csv"))
+
+    col_char <- c("Relationship", "Victim", "Reference", "Paternal", "Maternal", "Tree_persons", "Tree_sexes", "Tree_fathers", "Tree_mothers", "Tree_founders")
+    options(warn = -1)
+    dt_rel[, (col_char) := lapply(.SD, as.character), .SDcols = col_char]
+    options(warn = 0)
+
+    col_numeric <- c("Pr_IBD2", "Pr_IBD1", "Pr_IBD0")
+    options(warn = -1)
+    dt_rel[, (col_numeric) := lapply(.SD, as.numeric), .SDcols = col_numeric]
+    options(warn = 0)
   }else{
     victim <- c("Father", "Father", "Mother", "Mother", "Son", "Son", "Daughter", "Daughter",
                 "Brother", "Brother", "Sister", "Sister",
@@ -182,6 +202,16 @@ create_dt_myu <- function(path_pack, init = TRUE){
 
   if(init && is.element("myu.csv", fn_par)){
     dt_myu <- fread(paste0(path_pack, "/extdata/parameters/myu.csv"))
+
+    col_char <- c("Marker")
+    options(warn = -1)
+    dt_myu[, (col_char) := lapply(.SD, as.character), .SDcols = col_char]
+    options(warn = 0)
+
+    col_numeric <- c("Myu")
+    options(warn = -1)
+    dt_myu[, (col_numeric) := lapply(.SD, as.numeric), .SDcols = col_numeric]
+    options(warn = 0)
   }else{
     dt_myu <- data.table(Marker = c("D3S1358", "vWA", "D16S539", "CSF1PO", "TPOX",
                                     "D8S1179", "D21S11", "D18S51",
@@ -208,6 +238,16 @@ create_dt_par_auto <- function(path_pack, init = TRUE){
 
   if(init && is.element("par_auto.csv", fn_par)){
     dt_par_auto <- fread(paste0(path_pack, "/extdata/parameters/par_auto.csv"))
+
+    col_char <- c("Parameter")
+    options(warn = -1)
+    dt_par_auto[, (col_char) := lapply(.SD, as.character), .SDcols = col_char]
+    options(warn = 0)
+
+    col_numeric <- c("Value")
+    options(warn = -1)
+    dt_par_auto[, (col_numeric) := lapply(.SD, as.numeric), .SDcols = col_numeric]
+    options(warn = 0)
   }else{
     dt_par_auto <- data.table(Parameter = c("maf"), Value = c(0.001))
     write.csv(dt_par_auto, paste0(path_pack, "/extdata/parameters/par_auto.csv"), row.names = FALSE)

@@ -28,3 +28,15 @@ test_that("extract_pos_mt pattern 2", {
   expect_equal(pos_mt[2], 16024)
   expect_equal(pos_mt[343], 16365)
 })
+
+test_that("extract_pos_mt pattern 3", {
+
+  # Condition
+  range <- ""
+
+  # Run
+  pos_mt <- extract_pos_mt(range)
+
+  # Test
+  expect_equal(length(pos_mt), 0)
+})

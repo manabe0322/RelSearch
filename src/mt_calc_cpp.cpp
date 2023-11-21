@@ -10,19 +10,21 @@ std::vector<int> extract_pos_mt(std::string range){
   const char* del_2 = "-";
   std::vector<std::string> sep_range = split(range, del_1);
   int len = sep_range.size();
-  std::vector<int> pos_mt(0);
+  std::vector<int> pos_mt;
 
-  for(int i = 0; i < len; ++i){
-    std::vector<std::string> sep_range2 = split(sep_range[i], del_2);
+  if(sep_range[0] != ""){
+    for(int i = 0; i < len; ++i){
+      std::vector<std::string> sep_range2 = split(sep_range[i], del_2);
 
-    int len2 = sep_range2.size();
-    std::vector<int> fromto(len2);
-    for(int j = 0; j < len2; ++j){
-      fromto[j] = str_to_int(sep_range2[j]);
+      int len2 = sep_range2.size();
+      std::vector<int> fromto(len2);
+      for(int j = 0; j < len2; ++j){
+        fromto[j] = str_to_int(sep_range2[j]);
+      }
+
+      std::vector<int> pos_mt_sub = tousa(fromto[0], fromto[len2 - 1], 1);
+      pos_mt.insert(pos_mt.end(), pos_mt_sub.begin(), pos_mt_sub.end());
     }
-
-    std::vector<int> pos_mt_sub = tousa(fromto[0], fromto[len2 - 1], 1);
-    pos_mt.insert(pos_mt.end(), pos_mt_sub.begin(), pos_mt_sub.end());
   }
 
   return(pos_mt);

@@ -581,8 +581,9 @@ test_that("calc_kin_like_drop Pr(D) = 0 pattern 2", {
   k1 <- 0.5 / 2
   k0 <- 0.25
   pibd <- c(k2, 2 * k1, k0)
-  cons_mu <- FALSE
   myu <- 0.002
+  cons_mu <- FALSE
+  par_vic <- FALSE
 
   # Run
   likelihoods_1 <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
