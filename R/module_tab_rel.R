@@ -5,13 +5,9 @@ tab_rel_ui <- function(id){
   ns <- NS(id)
 
   tabPanel("Relationships",
-
            titlePanel("Relationships"),
-
            br(),
-
            sidebarLayout(
-
              sidebarPanel(width = 2,
                           actionButton(ns("act_rel_edit"), "Edit"),
                           br(),
@@ -27,7 +23,6 @@ tab_rel_ui <- function(id){
                           br(),
                           actionButton(ns("act_rel_famtree"), "Family tree")
              ),
-
              mainPanel(width = 10,
                        dataTableOutput(ns("dt_rel"))
              )

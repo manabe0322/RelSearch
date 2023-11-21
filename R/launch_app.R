@@ -270,13 +270,7 @@ relsearch <- function(){
 
                                         tab_myu_ui("tab_myu"),
 
-                                        tabPanel("Parameter",
-                                                 titlePanel("Parameter"),
-                                                 numeric_ui("maf"),
-                                                 br(),
-                                                 h4("Update default"),
-                                                 actionButton("act_par_auto_update", label = "Update default")
-                                        )
+                                        tab_par_auto_ui("tab_par_auto")
                              ),
                              tabPanel("Example files",
                                       titlePanel("Example files"),
@@ -335,36 +329,6 @@ relsearch <- function(){
     init_dt_rel <- create_dt_rel(path_pack)
     init_dt_myu <- create_dt_myu(path_pack)
     init_dt_par_auto <- create_dt_par_auto(path_pack)
-
-    ################
-    # Set criteria #
-    ################
-
-    rv_criteria <- callModule(tab_criteria_server, "tab_criteria", init_dt_criteria, path_pack)
-
-    #######################################
-    # Set information on the relationship #
-    #######################################
-
-    rv_rel <- callModule(tab_rel_server, "tab_rel", init_dt_rel, path_pack)
-
-    ######################
-    # Set mutation rates #
-    ######################
-
-    rv_myu <- callModule(tab_myu_server, "tab_myu", init_dt_myu, path_pack)
-
-    ###################################
-    # Set parameters of autosomal STR #
-    ###################################
-
-    rv_maf <- callModule(numeric_server, "maf", "Minimum allele frequency", init_dt_par_auto$Value[init_dt_par_auto$Parameter == "maf"])
-
-    observeEvent(input$act_par_auto_update, {
-      dt_par_auto <- data.table(Parameter = c("maf"), Value = c(rv_maf()))
-      write.csv(dt_par_auto, paste0(path_pack, "/extdata/parameters/par_auto.csv"), row.names = FALSE)
-      showModal(modalDialog(title = "Information", "The default parameter has been updated.", easyClose = TRUE, footer = NULL))
-    })
 
     #################
     # Load database #
@@ -601,6 +565,15 @@ relsearch <- function(){
       })
     })
 
+    ################
+    # Setting tabs #
+    ################
+
+    rv_criteria <- callModule(tab_criteria_server, "tab_criteria", init_dt_criteria, path_pack)
+    rv_rel <- callModule(tab_rel_server, "tab_rel", init_dt_rel, path_pack)
+    rv_myu <- callModule(tab_myu_server, "tab_myu", init_dt_myu, path_pack)
+    rv_par_auto <- callModule(tab_par_auto_server, "tab_par_auto", init_dt_par_auto, path_pack)
+
     #################
     # Example files #
     #################
@@ -684,185 +657,174 @@ relsearch <- function(){
 
     observeEvent(input$act_analyze, {
 
+      #####################
+      # Define data.table #
+      #####################
+
+      dt_v_auto <- load_v_auto()
+      dt_r_auto <- load_r_auto()
+      dt_af <- load_af()
+      dt_v_y <- load_v_y()
+      dt_r_y <- load_r_y()
+      dt_v_mt <- load_v_mt()
+      dt_r_mt <- load_r_mt()
+      dt_criteria <- data.table(Criteria = c("min_lr_auto", "max_mismatch_y", "max_ignore_y", "max_mustep_y", "max_mismatch_mt", "min_share_mt"),
+                                Value = c(rv_criteria$min_lr_auto, rv_criteria$max_mismatch_y, rv_criteria$max_ignore_y, rv_criteria$max_mustep_y, rv_criteria$max_mismatch_mt, rv_criteria$min_share_mt))
+      dt_rel <- data.table(Relationship = rv_rel$name, Victim = rv_rel$victim, Reference = rv_rel$reference,
+                           Pr_IBD2 = rv_rel$pibd2, Pr_IBD1 = rv_rel$pibd1, Pr_IBD0 = rv_rel$pibd0,
+                           Paternal = rv_rel$paternal, Maternal = rv_rel$maternal,
+                           Tree_persons = rv_rel$tree_persons, Tree_sexes = rv_rel$tree_sexes, Tree_fathers = rv_rel$tree_fathers, Tree_mothers = rv_rel$tree_mothers, Tree_founders = rv_rel$tree_founders)
+      dt_myu <- data.table(Marker = rv_myu$mk, Myu = rv_myu$val)
+      dt_par_auto <- data.table(Parameter = c("maf"), Value = c(rv_par_auto$maf))
+
+      ###################################
+      # Fix file names of each database #
+      ###################################
+
+      fn_v_auto <- input$file_v_auto$name
+      fn_r_auto <- input$file_r_auto$name
+      fn_af <- input$file_af$name
+      fn_v_y <- input$file_v_y$name
+      fn_r_y <- input$file_r_y$name
+      fn_v_mt <- input$file_v_mt$name
+      fn_r_mt <- input$file_r_mt$name
+
       ####################
-      # Check parameters #
+      # Check data.table #
       ####################
 
-      if(!isTruthy(rv_criteria)){
-        showModal(modalDialog(title = "Error", "Set criteria!", easyClose = TRUE, footer = NULL))
-      }else if(!isTruthy(rv_maf())){
-        showModal(modalDialog(title = "Error", "Set the minimum allele frequency!", easyClose = TRUE, footer = NULL))
+      error_message <- check_error(dt_v_auto, dt_r_auto, dt_af, dt_v_y, dt_r_y, dt_v_mt, dt_r_mt, dt_rel, dt_myu)
+      if(error_message != ""){
+        showModal(modalDialog(title = "Error", error_message, easyClose = TRUE, footer = NULL))
       }else{
+        start_time <- proc.time()
+        waiter_show(html = spin_3k(), color = "white")
 
-        #####################
-        # Define data.table #
-        #####################
+        ##############################
+        # Analysis for autosomal STR #
+        ##############################
 
-        dt_v_auto <- load_v_auto()
-        dt_r_auto <- load_r_auto()
-        dt_af <- load_af()
-        dt_v_y <- load_v_y()
-        dt_r_y <- load_r_y()
-        dt_v_mt <- load_v_mt()
-        dt_r_mt <- load_r_mt()
-        dt_criteria <- data.table(Criteria = c("min_lr_auto", "max_mismatch_y", "max_ignore_y", "max_mustep_y", "max_mismatch_mt", "min_share_mt"),
-                                  Value = c(rv_criteria$min_lr_auto, rv_criteria$max_mismatch_y, rv_criteria$max_ignore_y, rv_criteria$max_mustep_y, rv_criteria$max_mismatch_mt, rv_criteria$min_share_mt))
-        dt_rel <- data.table(Relationship = rv_rel$name, Victim = rv_rel$victim, Reference = rv_rel$reference,
-                             Pr_IBD2 = rv_rel$pibd2, Pr_IBD1 = rv_rel$pibd1, Pr_IBD0 = rv_rel$pibd0,
-                             Paternal = rv_rel$paternal, Maternal = rv_rel$maternal,
-                             Tree_persons = rv_rel$tree_persons, Tree_sexes = rv_rel$tree_sexes, Tree_fathers = rv_rel$tree_fathers, Tree_mothers = rv_rel$tree_mothers, Tree_founders = rv_rel$tree_founders)
-        dt_myu <- data.table(Marker = rv_myu$mk, Myu = rv_myu$val)
-        dt_par_auto <- data.table(Parameter = c("maf"), Value = c(rv_maf()))
+        bool_check_auto <- all(!is.null(dt_v_auto), !is.null(dt_r_auto), !is.null(dt_af))
 
-        ###################################
-        # Fix file names of each database #
-        ###################################
+        if(bool_check_auto){
+          tmp <- order_loci_auto(dt_v_auto, dt_r_auto, dt_af)
+          dt_v_auto <- tmp[[1]]
+          dt_r_auto <- tmp[[2]]
+          dt_af <- tmp[[3]]
 
-        fn_v_auto <- input$file_v_auto$name
-        fn_r_auto <- input$file_r_auto$name
-        fn_af <- input$file_af$name
-        fn_v_y <- input$file_v_y$name
-        fn_r_y <- input$file_r_y$name
-        fn_v_mt <- input$file_v_mt$name
-        fn_r_mt <- input$file_r_mt$name
-
-        ####################
-        # Check data.table #
-        ####################
-
-        error_message <- check_error(dt_v_auto, dt_r_auto, dt_af, dt_v_y, dt_r_y, dt_v_mt, dt_r_mt, dt_rel, dt_myu)
-        if(error_message != ""){
-          showModal(modalDialog(title = "Error", error_message, easyClose = TRUE, footer = NULL))
+          dt_result_auto <- analyze_auto(dt_v_auto, dt_r_auto, dt_af, dt_rel, dt_myu, dt_par_auto, dt_criteria)
         }else{
-          start_time <- proc.time()
-          waiter_show(html = spin_3k(), color = "white")
+          dt_result_auto <- NULL
+        }
 
-          ##############################
-          # Analysis for autosomal STR #
-          ##############################
+        ######################
+        # Analysis for Y-STR #
+        ######################
 
-          bool_check_auto <- all(!is.null(dt_v_auto), !is.null(dt_r_auto), !is.null(dt_af))
+        bool_check_y <- all(!is.null(dt_v_y), !is.null(dt_r_y))
 
-          if(bool_check_auto){
-            tmp <- order_loci_auto(dt_v_auto, dt_r_auto, dt_af)
-            dt_v_auto <- tmp[[1]]
-            dt_r_auto <- tmp[[2]]
-            dt_af <- tmp[[3]]
+        if(bool_check_y){
+          tmp <- order_loci_y(dt_v_y, dt_r_y)
+          dt_v_y <- tmp[[1]]
+          dt_r_y <- tmp[[2]]
 
-            dt_result_auto <- analyze_auto(dt_v_auto, dt_r_auto, dt_af, dt_rel, dt_myu, dt_par_auto, dt_criteria)
-          }else{
-            dt_result_auto <- NULL
-          }
+          dt_result_y <- analyze_y(dt_v_y, dt_r_y, dt_criteria)
+        }else{
+          dt_result_y <- NULL
+        }
 
-          ######################
-          # Analysis for Y-STR #
-          ######################
+        ######################
+        # Analysis for mtDNA #
+        ######################
 
-          bool_check_y <- all(!is.null(dt_v_y), !is.null(dt_r_y))
+        bool_check_mt <- all(!is.null(dt_v_mt), !is.null(dt_r_mt))
 
-          if(bool_check_y){
-            tmp <- order_loci_y(dt_v_y, dt_r_y)
-            dt_v_y <- tmp[[1]]
-            dt_r_y <- tmp[[2]]
+        if(bool_check_mt){
+          dt_result_mt <- analyze_mt(dt_v_mt, dt_r_mt, dt_criteria)
+        }else{
+          dt_result_mt <- NULL
+        }
 
-            dt_result_y <- analyze_y(dt_v_y, dt_r_y, dt_criteria)
-          }else{
-            dt_result_y <- NULL
-          }
+        #############################
+        # Clean the console message #
+        #############################
 
-          ######################
-          # Analysis for mtDNA #
-          ######################
-
-          bool_check_mt <- all(!is.null(dt_v_mt), !is.null(dt_r_mt))
-
-          if(bool_check_mt){
-            dt_result_mt <- analyze_mt(dt_v_mt, dt_r_mt, dt_criteria)
-          }else{
-            dt_result_mt <- NULL
-          }
-
-          #############################
-          # Clean the console message #
-          #############################
-
-          message('\r', paste0(rep(" ", 100), collapse = ""), appendLF = FALSE)
+        message('\r', paste0(rep(" ", 100), collapse = ""), appendLF = FALSE)
 
 
-          ############################
-          # Create the combined data #
-          ############################
+        ############################
+        # Create the combined data #
+        ############################
 
-          dt_combined <- create_combined_data(dt_result_auto, dt_result_y, dt_result_mt, dt_rel, keep_min_lr)
+        dt_combined <- create_combined_data(dt_result_auto, dt_result_y, dt_result_mt, dt_rel, keep_min_lr)
 
-          #############################
-          # Create the displayed data #
-          #############################
+        #############################
+        # Create the displayed data #
+        #############################
 
-          min_lr_auto <- dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"]
-          if(bool_check_auto){
-            dt_display <- create_displayed_data(dt_combined, fltr_type = "with_auto", min_lr = min_lr_auto, max_data = max_data)
-          }else{
-            dt_display <- create_displayed_data(dt_combined, fltr_type = "without_auto", max_data = max_data)
-          }
+        min_lr_auto <- dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"]
+        if(bool_check_auto){
+          dt_display <- create_displayed_data(dt_combined, fltr_type = "with_auto", min_lr = min_lr_auto, max_data = max_data)
+        }else{
+          dt_display <- create_displayed_data(dt_combined, fltr_type = "without_auto", max_data = max_data)
+        }
 
-          ###############################
-          # Assign objects to data_list #
-          ###############################
+        ###############################
+        # Assign objects to data_list #
+        ###############################
 
-          isolate(data_list$bool_check_auto <- bool_check_auto)
-          isolate(data_list$bool_check_y <- bool_check_y)
-          isolate(data_list$bool_check_mt <- bool_check_mt)
+        isolate(data_list$bool_check_auto <- bool_check_auto)
+        isolate(data_list$bool_check_y <- bool_check_y)
+        isolate(data_list$bool_check_mt <- bool_check_mt)
 
-          isolate(data_list$dt_combined <- dt_combined)
-          isolate(data_list$dt_display <- dt_display)
+        isolate(data_list$dt_combined <- dt_combined)
+        isolate(data_list$dt_display <- dt_display)
 
-          isolate(data_list$dt_v_auto <- dt_v_auto)
-          isolate(data_list$dt_r_auto <- dt_r_auto)
-          isolate(data_list$dt_af <- dt_af)
+        isolate(data_list$dt_v_auto <- dt_v_auto)
+        isolate(data_list$dt_r_auto <- dt_r_auto)
+        isolate(data_list$dt_af <- dt_af)
 
-          isolate(data_list$dt_v_y <- dt_v_y)
-          isolate(data_list$dt_r_y <- dt_r_y)
+        isolate(data_list$dt_v_y <- dt_v_y)
+        isolate(data_list$dt_r_y <- dt_r_y)
 
-          isolate(data_list$dt_v_mt <- dt_v_mt)
-          isolate(data_list$dt_r_mt <- dt_r_mt)
+        isolate(data_list$dt_v_mt <- dt_v_mt)
+        isolate(data_list$dt_r_mt <- dt_r_mt)
 
-          isolate(data_list$dt_criteria <- dt_criteria)
-          isolate(data_list$dt_rel <- dt_rel)
-          isolate(data_list$dt_myu <- dt_myu)
-          isolate(data_list$dt_par_auto <- dt_par_auto)
+        isolate(data_list$dt_criteria <- dt_criteria)
+        isolate(data_list$dt_rel <- dt_rel)
+        isolate(data_list$dt_myu <- dt_myu)
+        isolate(data_list$dt_par_auto <- dt_par_auto)
 
-          isolate(data_list$fn_v_auto <- fn_v_auto)
-          isolate(data_list$fn_r_auto <- fn_r_auto)
-          isolate(data_list$fn_af <- fn_af)
-          isolate(data_list$fn_v_y <- fn_v_y)
-          isolate(data_list$fn_r_y <- fn_r_y)
-          isolate(data_list$fn_v_mt <- fn_v_mt)
-          isolate(data_list$fn_r_mt <- fn_r_mt)
+        isolate(data_list$fn_v_auto <- fn_v_auto)
+        isolate(data_list$fn_r_auto <- fn_r_auto)
+        isolate(data_list$fn_af <- fn_af)
+        isolate(data_list$fn_v_y <- fn_v_y)
+        isolate(data_list$fn_r_y <- fn_r_y)
+        isolate(data_list$fn_v_mt <- fn_v_mt)
+        isolate(data_list$fn_r_mt <- fn_r_mt)
 
-          ######################
-          # Finish calculation #
-          ######################
+        ######################
+        # Finish calculation #
+        ######################
 
-          run_time <- proc.time() - start_time
-          cat(paste0("\n", "Calculation time : ", run_time[3], " sec", "\n"))
+        run_time <- proc.time() - start_time
+        cat(paste0("\n", "Calculation time : ", run_time[3], " sec", "\n"))
 
-          enable("name_proj")
-          enable("download_proj")
-          enable(selector = '.navbar-nav a[data-value = "Result"]')
-          disable(selector = '.navbar-nav a[data-value = "Settings"]')
-          updateNavbarPage(session, "navbar", selected = "Result")
+        enable("name_proj")
+        enable("download_proj")
+        enable(selector = '.navbar-nav a[data-value = "Result"]')
+        disable(selector = '.navbar-nav a[data-value = "Settings"]')
+        updateNavbarPage(session, "navbar", selected = "Result")
 
-          waiter_hide()
+        waiter_hide()
 
-          # Show a message for displayed data
-          if(nrow(dt_display) == max_data){
-            showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
-          }else if(bool_check_auto){
-            showModal(modalDialog(title = "Information", "Data that satisfies the criterion of the minimum LR is displayed.", easyClose = TRUE, footer = NULL))
-          }else{
-            showModal(modalDialog(title = "Information", "Data that satisfies the criteria for Y-STR or mtDNA is displayed.", easyClose = TRUE, footer = NULL))
-          }
+        # Show a message for displayed data
+        if(nrow(dt_display) == max_data){
+          showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
+        }else if(bool_check_auto){
+          showModal(modalDialog(title = "Information", "Data that satisfies the criterion of the minimum LR is displayed.", easyClose = TRUE, footer = NULL))
+        }else{
+          showModal(modalDialog(title = "Information", "Data that satisfies the criteria for Y-STR or mtDNA is displayed.", easyClose = TRUE, footer = NULL))
         }
       }
     })
