@@ -293,26 +293,26 @@ relsearch <- function(){
                                       br(),
                                       br(),
                                       downloadButton("download_r_mt", "mtDNA reference database")
-                             ),
-                             tabPanel("Manual",
-                                      tabsetPanel(
-                                        tabPanel("Getting started",
-                                                 includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual_getting-started.md"))
-                                        ),
-                                        tabPanel("Overall flow",
-                                                 includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual_overall-flow.md"))
-                                        ),
-                                        tabPanel("File format",
-                                                 includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual_file-format.md"))
-                                        ),
-                                        tabPanel("Settings",
-                                                 includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual_settings.md"))
-                                        ),
-                                        tabPanel("Calculation principle",
-                                                 includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual_calculation-principle.md"))
-                                        )
-                                      )
-                             )
+                             )#,
+#                             tabPanel("Manual",
+#                                      tabsetPanel(
+#                                        tabPanel("Getting started",
+#                                                 includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual_getting-started.md"))
+#                                        ),
+#                                        tabPanel("Overall flow",
+#                                                 includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual_overall-flow.md"))
+#                                        ),
+#                                        tabPanel("File format",
+#                                                 includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual_file-format.md"))
+#                                        ),
+#                                        tabPanel("Settings",
+#                                                 includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual_settings.md"))
+#                                        ),
+#                                        tabPanel("Calculation principle",
+#                                                 includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual_calculation-principle.md"))
+#                                        )
+#                                      )
+#                             )
                   )
   )
   options(warn = 0)
