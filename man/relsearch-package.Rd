@@ -2,7 +2,6 @@
 % Please edit documentation in R/package.R
 \docType{package}
 \name{relsearch-package}
-\alias{relsearch}
 \alias{relsearch-package}
 \title{relsearch: Open-source software for searching relatives between victim and reference databases}
 \description{
