@@ -43,12 +43,12 @@ load_proj_server <- function(id){
           isolate(rv_load_proj$data_list <- data_list)
           waiter_hide()
 
-          enable("name_proj")
-          enable("download_proj")
-          enable(selector = '.navbar-nav a[data-value = "Result"]')
-          disable(selector = '.navbar-nav a[data-value = "Settings"]')
-          updateNavbarPage(session, "navbar", selected = "Result")
-          showModal(modalDialog(title = "Information", "Displayed data satisfies at least one of the criteria for STR, Y-STR, and mtDNA.", easyClose = TRUE, footer = NULL))
+#          enable("name_proj")
+#          enable("download_proj")
+#          enable(selector = '.navbar-nav a[data-value = "Result"]')
+#          disable(selector = '.navbar-nav a[data-value = "Settings"]')
+#          updateNavbarPage(session, "navbar", selected = "Result")
+#          showModal(modalDialog(title = "Information", "Displayed data satisfies at least one of the criteria for STR, Y-STR, and mtDNA.", easyClose = TRUE, footer = NULL))
         }
       })
 
