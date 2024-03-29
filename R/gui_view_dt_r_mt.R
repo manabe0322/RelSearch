@@ -2,6 +2,8 @@
 #'
 #' @description The function to create the ui module for viewing reference database of the mtDNA
 tab_view_dt_r_mt_ui <- function(id){
+  ns <- NS(id)
+
   tabPanel("mtDNA : Reference", dataTableOutput(ns("dt_r_mt")))
 }
 

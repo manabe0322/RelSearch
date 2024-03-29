@@ -2,6 +2,8 @@
 #'
 #' @description The function to create the ui module for saving the project
 save_proj_ui <- function(id){
+  ns <- NS(id)
+
   tabPanel("Save project",
            useWaiter(),
            h2("Save project"),

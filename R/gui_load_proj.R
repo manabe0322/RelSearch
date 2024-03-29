@@ -2,6 +2,8 @@
 #'
 #' @description The function to create the ui module for loading the project
 load_proj_ui <- function(id){
+  ns <- NS(id)
+
   tabPanel("Load project",
            useWaiter(),
            h2("Load project"),

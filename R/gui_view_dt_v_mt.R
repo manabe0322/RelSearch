@@ -2,6 +2,8 @@
 #'
 #' @description The function to create the ui module for viewing victim database of the mtDNA
 tab_view_dt_v_mt_ui <- function(id){
+  ns <- NS(id)
+
   tabPanel("mtDNA : Victim", dataTableOutput(ns("dt_v_mt")))
 }
 

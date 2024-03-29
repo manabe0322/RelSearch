@@ -2,6 +2,8 @@
 #'
 #' @description The function to create the ui module for downloading example files
 example_ui <- function(id){
+  ns <- NS(id)
+
   tabPanel("Example files",
            titlePanel("Example files"),
            downloadButton(ns("download_v_auto"), "STR victim database"),

@@ -2,6 +2,8 @@
 #'
 #' @description The function to create the ui module for displaying results
 result_ui <- function(id){
+  ns <- NS(id)
+
   tabPanel("Result",
            titlePanel("Result"),
            br(),

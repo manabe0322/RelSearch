@@ -2,6 +2,8 @@
 #'
 #' @description The function to create the ui module for viewing reference database of the Y-STR
 tab_view_dt_r_y_ui <- function(id){
+  ns <- NS(id)
+
   tabPanel("Y-STR : Reference", dataTableOutput(ns("dt_r_y")))
 }
 

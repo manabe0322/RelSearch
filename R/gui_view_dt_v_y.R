@@ -2,6 +2,8 @@
 #'
 #' @description The function to create the ui module for viewing victim database of the Y-STR
 tab_view_dt_v_y_ui <- function(id){
+  ns <- NS(id)
+
   tabPanel("Y-STR : Victim", dataTableOutput(ns("dt_v_y")))
 }
 

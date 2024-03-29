@@ -2,6 +2,8 @@
 #'
 #' @description The function to create the ui module for viewing allele frequency database of the autosomal STR
 tab_view_dt_af_ui <- function(id){
+  ns <- NS(id)
+
   tabPanel("STR : Allele frequencies", dataTableOutput(ns("dt_af")))
 }
 
