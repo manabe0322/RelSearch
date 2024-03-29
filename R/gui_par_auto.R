@@ -9,7 +9,7 @@ tab_par_auto_ui <- function(id){
            br(),
            p("Press the save button to reflect the changes."),
            br(),
-           uiOutput(ns("maf")),
+           uiOutput(ns("output_maf")),
            br(),
            actionButton(ns("act_par_auto_save"), label = "Save"),
            br(),
@@ -38,19 +38,22 @@ tab_par_auto_server <- function(id, init_dt_par_auto, path_pack){
       # Output UI #
       #############
 
-      output$maf <- renderUI({numericInput(session$ns("maf"), label = "Minimum allele frequency", value = rv_par_auto$maf)})
+      output$output_maf <- renderUI({numericInput(session$ns("input_maf"), label = "Minimum allele frequency", value = rv_par_auto$maf)})
 
       ##########################################
       # Define the input rule of the parameter #
       ##########################################
 
-      observeEvent(input$maf, {
-        maf <- input$maf
-        if(!is.integer(maf) || maf < 0){
-          showFeedbackDanger(inputId = "maf", text = "A positive number between 0 to 1 is allowed.")
+      observeEvent(input$input_maf, {
+        maf <- input$input_maf
+        if(!is.numeric(maf)){
+          hideFeedback("input_maf")
+          disable("act_par_auto_save")
+        }else if(maf < 0 || maf > 1){
+          showFeedbackDanger(inputId = "input_maf", text = "A positive number between 0 to 1 is allowed.")
           disable("act_par_auto_save")
         }else{
-          hideFeedback("maf")
+          hideFeedback("input_maf")
           enable("act_par_auto_save")
         }
       })
@@ -74,9 +77,9 @@ tab_par_auto_server <- function(id, init_dt_par_auto, path_pack){
 
       observeEvent(input$act_par_auto_reset, {
         new_dt_par_auto <- create_dt_par_auto(path_pack, FALSE)
-
         rv_par_auto$maf <- new_dt_par_auto$Value[new_dt_par_auto$Parameter == "maf"]
-      })
+        updateNumericInput(session, inputId = "input_maf", value = rv_par_auto$maf)
+      }, ignoreInit = TRUE)
 
       return(rv_par_auto)
     }

@@ -65,30 +65,33 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
       observeEvent(input$act_rel_edit, {
         showModal(modalDialog(
           title = "Edit the name of the relationship",
-          selectInput(session$ns("rel_old_edit"), label = "Select a relationship", choices = rv_rel$name, selected = rv_rel$name[1]),
-          textInput(session$ns("rel_new_edit"), label = "Enter a new name", value = NULL),
+          selectInput(session$ns("input_rel_old_edit"), label = "Select a relationship", choices = rv_rel$name, selected = rv_rel$name[1]),
+          textInput(session$ns("input_rel_new_edit"), label = "Enter a new name", value = NULL),
           footer = tagList(
             actionButton(session$ns("act_rel_edit_save"), "Save"),
             modalButton("Cancel")
           ),
           size = "l"
         ))
-      })
+      }, ignoreInit = TRUE)
 
-      observeEvent(input$rel_new_edit, {
-        rel_new_edit <- input$rel_new_edit
-        if(is.null(rel_new_edit)){
-          showFeedbackDanger(inputId = "rel_new_edit", text = "Enter the relationship name.")
+      observeEvent(input$input_rel_new_edit, {
+        rel_new_edit <- input$input_rel_new_edit
+        if(nchar(rel_new_edit) == 0){
+          hideFeedback("input_rel_new_edit")
+          disable("act_rel_edit_save")
+        }else if(is.element(rel_new_edit, rv_rel$name)){
+          showFeedbackDanger(inputId = "input_rel_new_edit", text = "The name has been already registered.")
           disable("act_rel_edit_save")
         }else{
-          hideFeedback("rel_new_edit")
+          hideFeedback("input_rel_new_edit")
           enable("act_rel_edit_save")
         }
-      })
+      }, ignoreInit = TRUE)
 
       observeEvent(input$act_rel_edit_save, {
-        rel_old_edit <- input$rel_old_edit
-        rel_new_edit <- input$rel_new_edit
+        rel_old_edit <- input$input_rel_old_edit
+        rel_new_edit <- input$input_rel_new_edit
 
         rv_rel$name[rv_rel$name == rel_old_edit] <- rel_new_edit
 
@@ -113,7 +116,7 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
         })
 
         removeModal()
-      })
+      }, ignoreInit = TRUE)
 
       #####################################
       # Add information on a relationship #
@@ -175,6 +178,19 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
         })
       }
 
+      state_save_butt <- function(){
+        if(rv_famtree$error_famtree){
+          disable("act_rel_add_save")
+        }else{
+          rel_add <- input$input_rel_add
+          vic_add <- input$input_vic_add
+          ref_add <- input$input_ref_add
+          if(all(nchar(rel_add) != 0, !is.element(rel_add, rv_rel$name), nchar(vic_add) != 0, nchar(ref_add) != 0)){
+            enable("act_rel_add_save")
+          }
+        }
+      }
+
       observeEvent(input$act_rel_add, {
         showModal(modalDialog(
           title = "Add information on a relationship",
@@ -182,9 +198,9 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
           fluidRow(
             column(5,
                    wellPanel(
-                     textInput(session$ns("rel_add"), label = "Relationship", value = NULL),
-                     textInput(session$ns("vic_add"), label = "Victim", value = NULL),
-                     textInput(session$ns("ref_add"), label = "Reference", value = NULL)
+                     textInput(session$ns("input_rel_add"), label = "Relationship", value = NULL),
+                     textInput(session$ns("input_vic_add"), label = "Victim", value = NULL),
+                     textInput(session$ns("input_ref_add"), label = "Reference", value = NULL)
                    )
             ),
             column(7,
@@ -242,40 +258,39 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
           ),
           size = "l"
         ))
-      })
+      }, ignoreInit = TRUE)
 
-      observeEvent(input$rel_add, {
-        rel_add <- input$rel_add
-        if(is.null(rel_add)){
-          showFeedbackDanger(inputId = "rel_add", text = "Enter the relationship name.")
+      observeEvent(input$input_rel_add, {
+        rel_add <- input$input_rel_add
+        if(nchar(rel_add) == 0){
+          hideFeedback("input_rel_add")
+          disable("act_rel_add_save")
+        }else if(is.element(rel_add, rv_rel$name)){
+          showFeedbackDanger(inputId = "input_rel_add", text = "The name has been already registered.")
           disable("act_rel_add_save")
         }else{
-          hideFeedback("rel_add")
-          enable("act_rel_add_save")
+          hideFeedback("input_rel_add")
+          state_save_butt()
         }
-      })
+      }, ignoreInit = TRUE)
 
-      observeEvent(input$vic_add, {
-        vic_add <- input$vic_add
-        if(is.null(vic_add)){
-          showFeedbackDanger(inputId = "vic_add", text = "Enter the victim name.")
+      observeEvent(input$input_vic_add, {
+        vic_add <- input$input_vic_add
+        if(nchar(vic_add) == 0){
           disable("act_rel_add_save")
         }else{
-          hideFeedback("vic_add")
-          enable("act_rel_add_save")
+          state_save_butt()
         }
-      })
+      }, ignoreInit = TRUE)
 
-      observeEvent(input$ref_add, {
-        ref_add <- input$ref_add
-        if(is.null(ref_add)){
-          showFeedbackDanger(inputId = "ref_add", text = "Enter the reference name.")
+      observeEvent(input$input_ref_add, {
+        ref_add <- input$input_ref_add
+        if(nchar(ref_add) == 0){
           disable("act_rel_add_save")
         }else{
-          hideFeedback("ref_add")
-          enable("act_rel_add_save")
+          state_save_butt()
         }
-      })
+      }, ignoreInit = TRUE)
 
       observeEvent(input$v_founder, {
         v_founder <- input$v_founder
@@ -286,7 +301,7 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
           enable("v_father")
           enable("v_mother")
         }
-      })
+      }, ignoreInit = TRUE)
 
       observeEvent(input$r_founder, {
         r_founder <- input$r_founder
@@ -297,7 +312,7 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
           enable("r_father")
           enable("r_mother")
         }
-      })
+      }, ignoreInit = TRUE)
 
       observeEvent(input$act_famtree_add, {
         num_uk <- rv_famtree$num_uk + 1
@@ -349,12 +364,12 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
           })
         })
 
-        observeEvent(ignoreInit = TRUE, change_sex(), {
+        observeEvent(change_sex(), {
           input_sexes <- change_sex()
           rv_famtree$sex <- unlist(input_sexes)
-        })
+        }, ignoreInit = TRUE)
 
-        observeEvent(ignoreInit = TRUE, change_father(), {
+        observeEvent(change_father(), {
           input_fathers <- change_father()
           father_new <- unlist(input_fathers)
           num_uk <- rv_famtree$num_uk
@@ -365,9 +380,9 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
               }
             }
           }
-        })
+        }, ignoreInit = TRUE)
 
-        observeEvent(ignoreInit = TRUE, change_mother(), {
+        observeEvent(change_mother(), {
           input_mothers <- change_mother()
           mother_new <- unlist(input_mothers)
           num_uk <- rv_famtree$num_uk
@@ -378,9 +393,9 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
               }
             }
           }
-        })
+        }, ignoreInit = TRUE)
 
-        observeEvent(ignoreInit = TRUE, change_founder(), {
+        observeEvent(change_founder(), {
           input_founders <- change_founder()
           founder_new <- unlist(input_founders)
           num_uk <- rv_famtree$num_uk
@@ -398,8 +413,8 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
               }
             }
           }
-        })
-      })
+        }, ignoreInit = TRUE)
+      }, ignoreInit = TRUE)
 
       observeEvent(input$act_famtree_del, {
 
@@ -456,12 +471,12 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
             })
           })
 
-          observeEvent(ignoreInit = TRUE, change_sex(), {
+          observeEvent(change_sex(), {
             input_sexes <- change_sex()
             rv_famtree$sex <- unlist(input_sexes)
-          })
+          }, ignoreInit = TRUE)
 
-          observeEvent(ignoreInit = TRUE, change_father(), {
+          observeEvent(change_father(), {
             input_fathers <- change_father()
             father_new <- unlist(input_fathers)
             num_uk <- rv_famtree$num_uk
@@ -472,9 +487,9 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
                 }
               }
             }
-          })
+          }, ignoreInit = TRUE)
 
-          observeEvent(ignoreInit = TRUE, change_mother(), {
+          observeEvent(change_mother(), {
             input_mothers <- change_mother()
             mother_new <- unlist(input_mothers)
             num_uk <- rv_famtree$num_uk
@@ -485,9 +500,9 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
                 }
               }
             }
-          })
+          }, ignoreInit = TRUE)
 
-          observeEvent(ignoreInit = TRUE, change_founder(), {
+          observeEvent(change_founder(), {
             input_founders <- change_founder()
             founder_new <- unlist(input_founders)
             num_uk <- rv_famtree$num_uk
@@ -505,9 +520,9 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
                 }
               }
             }
-          })
+          }, ignoreInit = TRUE)
         }
-      })
+      }, ignoreInit = TRUE)
 
       observeEvent(input$act_famtree_view, {
         persons <- c("Victim", "Ref", rv_famtree$uk)
@@ -523,9 +538,9 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
           rv_famtree$error_famtree <- TRUE
         }else{
           rv_famtree$error_famtree <- FALSE
-          state_save_butt()
         }
-      })
+        state_save_butt()
+      }, ignoreInit = TRUE)
 
       output$famtree <- renderPlot({
         validate(
@@ -533,14 +548,6 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
         )
         plot(rv_famtree$tree, hatched = c("Victim", "Ref"))
       })
-
-      state_save_butt <- function(){
-        if(rv_famtree$error_famtree){
-          disable("act_rel_add_save")
-        }else{
-          enable("act_rel_add_save")
-        }
-      }
 
       observeEvent(input$act_rel_add_save, {
         tree <- rv_famtree$tree
@@ -585,9 +592,9 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
         founder_info[which(fid == "0")] <- "Yes"
 
         # Update information on the relationship
-        rv_rel$name <- c(rv_rel$name, input$rel_add)
-        rv_rel$victim <- c(rv_rel$victim, input$vic_add)
-        rv_rel$reference <- c(rv_rel$reference, input$ref_add)
+        rv_rel$name <- c(rv_rel$name, input$input_rel_add)
+        rv_rel$victim <- c(rv_rel$victim, input$input_vic_add)
+        rv_rel$reference <- c(rv_rel$reference, input$input_ref_add)
         rv_rel$pibd2 <- c(rv_rel$pibd2, pibd[1])
         rv_rel$pibd1 <- c(rv_rel$pibd1, pibd[2])
         rv_rel$pibd0 <- c(rv_rel$pibd0, pibd[3])
@@ -630,7 +637,7 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
         make_unk_selectbox(rv_famtree$num_uk, rv_famtree$uk, rv_famtree$sex, rv_famtree$father, rv_famtree$mother, rv_famtree$founder)
         state_save_butt()
         removeModal()
-      })
+      }, ignoreInit = TRUE)
 
       observeEvent(input$act_rel_add_cancel, {
         # Reset family tree
@@ -644,7 +651,7 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
         make_unk_selectbox(rv_famtree$num_uk, rv_famtree$uk, rv_famtree$sex, rv_famtree$father, rv_famtree$mother, rv_famtree$founder)
         state_save_butt()
         removeModal()
-      })
+      }, ignoreInit = TRUE)
 
       ########################################
       # Delete information on a relationship #
@@ -660,7 +667,7 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
           ),
           size = "l"
         ))
-      })
+      }, ignoreInit = TRUE)
 
       observeEvent(input$act_rel_del_save, {
         pos_del <- which(rv_rel$name == input$rel_del)
@@ -699,7 +706,7 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
         })
 
         removeModal()
-      })
+      }, ignoreInit = TRUE)
 
       #########################################
       # Reset information on the relationship #
@@ -714,7 +721,7 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
             modalButton("Cancel")
           ),
         ))
-      })
+      }, ignoreInit = TRUE)
 
       observeEvent(input$act_rel_reset_yes, {
         new_dt_rel <- create_dt_rel(path_pack, FALSE)
@@ -747,7 +754,7 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
         })
 
         removeModal()
-      })
+      }, ignoreInit = TRUE)
 
       #########################
       # Check the family tree #
@@ -777,7 +784,7 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
         }else{
           showModal(modalDialog(title = "Error", "Select a relationship!", easyClose = TRUE, footer = NULL))
         }
-      })
+      }, ignoreInit = TRUE)
 
       output$tree_check <- renderPlot({
         plot(rv_tree_check$tree, hatched = c("Victim", "Ref"))

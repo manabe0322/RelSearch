@@ -51,34 +51,37 @@ tab_myu_server <- function(id, init_dt_myu, path_pack){
       observeEvent(input$act_myu_edit, {
         showModal(modalDialog(
           title = "Edit a mutation rate",
-          selectInput(session$ns("myu_mk_edit"), label = "Select a locus", choices = rv_myu$mk, selected = rv_myu$mk[1]),
-          uiOutput(session$ns("myu_val_edit")),
+          selectInput(session$ns("input_myu_mk_edit"), label = "Select a locus", choices = rv_myu$mk, selected = rv_myu$mk[1]),
+          uiOutput(session$ns("output_myu_val_edit")),
           footer = tagList(
             actionButton(session$ns("act_myu_edit_save"), "Save"),
             modalButton("Cancel")
           ),
           size = "l"
         ))
-      })
+      }, ignoreInit = TRUE)
 
-      observeEvent(input$myu_mk_edit, {
-        output$myu_val_edit <- renderUI(numericInput(session$ns("myu_val_edit"), label = "Enter a mutation rate", value = rv_myu$val[rv_myu$mk == input$myu_mk_edit]))
-      })
+      observeEvent(input$input_myu_mk_edit, {
+        output$output_myu_val_edit <- renderUI(numericInput(session$ns("input_myu_val_edit"), label = "Enter a mutation rate", value = rv_myu$val[rv_myu$mk == input$input_myu_mk_edit]))
+      }, ignoreInit = TRUE)
 
-      observeEvent(input$myu_val_edit, {
-        myu_val_edit <- input$myu_val_edit
-        if(!is.numeric(myu_val_edit) || myu_val_edit < 0 || myu_val_edit > 1){
-          showFeedbackDanger(inputId = "myu_val_edit", text = "A positive number between 0 to 1 is allowed.")
+      observeEvent(input$input_myu_val_edit, {
+        myu_val_edit <- input$input_myu_val_edit
+        if(!is.numeric(myu_val_edit)){
+          hideFeedback("input_myu_val_edit")
+          disable("act_myu_edit_save")
+        }else if(myu_val_edit < 0 || myu_val_edit > 1){
+          showFeedbackDanger(inputId = "input_myu_val_edit", text = "A positive number between 0 to 1 is allowed.")
           disable("act_myu_edit_save")
         }else{
-          hideFeedback("myu_val_edit")
+          hideFeedback("input_myu_val_edit")
           enable("act_myu_edit_save")
         }
-      })
+      }, ignoreInit = TRUE)
 
       observeEvent(input$act_myu_edit_save, {
-        myu_mk_edit <- input$myu_mk_edit
-        myu_val_edit <- input$myu_val_edit
+        myu_mk_edit <- input$input_myu_mk_edit
+        myu_val_edit <- input$input_myu_val_edit
 
         rv_myu$val[rv_myu$mk == myu_mk_edit] <- myu_val_edit
 
@@ -96,7 +99,7 @@ tab_myu_server <- function(id, init_dt_myu, path_pack){
         })
 
         removeModal()
-      })
+      }, ignoreInit = TRUE)
 
       #######################
       # Add a mutation rate #
@@ -105,41 +108,53 @@ tab_myu_server <- function(id, init_dt_myu, path_pack){
       observeEvent(input$act_myu_add, {
         showModal(modalDialog(
           title = "Add a mutation rate",
-          textInput(session$ns("myu_mk_add"), label = "Enter a locus name", value = NULL),
-          numericInput(session$ns("myu_val_add"), label = "Mutation rate", value = NULL),
+          textInput(session$ns("input_myu_mk_add"), label = "Enter a locus name", value = NULL),
+          numericInput(session$ns("input_myu_val_add"), label = "Mutation rate", value = NULL),
           footer = tagList(
-            actionButton(session$ns("act_myu_add_save"), "Save"),
+            disabled(actionButton(session$ns("act_myu_add_save"), "Save")),
             modalButton("Cancel")
           ),
           size = "l"
         ))
-      })
+      }, ignoreInit = TRUE)
 
-      observeEvent(input$myu_mk_add, {
-        myu_mk_add <- input$myu_mk_add
-        if(is.null(myu_mk_add)){
-          showFeedbackDanger(inputId = "myu_mk_add", text = "Enter the marker name.")
+      observeEvent(input$input_myu_mk_add, {
+        myu_mk_add <- input$input_myu_mk_add
+        if(nchar(myu_mk_add) == 0){
+          hideFeedback("input_myu_mk_add")
+          disable("act_myu_add_save")
+        }else if(is.element(myu_mk_add, rv_myu$mk)){
+          showFeedbackDanger(inputId = "input_myu_mk_add", text = "The name has been already registered.")
           disable("act_myu_add_save")
         }else{
-          hideFeedback("myu_mk_add")
-          enable("act_myu_add_save")
+          hideFeedback("input_myu_mk_add")
+          myu_val_add <- input$input_myu_val_add
+          if(is.numeric(myu_val_add) && myu_val_add >= 0 && myu_val_add <= 1){
+            enable("act_myu_add_save")
+          }
         }
-      })
+      }, ignoreInit = TRUE)
 
-      observeEvent(input$myu_val_add, {
-        myu_val_add <- input$myu_val_add
-        if(!is.numeric(myu_val_add) || myu_val_add < 0 || myu_val_add > 1){
-          showFeedbackDanger(inputId = "myu_val_add", text = "A positive number between 0 to 1 is allowed.")
+      observeEvent(input$input_myu_val_add, {
+        myu_val_add <- input$input_myu_val_add
+        if(!is.numeric(myu_val_add)){
+          hideFeedback("input_myu_val_add")
+          disable("act_myu_add_save")
+        }else if(myu_val_add < 0 || myu_val_add > 1){
+          showFeedbackDanger(inputId = "input_myu_val_add", text = "A positive number between 0 to 1 is allowed.")
           disable("act_myu_add_save")
         }else{
-          hideFeedback("myu_val_add")
-          enable("act_myu_add_save")
+          hideFeedback("input_myu_val_add")
+          myu_mk_add <- input$input_myu_mk_add
+          if(nchar(myu_mk_add) != 0 && !is.element(myu_mk_add, rv_myu$mk)){
+            enable("act_myu_add_save")
+          }
         }
-      })
+      }, ignoreInit = TRUE)
 
       observeEvent(input$act_myu_add_save, {
-        myu_mk_add <- input$myu_mk_add
-        myu_val_add <- input$myu_val_add
+        myu_mk_add <- input$input_myu_mk_add
+        myu_val_add <- input$input_myu_val_add
 
         rv_myu$mk <- c(rv_myu$mk, myu_mk_add)
         rv_myu$val <- c(rv_myu$val, myu_val_add)
@@ -158,7 +173,7 @@ tab_myu_server <- function(id, init_dt_myu, path_pack){
         })
 
         removeModal()
-      })
+      }, ignoreInit = TRUE)
 
       ##########################
       # Delete a mutation rate #
@@ -167,17 +182,17 @@ tab_myu_server <- function(id, init_dt_myu, path_pack){
       observeEvent(input$act_myu_del, {
         showModal(modalDialog(
           title = "Delete a mutation rate",
-          selectInput(session$ns("myu_mk_del"), label = "Select a locus", choices = rv_myu$mk, selected = rv_myu$mk[1]),
+          selectInput(session$ns("input_myu_mk_del"), label = "Select a locus", choices = rv_myu$mk, selected = rv_myu$mk[1]),
           footer = tagList(
             actionButton(session$ns("act_myu_del_save"), "Save"),
             modalButton("Cancel")
           ),
           size = "l"
         ))
-      })
+      }, ignoreInit = TRUE)
 
       observeEvent(input$act_myu_del_save, {
-        pos_del <- which(rv_myu$mk == input$myu_mk_del)
+        pos_del <- which(rv_myu$mk == input$input_myu_mk_del)
         rv_myu$mk <- rv_myu$mk[- pos_del]
         rv_myu$val <- rv_myu$val[- pos_del]
 
@@ -195,7 +210,7 @@ tab_myu_server <- function(id, init_dt_myu, path_pack){
         })
 
         removeModal()
-      })
+      }, ignoreInit = TRUE)
 
       ############################
       # Reset the mutation rates #
@@ -210,7 +225,7 @@ tab_myu_server <- function(id, init_dt_myu, path_pack){
             modalButton("Cancel")
           ),
         ))
-      })
+      }, ignoreInit = TRUE)
 
       observeEvent(input$act_myu_reset_yes, {
         new_dt_myu <- create_dt_myu(path_pack, FALSE)
@@ -229,7 +244,7 @@ tab_myu_server <- function(id, init_dt_myu, path_pack){
         })
 
         removeModal()
-      })
+      }, ignoreInit = TRUE)
 
       ######################################
       # Display the initial mutation rates #

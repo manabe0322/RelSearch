@@ -14,18 +14,21 @@ tab_view_dt_r_mt_server <- function(id, rv_file){
   moduleServer(
     id,
     function(input, output, session){
-      dt_r_mt <- rv_file$dt_r_mt
+      observe({
+        req(rv_file)
+        dt_r_mt <- rv_file$dt_r_mt
 
-      if(!is.null(dt_r_mt)){
-        output$dt_r_mt <- renderDataTable({
-          datatable(
-            dt_r_mt,
-            selection = "none",
-            options = list(iDisplayLength = 50, ordering = FALSE),
-            rownames = FALSE
-          )
-        })
-      }
+        if(!is.null(dt_r_mt)){
+          output$dt_r_mt <- renderDataTable({
+            datatable(
+              dt_r_mt,
+              selection = "none",
+              options = list(iDisplayLength = 50, ordering = FALSE),
+              rownames = FALSE
+            )
+          })
+        }
+      })
     }
   )
 }

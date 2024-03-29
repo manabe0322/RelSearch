@@ -12,18 +12,18 @@ tab_criteria_ui <- function(id){
            fluidRow(
              column(4,
                     h4("STR"),
-                    uiOutput(ns("min_lr_auto"))
+                    uiOutput(ns("output_min_lr_auto"))
              ),
              column(4,
                     h4("Y-STR"),
-                    uiOutput(ns("max_mismatch_y")),
-                    uiOutput(ns("max_ignore_y")),
-                    uiOutput(ns("max_mustep_y"))
+                    uiOutput(ns("output_max_mismatch_y")),
+                    uiOutput(ns("output_max_ignore_y")),
+                    uiOutput(ns("output_max_mustep_y"))
              ),
              column(4,
                     h4("mtDNA"),
-                    uiOutput(ns("max_mismatch_mt")),
-                    uiOutput(ns("min_share_mt"))
+                    uiOutput(ns("output_max_mismatch_mt")),
+                    uiOutput(ns("output_min_share_mt"))
              )
            ),
            br(),
@@ -59,80 +59,152 @@ tab_criteria_server <- function(id, init_dt_criteria, path_pack, keep_min_lr){
       # Output UI #
       #############
 
-      output$min_lr_auto <- renderUI({numericInput(session$ns("min_lr_auto"), label = "Minimum LR", value = rv_criteria$min_lr_auto)})
-      output$max_mismatch_y <- renderUI({numericInput(session$ns("max_mismatch_y"), label = "Maximum number of mismatched loci", value = rv_criteria$max_mismatch_y)})
-      output$max_ignore_y <- renderUI({numericInput(session$ns("max_ignore_y"), label = "Maximum number of ignored loci", value = rv_criteria$max_ignore_y)})
-      output$max_mustep_y <- renderUI({numericInput(session$ns("max_mustep_y"), label = "Maximum total mutational steps", value = rv_criteria$max_mustep_y)})
-      output$max_mismatch_mt <- renderUI({numericInput(session$ns("max_mismatch_mt"), label = "Maximum number of inconsistency", value = rv_criteria$max_mismatch_mt)})
-      output$min_share_mt <- renderUI({numericInput(session$ns("min_share_mt"), label = "Minimum shared length", value = rv_criteria$min_share_mt)})
+      output$output_min_lr_auto <- renderUI({numericInput(session$ns("input_min_lr_auto"), label = "Minimum LR", value = rv_criteria$min_lr_auto)})
+      output$output_max_mismatch_y <- renderUI({numericInput(session$ns("input_max_mismatch_y"), label = "Maximum number of mismatched loci", value = rv_criteria$max_mismatch_y)})
+      output$output_max_ignore_y <- renderUI({numericInput(session$ns("input_max_ignore_y"), label = "Maximum number of ignored loci", value = rv_criteria$max_ignore_y)})
+      output$output_max_mustep_y <- renderUI({numericInput(session$ns("input_max_mustep_y"), label = "Maximum total mutational steps", value = rv_criteria$max_mustep_y)})
+      output$output_max_mismatch_mt <- renderUI({numericInput(session$ns("input_max_mismatch_mt"), label = "Maximum number of inconsistency", value = rv_criteria$max_mismatch_mt)})
+      output$output_min_share_mt <- renderUI({numericInput(session$ns("input_min_share_mt"), label = "Minimum shared length", value = rv_criteria$min_share_mt)})
 
       #####################################
       # Define the input rule of criteria #
       #####################################
 
-      observeEvent(input$min_lr_auto, {
-        min_lr_auto <- input$min_lr_auto
-        if(!is.numeric(min_lr_auto) || min_lr_auto < keep_min_lr){
-          showFeedbackDanger(inputId = "min_lr_auto", text = paste0("The positive number greater than ", keep_min_lr, " is allowed."))
+      observeEvent(input$input_min_lr_auto, {
+        min_lr_auto <- input$input_min_lr_auto
+        if(!is.numeric(min_lr_auto)){
+          hideFeedback("input_min_lr_auto")
+          disable("act_criteria_save")
+        }else if(min_lr_auto < keep_min_lr){
+          showFeedbackDanger(inputId = "input_min_lr_auto", text = paste0("The positive number greater than ", keep_min_lr, " is allowed."))
           disable("act_criteria_save")
         }else{
-          hideFeedback("min_lr_auto")
-          enable("act_criteria_save")
+          hideFeedback("input_min_lr_auto")
+          max_mismatch_y <- input$input_max_mismatch_y
+          max_ignore_y <- input$input_max_ignore_y
+          max_mustep_y <- input$input_max_mustep_y
+          max_mismatch_mt <- input$input_max_mismatch_mt
+          min_share_mt <- input$input_min_share_mt
+          if(all(is.integer(max_mismatch_y), is.integer(max_ignore_y), is.integer(max_mustep_y), is.integer(max_mismatch_mt), is.integer(min_share_mt))){
+            if(all(max_mismatch_y >= 0, max_ignore_y >= 0, max_mustep_y >= 0, max_mismatch_mt >= 0, min_share_mt >= 0)){
+              enable("act_criteria_save")
+            }
+          }
         }
       })
 
-      observeEvent(input$max_mismatch_y, {
-        max_mismatch_y <- input$max_mismatch_y
-        if(!is.integer(max_mismatch_y) || max_mismatch_y < 0){
-          showFeedbackDanger(inputId = "max_mismatch_y", text = "An integer greater than or equal to zero is allowed.")
+      observeEvent(input$input_max_mismatch_y, {
+        max_mismatch_y <- input$input_max_mismatch_y
+        if(!is.numeric(max_mismatch_y)){
+          hideFeedback("input_max_mismatch_y")
+          disable("act_criteria_save")
+        }else if(!is.integer(max_mismatch_y) || max_mismatch_y < 0){
+          showFeedbackDanger(inputId = "input_max_mismatch_y", text = "An integer greater than or equal to zero is allowed.")
           disable("act_criteria_save")
         }else{
-          hideFeedback("max_mismatch_y")
-          enable("act_criteria_save")
+          hideFeedback("input_max_mismatch_y")
+          min_lr_auto <- input$input_min_lr_auto
+          max_ignore_y <- input$input_max_ignore_y
+          max_mustep_y <- input$input_max_mustep_y
+          max_mismatch_mt <- input$input_max_mismatch_mt
+          min_share_mt <- input$input_min_share_mt
+          if(all(is.numeric(min_lr_auto), is.integer(max_ignore_y), is.integer(max_mustep_y), is.integer(max_mismatch_mt), is.integer(min_share_mt))){
+            if(all(min_lr_auto >= keep_min_lr, max_ignore_y >= 0, max_mustep_y >= 0, max_mismatch_mt >= 0, min_share_mt >= 0)){
+              enable("act_criteria_save")
+            }
+          }
         }
       })
 
-      observeEvent(input$max_ignore_y, {
-        max_ignore_y <- input$max_ignore_y
-        if(!is.integer(max_ignore_y) || max_ignore_y < 0){
-          showFeedbackDanger(inputId = "max_ignore_y", text = "An integer greater than or equal to zero is allowed.")
+      observeEvent(input$input_max_ignore_y, {
+        max_ignore_y <- input$input_max_ignore_y
+        if(!is.numeric(max_ignore_y)){
+          hideFeedback("input_max_ignore_y")
+          disable("act_criteria_save")
+        }else if(!is.integer(max_ignore_y) || max_ignore_y < 0){
+          showFeedbackDanger(inputId = "input_max_ignore_y", text = "An integer greater than or equal to zero is allowed.")
           disable("act_criteria_save")
         }else{
-          hideFeedback("max_ignore_y")
-          enable("act_criteria_save")
+          hideFeedback("input_max_ignore_y")
+          min_lr_auto <- input$input_min_lr_auto
+          max_mismatch_y <- input$input_max_mismatch_y
+          max_mustep_y <- input$input_max_mustep_y
+          max_mismatch_mt <- input$input_max_mismatch_mt
+          min_share_mt <- input$input_min_share_mt
+          if(all(is.numeric(min_lr_auto), is.integer(max_mismatch_y), is.integer(max_mustep_y), is.integer(max_mismatch_mt), is.integer(min_share_mt))){
+            if(all(min_lr_auto >= keep_min_lr, max_mismatch_y >= 0, max_mustep_y >= 0, max_mismatch_mt >= 0, min_share_mt >= 0)){
+              enable("act_criteria_save")
+            }
+          }
         }
       })
 
-      observeEvent(input$max_mustep_y, {
-        max_mustep_y <- input$max_mustep_y
-        if(!is.integer(max_mustep_y) || max_mustep_y < 0){
-          showFeedbackDanger(inputId = "max_mustep_y", text = "An integer greater than or equal to zero is allowed.")
+      observeEvent(input$input_max_mustep_y, {
+        max_mustep_y <- input$input_max_mustep_y
+        if(!is.numeric(max_mustep_y)){
+          hideFeedback("input_max_mustep_y")
+          disable("act_criteria_save")
+        }else if(!is.integer(max_mustep_y) || max_mustep_y < 0){
+          showFeedbackDanger(inputId = "input_max_mustep_y", text = "An integer greater than or equal to zero is allowed.")
           disable("act_criteria_save")
         }else{
-          hideFeedback("max_mustep_y")
-          enable("act_criteria_save")
+          hideFeedback("input_max_mustep_y")
+          min_lr_auto <- input$input_min_lr_auto
+          max_mismatch_y <- input$input_max_mismatch_y
+          max_ignore_y <- input$input_max_ignore_y
+          max_mismatch_mt <- input$input_max_mismatch_mt
+          min_share_mt <- input$input_min_share_mt
+          if(all(is.numeric(min_lr_auto), is.integer(max_mismatch_y), is.integer(max_ignore_y), is.integer(max_mismatch_mt), is.integer(min_share_mt))){
+            if(all(min_lr_auto >= keep_min_lr, max_mismatch_y >= 0, max_ignore_y >= 0, max_mismatch_mt >= 0, min_share_mt >= 0)){
+              enable("act_criteria_save")
+            }
+          }
         }
       })
 
-      observeEvent(input$max_mismatch_mt, {
-        max_mismatch_mt <- input$max_mismatch_mt
-        if(!is.integer(max_mismatch_mt) || max_mismatch_mt < 0){
-          showFeedbackDanger(inputId = "max_mismatch_mt", text = "An integer greater than or equal to zero is allowed.")
+      observeEvent(input$input_max_mismatch_mt, {
+        max_mismatch_mt <- input$input_max_mismatch_mt
+        if(!is.numeric(max_mismatch_mt)){
+          hideFeedback("input_max_mismatch_mt")
+          disable("act_criteria_save")
+        }else if(!is.integer(max_mismatch_mt) || max_mismatch_mt < 0){
+          showFeedbackDanger(inputId = "input_max_mismatch_mt", text = "An integer greater than or equal to zero is allowed.")
           disable("act_criteria_save")
         }else{
-          hideFeedback("max_mismatch_mt")
-          enable("act_criteria_save")
+          hideFeedback("input_max_mismatch_mt")
+          min_lr_auto <- input$input_min_lr_auto
+          max_mismatch_y <- input$input_max_mismatch_y
+          max_ignore_y <- input$input_max_ignore_y
+          max_mustep_y <- input$input_max_mustep_y
+          min_share_mt <- input$input_min_share_mt
+          if(all(is.numeric(min_lr_auto), is.integer(max_mismatch_y), is.integer(max_ignore_y), is.integer(max_mustep_y), is.integer(min_share_mt))){
+            if(all(min_lr_auto >= keep_min_lr, max_mismatch_y >= 0, max_ignore_y >= 0, max_mustep_y >= 0, min_share_mt >= 0)){
+              enable("act_criteria_save")
+            }
+          }
         }
       })
 
-      observeEvent(input$min_share_mt, {
-        min_share_mt <- input$min_share_mt
-        if(!is.integer(min_share_mt) || min_share_mt < 0){
-          showFeedbackDanger(inputId = "min_share_mt", text = "An integer greater than or equal to zero is allowed.")
+      observeEvent(input$input_min_share_mt, {
+        min_share_mt <- input$input_min_share_mt
+        if(!is.numeric(min_share_mt)){
+          hideFeedback("input_min_share_mt")
+          disable("act_criteria_save")
+        }else if(!is.integer(min_share_mt) || min_share_mt < 0){
+          showFeedbackDanger(inputId = "input_min_share_mt", text = "An integer greater than or equal to zero is allowed.")
           disable("act_criteria_save")
         }else{
-          hideFeedback("min_share_mt")
-          enable("act_criteria_save")
+          hideFeedback("input_min_share_mt")
+          min_lr_auto <- input$input_min_lr_auto
+          max_mismatch_y <- input$input_max_mismatch_y
+          max_ignore_y <- input$input_max_ignore_y
+          max_mustep_y <- input$input_max_mustep_y
+          max_mismatch_mt <- input$input_max_mismatch_mt
+          if(all(is.numeric(min_lr_auto), is.integer(max_mismatch_y), is.integer(max_ignore_y), is.integer(max_mustep_y), is.integer(max_mismatch_mt))){
+            if(all(min_lr_auto >= keep_min_lr, max_mismatch_y >= 0, max_ignore_y >= 0, max_mustep_y >= 0, max_mismatch_mt >= 0)){
+              enable("act_criteria_save")
+            }
+          }
         }
       })
 
@@ -141,12 +213,12 @@ tab_criteria_server <- function(id, init_dt_criteria, path_pack, keep_min_lr){
       #################
 
       observeEvent(input$act_criteria_save, {
-        rv_criteria$min_lr_auto <- input$min_lr_auto
-        rv_criteria$max_mismatch_y <- input$max_mismatch_y
-        rv_criteria$max_ignore_y <- input$max_ignore_y
-        rv_criteria$max_mustep_y <- input$max_mustep_y
-        rv_criteria$max_mismatch_mt <- input$max_mismatch_mt
-        rv_criteria$min_share_mt <- input$min_share_mt
+        rv_criteria$min_lr_auto <- input$input_min_lr_auto
+        rv_criteria$max_mismatch_y <- input$input_max_mismatch_y
+        rv_criteria$max_ignore_y <- input$input_max_ignore_y
+        rv_criteria$max_mustep_y <- input$input_max_mustep_y
+        rv_criteria$max_mismatch_mt <- input$input_max_mismatch_mt
+        rv_criteria$min_share_mt <- input$input_min_share_mt
 
         new_dt_criteria <- data.table(Criteria = c("min_lr_auto", "max_mismatch_y", "max_ignore_y", "max_mustep_y", "max_mismatch_mt", "min_share_mt"),
                                       Value = c(rv_criteria$min_lr_auto, rv_criteria$max_mismatch_y, rv_criteria$max_ignore_y, rv_criteria$max_mustep_y, rv_criteria$max_mismatch_mt, rv_criteria$min_share_mt))
@@ -154,7 +226,7 @@ tab_criteria_server <- function(id, init_dt_criteria, path_pack, keep_min_lr){
         write.csv(new_dt_criteria, paste0(path_pack, "/extdata/parameters/criteria.csv"), row.names = FALSE)
 
         showModal(modalDialog(title = "Information", "The criteria has been saved.", easyClose = TRUE, footer = NULL))
-      })
+      }, ignoreInit = TRUE)
 
       ##################
       # Reset criteria #
@@ -169,7 +241,14 @@ tab_criteria_server <- function(id, init_dt_criteria, path_pack, keep_min_lr){
         rv_criteria$max_mustep_y <- new_dt_criteria$Value[new_dt_criteria$Criteria == "max_mustep_y"]
         rv_criteria$max_mismatch_mt <- new_dt_criteria$Value[new_dt_criteria$Criteria == "max_mismatch_mt"]
         rv_criteria$min_share_mt <- new_dt_criteria$Value[new_dt_criteria$Criteria == "min_share_mt"]
-      })
+
+        updateNumericInput(session, inputId = "input_min_lr_auto", value = rv_criteria$min_lr_auto)
+        updateNumericInput(session, inputId = "input_max_mismatch_y", value = rv_criteria$max_mismatch_y)
+        updateNumericInput(session, inputId = "input_max_ignore_y", value = rv_criteria$max_ignore_y)
+        updateNumericInput(session, inputId = "input_max_mustep_y", value = rv_criteria$max_mustep_y)
+        updateNumericInput(session, inputId = "input_max_mismatch_mt", value = rv_criteria$max_mismatch_mt)
+        updateNumericInput(session, inputId = "input_min_share_mt", value = rv_criteria$min_share_mt)
+      }, ignoreInit = TRUE)
 
       return(rv_criteria)
     }

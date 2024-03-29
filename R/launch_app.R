@@ -37,9 +37,9 @@ relsearch <- function(){
                                         tab_view_dt_r_auto_ui("view_dt_r_auto"),
                                         tab_view_dt_af_ui("view_dt_af"),
                                         tab_view_dt_v_y_ui("view_dt_v_y"),
-                                        tab_view_dt_v_y_ui("view_dt_r_y"),
+                                        tab_view_dt_r_y_ui("view_dt_r_y"),
                                         tab_view_dt_v_mt_ui("view_dt_v_mt"),
-                                        tab_view_dt_v_mt_ui("view_dt_r_mt"),
+                                        tab_view_dt_r_mt_ui("view_dt_r_mt"),
                              ),
 
                              navbarMenu("Settings",
