@@ -102,19 +102,20 @@ relsearch <- function(){
     rv_load_proj <- load_proj_server("load_proj")
     observe({
       req(rv_load_proj)
-      if(!is.null(rv_load_proj$dt_combined)){
-        rv_file$dt_v_auto <- rv_load_proj$dt_v_auto
-        rv_file$dt_r_auto <- rv_load_proj$dt_r_auto
-        rv_file$dt_af <- rv_load_proj$dt_af
-        rv_file$dt_v_y <- rv_load_proj$dt_v_y
-        rv_file$dt_v_y <- rv_load_proj$dt_v_y
-        rv_file$dt_v_mt <- rv_load_proj$dt_v_mt
-        rv_file$dt_r_mt <- rv_load_proj$dt_r_mt
-        rv_file$dt_criteria <- rv_load_proj$dt_criteria
-        rv_file$dt_rel <- rv_load_proj$dt_rel
-        rv_file$dt_myu <- rv_load_proj$dt_myu
-        rv_file$dt_par_auto <- rv_load_proj$dt_par_auto
-        rv_file$data_list <- rv_load_proj$data_list
+      if(!is.null(rv_load_proj$data_list)){
+        isolate(data_list <- rv_load_proj$data_list)
+        rv_file$dt_v_auto <- data_list$dt_v_auto
+        rv_file$dt_r_auto <- data_list$dt_r_auto
+        rv_file$dt_af <- data_list$dt_af
+        rv_file$dt_v_y <- data_list$dt_v_y
+        rv_file$dt_v_y <- data_list$dt_v_y
+        rv_file$dt_v_mt <- data_list$dt_v_mt
+        rv_file$dt_r_mt <- data_list$dt_r_mt
+        rv_file$dt_criteria <- data_list$dt_criteria
+        rv_file$dt_rel <- data_list$dt_rel
+        rv_file$dt_myu <- data_list$dt_myu
+        rv_file$dt_par_auto <- data_list$dt_par_auto
+        rv_file$data_list <- data_list
       }
     })
 
