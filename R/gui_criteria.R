@@ -39,7 +39,7 @@ tab_criteria_ui <- function(id){
 #' @description The function to create the server module for criteria
 #' @param init_dt_criteria The initial data.table of criteria
 #' @param path_pack Package path
-tab_criteria_server <- function(id, init_dt_criteria, path_pack){
+tab_criteria_server <- function(id, init_dt_criteria, path_pack, keep_min_lr){
   moduleServer(
     id,
     function(input, output, session){
@@ -70,52 +70,90 @@ tab_criteria_server <- function(id, init_dt_criteria, path_pack){
       # Define the input rule of criteria #
       #####################################
 
-      iv_min_lr_auto <- InputValidator$new()
-      iv_min_lr_auto$add_rule("min_lr_auto", sv_numeric())
-      iv_min_lr_auto$enable()
+      observeEvent(input$min_lr_auto, {
+        min_lr_auto <- input$min_lr_auto
+        if(!is.numeric(min_lr_auto) || min_lr_auto < keep_min_lr){
+          showFeedbackDanger(inputId = "min_lr_auto", text = paste0("The positive number greater than ", keep_min_lr, " is allowed."))
+          disable("act_criteria_save")
+        }else{
+          hideFeedback("min_lr_auto")
+          enable("act_criteria_save")
+        }
+      })
 
-      iv_max_mismatch_y <- InputValidator$new()
-      iv_max_mismatch_y$add_rule("max_mismatch_y", sv_numeric())
-      iv_max_mismatch_y$enable()
+      observeEvent(input$max_mismatch_y, {
+        max_mismatch_y <- input$max_mismatch_y
+        if(!is.integer(max_mismatch_y) || max_mismatch_y < 0){
+          showFeedbackDanger(inputId = "max_mismatch_y", text = "An integer greater than or equal to zero is allowed.")
+          disable("act_criteria_save")
+        }else{
+          hideFeedback("max_mismatch_y")
+          enable("act_criteria_save")
+        }
+      })
 
-      iv_max_ignore_y <- InputValidator$new()
-      iv_max_ignore_y$add_rule("max_ignore_y", sv_numeric())
-      iv_max_ignore_y$enable()
+      observeEvent(input$max_ignore_y, {
+        max_ignore_y <- input$max_ignore_y
+        if(!is.integer(max_ignore_y) || max_ignore_y < 0){
+          showFeedbackDanger(inputId = "max_ignore_y", text = "An integer greater than or equal to zero is allowed.")
+          disable("act_criteria_save")
+        }else{
+          hideFeedback("max_ignore_y")
+          enable("act_criteria_save")
+        }
+      })
 
-      iv_max_mustep_y <- InputValidator$new()
-      iv_max_mustep_y$add_rule("max_mustep_y", sv_numeric())
-      iv_max_mustep_y$enable()
+      observeEvent(input$max_mustep_y, {
+        max_mustep_y <- input$max_mustep_y
+        if(!is.integer(max_mustep_y) || max_mustep_y < 0){
+          showFeedbackDanger(inputId = "max_mustep_y", text = "An integer greater than or equal to zero is allowed.")
+          disable("act_criteria_save")
+        }else{
+          hideFeedback("max_mustep_y")
+          enable("act_criteria_save")
+        }
+      })
 
-      iv_max_mismatch_mt <- InputValidator$new()
-      iv_max_mismatch_mt$add_rule("max_mismatch_mt", sv_numeric())
-      iv_max_mismatch_mt$enable()
+      observeEvent(input$max_mismatch_mt, {
+        max_mismatch_mt <- input$max_mismatch_mt
+        if(!is.integer(max_mismatch_mt) || max_mismatch_mt < 0){
+          showFeedbackDanger(inputId = "max_mismatch_mt", text = "An integer greater than or equal to zero is allowed.")
+          disable("act_criteria_save")
+        }else{
+          hideFeedback("max_mismatch_mt")
+          enable("act_criteria_save")
+        }
+      })
 
-      iv_min_share_mt <- InputValidator$new()
-      iv_min_share_mt$add_rule("min_share_mt", sv_numeric())
-      iv_min_share_mt$enable()
+      observeEvent(input$min_share_mt, {
+        min_share_mt <- input$min_share_mt
+        if(!is.integer(min_share_mt) || min_share_mt < 0){
+          showFeedbackDanger(inputId = "min_share_mt", text = "An integer greater than or equal to zero is allowed.")
+          disable("act_criteria_save")
+        }else{
+          hideFeedback("min_share_mt")
+          enable("act_criteria_save")
+        }
+      })
 
       #################
       # Save criteria #
       #################
 
       observeEvent(input$act_criteria_save, {
-        if(all(isTruthy(input$min_lr_auto), isTruthy(input$max_mismatch_y), isTruthy(input$max_ignore_y), isTruthy(input$max_mustep_y), isTruthy(input$max_mismatch_mt), isTruthy(input$min_share_mt))){
-          rv_criteria$min_lr_auto <- input$min_lr_auto
-          rv_criteria$max_mismatch_y <- input$max_mismatch_y
-          rv_criteria$max_ignore_y <- input$max_ignore_y
-          rv_criteria$max_mustep_y <- input$max_mustep_y
-          rv_criteria$max_mismatch_mt <- input$max_mismatch_mt
-          rv_criteria$min_share_mt <- input$min_share_mt
+        rv_criteria$min_lr_auto <- input$min_lr_auto
+        rv_criteria$max_mismatch_y <- input$max_mismatch_y
+        rv_criteria$max_ignore_y <- input$max_ignore_y
+        rv_criteria$max_mustep_y <- input$max_mustep_y
+        rv_criteria$max_mismatch_mt <- input$max_mismatch_mt
+        rv_criteria$min_share_mt <- input$min_share_mt
 
-          new_dt_criteria <- data.table(Criteria = c("min_lr_auto", "max_mismatch_y", "max_ignore_y", "max_mustep_y", "max_mismatch_mt", "min_share_mt"),
-                                        Value = c(rv_criteria$min_lr_auto, rv_criteria$max_mismatch_y, rv_criteria$max_ignore_y, rv_criteria$max_mustep_y, rv_criteria$max_mismatch_mt, rv_criteria$min_share_mt))
+        new_dt_criteria <- data.table(Criteria = c("min_lr_auto", "max_mismatch_y", "max_ignore_y", "max_mustep_y", "max_mismatch_mt", "min_share_mt"),
+                                      Value = c(rv_criteria$min_lr_auto, rv_criteria$max_mismatch_y, rv_criteria$max_ignore_y, rv_criteria$max_mustep_y, rv_criteria$max_mismatch_mt, rv_criteria$min_share_mt))
 
-          write.csv(new_dt_criteria, paste0(path_pack, "/extdata/parameters/criteria.csv"), row.names = FALSE)
+        write.csv(new_dt_criteria, paste0(path_pack, "/extdata/parameters/criteria.csv"), row.names = FALSE)
 
-          showModal(modalDialog(title = "Information", "The criteria has been saved.", easyClose = TRUE, footer = NULL))
-        }else{
-          showModal(modalDialog(title = "Error", "Set criteria!", easyClose = TRUE, footer = NULL))
-        }
+        showModal(modalDialog(title = "Information", "The criteria has been saved.", easyClose = TRUE, footer = NULL))
       })
 
       ##################

@@ -44,26 +44,28 @@ tab_par_auto_server <- function(id, init_dt_par_auto, path_pack){
       # Define the input rule of the parameter #
       ##########################################
 
-      iv_maf <- InputValidator$new()
-      iv_maf$add_rule("maf", sv_numeric())
-      iv_maf$enable()
+      observeEvent(input$maf, {
+        maf <- input$maf
+        if(!is.integer(maf) || maf < 0){
+          showFeedbackDanger(inputId = "maf", text = "A positive number between 0 to 1 is allowed.")
+          disable("act_par_auto_save")
+        }else{
+          hideFeedback("maf")
+          enable("act_par_auto_save")
+        }
+      })
 
       ##################
       # Save parameter #
       ##################
 
       observeEvent(input$act_par_auto_save, {
-        if(isTruthy(input$maf)){
-          rv_par_auto$maf <- input$maf
+        rv_par_auto$maf <- input$maf
 
-          new_dt_par_auto <- data.table(Parameter = c("maf"), Value = c(rv_par_auto$maf))
+        new_dt_par_auto <- data.table(Parameter = c("maf"), Value = c(rv_par_auto$maf))
+        write.csv(new_dt_par_auto, paste0(path_pack, "/extdata/parameters/par_auto.csv"), row.names = FALSE)
 
-          write.csv(new_dt_par_auto, paste0(path_pack, "/extdata/parameters/par_auto.csv"), row.names = FALSE)
-
-          showModal(modalDialog(title = "Information", "The parameter has been saved.", easyClose = TRUE, footer = NULL))
-        }else{
-          showModal(modalDialog(title = "Error", "Set the parameter!", easyClose = TRUE, footer = NULL))
-        }
+        showModal(modalDialog(title = "Information", "The parameter has been saved.", easyClose = TRUE, footer = NULL))
       })
 
       ###################

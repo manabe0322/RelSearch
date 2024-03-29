@@ -62,8 +62,6 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
       # Edit the name of a relationship #
       ###################################
 
-      iv_rel_edit <- InputValidator$new()
-
       observeEvent(input$act_rel_edit, {
         showModal(modalDialog(
           title = "Edit the name of the relationship",
@@ -75,43 +73,46 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
           ),
           size = "l"
         ))
+      })
 
-        iv_rel_edit$disable()
+      observeEvent(input$rel_new_edit, {
+        rel_new_edit <- input$rel_new_edit
+        if(is.null(rel_new_edit)){
+          showFeedbackDanger(inputId = "rel_new_edit", text = "Enter the relationship name.")
+          disable("act_rel_edit_save")
+        }else{
+          hideFeedback("rel_new_edit")
+          enable("act_rel_edit_save")
+        }
       })
 
       observeEvent(input$act_rel_edit_save, {
         rel_old_edit <- input$rel_old_edit
         rel_new_edit <- input$rel_new_edit
 
-        if(isTruthy(rel_new_edit)){
-          rv_rel$name[rv_rel$name == rel_old_edit] <- rel_new_edit
+        rv_rel$name[rv_rel$name == rel_old_edit] <- rel_new_edit
 
-          new_dt_rel <- data.table(Relationship = rv_rel$name, Victim = rv_rel$victim, Reference = rv_rel$reference,
-                                   Pr_IBD2 = rv_rel$pibd2, Pr_IBD1 = rv_rel$pibd1, Pr_IBD0 = rv_rel$pibd0,
-                                   Paternal = rv_rel$paternal, Maternal = rv_rel$maternal,
-                                   Tree_persons = rv_rel$tree_persons, Tree_sexes = rv_rel$tree_sexes, Tree_fathers = rv_rel$tree_fathers, Tree_mothers = rv_rel$tree_mothers, Tree_founders = rv_rel$tree_founders)
+        new_dt_rel <- data.table(Relationship = rv_rel$name, Victim = rv_rel$victim, Reference = rv_rel$reference,
+                                 Pr_IBD2 = rv_rel$pibd2, Pr_IBD1 = rv_rel$pibd1, Pr_IBD0 = rv_rel$pibd0,
+                                 Paternal = rv_rel$paternal, Maternal = rv_rel$maternal,
+                                 Tree_persons = rv_rel$tree_persons, Tree_sexes = rv_rel$tree_sexes, Tree_fathers = rv_rel$tree_fathers, Tree_mothers = rv_rel$tree_mothers, Tree_founders = rv_rel$tree_founders)
 
-          write.csv(new_dt_rel, paste0(path_pack, "/extdata/parameters/rel.csv"), row.names = FALSE)
+        write.csv(new_dt_rel, paste0(path_pack, "/extdata/parameters/rel.csv"), row.names = FALSE)
 
-          output$dt_rel <- renderDataTable({
-            datatable(
-              new_dt_rel,
-              colnames = c("Relationship", "Victim", "Reference", "Pr (IBD = 2)", "Pr (IBD = 1)", "Pr (IBD = 0)", "Paternal lineage", "Maternal lineage",
-                           "Tree_persons", "Tree_sexes", "Tree_fathers", "Tree_mothers", "Tree_founders"),
-              selection = list(mode = "single", target = "row"),
-              options = list(iDisplayLength = 10, ordering = FALSE,
-                             columnDefs = list(list(targets = 8:12, visible = FALSE))
-              ),
-              rownames = FALSE
-            )
-          })
+        output$dt_rel <- renderDataTable({
+          datatable(
+            new_dt_rel,
+            colnames = c("Relationship", "Victim", "Reference", "Pr (IBD = 2)", "Pr (IBD = 1)", "Pr (IBD = 0)", "Paternal lineage", "Maternal lineage",
+                         "Tree_persons", "Tree_sexes", "Tree_fathers", "Tree_mothers", "Tree_founders"),
+            selection = list(mode = "single", target = "row"),
+            options = list(iDisplayLength = 10, ordering = FALSE,
+                           columnDefs = list(list(targets = 8:12, visible = FALSE))
+            ),
+            rownames = FALSE
+          )
+        })
 
-          removeModal()
-
-        }else{
-          iv_rel_edit$add_rule("rel_new_edit", sv_required())
-          iv_rel_edit$enable()
-        }
+        removeModal()
       })
 
       #####################################
@@ -127,8 +128,6 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
       rv_famtree$founder <- character(0)
       rv_famtree$error_famtree <- TRUE
       rv_famtree$tree <- NULL
-
-      iv_rel_add <- InputValidator$new()
 
       make_unk_selectbox <- function(num_uk, uks, sexes, fathers, mothers, founders){
 
@@ -243,8 +242,39 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
           ),
           size = "l"
         ))
+      })
 
-        iv_rel_add$disable()
+      observeEvent(input$rel_add, {
+        rel_add <- input$rel_add
+        if(is.null(rel_add)){
+          showFeedbackDanger(inputId = "rel_add", text = "Enter the relationship name.")
+          disable("act_rel_add_save")
+        }else{
+          hideFeedback("rel_add")
+          enable("act_rel_add_save")
+        }
+      })
+
+      observeEvent(input$vic_add, {
+        vic_add <- input$vic_add
+        if(is.null(vic_add)){
+          showFeedbackDanger(inputId = "vic_add", text = "Enter the victim name.")
+          disable("act_rel_add_save")
+        }else{
+          hideFeedback("vic_add")
+          enable("act_rel_add_save")
+        }
+      })
+
+      observeEvent(input$ref_add, {
+        ref_add <- input$ref_add
+        if(is.null(ref_add)){
+          showFeedbackDanger(inputId = "ref_add", text = "Enter the reference name.")
+          disable("act_rel_add_save")
+        }else{
+          hideFeedback("ref_add")
+          enable("act_rel_add_save")
+        }
       })
 
       observeEvent(input$v_founder, {
@@ -513,100 +543,93 @@ tab_rel_server <- function(id, init_dt_rel, path_pack){
       }
 
       observeEvent(input$act_rel_add_save, {
-        if(all(c(isTruthy(input$rel_add), isTruthy(input$vic_add), isTruthy(input$ref_add)))){
-          tree <- rv_famtree$tree
+        tree <- rv_famtree$tree
 
-          # Kinship coefficient
-          coeff_tree <- coeffTable(tree)
-          pos_row <- intersect(which(is.element(coeff_tree[, "id1"], c("Victim", "Ref")) == TRUE),
-                               which(is.element(coeff_tree[, "id2"], c("Victim", "Ref")) == TRUE))
-          pibd <- as.numeric(coeff_tree[pos_row, c("k2", "k1", "k0")])
-          deg <- as.numeric(coeff_tree[pos_row, "deg"])
+        # Kinship coefficient
+        coeff_tree <- coeffTable(tree)
+        pos_row <- intersect(which(is.element(coeff_tree[, "id1"], c("Victim", "Ref")) == TRUE),
+                             which(is.element(coeff_tree[, "id2"], c("Victim", "Ref")) == TRUE))
+        pibd <- as.numeric(coeff_tree[pos_row, c("k2", "k1", "k0")])
+        deg <- as.numeric(coeff_tree[pos_row, "deg"])
 
-          # Extract tree data
-          tree_list <- unclass(tree)
-          id <- tree_list$ID
-          fid <- tree_list$FIDX
-          fid[fid != 0] <- id[fid[fid != 0]]
-          mid <- tree_list$MIDX
-          mid[mid != 0] <- id[mid[mid != 0]]
-          sex <- tree_list$SEX
+        # Extract tree data
+        tree_list <- unclass(tree)
+        id <- tree_list$ID
+        fid <- tree_list$FIDX
+        fid[fid != 0] <- id[fid[fid != 0]]
+        mid <- tree_list$MIDX
+        mid[mid != 0] <- id[mid[mid != 0]]
+        sex <- tree_list$SEX
 
-          # Judge paternal lineage
-          rel_paternal <- judge_paternal("Victim", "Ref", id, fid, sex)
-          if(is.element(rel_paternal, c("lineal", "collateral"))){
-            paternal_add <- "Yes"
-          }else{
-            paternal_add <- "No"
-          }
-
-          # Judge maternal lineage
-          rel_maternal <- judge_maternal("Victim", "Ref", id, mid)
-          if(is.element(rel_maternal, c("lineal", "collateral"))){
-            maternal_add <- "Yes"
-          }else{
-            maternal_add <- "No"
-          }
-
-          # Make additional tree data
-          sex_info <- sex
-          sex_info[which(sex == 1)] <- "M"
-          sex_info[which(sex == 2)] <- "F"
-          founder_info <- rep("No", length(id))
-          founder_info[which(fid == "0")] <- "Yes"
-
-          # Update information on the relationship
-          rv_rel$name <- c(rv_rel$name, input$rel_add)
-          rv_rel$victim <- c(rv_rel$victim, input$vic_add)
-          rv_rel$reference <- c(rv_rel$reference, input$ref_add)
-          rv_rel$pibd2 <- c(rv_rel$pibd2, pibd[1])
-          rv_rel$pibd1 <- c(rv_rel$pibd1, pibd[2])
-          rv_rel$pibd0 <- c(rv_rel$pibd0, pibd[3])
-          rv_rel$paternal <- c(rv_rel$paternal, paternal_add)
-          rv_rel$maternal <- c(rv_rel$maternal, maternal_add)
-          rv_rel$tree_persons <- c(rv_rel$tree_persons, paste(id, collapse = ", "))
-          rv_rel$tree_sexes <- c(rv_rel$tree_sexes, paste(sex_info, collapse = ", "))
-          rv_rel$tree_fathers <- c(rv_rel$tree_fathers, paste(fid, collapse = ", "))
-          rv_rel$tree_mothers <- c(rv_rel$tree_mothers, paste(mid, collapse = ", "))
-          rv_rel$tree_founders <- c(rv_rel$tree_founders, paste(founder_info, collapse = ", "))
-
-          new_dt_rel <- data.table(Relationship = rv_rel$name, Victim = rv_rel$victim, Reference = rv_rel$reference,
-                                   Pr_IBD2 = rv_rel$pibd2, Pr_IBD1 = rv_rel$pibd1, Pr_IBD0 = rv_rel$pibd0,
-                                   Paternal = rv_rel$paternal, Maternal = rv_rel$maternal,
-                                   Tree_persons = rv_rel$tree_persons, Tree_sexes = rv_rel$tree_sexes, Tree_fathers = rv_rel$tree_fathers, Tree_mothers = rv_rel$tree_mothers, Tree_founders = rv_rel$tree_founders)
-
-          write.csv(new_dt_rel, paste0(path_pack, "/extdata/parameters/rel.csv"), row.names = FALSE)
-
-          output$dt_rel <- renderDataTable({
-            datatable(
-              new_dt_rel,
-              colnames = c("Relationship", "Victim", "Reference", "Pr (IBD = 2)", "Pr (IBD = 1)", "Pr (IBD = 0)", "Paternal lineage", "Maternal lineage",
-                           "Tree_persons", "Tree_sexes", "Tree_fathers", "Tree_mothers", "Tree_founders"),
-              selection = list(mode = "single", target = "row"),
-              options = list(iDisplayLength = 10, ordering = FALSE,
-                             columnDefs = list(list(targets = 8:12, visible = FALSE))
-              ),
-              rownames = FALSE
-            )
-          })
-
-          # Reset family tree
-          rv_famtree$num_uk <- 0
-          rv_famtree$uk <- character(0)
-          rv_famtree$sex <- character(0)
-          rv_famtree$father <- character(0)
-          rv_famtree$mother <- character(0)
-          rv_famtree$founder <- character(0)
-          rv_famtree$error_famtree <- TRUE
-          make_unk_selectbox(rv_famtree$num_uk, rv_famtree$uk, rv_famtree$sex, rv_famtree$father, rv_famtree$mother, rv_famtree$founder)
-          state_save_butt()
-          removeModal()
+        # Judge paternal lineage
+        rel_paternal <- judge_paternal("Victim", "Ref", id, fid, sex)
+        if(is.element(rel_paternal, c("lineal", "collateral"))){
+          paternal_add <- "Yes"
         }else{
-          iv_rel_add$add_rule("rel_add", sv_required())
-          iv_rel_add$add_rule("vic_add", sv_required())
-          iv_rel_add$add_rule("ref_add", sv_required())
-          iv_rel_add$enable()
+          paternal_add <- "No"
         }
+
+        # Judge maternal lineage
+        rel_maternal <- judge_maternal("Victim", "Ref", id, mid)
+        if(is.element(rel_maternal, c("lineal", "collateral"))){
+          maternal_add <- "Yes"
+        }else{
+          maternal_add <- "No"
+        }
+
+        # Make additional tree data
+        sex_info <- sex
+        sex_info[which(sex == 1)] <- "M"
+        sex_info[which(sex == 2)] <- "F"
+        founder_info <- rep("No", length(id))
+        founder_info[which(fid == "0")] <- "Yes"
+
+        # Update information on the relationship
+        rv_rel$name <- c(rv_rel$name, input$rel_add)
+        rv_rel$victim <- c(rv_rel$victim, input$vic_add)
+        rv_rel$reference <- c(rv_rel$reference, input$ref_add)
+        rv_rel$pibd2 <- c(rv_rel$pibd2, pibd[1])
+        rv_rel$pibd1 <- c(rv_rel$pibd1, pibd[2])
+        rv_rel$pibd0 <- c(rv_rel$pibd0, pibd[3])
+        rv_rel$paternal <- c(rv_rel$paternal, paternal_add)
+        rv_rel$maternal <- c(rv_rel$maternal, maternal_add)
+        rv_rel$tree_persons <- c(rv_rel$tree_persons, paste(id, collapse = ", "))
+        rv_rel$tree_sexes <- c(rv_rel$tree_sexes, paste(sex_info, collapse = ", "))
+        rv_rel$tree_fathers <- c(rv_rel$tree_fathers, paste(fid, collapse = ", "))
+        rv_rel$tree_mothers <- c(rv_rel$tree_mothers, paste(mid, collapse = ", "))
+        rv_rel$tree_founders <- c(rv_rel$tree_founders, paste(founder_info, collapse = ", "))
+
+        new_dt_rel <- data.table(Relationship = rv_rel$name, Victim = rv_rel$victim, Reference = rv_rel$reference,
+                                 Pr_IBD2 = rv_rel$pibd2, Pr_IBD1 = rv_rel$pibd1, Pr_IBD0 = rv_rel$pibd0,
+                                 Paternal = rv_rel$paternal, Maternal = rv_rel$maternal,
+                                 Tree_persons = rv_rel$tree_persons, Tree_sexes = rv_rel$tree_sexes, Tree_fathers = rv_rel$tree_fathers, Tree_mothers = rv_rel$tree_mothers, Tree_founders = rv_rel$tree_founders)
+
+        write.csv(new_dt_rel, paste0(path_pack, "/extdata/parameters/rel.csv"), row.names = FALSE)
+
+        output$dt_rel <- renderDataTable({
+          datatable(
+            new_dt_rel,
+            colnames = c("Relationship", "Victim", "Reference", "Pr (IBD = 2)", "Pr (IBD = 1)", "Pr (IBD = 0)", "Paternal lineage", "Maternal lineage",
+                         "Tree_persons", "Tree_sexes", "Tree_fathers", "Tree_mothers", "Tree_founders"),
+            selection = list(mode = "single", target = "row"),
+            options = list(iDisplayLength = 10, ordering = FALSE,
+                           columnDefs = list(list(targets = 8:12, visible = FALSE))
+            ),
+            rownames = FALSE
+          )
+        })
+
+        # Reset family tree
+        rv_famtree$num_uk <- 0
+        rv_famtree$uk <- character(0)
+        rv_famtree$sex <- character(0)
+        rv_famtree$father <- character(0)
+        rv_famtree$mother <- character(0)
+        rv_famtree$founder <- character(0)
+        rv_famtree$error_famtree <- TRUE
+        make_unk_selectbox(rv_famtree$num_uk, rv_famtree$uk, rv_famtree$sex, rv_famtree$father, rv_famtree$mother, rv_famtree$founder)
+        state_save_butt()
+        removeModal()
       })
 
       observeEvent(input$act_rel_add_cancel, {

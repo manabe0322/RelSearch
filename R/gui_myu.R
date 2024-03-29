@@ -48,8 +48,6 @@ tab_myu_server <- function(id, init_dt_myu, path_pack){
       # Edit a mutation rate #
       ########################
 
-      iv_myu_edit <- InputValidator$new()
-
       observeEvent(input$act_myu_edit, {
         showModal(modalDialog(
           title = "Edit a mutation rate",
@@ -61,46 +59,48 @@ tab_myu_server <- function(id, init_dt_myu, path_pack){
           ),
           size = "l"
         ))
-
-        iv_myu_edit$disable()
       })
 
       observeEvent(input$myu_mk_edit, {
         output$myu_val_edit <- renderUI(numericInput(session$ns("myu_val_edit"), label = "Enter a mutation rate", value = rv_myu$val[rv_myu$mk == input$myu_mk_edit]))
       })
 
+      observeEvent(input$myu_val_edit, {
+        myu_val_edit <- input$myu_val_edit
+        if(!is.numeric(myu_val_edit) || myu_val_edit < 0 || myu_val_edit > 1){
+          showFeedbackDanger(inputId = "myu_val_edit", text = "A positive number between 0 to 1 is allowed.")
+          disable("act_myu_edit_save")
+        }else{
+          hideFeedback("myu_val_edit")
+          enable("act_myu_edit_save")
+        }
+      })
+
       observeEvent(input$act_myu_edit_save, {
         myu_mk_edit <- input$myu_mk_edit
         myu_val_edit <- input$myu_val_edit
 
-        if(isTruthy(myu_val_edit)){
-          rv_myu$val[rv_myu$mk == myu_mk_edit] <- myu_val_edit
+        rv_myu$val[rv_myu$mk == myu_mk_edit] <- myu_val_edit
 
-          new_dt_myu <- data.table(Marker = rv_myu$mk, Myu = rv_myu$val)
-          write.csv(new_dt_myu, paste0(path_pack, "/extdata/parameters/myu.csv"), row.names = FALSE)
+        new_dt_myu <- data.table(Marker = rv_myu$mk, Myu = rv_myu$val)
+        write.csv(new_dt_myu, paste0(path_pack, "/extdata/parameters/myu.csv"), row.names = FALSE)
 
-          output$dt_myu <- renderDataTable({
-            datatable(
-              new_dt_myu,
-              colnames = c("Locus", "Mutation rates"),
-              selection = "none",
-              options = list(iDisplayLength = 50, ordering = FALSE),
-              rownames = FALSE
-            )
-          })
+        output$dt_myu <- renderDataTable({
+          datatable(
+            new_dt_myu,
+            colnames = c("Locus", "Mutation rates"),
+            selection = "none",
+            options = list(iDisplayLength = 50, ordering = FALSE),
+            rownames = FALSE
+          )
+        })
 
-          removeModal()
-        }else{
-          iv_myu_edit$add_rule("myu_val_edit", sv_numeric())
-          iv_myu_edit$enable()
-        }
+        removeModal()
       })
 
       #######################
       # Add a mutation rate #
       #######################
-
-      iv_myu_add <- InputValidator$new()
 
       observeEvent(input$act_myu_add, {
         showModal(modalDialog(
@@ -113,37 +113,51 @@ tab_myu_server <- function(id, init_dt_myu, path_pack){
           ),
           size = "l"
         ))
+      })
 
-        iv_myu_add$disable()
+      observeEvent(input$myu_mk_add, {
+        myu_mk_add <- input$myu_mk_add
+        if(is.null(myu_mk_add)){
+          showFeedbackDanger(inputId = "myu_mk_add", text = "Enter the marker name.")
+          disable("act_myu_add_save")
+        }else{
+          hideFeedback("myu_mk_add")
+          enable("act_myu_add_save")
+        }
+      })
+
+      observeEvent(input$myu_val_add, {
+        myu_val_add <- input$myu_val_add
+        if(!is.numeric(myu_val_add) || myu_val_add < 0 || myu_val_add > 1){
+          showFeedbackDanger(inputId = "myu_val_add", text = "A positive number between 0 to 1 is allowed.")
+          disable("act_myu_add_save")
+        }else{
+          hideFeedback("myu_val_add")
+          enable("act_myu_add_save")
+        }
       })
 
       observeEvent(input$act_myu_add_save, {
         myu_mk_add <- input$myu_mk_add
         myu_val_add <- input$myu_val_add
 
-        if(isTruthy(myu_mk_add) && isTruthy(myu_val_add)){
-          rv_myu$mk <- c(rv_myu$mk, myu_mk_add)
-          rv_myu$val <- c(rv_myu$val, myu_val_add)
+        rv_myu$mk <- c(rv_myu$mk, myu_mk_add)
+        rv_myu$val <- c(rv_myu$val, myu_val_add)
 
-          new_dt_myu <- data.table(Marker = rv_myu$mk, Myu = rv_myu$val)
-          write.csv(new_dt_myu, paste0(path_pack, "/extdata/parameters/myu.csv"), row.names = FALSE)
+        new_dt_myu <- data.table(Marker = rv_myu$mk, Myu = rv_myu$val)
+        write.csv(new_dt_myu, paste0(path_pack, "/extdata/parameters/myu.csv"), row.names = FALSE)
 
-          output$dt_myu <- renderDataTable({
-            datatable(
-              new_dt_myu,
-              colnames = c("Locus", "Mutation rates"),
-              selection = "none",
-              options = list(iDisplayLength = 50, ordering = FALSE),
-              rownames = FALSE
-            )
-          })
+        output$dt_myu <- renderDataTable({
+          datatable(
+            new_dt_myu,
+            colnames = c("Locus", "Mutation rates"),
+            selection = "none",
+            options = list(iDisplayLength = 50, ordering = FALSE),
+            rownames = FALSE
+          )
+        })
 
-          removeModal()
-        }else{
-          iv_myu_add$add_rule("myu_mk_add", sv_required())
-          iv_myu_add$add_rule("myu_val_add", sv_numeric())
-          iv_myu_add$enable()
-        }
+        removeModal()
       })
 
       ##########################

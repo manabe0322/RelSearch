@@ -90,7 +90,7 @@ relsearch <- function(){
     # Setting tabs #
     ################
 
-    rv_criteria <- tab_criteria_server("tab_criteria", init_dt_criteria, path_pack)
+    rv_criteria <- tab_criteria_server("tab_criteria", init_dt_criteria, path_pack, keep_min_lr)
     rv_rel <- tab_rel_server("tab_rel", init_dt_rel, path_pack)
     rv_myu <- tab_myu_server("tab_myu", init_dt_myu, path_pack)
     rv_par_auto <- tab_par_auto_server("tab_par_auto", init_dt_par_auto, path_pack)
