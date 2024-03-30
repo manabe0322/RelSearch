@@ -17,7 +17,7 @@ load_proj_ui <- function(id){
 #' load_proj_server
 #'
 #' @description The function to create the server module for loading the project
-load_proj_server <- function(id){
+load_proj_server <- function(id, session_top, max_data){
   moduleServer(
     id,
     function(input, output, session){
@@ -41,14 +41,17 @@ load_proj_server <- function(id){
           waiter_show(html = spin_3k(), color = "white")
           load(input$file_proj$datapath)
           rv_load_proj$data_list <- data_list
+          updateNavbarPage(session = session_top, "navbar", selected = "Result")
           waiter_hide()
 
-#          enable("name_proj")
-#          enable("download_proj")
-#          enable(selector = '.navbar-nav a[data-value = "Result"]')
-#          disable(selector = '.navbar-nav a[data-value = "Settings"]')
-#          updateNavbarPage(session, "navbar", selected = "Result")
-#          showModal(modalDialog(title = "Information", "Displayed data satisfies at least one of the criteria for STR, Y-STR, and mtDNA.", easyClose = TRUE, footer = NULL))
+          # Show a message for displayed data
+          if(nrow(data_list$dt_display) == max_data){
+            showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
+          }else if(data_list$bool_check_auto){
+            showModal(modalDialog(title = "Information", "Data that satisfies the criterion of the minimum LR is displayed.", easyClose = TRUE, footer = NULL))
+          }else{
+            showModal(modalDialog(title = "Information", "Data that satisfies the criteria for Y-STR or mtDNA is displayed.", easyClose = TRUE, footer = NULL))
+          }
         }
       }, ignoreInit = TRUE)
 

@@ -37,16 +37,17 @@ tab_criteria_ui <- function(id){
 #' tab_criteria_server
 #'
 #' @description The function to create the server module for criteria
-#' @param init_dt_criteria The initial data.table of criteria
 #' @param path_pack Package path
-tab_criteria_server <- function(id, init_dt_criteria, path_pack, keep_min_lr){
+tab_criteria_server <- function(id, path_pack, keep_min_lr){
   moduleServer(
     id,
     function(input, output, session){
+
       ######################################
       # Define the initial reactive values #
       ######################################
 
+      init_dt_criteria <- create_dt_criteria(path_pack)
       rv_criteria <- reactiveValues()
       rv_criteria$min_lr_auto <- init_dt_criteria$Value[init_dt_criteria$Criteria == "min_lr_auto"]
       rv_criteria$max_mismatch_y <- init_dt_criteria$Value[init_dt_criteria$Criteria == "max_mismatch_y"]

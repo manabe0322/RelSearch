@@ -33,16 +33,17 @@ tab_rel_ui <- function(id){
 #' tab_rel_server
 #'
 #' @description The function to create the server module for information on the relationship
-#' @param init_dt_rel The initial data.table of information on relationship
 #' @param path_pack Package path
-tab_rel_server <- function(id, init_dt_rel, path_pack){
+tab_rel_server <- function(id, path_pack){
   moduleServer(
     id,
     function(input, output, session){
+
       ######################################
       # Define the initial reactive values #
       ######################################
 
+      init_dt_rel <- create_dt_rel(path_pack)
       rv_rel <- reactiveValues()
       rv_rel$name <- init_dt_rel[, Relationship]
       rv_rel$victim <- init_dt_rel[, Victim]

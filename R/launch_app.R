@@ -74,29 +74,11 @@ relsearch <- function(){
   )
 
   server <- function(input, output, session){
-
-    #disable(selector = '.navbar-nav a[data-value = "Result"]')
-
-    ###########################
-    # Load initial data.table #
-    ###########################
-
-    init_dt_criteria <- create_dt_criteria(path_pack)
-    init_dt_rel <- create_dt_rel(path_pack)
-    init_dt_myu <- create_dt_myu(path_pack)
-    init_dt_par_auto <- create_dt_par_auto(path_pack)
-
-    ################
-    # Setting tabs #
-    ################
-
-    rv_criteria <- tab_criteria_server("tab_criteria", init_dt_criteria, path_pack, keep_min_lr)
-    rv_rel <- tab_rel_server("tab_rel", init_dt_rel, path_pack)
-    rv_myu <- tab_myu_server("tab_myu", init_dt_myu, path_pack)
-    rv_par_auto <- tab_par_auto_server("tab_par_auto", init_dt_par_auto, path_pack)
-
+    rv_criteria <- tab_criteria_server("tab_criteria", path_pack, keep_min_lr)
+    rv_rel <- tab_rel_server("tab_rel", path_pack)
+    rv_myu <- tab_myu_server("tab_myu", path_pack)
+    rv_par_auto <- tab_par_auto_server("tab_par_auto", path_pack)
     example_server("example", path_pack)
-
     rv_file <- load_server("load", session, rv_criteria, rv_rel, rv_myu, rv_par_auto, keep_min_lr, max_data)
 
     observe({
@@ -112,7 +94,11 @@ relsearch <- function(){
       save_proj_server("save_proj", rv_file)
     })
 
-    rv_load_proj <- load_proj_server("load_proj")
+    observeEvent(input$act_new_proj, {
+      refresh()
+    })
+
+    rv_load_proj <- load_proj_server("load_proj", session, max_data)
     observe({
       req(rv_load_proj)
       data_list <- rv_load_proj$data_list
@@ -130,14 +116,6 @@ relsearch <- function(){
         rv_file$dt_par_auto <- data_list$dt_par_auto
         rv_file$data_list <- data_list
       }
-    })
-
-    ###############
-    # New project #
-    ###############
-
-    observeEvent(input$act_new_proj, {
-      refresh()
     })
   }
 

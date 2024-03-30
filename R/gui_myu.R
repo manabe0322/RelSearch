@@ -30,16 +30,17 @@ tab_myu_ui <- function(id){
 #' tab_myu_server
 #'
 #' @description The function to create the server module for mutation rates
-#' @param init_dt_myu The initial data.table of mutation rates
 #' @param path_pack Package path
-tab_myu_server <- function(id, init_dt_myu, path_pack){
+tab_myu_server <- function(id, path_pack){
   moduleServer(
     id,
     function(input, output, session){
+
       ######################################
       # Define the initial reactive values #
       ######################################
 
+      init_dt_myu <- create_dt_myu(path_pack)
       rv_myu <- reactiveValues()
       rv_myu$mk <- init_dt_myu[, Marker]
       rv_myu$val <- init_dt_myu[, Myu]

@@ -21,16 +21,17 @@ tab_par_auto_ui <- function(id){
 #' tab_par_auto_server
 #'
 #' @description The function to create the server module for the parameter
-#' @param init_dt_par_auto The initial data.table of the parameter
 #' @param path_pack Package path
-tab_par_auto_server <- function(id, init_dt_par_auto, path_pack){
+tab_par_auto_server <- function(id, path_pack){
   moduleServer(
     id,
     function(input, output, session){
+
       ######################################
       # Define the initial reactive values #
       ######################################
 
+      init_dt_par_auto <- create_dt_par_auto(path_pack)
       rv_par_auto <- reactiveValues()
       rv_par_auto$maf <- init_dt_par_auto$Value[init_dt_par_auto$Parameter == "maf"]
 
