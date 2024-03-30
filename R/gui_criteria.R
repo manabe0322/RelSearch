@@ -7,7 +7,7 @@ tab_criteria_ui <- function(id){
   tabPanel("Criteria",
            titlePanel("Criteria"),
            br(),
-           p("Press the save button to reflect the changes."),
+           p(HTML("<b>Press the save button to reflect the changes.</b>")),
            br(),
            fluidRow(
              column(4,

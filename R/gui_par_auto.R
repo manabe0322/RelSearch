@@ -7,7 +7,7 @@ tab_par_auto_ui <- function(id){
   tabPanel("Parameter",
            titlePanel("Parameter"),
            br(),
-           p("Press the save button to reflect the changes."),
+           p(HTML("<b>Press the save button to reflect the changes.</b>")),
            br(),
            uiOutput(ns("output_maf")),
            br(),
@@ -69,7 +69,7 @@ tab_par_auto_server <- function(id, init_dt_par_auto, path_pack){
         write.csv(new_dt_par_auto, paste0(path_pack, "/extdata/parameters/par_auto.csv"), row.names = FALSE)
 
         showModal(modalDialog(title = "Information", "The parameter has been saved.", easyClose = TRUE, footer = NULL))
-      })
+      }, ignoreInit = TRUE)
 
       ###################
       # Reset parameter #
