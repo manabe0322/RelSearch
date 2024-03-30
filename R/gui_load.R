@@ -37,7 +37,7 @@ load_ui <- function(id){
 #' load_server
 #'
 #' @description The function to create the server module for loading files
-load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_auto){
+load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_auto, keep_min_lr, max_data){
   moduleServer(
     id,
     function(input, output, session){
@@ -284,6 +284,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_aut
           data_list$fn_r_y <- fn_r_y
           data_list$fn_v_mt <- fn_v_mt
           data_list$fn_r_mt <- fn_r_mt
+          rv_file$data_list <- data_list
 
           ######################
           # Finish calculation #

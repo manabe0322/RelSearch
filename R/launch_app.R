@@ -20,7 +20,7 @@ relsearch <- function(){
 
                              load_ui("load"),
 
-#                             result_ui("result"),
+                             result_ui("result"),
 
                              navbarMenu("Project",
                                         tabPanel("New project",
@@ -97,7 +97,7 @@ relsearch <- function(){
 
     example_server("example", path_pack)
 
-    rv_file <- load_server("load", session, rv_criteria, rv_rel, rv_myu, rv_par_auto)
+    rv_file <- load_server("load", session, rv_criteria, rv_rel, rv_myu, rv_par_auto, keep_min_lr, max_data)
 
     observe({
       req(rv_file)
@@ -108,7 +108,7 @@ relsearch <- function(){
       tab_view_dt_r_y_server("view_dt_r_y", rv_file)
       tab_view_dt_v_mt_server("view_dt_v_mt", rv_file)
       tab_view_dt_r_mt_server("view_dt_r_mt", rv_file)
-#      result_server("result", rv_file)
+      result_server("result", rv_file, keep_min_lr, max_data)
     })
 
 #    rv_load_proj <- load_proj_server("load_proj")

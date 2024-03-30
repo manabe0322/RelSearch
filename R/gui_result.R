@@ -7,7 +7,8 @@ result_ui <- function(id){
   tabPanel("Result",
            titlePanel("Result"),
            br(),
-           tabsetPanel(ns("tab_result"),
+           tabsetPanel(id = ns("tab_result"),
+                       type = "tabs",
                        tabPanel("Summary",
                                 br(),
                                 sidebarLayout(
@@ -190,7 +191,7 @@ result_ui <- function(id){
 #' result_server
 #'
 #' @description The function to create the server module for displaying results
-result_server <- function(id, rv_file){
+result_server <- function(id, rv_file, keep_min_lr, max_data){
   moduleServer(
     id,
     function(input, output, session){
@@ -228,7 +229,7 @@ result_server <- function(id, rv_file){
         ########################
 
         output$summary_min_lr <- renderUI({
-          numericInput(session$ns("summary_min_lr"), label = "Minimum LR displayed", value = dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"])
+          numericInput(session$ns("input_summary_min_lr"), label = "Minimum LR displayed", value = dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"])
         })
 
         observeEvent(input$act_default, {
@@ -245,7 +246,7 @@ result_server <- function(id, rv_file){
           }else{
             showModal(modalDialog(title = "Information", "Data that satisfies the criteria for Y-STR or mtDNA is displayed.", easyClose = TRUE, footer = NULL))
           }
-        })
+        }, ignoreInit = TRUE)
 
         observeEvent(input$act_identified, {
           dt_display <- create_displayed_data(dt_combined, fltr_type = "identified", max_data = max_data)
@@ -253,7 +254,7 @@ result_server <- function(id, rv_file){
           if(nrow(dt_display) == max_data){
             showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
           }
-        })
+        }, ignoreInit = TRUE)
 
         observeEvent(input$act_multiple, {
           dt_display <- create_displayed_data(dt_combined, fltr_type = "multiple", max_data = max_data)
@@ -261,7 +262,7 @@ result_server <- function(id, rv_file){
           if(nrow(dt_display) == max_data){
             showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
           }
-        })
+        }, ignoreInit = TRUE)
 
         observeEvent(input$act_warning, {
           dt_display <- create_displayed_data(dt_combined, fltr_type = "warning", max_data = max_data)
@@ -269,21 +270,24 @@ result_server <- function(id, rv_file){
           if(nrow(dt_display) == max_data){
             showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
           }
-        })
+        }, ignoreInit = TRUE)
 
-        observeEvent(input$summary_min_lr, {
-          summary_min_lr <- input$summary_min_lr
-          if(!is.numeric(summary_min_lr) || summary_min_lr < keep_min_lr){
-            showFeedbackDanger(inputId = "summary_min_lr", text = paste0("The minimum LR value should be greater than ", keep_min_lr, "."))
+        observeEvent(input$input_summary_min_lr, {
+          summary_min_lr <- input$input_summary_min_lr
+          if(!is.numeric(summary_min_lr)){
+            hideFeedback("input_summary_min_lr")
+            disable("act_fltr_lr")
+          }else if(summary_min_lr < keep_min_lr){
+            showFeedbackDanger(inputId = "input_summary_min_lr", text = paste0("The minimum LR value should be greater than ", keep_min_lr, "."))
             disable("act_fltr_lr")
           }else{
-            hideFeedback("summary_min_lr")
+            hideFeedback("input_summary_min_lr")
             enable("act_fltr_lr")
           }
-        })
+        }, ignoreInit = TRUE)
 
         observeEvent(input$act_fltr_lr, {
-          summary_min_lr <- input$summary_min_lr
+          summary_min_lr <- input$input_summary_min_lr
           if(isTruthy(summary_min_lr)){
             if(summary_min_lr >= keep_min_lr){
               dt_display <- create_displayed_data(dt_combined, fltr_type = "with_auto", min_lr = summary_min_lr, max_data = max_data)
@@ -293,7 +297,7 @@ result_server <- function(id, rv_file){
               }
             }
           }
-        })
+        }, ignoreInit = TRUE)
 
         output$dt_display <- renderDataTable(server = FALSE, {
           dt_display <- rv_result$dt_display
@@ -341,7 +345,7 @@ result_server <- function(id, rv_file){
         # Display detailed data #
         #########################
 
-        observeEvent(ignoreInit = TRUE, input$dt_display_rows_selected, {
+        observeEvent(input$dt_display_rows_selected, {
           pos_select <- input$dt_display_rows_selected
 
           sn_v_select <- dt_display[pos_select, Victim]
@@ -446,7 +450,7 @@ result_server <- function(id, rv_file){
               rownames = FALSE
             )
           })
-        })
+        }, ignoreInit = TRUE)
 
         ###############################
         # Display analysis conditions #
@@ -524,7 +528,7 @@ result_server <- function(id, rv_file){
           }else{
             showModal(modalDialog(title = "Error", "Select a relationship!", easyClose = TRUE, footer = NULL))
           }
-        })
+        }, ignoreInit = TRUE)
 
         output$result_myu <- renderDataTable(server = FALSE, {
           datatable(
