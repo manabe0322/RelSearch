@@ -99,18 +99,17 @@ relsearch <- function(){
 
     rv_file <- load_server("load", session, rv_criteria, rv_rel, rv_myu, rv_par_auto)
 
-    tab_view_dt_v_auto_server("view_dt_v_auto", rv_file)
-    tab_view_dt_r_auto_server("view_dt_r_auto", rv_file)
-    tab_view_dt_af_server("view_dt_af", rv_file)
-    tab_view_dt_v_y_server("view_dt_v_y", rv_file)
-    tab_view_dt_r_y_server("view_dt_r_y", rv_file)
-    tab_view_dt_v_mt_server("view_dt_v_mt", rv_file)
-    tab_view_dt_r_mt_server("view_dt_r_mt", rv_file)
-
-#    observe({
-#      req(rv_file)
+    observe({
+      req(rv_file)
+      tab_view_dt_v_auto_server("view_dt_v_auto", rv_file)
+      tab_view_dt_r_auto_server("view_dt_r_auto", rv_file)
+      tab_view_dt_af_server("view_dt_af", rv_file)
+      tab_view_dt_v_y_server("view_dt_v_y", rv_file)
+      tab_view_dt_r_y_server("view_dt_r_y", rv_file)
+      tab_view_dt_v_mt_server("view_dt_v_mt", rv_file)
+      tab_view_dt_r_mt_server("view_dt_r_mt", rv_file)
 #      result_server("result", rv_file)
-#    })
+    })
 
 #    rv_load_proj <- load_proj_server("load_proj")
 #    save_proj_server("save_proj", rv_file)

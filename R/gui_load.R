@@ -309,6 +309,8 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_aut
           }
         }
       })
+
+      return(rv_file)
     }
   )
 }
