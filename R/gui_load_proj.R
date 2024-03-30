@@ -40,7 +40,7 @@ load_proj_server <- function(id){
         }else{
           waiter_show(html = spin_3k(), color = "white")
           load(input$file_proj$datapath)
-          isolate(rv_load_proj$data_list <- data_list)
+          rv_load_proj$data_list <- data_list
           waiter_hide()
 
 #          enable("name_proj")
@@ -50,7 +50,7 @@ load_proj_server <- function(id){
 #          updateNavbarPage(session, "navbar", selected = "Result")
 #          showModal(modalDialog(title = "Information", "Displayed data satisfies at least one of the criteria for STR, Y-STR, and mtDNA.", easyClose = TRUE, footer = NULL))
         }
-      })
+      }, ignoreInit = TRUE)
 
       return(rv_load_proj)
     }

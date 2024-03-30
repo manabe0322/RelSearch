@@ -109,28 +109,28 @@ relsearch <- function(){
       tab_view_dt_v_mt_server("view_dt_v_mt", rv_file)
       tab_view_dt_r_mt_server("view_dt_r_mt", rv_file)
       result_server("result", rv_file, keep_min_lr, max_data)
+      save_proj_server("save_proj", rv_file)
     })
 
-#    rv_load_proj <- load_proj_server("load_proj")
-#    save_proj_server("save_proj", rv_file)
-#    observe({
-#      req(rv_load_proj)
-#      if(!is.null(rv_load_proj$data_list)){
-#        isolate(data_list <- rv_load_proj$data_list)
-#        rv_file$dt_v_auto <- data_list$dt_v_auto
-#        rv_file$dt_r_auto <- data_list$dt_r_auto
-#        rv_file$dt_af <- data_list$dt_af
-#        rv_file$dt_v_y <- data_list$dt_v_y
-#        rv_file$dt_v_y <- data_list$dt_v_y
-#        rv_file$dt_v_mt <- data_list$dt_v_mt
-#        rv_file$dt_r_mt <- data_list$dt_r_mt
-#        rv_file$dt_criteria <- data_list$dt_criteria
-#        rv_file$dt_rel <- data_list$dt_rel
-#        rv_file$dt_myu <- data_list$dt_myu
-#        rv_file$dt_par_auto <- data_list$dt_par_auto
-#        rv_file$data_list <- data_list
-#      }
-#    })
+    rv_load_proj <- load_proj_server("load_proj")
+    observe({
+      req(rv_load_proj)
+      data_list <- rv_load_proj$data_list
+      if(!is.null(data_list)){
+        rv_file$dt_v_auto <- data_list$dt_v_auto
+        rv_file$dt_r_auto <- data_list$dt_r_auto
+        rv_file$dt_af <- data_list$dt_af
+        rv_file$dt_v_y <- data_list$dt_v_y
+        rv_file$dt_v_y <- data_list$dt_v_y
+        rv_file$dt_v_mt <- data_list$dt_v_mt
+        rv_file$dt_r_mt <- data_list$dt_r_mt
+        rv_file$dt_criteria <- data_list$dt_criteria
+        rv_file$dt_rel <- data_list$dt_rel
+        rv_file$dt_myu <- data_list$dt_myu
+        rv_file$dt_par_auto <- data_list$dt_par_auto
+        rv_file$data_list <- data_list
+      }
+    })
 
     ###############
     # New project #
