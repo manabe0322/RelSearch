@@ -238,7 +238,7 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
           }else{
             dt_display <- create_displayed_data(dt_combined, fltr_type = "without_auto", max_data = max_data)
           }
-          isolate(rv_result$dt_display <- dt_display)
+          rv_result$dt_display <- dt_display
           if(nrow(dt_display) == max_data){
             showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
           }else if(bool_check_auto){
@@ -250,7 +250,7 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
 
         observeEvent(input$act_identified, {
           dt_display <- create_displayed_data(dt_combined, fltr_type = "identified", max_data = max_data)
-          isolate(rv_result$dt_display <- dt_display)
+          rv_result$dt_display <- dt_display
           if(nrow(dt_display) == max_data){
             showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
           }
@@ -258,7 +258,7 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
 
         observeEvent(input$act_multiple, {
           dt_display <- create_displayed_data(dt_combined, fltr_type = "multiple", max_data = max_data)
-          isolate(rv_result$dt_display <- dt_display)
+          rv_result$dt_display <- dt_display
           if(nrow(dt_display) == max_data){
             showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
           }
@@ -266,7 +266,7 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
 
         observeEvent(input$act_warning, {
           dt_display <- create_displayed_data(dt_combined, fltr_type = "warning", max_data = max_data)
-          isolate(rv_result$dt_display <- dt_display)
+          rv_result$dt_display <- dt_display
           if(nrow(dt_display) == max_data){
             showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
           }
@@ -291,7 +291,7 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
           if(isTruthy(summary_min_lr)){
             if(summary_min_lr >= keep_min_lr){
               dt_display <- create_displayed_data(dt_combined, fltr_type = "with_auto", min_lr = summary_min_lr, max_data = max_data)
-              isolate(rv_result$dt_display <- dt_display)
+              rv_result$dt_display <- dt_display
               if(nrow(dt_display) == max_data){
                 showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
               }
@@ -346,6 +346,7 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
         #########################
 
         observeEvent(input$dt_display_rows_selected, {
+          dt_display <- rv_result$dt_display
           pos_select <- input$dt_display_rows_selected
 
           sn_v_select <- dt_display[pos_select, Victim]
@@ -456,13 +457,13 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
         # Display analysis conditions #
         ###############################
 
-        output$result_fn_v_auto <- renderText({isolate(paste0(fn_v_auto))})
-        output$result_fn_r_auto <- renderText({isolate(paste0(fn_r_auto))})
-        output$result_fn_af <- renderText({isolate(paste0(fn_af))})
-        output$result_fn_v_y <- renderText({isolate(paste0(fn_v_y))})
-        output$result_fn_r_y <- renderText({isolate(paste0(fn_r_y))})
-        output$result_fn_v_mt <- renderText({isolate(paste0(fn_v_mt))})
-        output$result_fn_r_mt <- renderText({isolate(paste0(fn_r_mt))})
+        output$result_fn_v_auto <- renderText({fn_v_auto})
+        output$result_fn_r_auto <- renderText({fn_r_auto})
+        output$result_fn_af <- renderText({fn_af})
+        output$result_fn_v_y <- renderText({fn_v_y})
+        output$result_fn_r_y <- renderText({fn_r_y})
+        output$result_fn_v_mt <- renderText({fn_v_mt})
+        output$result_fn_r_mt <- renderText({fn_r_mt})
 
         output$result_min_lr_auto <- renderText({
           paste0(dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"])
