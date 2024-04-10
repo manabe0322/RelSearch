@@ -4,11 +4,9 @@
 \alias{tab_rel_server}
 \title{tab_rel_server}
 \usage{
-tab_rel_server(id, init_dt_rel, path_pack)
+tab_rel_server(id, path_pack)
 }
 \arguments{
-\item{init_dt_rel}{The initial data.table of information on relationship}
-
 \item{path_pack}{Package path}
 }
 \description{

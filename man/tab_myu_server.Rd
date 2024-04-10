@@ -4,11 +4,9 @@
 \alias{tab_myu_server}
 \title{tab_myu_server}
 \usage{
-tab_myu_server(id, init_dt_myu, path_pack)
+tab_myu_server(id, path_pack)
 }
 \arguments{
-\item{init_dt_myu}{The initial data.table of mutation rates}
-
 \item{path_pack}{Package path}
 }
 \description{

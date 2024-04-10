@@ -4,11 +4,9 @@
 \alias{tab_criteria_server}
 \title{tab_criteria_server}
 \usage{
-tab_criteria_server(id, init_dt_criteria, path_pack)
+tab_criteria_server(id, path_pack, keep_min_lr)
 }
 \arguments{
-\item{init_dt_criteria}{The initial data.table of criteria}
-
 \item{path_pack}{Package path}
 }
 \description{

@@ -147,7 +147,6 @@ create_displayed_data <- function(dt_combined, fltr_type = "with_auto", min_lr =
 
   dt_display <- dt_combined[, list(Victim, Reference, AssumedRel, LR_Total, EstimatedRel, Paternal, Maternal, ColorBack, ColorY, ColorMt)]
   setorder(dt_display, - LR_Total, Paternal, Maternal, na.last = TRUE)
-  dt_display$LR_Total <- signif(dt_display$LR_Total, 3)
 
   if(fltr_type == "with_auto"){
     dt_display <- dt_display[LR_Total >= min_lr]

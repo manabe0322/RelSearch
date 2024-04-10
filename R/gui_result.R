@@ -11,84 +11,93 @@ result_ui <- function(id){
                        type = "tabs",
                        tabPanel("Summary",
                                 br(),
-                                sidebarLayout(
-                                  sidebarPanel(
-                                    h4("Display setting"),
-                                    br(),
-                                    actionButton(ns("act_default"), label = "Default display", class = "btn btn-primary"),
-                                    br(),
-                                    br(),
-                                    actionButton(ns("act_identified"), label = "Identified pairs", class = "btn btn-success"),
-                                    br(),
-                                    br(),
-                                    actionButton(ns("act_multiple"), label = "Multiple candidates", class = "btn btn-warning"),
-                                    br(),
-                                    br(),
-                                    actionButton(ns("act_warning"), label = "Not support lineage", class = "btn btn-danger"),
-                                    br(),
-                                    br(),
-                                    uiOutput(ns("summary_min_lr")),
-                                    actionButton(ns("act_fltr_lr"), label = "Apply"),
-                                    width = 3
+                                fluidRow(
+                                  column(3,
+                                         wellPanel(
+                                           h4("Display setting"),
+                                           br(),
+                                           actionButton(ns("act_default"), label = "Default display", class = "btn btn-primary"),
+                                           br(),
+                                           br(),
+                                           actionButton(ns("act_identified"), label = "Identified pairs", class = "btn btn-success"),
+                                           br(),
+                                           br(),
+                                           actionButton(ns("act_multiple"), label = "Multiple candidates", class = "btn btn-warning"),
+                                           br(),
+                                           br(),
+                                           actionButton(ns("act_warning"), label = "Not support lineage", class = "btn btn-danger"),
+                                           br(),
+                                           br(),
+                                           uiOutput(ns("summary_min_lr")),
+                                           actionButton(ns("act_fltr_lr"), label = "Apply")
+                                         ),
+                                         downloadButton(ns("download_main"), "Download", class = "btn btn-primary btn-lg")
                                   ),
-                                  mainPanel(
-                                    br(),
-                                    dataTableOutput(ns("dt_display")),
-                                    width = 9
+                                  column(9,
+                                         br(),
+                                         dataTableOutput(ns("dt_display"))
                                   )
                                 )
                        ),
                        tabPanel("Selected data in detail",
                                 br(),
-                                sidebarLayout(
-                                  sidebarPanel(
-                                    h4("Victim"),
-                                    textOutput(ns("sn_v_select")),
-                                    br(),
-                                    h4("Reference"),
-                                    textOutput(ns("sn_r_select")),
-                                    br(),
-                                    h4("Estimated relationship"),
-                                    textOutput(ns("estimated_rel_select")),
-                                    br(),
-                                    h4("Paternal lineage"),
-                                    textOutput(ns("paternal_select")),
-                                    br(),
-                                    h4("Maternal lineage"),
-                                    textOutput(ns("maternal_select")),
-                                    width = 2
+                                fluidRow(
+                                  column(2,
+                                         wellPanel(
+                                           h4("Victim"),
+                                           textOutput(ns("sn_v_select")),
+                                           br(),
+                                           h4("Reference"),
+                                           textOutput(ns("sn_r_select")),
+                                           br(),
+                                           h4("Estimated relationship"),
+                                           textOutput(ns("estimated_rel_select")),
+                                           br(),
+                                           h4("Paternal lineage"),
+                                           textOutput(ns("paternal_select")),
+                                           br(),
+                                           h4("Maternal lineage"),
+                                           textOutput(ns("maternal_select"))
+                                         ),
+                                         disabled(downloadButton(ns("download_auto"), "Download (STR)")),
+                                         br(),
+                                         br(),
+                                         disabled(downloadButton(ns("download_y"), "Download (Y-STR)")),
+                                         br(),
+                                         br(),
+                                         disabled(downloadButton(ns("download_mt"), "Download (mtDNA)"))
                                   ),
-                                  mainPanel(
-                                    tabsetPanel(
-                                      tabPanel("STR",
-                                               br(),
-                                               dataTableOutput(ns("dt_detail_auto"))
-                                      ),
-                                      tabPanel("Y-STR",
-                                               br(),
-                                               dataTableOutput(ns("dt_detail_y"))
-                                      ),
-                                      tabPanel("mtDNA",
-                                               br(),
-                                               fluidRow(
-                                                 column(4,
-                                                        h4("Number of mismatches"),
-                                                        textOutput(ns("num_mismatch_select"))
-                                                 ),
-                                                 column(4,
-                                                        h4("Shared range"),
-                                                        textOutput(ns("share_range_select"))
-                                                 ),
-                                                 column(4,
-                                                        h4("Shared length (bp)"),
-                                                        textOutput(ns("share_len_select"))
-                                                 )
-                                               ),
-                                               br(),
-                                               br(),
-                                               dataTableOutput(ns("dt_detail_mt"))
-                                      )
-                                    )
+                                  column(10,
+                                         tabsetPanel(
+                                           tabPanel("STR",
+                                                    br(),
+                                                    dataTableOutput(ns("dt_detail_auto"))
+                                           ),
+                                           tabPanel("Y-STR",
+                                                    br(),
+                                                    dataTableOutput(ns("dt_detail_y"))
+                                           ),
+                                           tabPanel("mtDNA",
+                                                    br(),
+                                                    fluidRow(
+                                                      column(4,
+                                                             h4("Number of mismatches"),
+                                                             textOutput(ns("num_mismatch_select"))
+                                                      ),
+                                                      column(4,
+                                                             h4("Shared range"),
+                                                             textOutput(ns("share_range_select"))
+                                                      ),
+                                                      column(4,
+                                                             h4("Shared length (bp)"),
+                                                             textOutput(ns("share_len_select"))
+                                                      )
+                                                    ),
+                                                    br(),
+                                                    br(),
+                                                    dataTableOutput(ns("dt_detail_mt"))
+                                           )
+                                         )
                                   )
                                 )
                        ),
@@ -223,6 +232,17 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
 
         rv_result <- reactiveValues()
         rv_result$dt_display <- dt_display
+        rv_result$dt_detail_auto <- NULL
+        rv_result$dt_detail_y <- NULL
+        rv_result$dt_detail_mt <- NULL
+        rv_result$sn_v_select <- NULL
+        rv_result$sn_r_select <- NULL
+        rv_result$estimated_rel_select <- NULL
+        rv_result$paternal_select <- NULL
+        rv_result$maternal_select <- NULL
+        rv_result$mismatch_mt <- NULL
+        rv_result$share_range_mt <- NULL
+        rv_result$share_length_mt <- NULL
 
         ########################
         # Display summary data #
@@ -321,136 +341,195 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
             dt_display,
             colnames = c("Victim", "Reference", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage", "ColorBack", "ColorY", "ColorMt"),
             filter = "top",
-            extensions = "Buttons",
             selection = list(mode = "single", target = "row"),
             options = list(iDisplayLength = 10, ordering = FALSE, autoWidth = TRUE,
-                           dom = "Bfrtip",
-                           buttons = list(list(extend = "csv",
-                                               text = "Download",
-                                               filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_relsearch_result"),
-                                               exportOptions = list(modifier = list(page = "all"),
-                                                                    columns = c(0:6))
-                           )
-                           ),
                            columnDefs = list(list(targets = 3, searchable = FALSE), list(targets = 7:9, visible = FALSE))
             ),
             rownames = FALSE
           ) %>%
+            formatSignif(columns = c("LR_Total"), digits = 3) %>%
             formatStyle(columns = "ColorBack", target = "row", backgroundColor = styleEqual(c(0, 1, 2), c("#ffe0ef", "#e0ffe0", "#ffffe0"))) #%>%
           #formatStyle(columns = "Paternal", target = "cell", color = styleRow(index_warning_y, color_display_y)) %>%
           #formatStyle(columns = "Maternal", target = "cell", color = styleRow(index_warning_mt, color_display_mt))
         })
 
+        output$download_main <- downloadHandler(
+          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_relsearch_result.csv"),
+          content = function(file){
+            dt_display <- rv_result$dt_display
+            dt_display[, ColorBack:=NULL]
+            dt_display[, ColorY:=NULL]
+            dt_display[, ColorMt:=NULL]
+            colnames(dt_display) <- c("Victim", "Reference", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage")
+            write.csv(dt_display, file, row.names = FALSE)
+          }
+        )
+
         #########################
         # Display detailed data #
         #########################
 
-        observeEvent(input$dt_display_rows_selected, {
-          dt_display <- rv_result$dt_display
-          pos_select <- input$dt_display_rows_selected
-
-          sn_v_select <- dt_display[pos_select, Victim]
-          sn_r_select <- dt_display[pos_select, Reference]
-          assumed_rel_select <- dt_display[pos_select, AssumedRel]
-          estimated_rel_select <- dt_display[pos_select, EstimatedRel]
-          if(is.na(estimated_rel_select)){
-            estimated_rel_select <- "Not identified"
-          }
-          paternal_select <- dt_display[pos_select, Paternal]
-          if(is.na(paternal_select)){
-            paternal_select <- "No data"
-          }
-          maternal_select <- dt_display[pos_select, Maternal]
-          if(is.na(maternal_select)){
-            maternal_select <- "No data"
-          }
-
-          result_selected <- dt_combined[.(sn_v_select, sn_r_select, assumed_rel_select)]
-
-          if(bool_check_auto){
-            dt_detail_auto <- create_detailed_data_auto(dt_v_auto, dt_r_auto, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
-          }else{
-            dt_detail_auto <- NULL
-          }
-
-          if(data_list$bool_check_y){
-            dt_detail_y <- create_detailed_data_y(dt_v_y, dt_r_y, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
-          }else{
-            dt_detail_y <- NULL
-          }
-
-          if(data_list$bool_check_mt){
-            dt_detail_mt <- create_detailed_data_mt(dt_v_mt, dt_r_mt, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
-
-            output$num_mismatch_select <- renderText({paste0(result_selected[, MismatchMt])})
-            output$share_range_select <- renderText({paste0(result_selected[, ShareRangeMt])})
-            output$share_len_select <- renderText({paste0(result_selected[, ShareLengthMt])})
-          }else{
-            dt_detail_mt <- NULL
-          }
-
-          output$sn_v_select <- renderText({paste0(sn_v_select)})
-          output$sn_r_select <- renderText({paste0(sn_r_select)})
-          output$estimated_rel_select <- renderText({paste0(estimated_rel_select)})
-          output$paternal_select <- renderText({paste0(paternal_select)})
-          output$maternal_select <- renderText({paste0(maternal_select)})
-
-          output$dt_detail_auto <- renderDataTable(server = FALSE, {
+        output$dt_detail_auto <- renderDataTable(server = FALSE, {
+          dt_detail_auto <- rv_result$dt_detail_auto
+          if(is.null(dt_detail_auto)){
             datatable(
               dt_detail_auto,
               colnames = c("Locus", "Victim profile", "Reference profile", "Likelihood (related)", "Likelihood (unrelated)", "LR"),
-              extensions = "Buttons",
               selection = "none",
-              options = list(iDisplayLength = 50, ordering = FALSE,
-                             dom = "Bfrtip",
-                             buttons = list(list(extend = "csv",
-                                                 text = "Download",
-                                                 filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_relsearch_detail_STR"),
-                                                 exportOptions = list(modifier = list(page = "all"))
-                             )
-                             )
-              ),
+              options = list(iDisplayLength = 50, ordering = FALSE),
               rownames = FALSE
             )
-          })
-
-          output$dt_detail_y <- renderDataTable(server = FALSE, {
+          }else{
             datatable(
-              dt_detail_y,
-              colnames = c("Locus", "Victim profile", "Reference profile", "Ignored locus", "Mismatched locus", "Mutational step"),
-              extensions = "Buttons",
+              dt_detail_auto,
+              colnames = c("Locus", "Victim profile", "Reference profile", "Likelihood (related)", "Likelihood (unrelated)", "LR"),
               selection = "none",
-              options = list(iDisplayLength = 50, ordering = FALSE,
-                             dom = "Bfrtip",
-                             buttons = list(list(extend = "csv",
-                                                 text = "Download",
-                                                 filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_relsearch_detail_Y-STR"),
-                                                 exportOptions = list(modifier = list(page = "all"))
-                             )
-                             )
-              ),
+              options = list(iDisplayLength = 50, ordering = FALSE),
               rownames = FALSE
-            )
-          })
+            ) %>%
+              formatSignif(columns = c("LikeH1", "LikeH2", "LR"), digits = 3)
+          }
+        })
 
-          output$dt_detail_mt <- renderDataTable(server = FALSE, {
-            datatable(
-              dt_detail_mt,
-              colnames = c("Victim profile", "Reference profile", "Out of shared range", "Mismatch"),
-              extensions = "Buttons",
-              selection = "none",
-              options = list(iDisplayLength = 50, ordering = FALSE,
-                             dom = "Bfrtip",
-                             buttons = list(list(extend = "csv",
-                                                 text = "Download",
-                                                 filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_relsearch_detail_mtDNA"),
-                                                 exportOptions = list(modifier = list(page = "all"))
-                             )
-                             )
-              ),
-              rownames = FALSE
-            )
-          })
+        output$dt_detail_y <- renderDataTable(server = FALSE, {
+          dt_detail_y <- rv_result$dt_detail_y
+          datatable(
+            dt_detail_y,
+            colnames = c("Locus", "Victim profile", "Reference profile", "Ignored locus", "Mismatched locus", "Mutational step"),
+            selection = "none",
+            options = list(iDisplayLength = 50, ordering = FALSE),
+            rownames = FALSE
+          )
+        })
+
+        output$dt_detail_mt <- renderDataTable(server = FALSE, {
+          dt_detail_mt <- rv_result$dt_detail_mt
+          datatable(
+            dt_detail_mt,
+            colnames = c("Victim profile", "Reference profile", "Out of shared range", "Mismatch"),
+            selection = "none",
+            options = list(iDisplayLength = 50, ordering = FALSE),
+            rownames = FALSE
+          )
+        })
+
+        output$download_auto <- downloadHandler(
+          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_relsearch_detail_STR.csv"),
+          content = function(file){
+            dt_detail_auto <- rv_result$dt_detail_auto
+            colnames(dt_detail_auto) <- c("Locus", "Victim profile", "Reference profile", "Likelihood (related)", "Likelihood (unrelated)", "LR")
+            write.csv(dt_detail_auto, file, row.names = FALSE)
+          }
+        )
+
+        output$download_y <- downloadHandler(
+          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_relsearch_detail_Y-STR.csv"),
+          content = function(file){
+            dt_detail_y <- rv_result$dt_detail_y
+            colnames(dt_detail_y) <- c("Locus", "Victim profile", "Reference profile", "Ignored locus", "Mismatched locus", "Mutational step")
+            write.csv(dt_detail_y, file, row.names = FALSE)
+          }
+        )
+
+        output$download_mt <- downloadHandler(
+          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_relsearch_detail_mtDNA.csv"),
+          content = function(file){
+            dt_detail_mt <- rv_result$dt_detail_mt
+            colnames(dt_detail_mt) <- c("Victim profile", "Reference profile", "Out of shared range", "Mismatch")
+            write.csv(dt_detail_mt, file, row.names = FALSE)
+          }
+        )
+
+        output$sn_v_select <- renderText({paste0(rv_result$sn_v_select)})
+        output$sn_r_select <- renderText({paste0(rv_result$sn_r_select)})
+        output$estimated_rel_select <- renderText({paste0(rv_result$estimated_rel_select)})
+        output$paternal_select <- renderText({paste0(rv_result$paternal_select)})
+        output$maternal_select <- renderText({paste0(rv_result$maternal_select)})
+
+        output$num_mismatch_select <- renderText({paste0(rv_result$mismatch_mt)})
+        output$share_range_select <- renderText({paste0(rv_result$share_range_mt)})
+        output$share_len_select <- renderText({paste0(rv_result$share_length_mt)})
+
+        observeEvent(input$dt_display_rows_selected, {
+          pos_select <- input$dt_display_rows_selected
+
+          if(is.null(pos_select)){
+            disable("download_auto")
+            disable("download_y")
+            disable("download_mt")
+            rv_result$dt_detail_auto <- NULL
+            rv_result$dt_detail_y <- NULL
+            rv_result$dt_detail_mt <- NULL
+            rv_result$sn_v_select <- NULL
+            rv_result$sn_r_select <- NULL
+            rv_result$estimated_rel_select <- NULL
+            rv_result$paternal_select <- NULL
+            rv_result$maternal_select <- NULL
+            rv_result$mismatch_mt <- NULL
+            rv_result$share_range_mt <- NULL
+            rv_result$share_length_mt <- NULL
+          }else{
+            dt_display <- rv_result$dt_display
+            sn_v_select <- dt_display[pos_select, Victim]
+            sn_r_select <- dt_display[pos_select, Reference]
+            assumed_rel_select <- dt_display[pos_select, AssumedRel]
+            estimated_rel_select <- dt_display[pos_select, EstimatedRel]
+            if(is.na(estimated_rel_select)){
+              estimated_rel_select <- "Not identified"
+            }
+            paternal_select <- dt_display[pos_select, Paternal]
+            if(is.na(paternal_select)){
+              paternal_select <- "No data"
+            }
+            maternal_select <- dt_display[pos_select, Maternal]
+            if(is.na(maternal_select)){
+              maternal_select <- "No data"
+            }
+
+            result_selected <- dt_combined[.(sn_v_select, sn_r_select, assumed_rel_select)]
+
+            if(bool_check_auto){
+              dt_detail_auto <- create_detailed_data_auto(dt_v_auto, dt_r_auto, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
+              enable("download_auto")
+            }else{
+              dt_detail_auto <- NULL
+              disable("download_auto")
+            }
+
+            if(data_list$bool_check_y){
+              dt_detail_y <- create_detailed_data_y(dt_v_y, dt_r_y, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
+              enable("download_y")
+            }else{
+              dt_detail_y <- NULL
+              disable("download_y")
+            }
+
+            if(data_list$bool_check_mt){
+              dt_detail_mt <- create_detailed_data_mt(dt_v_mt, dt_r_mt, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
+              mismatch_mt <- result_selected[, MismatchMt]
+              share_range_mt <- result_selected[, ShareRangeMt]
+              share_length_mt <- result_selected[, ShareLengthMt]
+              enable("download_mt")
+            }else{
+              dt_detail_mt <- NULL
+              mismatch_mt <- NULL
+              share_range_mt <- NULL
+              share_length_mt <- NULL
+              disable("download_mt")
+            }
+
+            rv_result$dt_detail_auto <- dt_detail_auto
+            rv_result$dt_detail_y <- dt_detail_y
+            rv_result$dt_detail_mt <- dt_detail_mt
+            rv_result$sn_v_select <- sn_v_select
+            rv_result$sn_r_select <- sn_r_select
+            rv_result$estimated_rel_select <- estimated_rel_select
+            rv_result$paternal_select <- paternal_select
+            rv_result$maternal_select <- maternal_select
+            rv_result$mismatch_mt <- mismatch_mt
+            rv_result$share_range_mt <- share_range_mt
+            rv_result$share_length_mt <- share_length_mt
+          }
         }, ignoreInit = TRUE)
 
         ###############################

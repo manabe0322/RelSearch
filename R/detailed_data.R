@@ -47,9 +47,9 @@ create_detailed_data_auto <- function(dt_v_auto, dt_r_auto, sn_v_select, sn_r_se
     prof_v_display <- c(display_gt(prof_v_select), "")
     prof_r_display <- c(display_gt(prof_r_select), "")
     locus_display <- gsub("LikeH1_", "", cn_result[grep("LikeH1_", cn_result)])
-    like_h1_display <- signif(as.numeric(result_selected[, grep("LikeH1_", cn_result), with = FALSE]), 3)
-    like_h2_display <- signif(as.numeric(result_selected[, grep("LikeH2_", cn_result), with = FALSE]), 3)
-    lr_display <- signif(as.numeric(result_selected[, grep("LR_", cn_result), with = FALSE]), 3)
+    like_h1_display <- as.numeric(result_selected[, grep("LikeH1_", cn_result), with = FALSE])
+    like_h2_display <- as.numeric(result_selected[, grep("LikeH2_", cn_result), with = FALSE])
+    lr_display <- as.numeric(result_selected[, grep("LR_", cn_result), with = FALSE])
 
     dt_detail_auto <- data.table(Locus = locus_display, Profile_V = prof_v_display, Profile_R = prof_r_display, LikeH1 = like_h1_display, LikeH2 = like_h2_display, LR = lr_display)
   }else{

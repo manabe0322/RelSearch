@@ -4,11 +4,9 @@
 \alias{tab_par_auto_server}
 \title{tab_par_auto_server}
 \usage{
-tab_par_auto_server(id, init_dt_par_auto, path_pack)
+tab_par_auto_server(id, path_pack)
 }
 \arguments{
-\item{init_dt_par_auto}{The initial data.table of the parameter}
-
 \item{path_pack}{Package path}
 }
 \description{
