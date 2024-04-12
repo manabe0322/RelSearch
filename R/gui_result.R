@@ -356,12 +356,12 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
         output$download_main <- downloadHandler(
           filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_relsearch_result.csv"),
           content = function(file){
-            dt_display <- rv_result$dt_display
-            dt_display[, ColorBack:=NULL]
-            dt_display[, ColorY:=NULL]
-            dt_display[, ColorMt:=NULL]
-            colnames(dt_display) <- c("Victim", "Reference", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage")
-            write.csv(dt_display, file, row.names = FALSE)
+            dt_download <- rv_result$dt_display
+            dt_download[, ColorBack:=NULL]
+            dt_download[, ColorY:=NULL]
+            dt_download[, ColorMt:=NULL]
+            colnames(dt_download) <- c("Victim", "Reference", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage")
+            write.csv(dt_download, file, row.names = FALSE)
           }
         )
 
@@ -376,7 +376,7 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
               dt_detail_auto,
               colnames = c("Locus", "Victim profile", "Reference profile", "Likelihood (related)", "Likelihood (unrelated)", "LR"),
               selection = "none",
-              options = list(iDisplayLength = 50, ordering = FALSE),
+              options = list(dom = "t", iDisplayLength = 50, ordering = FALSE),
               rownames = FALSE
             )
           }else{
@@ -384,7 +384,7 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
               dt_detail_auto,
               colnames = c("Locus", "Victim profile", "Reference profile", "Likelihood (related)", "Likelihood (unrelated)", "LR"),
               selection = "none",
-              options = list(iDisplayLength = 50, ordering = FALSE),
+              options = list(dom = "t", iDisplayLength = 50, ordering = FALSE),
               rownames = FALSE
             ) %>%
               formatSignif(columns = c("LikeH1", "LikeH2", "LR"), digits = 3)
@@ -397,7 +397,7 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
             dt_detail_y,
             colnames = c("Locus", "Victim profile", "Reference profile", "Ignored locus", "Mismatched locus", "Mutational step"),
             selection = "none",
-            options = list(iDisplayLength = 50, ordering = FALSE),
+            options = list(dom = "t", iDisplayLength = 50, ordering = FALSE),
             rownames = FALSE
           )
         })
@@ -408,7 +408,7 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
             dt_detail_mt,
             colnames = c("Victim profile", "Reference profile", "Out of shared range", "Mismatch"),
             selection = "none",
-            options = list(iDisplayLength = 50, ordering = FALSE),
+            options = list(dom = "t", iDisplayLength = 50, ordering = FALSE),
             rownames = FALSE
           )
         })
@@ -490,32 +490,35 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
 
             if(bool_check_auto){
               dt_detail_auto <- create_detailed_data_auto(dt_v_auto, dt_r_auto, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
-              enable("download_auto")
-            }else{
-              dt_detail_auto <- NULL
-              disable("download_auto")
+              if(is.null(dt_detail_auto)){
+                disable("download_auto")
+              }else{
+                enable("download_auto")
+              }
             }
 
-            if(data_list$bool_check_y){
+            if(bool_check_y){
               dt_detail_y <- create_detailed_data_y(dt_v_y, dt_r_y, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
-              enable("download_y")
-            }else{
-              dt_detail_y <- NULL
-              disable("download_y")
+              if(is.null(dt_detail_y)){
+                disable("download_y")
+              }else{
+                enable("download_y")
+              }
             }
 
-            if(data_list$bool_check_mt){
+            if(bool_check_mt){
               dt_detail_mt <- create_detailed_data_mt(dt_v_mt, dt_r_mt, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
-              mismatch_mt <- result_selected[, MismatchMt]
-              share_range_mt <- result_selected[, ShareRangeMt]
-              share_length_mt <- result_selected[, ShareLengthMt]
-              enable("download_mt")
-            }else{
-              dt_detail_mt <- NULL
-              mismatch_mt <- NULL
-              share_range_mt <- NULL
-              share_length_mt <- NULL
-              disable("download_mt")
+              if(is.null(dt_detail_mt)){
+                mismatch_mt <- NULL
+                share_range_mt <- NULL
+                share_length_mt <- NULL
+                disable("download_mt")
+              }else{
+                mismatch_mt <- result_selected[, MismatchMt]
+                share_range_mt <- result_selected[, ShareRangeMt]
+                share_length_mt <- result_selected[, ShareLengthMt]
+                enable("download_mt")
+              }
             }
 
             rv_result$dt_detail_auto <- dt_detail_auto
@@ -596,7 +599,7 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
 
             showModal(modalDialog(
               title = paste0("Relationship: ", name_select),
-              plotOutput("tree_check"),
+              plotOutput(session$ns("tree_check")),
               footer = tagList(
                 modalButton("Close")
               )
