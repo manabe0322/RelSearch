@@ -6,6 +6,7 @@ example_ui <- function(id){
 
   tabPanel("Example files",
            titlePanel("Example files"),
+           br(),
            downloadButton(ns("download_v_auto"), "STR victim database"),
            br(),
            br(),

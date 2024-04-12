@@ -10,6 +10,10 @@ relsearch <- function(){
   keep_min_lr <- 1
   options(shiny.maxRequestSize = 500 * 1024^2)
 
+  # Install and activate pandoc
+  pandoc_install()
+  pandoc_activate()
+
   ui <- fluidPage(useShinyjs(),
                   useShinyFeedback(),
                   theme = shinytheme("cerulean"),
@@ -49,8 +53,10 @@ relsearch <- function(){
                                         tab_par_auto_ui("tab_par_auto")
                              ),
 
-                             example_ui("example")
-                             #,
+                             example_ui("example"),
+
+                             manual_ui("manual")
+
 #                             tabPanel("Manual",
 #                                      tabsetPanel(
 #                                        tabPanel("Getting started",
@@ -79,6 +85,7 @@ relsearch <- function(){
     rv_myu <- tab_myu_server("tab_myu", path_pack)
     rv_par_auto <- tab_par_auto_server("tab_par_auto", path_pack)
     example_server("example", path_pack)
+    manual_server("manual", path_pack)
     rv_file <- load_server("load", session, rv_criteria, rv_rel, rv_myu, rv_par_auto, keep_min_lr, max_data)
 
     observe({
