@@ -14,7 +14,7 @@ body{
   color: #333333;
 }
 
-table，th, td{
+table, th, td{
   font-size: 14px;
   color: #333333;
 }
@@ -44,8 +44,11 @@ p{
 }
 ```
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(data.table)
+library(DT)
 ```
 
 ---
@@ -95,7 +98,7 @@ relsearch()
 
 <img src="fig_quick_3.jpg" width="80%">
 
-**Note** See Section [Result](#sec_result) for navigation of the result window
+**Note** See section [Result](#sec_result) for navigation of the result window
 
 <br>
 
@@ -121,7 +124,72 @@ relsearch()
 
 ### STR: Victim database
 
+```{r, echo = FALSE}
+dt_v_auto_ex <- data.table(SampleName = c("Victim1", "Victim2", "Victim3", "︙"), 
+                           D3S1358 = c("17", "17", "15", "︙"), 
+                           D3S1358 = c("17", "", "17", "︙"), 
+                           vWA = c("17", "18", "17", "︙"), 
+                           vWA = c("", "18", "18", "︙"), 
+                           D16S539 = c("11", "", "10", "︙"), 
+                           D16S539 = c("", "", "10", "︙"), 
+                           CSF1PO = c("12", "10", "10", "︙"), 
+                           CSF1PO = c("", "11", "12", "︙"), 
+                           TPOX = c("", "8", "8", "︙"), 
+                           TPOX = c("", "", "11", "︙"))
+datatable(dt_v_auto_ex, 
+          selection = "none",
+          options = list(dom = "t", iDisplayLength = nrow(dt_v_auto_ex), ordering = FALSE, autowidth = TRUE),
+          rownames = FALSE)
+```
+
+**Note**
+
+* File type: .csv
+
+* This file requires the column "SampleName" and columns for each marker (two columns in each).
+
+* The marker with two empty cells (e.g., TPOX of sample "Victim1" in the above table) is ignored when calculating the likelihood ratio.
+
+* The marker with one empty cell (e.g., vWA of sample "Victim1" in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.
+
+<br>
+
 ### STR: Reference database
+
+```{r, echo = FALSE}
+dt_r_auto_ex <- data.table(SampleName = c("Reference1", "Reference2", "Reference3", "︙"), 
+                           Relationship = c("Father_Son", "Father_Son", "Brother_Brother"),
+                           D3S1358 = c("17", "17", "15", "︙"), 
+                           D3S1358 = c("17", "", "17", "︙"), 
+                           vWA = c("17", "18", "17", "︙"), 
+                           vWA = c("", "18", "18", "︙"), 
+                           D16S539 = c("11", "", "10", "︙"), 
+                           D16S539 = c("", "", "10", "︙"), 
+                           CSF1PO = c("12", "10", "10", "︙"), 
+                           CSF1PO = c("", "11", "12", "︙"), 
+                           TPOX = c("", "8", "8", "︙"), 
+                           TPOX = c("", "", "11", "︙"))
+datatable(dt_r_auto_ex, 
+          selection = "none",
+          options = list(dom = "t", iDisplayLength = nrow(dt_r_auto_ex), ordering = FALSE, autowidth = TRUE),
+          rownames = FALSE)
+```
+
+**Note**
+
+* File type: .csv
+
+* This file requires the columns "SampleName", "Relationship", and columns for each marker (two columns in each).
+
+* The relationship of a missing family member should be designated in the column "Relationship". The name of the relationship should be defined in Settings > Relationships.
+
+* If a reference has multiple missing family members, add rows for each relationship of the members (e.g., sibling and parent-child of the sample "Reference7" in the above table).
+
+* The marker with two empty cells (e.g., CSF1PO of sample "Reference10" in the above table) is ignored when calculating the likelihood ratio.
+
+* The marker with one empty cell (e.g., vWA of sample "Reference10" in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.
+
+<br>
 
 ### STR: Allele frequencies
 
