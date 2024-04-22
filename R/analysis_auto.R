@@ -29,7 +29,7 @@ set_af <- function(dt_v_auto, dt_r_auto, dt_af, maf){
       af_al <- c(af_al, obsal[pos_unobs])
       af <- c(af, rep(maf, length(pos_unobs)))
     }
-    af_list[[i]] <- af
+    af_list[[i]] <- af / sum(af)
     af_al_list[[i]] <- af_al
   }
   names(af_list) <- name_l
