@@ -374,17 +374,17 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
           if(is.null(dt_detail_auto)){
             datatable(
               dt_detail_auto,
-              colnames = c("Locus", "Victim profile", "Reference profile", "Likelihood (related)", "Likelihood (unrelated)", "LR"),
+              colnames = c("Victim", "Reference", "Estimated relationship", "Locus", "Victim profile", "Reference profile", "Likelihood (related)", "Likelihood (unrelated)", "LR"),
               selection = "none",
-              options = list(dom = "t", iDisplayLength = 50, ordering = FALSE),
+              options = list(dom = "t", iDisplayLength = nrow(dt_detail_auto), ordering = FALSE, columnDefs = list(list(targets = 0:2, visible = FALSE))),
               rownames = FALSE
             )
           }else{
             datatable(
               dt_detail_auto,
-              colnames = c("Locus", "Victim profile", "Reference profile", "Likelihood (related)", "Likelihood (unrelated)", "LR"),
+              colnames = c("Victim", "Reference", "Estimated relationship", "Locus", "Victim profile", "Reference profile", "Likelihood (related)", "Likelihood (unrelated)", "LR"),
               selection = "none",
-              options = list(dom = "t", iDisplayLength = 50, ordering = FALSE),
+              options = list(dom = "t", iDisplayLength = nrow(dt_detail_auto), ordering = FALSE, columnDefs = list(list(targets = 0:2, visible = FALSE))),
               rownames = FALSE
             ) %>%
               formatSignif(columns = c("LikeH1", "LikeH2", "LR"), digits = 3)
@@ -395,9 +395,9 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
           dt_detail_y <- rv_result$dt_detail_y
           datatable(
             dt_detail_y,
-            colnames = c("Locus", "Victim profile", "Reference profile", "Ignored locus", "Mismatched locus", "Mutational step"),
+            colnames = c("Victim", "Reference", "Paternal lineage", "Locus", "Victim profile", "Reference profile", "Ignored locus", "Mismatched locus", "Mutational step"),
             selection = "none",
-            options = list(dom = "t", iDisplayLength = 50, ordering = FALSE),
+            options = list(dom = "t", iDisplayLength = nrow(dt_detail_y), ordering = FALSE, columnDefs = list(list(targets = 0:2, visible = FALSE))),
             rownames = FALSE
           )
         })
@@ -406,9 +406,9 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
           dt_detail_mt <- rv_result$dt_detail_mt
           datatable(
             dt_detail_mt,
-            colnames = c("Victim profile", "Reference profile", "Out of shared range", "Mismatch"),
+            colnames = c("Victim", "Reference", "Maternal lineage", "Shared range", "Shared length", "Victim profile", "Reference profile", "Out of shared range", "Mismatch"),
             selection = "none",
-            options = list(dom = "t", iDisplayLength = 50, ordering = FALSE),
+            options = list(dom = "t", iDisplayLength = nrow(dt_detail_mt), ordering = FALSE, columnDefs = list(list(targets = 0:4, visible = FALSE))),
             rownames = FALSE
           )
         })
@@ -417,7 +417,7 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
           filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_relsearch_detail_STR.csv"),
           content = function(file){
             dt_detail_auto <- rv_result$dt_detail_auto
-            colnames(dt_detail_auto) <- c("Locus", "Victim profile", "Reference profile", "Likelihood (related)", "Likelihood (unrelated)", "LR")
+            colnames(dt_detail_auto) <- c("Victim", "Reference", "Estimated relationship", "Locus", "Victim profile", "Reference profile", "Likelihood (related)", "Likelihood (unrelated)", "LR")
             write.csv(dt_detail_auto, file, row.names = FALSE)
           }
         )
@@ -426,7 +426,7 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
           filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_relsearch_detail_Y-STR.csv"),
           content = function(file){
             dt_detail_y <- rv_result$dt_detail_y
-            colnames(dt_detail_y) <- c("Locus", "Victim profile", "Reference profile", "Ignored locus", "Mismatched locus", "Mutational step")
+            colnames(dt_detail_y) <- c("Victim", "Reference", "Paternal lineage", "Locus", "Victim profile", "Reference profile", "Ignored locus", "Mismatched locus", "Mutational step")
             write.csv(dt_detail_y, file, row.names = FALSE)
           }
         )
@@ -435,7 +435,7 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
           filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_relsearch_detail_mtDNA.csv"),
           content = function(file){
             dt_detail_mt <- rv_result$dt_detail_mt
-            colnames(dt_detail_mt) <- c("Victim profile", "Reference profile", "Out of shared range", "Mismatch")
+            colnames(dt_detail_mt) <- c("Victim", "Reference", "Maternal lineage", "Shared range", "Shared length", "Victim profile", "Reference profile", "Out of shared range", "Mismatch")
             write.csv(dt_detail_mt, file, row.names = FALSE)
           }
         )
@@ -489,7 +489,7 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
             result_selected <- dt_combined[.(sn_v_select, sn_r_select, assumed_rel_select)]
 
             if(bool_check_auto){
-              dt_detail_auto <- create_detailed_data_auto(dt_v_auto, dt_r_auto, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
+              rv_result$dt_detail_auto <- dt_detail_auto <- create_detailed_data_auto(dt_v_auto, dt_r_auto, sn_v_select, sn_r_select, assumed_rel_select, estimated_rel_select, result_selected)
               if(is.null(dt_detail_auto)){
                 disable("download_auto")
               }else{
@@ -498,7 +498,7 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
             }
 
             if(bool_check_y){
-              dt_detail_y <- create_detailed_data_y(dt_v_y, dt_r_y, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
+              rv_result$dt_detail_y <- dt_detail_y <- create_detailed_data_y(dt_v_y, dt_r_y, sn_v_select, sn_r_select, assumed_rel_select, paternal_select, result_selected)
               if(is.null(dt_detail_y)){
                 disable("download_y")
               }else{
@@ -507,7 +507,7 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
             }
 
             if(bool_check_mt){
-              dt_detail_mt <- create_detailed_data_mt(dt_v_mt, dt_r_mt, sn_v_select, sn_r_select, assumed_rel_select, result_selected)
+              rv_result$dt_detail_mt <- dt_detail_mt <- create_detailed_data_mt(dt_v_mt, dt_r_mt, sn_v_select, sn_r_select, assumed_rel_select, maternal_select, result_selected)
               if(is.null(dt_detail_mt)){
                 mismatch_mt <- NULL
                 share_range_mt <- NULL
@@ -521,9 +521,6 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
               }
             }
 
-            rv_result$dt_detail_auto <- dt_detail_auto
-            rv_result$dt_detail_y <- dt_detail_y
-            rv_result$dt_detail_mt <- dt_detail_mt
             rv_result$sn_v_select <- sn_v_select
             rv_result$sn_r_select <- sn_r_select
             rv_result$estimated_rel_select <- estimated_rel_select

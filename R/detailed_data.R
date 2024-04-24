@@ -28,8 +28,9 @@ display_gt <- function(data_gt){
 #' @param sn_v_select The sample name of the selected victim
 #' @param sn_r_select The sample name of the selected reference
 #' @param assumed_rel_select The assumed relationship
+#' @param estimated_rel_select The estimated relationship
 #' @param result_selected The selected result
-create_detailed_data_auto <- function(dt_v_auto, dt_r_auto, sn_v_select, sn_r_select, assumed_rel_select, result_selected){
+create_detailed_data_auto <- function(dt_v_auto, dt_r_auto, sn_v_select, sn_r_select, assumed_rel_select, estimated_rel_select, result_selected){
   setkey(dt_v_auto, SampleName)
   setkey(dt_r_auto, SampleName, Relationship)
 
@@ -50,8 +51,9 @@ create_detailed_data_auto <- function(dt_v_auto, dt_r_auto, sn_v_select, sn_r_se
     like_h1_display <- as.numeric(result_selected[, grep("LikeH1_", cn_result), with = FALSE])
     like_h2_display <- as.numeric(result_selected[, grep("LikeH2_", cn_result), with = FALSE])
     lr_display <- as.numeric(result_selected[, grep("LR_", cn_result), with = FALSE])
+    n_row <- length(locus_display)
 
-    dt_detail_auto <- data.table(Locus = locus_display, Profile_V = prof_v_display, Profile_R = prof_r_display, LikeH1 = like_h1_display, LikeH2 = like_h2_display, LR = lr_display)
+    dt_detail_auto <- data.table(Victim = rep(sn_v_select, n_row), Reference = rep(sn_r_select, n_row), Estimated_Relationship = rep(estimated_rel_select, n_row), Locus = locus_display, Profile_V = prof_v_display, Profile_R = prof_r_display, LikeH1 = like_h1_display, LikeH2 = like_h2_display, LR = lr_display)
   }else{
     dt_detail_auto <- NULL
   }
@@ -67,8 +69,9 @@ create_detailed_data_auto <- function(dt_v_auto, dt_r_auto, sn_v_select, sn_r_se
 #' @param sn_v_select The sample name of the selected victim
 #' @param sn_r_select The sample name of the selected reference
 #' @param assumed_rel_select The assumed relationship
+#' @param paternal_select The paternal lineage of the selected victim-reference pair
 #' @param result_selected The selected result
-create_detailed_data_y <- function(dt_v_y, dt_r_y, sn_v_select, sn_r_select, assumed_rel_select, result_selected){
+create_detailed_data_y <- function(dt_v_y, dt_r_y, sn_v_select, sn_r_select, assumed_rel_select, paternal_select, result_selected){
   setkey(dt_v_y, SampleName)
   setkey(dt_r_y, SampleName, Relationship)
 
@@ -95,8 +98,9 @@ create_detailed_data_y <- function(dt_v_y, dt_r_y, sn_v_select, sn_r_select, ass
     pos99 <- which(mustep_y_display >= 99)
     mustep_y_display <- as.character(mustep_y_display)
     mustep_y_display[pos99] <- "Unable to calculate"
+    n_row <- length(locus_display)
 
-    dt_detail_y <- data.table(Locus = locus_display, Profile_V = prof_v_display, Profile_R = prof_r_display, Ignore = ignore_y_display, Mismatch = mismatch_y_display, MuStep = mustep_y_display)
+    dt_detail_y <- data.table(Victim = rep(sn_v_select, n_row), Reference = rep(sn_r_select, n_row), Paternal_lineage = rep(paternal_select, n_row), Locus = locus_display, Profile_V = prof_v_display, Profile_R = prof_r_display, Ignore = ignore_y_display, Mismatch = mismatch_y_display, MuStep = mustep_y_display)
   }else{
     dt_detail_y <- NULL
   }
@@ -112,8 +116,9 @@ create_detailed_data_y <- function(dt_v_y, dt_r_y, sn_v_select, sn_r_select, ass
 #' @param sn_v_select The sample name of the selected victim
 #' @param sn_r_select The sample name of the selected reference
 #' @param assumed_rel_select The assumed relationship
+#' @param maternal_select The maternal lineage of the selected victim-reference pair
 #' @param result_selected The selected result
-create_detailed_data_mt <- function(dt_v_mt, dt_r_mt, sn_v_select, sn_r_select, assumed_rel_select, result_selected){
+create_detailed_data_mt <- function(dt_v_mt, dt_r_mt, sn_v_select, sn_r_select, assumed_rel_select, maternal_select, result_selected){
   setkey(dt_v_mt, SampleName)
   setkey(dt_r_mt, SampleName, Relationship)
 
@@ -141,11 +146,11 @@ create_detailed_data_mt <- function(dt_v_mt, dt_r_mt, sn_v_select, sn_r_select, 
 
     pos_mt_vr <- extract_pos_mt_vr(dt_v_mt_select[, Range], dt_r_mt_select[, Range])
 
-    type_v_display <- rep("", n_type_vr)
-    type_v_display[is.element(type_vr, type_v)] <- type_v
+    prof_v_display <- rep("", n_type_vr)
+    prof_v_display[is.element(type_vr, type_v)] <- type_v
 
-    type_r_display <- rep("", n_type_vr)
-    type_r_display[is.element(type_vr, type_r)] <- type_r
+    prof_r_display <- rep("", n_type_vr)
+    prof_r_display[is.element(type_vr, type_r)] <- type_r
 
     pos_common <- is.element(sapply(type_vr, extract_integer), pos_mt_vr)
 
@@ -156,7 +161,7 @@ create_detailed_data_mt <- function(dt_v_mt, dt_r_mt, sn_v_select, sn_r_select, 
     mismatch_mt_display <- rep("", n_type_vr)
     mismatch_mt_display[apply(rbind(pos_common, pos_mismatch), 2, all)] <- "x"
 
-    dt_detail_mt <- data.table(Type_Victim = type_v_display, Type_Reference = type_r_display, OutRange = out_range_display, Mismatch = mismatch_mt_display)
+    dt_detail_mt <- data.table(Victim = rep(sn_v_select, n_type_vr), Reference = rep(sn_r_select, n_type_vr), Maternal_lineage = rep(maternal_select, n_type_vr), Shared_range = rep(result_selected[, ShareRangeMt], n_type_vr), Shared_length = rep(result_selected[, ShareLengthMt], n_type_vr), Profile_V = prof_v_display, Profile_R = prof_r_display, OutRange = out_range_display, Mismatch = mismatch_mt_display)
   }else{
     dt_detail_mt <- NULL
   }
