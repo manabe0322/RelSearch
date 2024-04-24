@@ -292,6 +292,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_aut
 
           run_time <- proc.time() - start_time
           cat(paste0("\n", "Calculation time : ", run_time[3], " sec", "\n"))
+          #disable(selector = '.navbar-nav a[data-value = "Settings"]')
           updateNavbarPage(session = session_top, "navbar", selected = "Result")
           waiter_hide()
 

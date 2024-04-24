@@ -20,6 +20,7 @@ relsearch <- function(){
                   tags$style(type = "text/css", "body{padding-top: 70px;}"),
                   navbarPage(title = paste0("relsearch ver. ", ver_soft),
                              id = "navbar",
+                             selected = "Load",
                              position = c("fixed-top"),
 
                              load_ui("load"),
@@ -56,26 +57,6 @@ relsearch <- function(){
                              example_ui("example"),
 
                              manual_ui("manual")
-
-#                             tabPanel("Manual",
-#                                      tabsetPanel(
-#                                        tabPanel("Getting started",
-#                                                 includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual_getting-started.md"))
-#                                        ),
-#                                        tabPanel("Overall flow",
-#                                                 includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual_overall-flow.md"))
-#                                        ),
-#                                        tabPanel("File format",
-#                                                 includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual_file-format.md"))
-#                                        ),
-#                                        tabPanel("Settings",
-#                                                 includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual_settings.md"))
-#                                        ),
-#                                        tabPanel("Calculation principle",
-#                                                 includeMarkdown(paste0(path_pack, "/extdata/manual/relsearch_manual_calculation-principle.md"))
-#                                        )
-#                                      )
-#                             )
                   )
   )
 
