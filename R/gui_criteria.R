@@ -5,6 +5,8 @@ tab_criteria_ui <- function(id){
   ns <- NS(id)
 
   tabPanel("Criteria",
+           useShinyjs(),
+           useShinyFeedback(),
            titlePanel("Criteria"),
            br(),
            p(HTML("<b>Press the save button to reflect the changes.</b>")),

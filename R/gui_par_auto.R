@@ -5,6 +5,8 @@ tab_par_auto_ui <- function(id){
   ns <- NS(id)
 
   tabPanel("Parameter",
+           useShinyjs(),
+           useShinyFeedback(),
            titlePanel("Parameter"),
            br(),
            p(HTML("<b>Press the save button to reflect the changes.</b>")),

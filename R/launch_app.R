@@ -14,9 +14,7 @@ relsearch <- function(){
   pandoc_install()
   pandoc_activate()
 
-  ui <- fluidPage(useShinyjs(),
-                  useShinyFeedback(),
-                  theme = shinytheme("cerulean"),
+  ui <- fluidPage(theme = shinytheme("cerulean"),
                   tags$style(type = "text/css", "body{padding-top: 70px;}"),
                   navbarPage(title = paste0("relsearch ver. ", ver_soft),
                              id = "navbar",
@@ -29,6 +27,7 @@ relsearch <- function(){
 
                              navbarMenu("Project",
                                         tabPanel("New project",
+                                                 useShinyjs(),
                                                  h2("New project"),
                                                  br(),
                                                  actionButton("act_new_proj", label = "New project", class = "btn btn-primary btn-lg")

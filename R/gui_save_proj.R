@@ -5,6 +5,7 @@ save_proj_ui <- function(id){
   ns <- NS(id)
 
   tabPanel("Save project",
+           useShinyjs(),
            useWaiter(),
            h2("Save project"),
            br(),

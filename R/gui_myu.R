@@ -5,6 +5,8 @@ tab_myu_ui <- function(id){
   ns <- NS(id)
 
   tabPanel("Mutation rates",
+           useShinyjs(),
+           useShinyFeedback(),
            titlePanel("Mutation rates"),
            br(),
            sidebarLayout(
@@ -52,7 +54,7 @@ tab_myu_server <- function(id, path_pack){
       observeEvent(input$act_myu_edit, {
         showModal(modalDialog(
           title = "Edit a mutation rate",
-          selectInput(session$ns("input_myu_mk_edit"), label = "Select a locus", choices = rv_myu$mk, selected = rv_myu$mk[1]),
+          selectInput(session$ns("input_myu_mk_edit"), label = "Select a locus", choices = rv_myu$mk, selected = rv_myu$mk[1], selectize = FALSE),
           uiOutput(session$ns("output_myu_val_edit")),
           footer = tagList(
             actionButton(session$ns("act_myu_edit_save"), "Save"),
@@ -183,7 +185,7 @@ tab_myu_server <- function(id, path_pack){
       observeEvent(input$act_myu_del, {
         showModal(modalDialog(
           title = "Delete a mutation rate",
-          selectInput(session$ns("input_myu_mk_del"), label = "Select a locus", choices = rv_myu$mk, selected = rv_myu$mk[1]),
+          selectInput(session$ns("input_myu_mk_del"), label = "Select a locus", choices = rv_myu$mk, selected = rv_myu$mk[1], selectize = FALSE),
           footer = tagList(
             actionButton(session$ns("act_myu_del_save"), "Save"),
             modalButton("Cancel")

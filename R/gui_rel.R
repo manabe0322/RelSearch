@@ -5,6 +5,8 @@ tab_rel_ui <- function(id){
   ns <- NS(id)
 
   tabPanel("Relationships",
+           useShinyjs(),
+           useShinyFeedback(),
            titlePanel("Relationships"),
            br(),
            sidebarLayout(
@@ -66,7 +68,7 @@ tab_rel_server <- function(id, path_pack){
       observeEvent(input$act_rel_edit, {
         showModal(modalDialog(
           title = "Edit the name of the relationship",
-          selectInput(session$ns("input_rel_old_edit"), label = "Select a relationship", choices = rv_rel$name, selected = rv_rel$name[1]),
+          selectInput(session$ns("input_rel_old_edit"), label = "Select a relationship", choices = rv_rel$name, selected = rv_rel$name[1], selectize = FALSE),
           textInput(session$ns("input_rel_new_edit"), label = "Enter a new name", value = NULL),
           footer = tagList(
             actionButton(session$ns("act_rel_edit_save"), "Save"),
@@ -137,14 +139,14 @@ tab_rel_server <- function(id, path_pack){
 
         output$uks <- renderUI({
           lapply(seq_len(num_uk), function(x){
-            disabled(selectInput(session$ns(paste0("uk_", x)), label = NULL, choices = uks[x], selected = uks[x])
+            disabled(selectInput(session$ns(paste0("uk_", x)), label = NULL, choices = uks[x], selected = uks[x], selectize = FALSE)
             )
           })
         })
 
         output$sexes <- renderUI({
           lapply(seq_len(num_uk), function(x){
-            selectInput(session$ns(paste0("sex_", x)), label = NULL, choices = c("M", "F"), selected = sexes[x])
+            selectInput(session$ns(paste0("sex_", x)), label = NULL, choices = c("M", "F"), selected = sexes[x], selectize = FALSE)
           })
         })
 
@@ -152,9 +154,9 @@ tab_rel_server <- function(id, path_pack){
           output_list <- list()
           for(x in seq_len(num_uk)){
             if(founders[x] == "Yes"){
-              output_list[[x]] <- disabled(selectInput(session$ns(paste0("father_", x)), label = NULL, choices = c("Victim", "Ref", uks), selected = fathers[x]))
+              output_list[[x]] <- disabled(selectInput(session$ns(paste0("father_", x)), label = NULL, choices = c("Victim", "Ref", uks), selected = fathers[x], selectize = FALSE))
             }else{
-              output_list[[x]] <- selectInput(session$ns(paste0("father_", x)), label = NULL, choices = c("Victim", "Ref", uks), selected = fathers[x])
+              output_list[[x]] <- selectInput(session$ns(paste0("father_", x)), label = NULL, choices = c("Victim", "Ref", uks), selected = fathers[x], selectize = FALSE)
             }
           }
           output_list
@@ -164,9 +166,9 @@ tab_rel_server <- function(id, path_pack){
           output_list <- list()
           for(x in seq_len(num_uk)){
             if(founders[x] == "Yes"){
-              output_list[[x]] <- disabled(selectInput(session$ns(paste0("mother_", x)), label = NULL, choices = c("Victim", "Ref", uks), selected = mothers[x]))
+              output_list[[x]] <- disabled(selectInput(session$ns(paste0("mother_", x)), label = NULL, choices = c("Victim", "Ref", uks), selected = mothers[x], selectize = FALSE))
             }else{
-              output_list[[x]] <- selectInput(session$ns(paste0("mother_", x)), label = NULL, choices = c("Victim", "Ref", uks), selected = mothers[x])
+              output_list[[x]] <- selectInput(session$ns(paste0("mother_", x)), label = NULL, choices = c("Victim", "Ref", uks), selected = mothers[x], selectize = FALSE)
             }
           }
           output_list
@@ -174,7 +176,7 @@ tab_rel_server <- function(id, path_pack){
 
         output$founders <- renderUI({
           lapply(seq_len(num_uk), function(x){
-            selectInput(session$ns(paste0("founder_", x)), label = NULL, choices = c("Yes", "No"), selected = founders[x])
+            selectInput(session$ns(paste0("founder_", x)), label = NULL, choices = c("Yes", "No"), selected = founders[x], selectize = FALSE)
           })
         })
       }
@@ -229,19 +231,19 @@ tab_rel_server <- function(id, path_pack){
             ),
 
             column(12,
-                   column(2, disabled(selectInput(session$ns("v_person"), label = NULL, choices = "Victim", selected = "Victim"))),
-                   column(2, selectInput(session$ns("v_sex"), label = NULL, choices = c("M", "F"), selected = "M")),
-                   column(3, selectInput(session$ns("v_father"), label = NULL, choices = c("Victim", "Ref"), selected = "Victim")),
-                   column(3, selectInput(session$ns("v_mother"), label = NULL, choices = c("Victim", "Ref"), selected = "Victim")),
-                   column(2, selectInput(session$ns("v_founder"), label = NULL, choices = c("Yes", "No"), selected = "No"))
+                   column(2, disabled(selectInput(session$ns("v_person"), label = NULL, choices = "Victim", selected = "Victim", selectize = FALSE))),
+                   column(2, selectInput(session$ns("v_sex"), label = NULL, choices = c("M", "F"), selected = "M", selectize = FALSE)),
+                   column(3, selectInput(session$ns("v_father"), label = NULL, choices = c("Victim", "Ref"), selected = "Victim", selectize = FALSE)),
+                   column(3, selectInput(session$ns("v_mother"), label = NULL, choices = c("Victim", "Ref"), selected = "Victim", selectize = FALSE)),
+                   column(2, selectInput(session$ns("v_founder"), label = NULL, choices = c("Yes", "No"), selected = "No", selectize = FALSE))
             ),
 
             column(12,
-                   column(2, disabled(selectInput(session$ns("r_person"), label = NULL, choices = "Ref", selected = "Ref"))),
-                   column(2, selectInput(session$ns("r_sex"), label = NULL, choices = c("M", "F"), selected = "M")),
-                   column(3, selectInput(session$ns("r_father"), label = NULL, choices = c("Victim", "Ref"), selected = "Victim")),
-                   column(3, selectInput(session$ns("r_mother"), label = NULL, choices = c("Victim", "Ref"), selected = "Victim")),
-                   column(2, selectInput(session$ns("r_founder"), label = NULL, choices = c("Yes", "No"), selected = "No"))
+                   column(2, disabled(selectInput(session$ns("r_person"), label = NULL, choices = "Ref", selected = "Ref", selectize = FALSE))),
+                   column(2, selectInput(session$ns("r_sex"), label = NULL, choices = c("M", "F"), selected = "M", selectize = FALSE)),
+                   column(3, selectInput(session$ns("r_father"), label = NULL, choices = c("Victim", "Ref"), selected = "Victim", selectize = FALSE)),
+                   column(3, selectInput(session$ns("r_mother"), label = NULL, choices = c("Victim", "Ref"), selected = "Victim", selectize = FALSE)),
+                   column(2, selectInput(session$ns("r_founder"), label = NULL, choices = c("Yes", "No"), selected = "No", selectize = FALSE))
             ),
 
             column(12,
@@ -661,7 +663,7 @@ tab_rel_server <- function(id, path_pack){
       observeEvent(input$act_rel_del, {
         showModal(modalDialog(
           title = "Delete information on a relationship",
-          selectInput(session$ns("rel_del"), label = "Select a relationship", choices = rv_rel$name, selected = rv_rel$name[1]),
+          selectInput(session$ns("rel_del"), label = "Select a relationship", choices = rv_rel$name, selected = rv_rel$name[1], selectize = FALSE),
           footer = tagList(
             actionButton(session$ns("act_rel_del_save"), "Save"),
             modalButton("Cancel")

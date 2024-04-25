@@ -5,6 +5,8 @@ result_ui <- function(id){
   ns <- NS(id)
 
   tabPanel("Result",
+           useShinyjs(),
+           useShinyFeedback(),
            titlePanel("Result"),
            br(),
            tabsetPanel(id = ns("tab_result"),
