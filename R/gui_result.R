@@ -536,6 +536,9 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
                 share_length_mt <- result_selected[, ShareLengthMt]
                 enable("download_mt")
               }
+              rv_result$mismatch_mt <- mismatch_mt
+              rv_result$share_range_mt <- share_range_mt
+              rv_result$share_length_mt <- share_length_mt
             }
 
             rv_result$sn_v_select <- sn_v_select
@@ -543,9 +546,6 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
             rv_result$estimated_rel_select <- estimated_rel_select
             rv_result$paternal_select <- paternal_select
             rv_result$maternal_select <- maternal_select
-            rv_result$mismatch_mt <- mismatch_mt
-            rv_result$share_range_mt <- share_range_mt
-            rv_result$share_length_mt <- share_length_mt
           }
         }, ignoreInit = TRUE)
 
