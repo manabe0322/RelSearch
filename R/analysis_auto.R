@@ -6,35 +6,43 @@
 #' @param dt_af A data.table of allele frequencies (autosomal STR)
 #' @param maf The minimum allele frequency
 set_af <- function(dt_v_auto, dt_r_auto, dt_af, maf){
-  n_l <- ncol(dt_af) - 1
+  n_mk <- ncol(dt_af) - 1
   name_al <- dt_af[, Allele]
-  name_l <- setdiff(names(dt_v_auto), c("SampleName", "Relationship"))
-  af_list <- af_al_list <- list()
+  name_mk <- setdiff(names(dt_v_auto), c("SampleName", "Relationship"))
+  af_list <- af_al_list <- unobs_al_list <- list()
 
-  for(i in 1:n_l){
-    pos_v <- which(names(dt_v_auto) == name_l[i])
-    pos_r <- which(names(dt_r_auto) == name_l[i])
-    pos_af <- which(names(dt_af) == name_l[i])
+  for(i in 1:n_mk){
+    pos_v <- which(names(dt_v_auto) == name_mk[i])
+    pos_r <- which(names(dt_r_auto) == name_mk[i])
+    pos_af <- which(names(dt_af) == name_mk[i])
 
-    obsal <- unique(c(dt_v_auto[[pos_v[1]]], dt_v_auto[[pos_v[2]]], dt_r_auto[[pos_r[1]]], dt_r_auto[[pos_r[2]]]))
-    obsal <- obsal[!is.na(obsal)]
+    vs_als <- unique(c(dt_v_auto[[pos_v[1]]], dt_v_auto[[pos_v[2]]], dt_r_auto[[pos_r[1]]], dt_r_auto[[pos_r[2]]]))
+    vs_als <- vs_als[!is.na(vs_als)]
 
     af <- dt_af[[pos_af]]
     pos_al <- !is.na(af)
     af <- af[pos_al]
     af_al <- name_al[pos_al]
 
-    pos_unobs <- which(is.element(obsal, af_al) == FALSE)
+    pos_unobs <- which(is.element(vs_als, af_al) == FALSE)
+    unobs_al <- vs_als[pos_unobs]
     if(length(pos_unobs) > 0){
-      af_al <- c(af_al, obsal[pos_unobs])
+      af_al <- c(af_al, unobs_al)
       af <- c(af, rep(maf, length(pos_unobs)))
+      index_order <- order(af_al)
+      af_al <- af_al[index_order]
+      af <- af[index_order]
     }
     af_list[[i]] <- af / sum(af)
     af_al_list[[i]] <- af_al
+    unobs_al_list[[i]] <- unobs_al
   }
-  names(af_list) <- name_l
-  names(af_al_list) <- name_l
-  return(list(af_list, af_al_list))
+  names(af_list) <- name_mk
+  names(af_al_list) <- name_mk
+  names(unobs_al_list) <- name_mk
+  return(list("af_list" = af_list,
+              "af_al_list" = af_al_list,
+              "unobs_al_list" = unobs_al_list))
 }
 
 #' order_loci_auto
@@ -45,19 +53,19 @@ set_af <- function(dt_v_auto, dt_r_auto, dt_af, maf){
 #' @param dt_af A data.table of allele frequencies (autosomal STR)
 order_loci_auto <- function(dt_v_auto, dt_r_auto, dt_af){
   locus_auto <- setdiff(names(dt_v_auto), c("SampleName", "Relationship"))
-  n_l <- length(locus_auto)
+  n_mk <- length(locus_auto)
 
   # Define objects for the column position
-  pos_v <- rep(0, 2 * n_l + 1)
-  pos_r <- rep(0, 2 * n_l + 2)
-  pos_af <- rep(0, n_l + 1)
+  pos_v <- rep(0, 2 * n_mk + 1)
+  pos_r <- rep(0, 2 * n_mk + 2)
+  pos_af <- rep(0, n_mk + 1)
 
   pos_v[1] <- which(is.element(names(dt_v_auto), "SampleName"))
   pos_r[1] <- which(is.element(names(dt_r_auto), "SampleName"))
   pos_r[2] <- which(is.element(names(dt_r_auto), "Relationship"))
   pos_af[1] <- which(is.element(names(dt_af), "Allele"))
 
-  for(i in 1:n_l){
+  for(i in 1:n_mk){
     pos_v[c(2 * i, 2 * i + 1)] <- which(is.element(names(dt_v_auto), locus_auto[i]))
     pos_r[c(2 * i + 1, 2 * i + 2)] <- which(is.element(names(dt_r_auto), locus_auto[i]))
     pos_af[i + 1] <- which(is.element(names(dt_af), locus_auto[i]))
@@ -107,6 +115,51 @@ define_action_myu <- function(dt_rel){
   return(list(cons_mutations, parent_victim))
 }
 
+#' make_dt_af_use
+#'
+#' @description The function to make a data.table of the allele freuqencies used
+#' @param af_list A list of the allele frequencies
+#' @param af_al_list A list of the alleles
+make_dt_af_use <- function(af_list, af_al_list){
+  n_mk <- length(af_list)
+  af_alleles_all <- sort(unique(unlist(af_al_list)))
+  mat_af_use <- matrix("", length(af_alleles_all), n_mk + 1)
+  mat_af_use[, 1] <- af_alleles_all
+
+  for(i in 1:n_mk){
+    af_mk <- af_list[[i]]
+    af_al_mk <- af_al_list[[i]]
+    mat_af_use[is.element(af_alleles_all, af_al_mk), i + 1] <- af_mk
+  }
+
+  dt_af_use <- as.data.table(mat_af_use)
+  colnames(dt_af_use) <- c("Allele", names(af_list))
+
+  return(dt_af_use)
+}
+
+#' make_dt_unobs_al
+#'
+#' @description The function to make a data.table of the unobserved alleles
+#' @param unobs_al_list A list of the unobserved alleles
+make_dt_unobs_al <- function(unobs_al_list){
+  unobs_mk_all <- character(0)
+  unobs_al_all <- numeric(0)
+  name_mk <- names(unobs_al_list)
+  for(i in 1:length(unobs_al_list)){
+    unobs_al_mk <- unobs_al_list[[i]]
+    n_unobs <- length(unobs_al_mk)
+    if(n_unobs != 0){
+      unobs_mk_all <- c(unobs_mk_all, rep(name_mk[i], n_unobs))
+      unobs_al_all <- c(unobs_al_all, unobs_al_mk)
+    }
+  }
+
+  dt_unobs_al <- data.table(Marker = unobs_mk_all,
+                            Allele = unobs_al_all)
+  return(dt_unobs_al)
+}
+
 #' analyze_auto
 #'
 #' @description The function to analyze data for autosomal STR
@@ -128,7 +181,7 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
 
   # Locus
   locus_auto <- setdiff(names(dt_v_auto), c("SampleName", "Relationship"))
-  n_l <- length(locus_auto)
+  n_mk <- length(locus_auto)
 
   # Parameters
   maf <- dt_par_auto$Value[dt_par_auto$Parameter == "maf"]
@@ -156,8 +209,9 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
 
   # Allele frequencies
   tmp <- set_af(dt_v_auto, dt_r_auto, dt_af, maf)
-  af_list <- tmp[[1]]
-  af_al_list <- tmp[[2]]
+  af_list <- tmp$af_list
+  af_al_list <- tmp$af_al_list
+  unobs_al_list <- tmp$unobs_al_list
 
   # IBD probabilities
   names_rel <- dt_rel[, Relationship]
@@ -167,8 +221,8 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
   # Mutation rates
   locus_myu <- dt_myu[, Marker]
   myu_all <- dt_myu[, Myu]
-  myus <- rep(0, n_l)
-  for(i in 1:n_l){
+  myus <- rep(0, n_mk)
+  for(i in 1:n_mk){
     myus[i] <- myu_all[which(locus_myu == locus_auto[i])]
   }
   names(myus) <- locus_auto
@@ -209,7 +263,7 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
 
   dt_left <- data.table(Victim = result_sn_v_auto, Reference = result_sn_r_auto, AssumedRel = result_assumed_rel)
   result_auto <- unlist(result_auto)
-  result_auto <- matrix(result_auto, nrow = length(sn_v_auto) * length(sn_r_auto), ncol = 3 * (n_l + 1), byrow = TRUE)
+  result_auto <- matrix(result_auto, nrow = length(sn_v_auto) * length(sn_r_auto), ncol = 3 * (n_mk + 1), byrow = TRUE)
   dt_right <- as.data.frame(result_auto)
   setDT(dt_right)
   names(dt_right) <- c(paste0("LikeH1_", c(locus_auto, "Total")), paste0("LikeH2_", c(locus_auto, "Total")), paste0("LR_", c(locus_auto, "Total")))
@@ -229,5 +283,14 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
   dt_result_auto[, EstimatedRel := est_rel_all]
   options(warn = 0)
 
-  return(dt_result_auto)
+  ###########################################################
+  # Create the data.table for the allele probabilities used #
+  ###########################################################
+
+  dt_af_use <- make_dt_af_use(af_list, af_al_list)
+  dt_unobs_al <- make_dt_unobs_al(unobs_al_list)
+
+  return(list("dt_result_auto" = dt_result_auto,
+              "dt_af_use" = dt_af_use,
+              "dt_unobs_al" = dt_unobs_al))
 }

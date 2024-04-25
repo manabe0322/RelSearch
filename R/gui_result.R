@@ -141,6 +141,19 @@ result_ui <- function(id){
                                              )
                                            )
                                   ),
+                                  tabPanel("Allele probability",
+                                           br(),
+                                           fluidRow(
+                                             column(6,
+                                                    h4("Unobserved alleles in the population database"),
+                                                    dataTableOutput(ns("dt_unobs_al"))
+                                             ),
+                                             column(6,
+                                                    h4("Allele probabilities used"),
+                                                    downloadButton(ns("download_af_use"), "Download")
+                                             )
+                                           )
+                                  ),
                                   tabPanel("Criteria",
                                            br(),
                                            fluidRow(
@@ -216,6 +229,8 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
         dt_v_auto <- data_list$dt_v_auto
         dt_r_auto <- data_list$dt_r_auto
         dt_af <- data_list$dt_af
+        dt_af_use <- data_list$dt_af_use
+        dt_unobs_al <- data_list$dt_unobs_al
         dt_v_y <- data_list$dt_v_y
         dt_r_y <- data_list$dt_r_y
         dt_v_mt <- data_list$dt_v_mt
@@ -545,6 +560,23 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
         output$result_fn_r_y <- renderText({fn_r_y})
         output$result_fn_v_mt <- renderText({fn_v_mt})
         output$result_fn_r_mt <- renderText({fn_r_mt})
+
+        output$dt_unobs_al <- renderDataTable(server = FALSE, {
+          datatable(
+            dt_unobs_al,
+            colnames = c("Marker", "Allele"),
+            selection = "none",
+            options = list(dom = "t", iDisplayLength = nrow(dt_unobs_al), ordering = FALSE),
+            rownames = FALSE
+          )
+        })
+
+        output$download_af_use <- downloadHandler(
+          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_relsearch_af_use.csv"),
+          content = function(file){
+            write.csv(dt_af_use, file, row.names = FALSE)
+          }
+        )
 
         output$result_min_lr_auto <- renderText({
           paste0(dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"])

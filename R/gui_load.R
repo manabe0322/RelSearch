@@ -193,9 +193,14 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_aut
             dt_r_auto <- tmp[[2]]
             dt_af <- tmp[[3]]
 
-            dt_result_auto <- analyze_auto(dt_v_auto, dt_r_auto, dt_af, dt_rel, dt_myu, dt_par_auto, dt_criteria)
+            tmp <- analyze_auto(dt_v_auto, dt_r_auto, dt_af, dt_rel, dt_myu, dt_par_auto, dt_criteria)
+            dt_result_auto <- tmp$dt_result_auto
+            dt_af_use <- tmp$dt_af_use
+            dt_unobs_al <- tmp$dt_unobs_al
           }else{
             dt_result_auto <- NULL
+            dt_af_use <- NULL
+            dt_unobs_al <- NULL
           }
 
           ######################
@@ -253,10 +258,10 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_aut
           # Assign objects to data_list #
           ###############################
 
-          data_list <- vector(mode = "list", length = 23)
+          data_list <- vector(mode = "list", length = 25)
           names(data_list) <- c("bool_check_auto", "bool_check_y", "bool_check_mt",
                                 "dt_combined", "dt_display",
-                                "dt_v_auto", "dt_r_auto", "dt_af",
+                                "dt_v_auto", "dt_r_auto", "dt_af", "dt_af_use", "dt_unobs_al",
                                 "dt_v_y", "dt_r_y",
                                 "dt_v_mt", "dt_r_mt",
                                 "dt_criteria", "dt_rel", "dt_myu", "dt_par_auto",
@@ -269,6 +274,8 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_aut
           data_list$dt_v_auto <- dt_v_auto
           data_list$dt_r_auto <- dt_r_auto
           data_list$dt_af <- dt_af
+          data_list$dt_af_use <- dt_af_use
+          data_list$dt_unobs_al <- dt_unobs_al
           data_list$dt_v_y <- dt_v_y
           data_list$dt_r_y <- dt_r_y
           data_list$dt_v_mt <- dt_v_mt

@@ -10,6 +10,7 @@ create_detailed_data_y(
   sn_v_select,
   sn_r_select,
   assumed_rel_select,
+  paternal_select,
   result_selected
 )
 }
@@ -23,6 +24,8 @@ create_detailed_data_y(
 \item{sn_r_select}{The sample name of the selected reference}
 
 \item{assumed_rel_select}{The assumed relationship}
+
+\item{paternal_select}{The paternal lineage of the selected victim-reference pair}
 
 \item{result_selected}{The selected result}
 }

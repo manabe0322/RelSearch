@@ -10,6 +10,7 @@ create_detailed_data_auto(
   sn_v_select,
   sn_r_select,
   assumed_rel_select,
+  estimated_rel_select,
   result_selected
 )
 }
@@ -23,6 +24,8 @@ create_detailed_data_auto(
 \item{sn_r_select}{The sample name of the selected reference}
 
 \item{assumed_rel_select}{The assumed relationship}
+
+\item{estimated_rel_select}{The estimated relationship}
 
 \item{result_selected}{The selected result}
 }
