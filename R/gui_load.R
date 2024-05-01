@@ -71,7 +71,17 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_aut
 
       observe({
         req(rv_myu)
-        rv_file$dt_myu <- data.table(Marker = rv_myu$mk, Myu = rv_myu$val)
+        rv_file$dt_myu <- data.table(Marker = rv_myu$mk,
+                                     Paternal_m2 = rv_myu$paternal_m2,
+                                     Paternal_m1 = rv_myu$paternal_m1,
+                                     Paternal_0 = rv_myu$paternal_0,
+                                     Paternal_p1 = rv_myu$paternal_p1,
+                                     Paternal_p2 = rv_myu$paternal_p2,
+                                     Maternal_m2 = rv_myu$maternal_m2,
+                                     Maternal_m1 = rv_myu$maternal_m1,
+                                     Maternal_0 = rv_myu$maternal_0,
+                                     Maternal_p1 = rv_myu$maternal_p1,
+                                     Maternal_p2 = rv_myu$maternal_p2)
       })
 
       observe({
