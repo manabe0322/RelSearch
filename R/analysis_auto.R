@@ -79,40 +79,49 @@ order_loci_auto <- function(dt_v_auto, dt_r_auto, dt_af){
   return(list(dt_v_auto, dt_r_auto, dt_af))
 }
 
-#' define_action_myu
+#' make_info_myu
 #'
-#' @description The function to define actions for considering mutation rates
+#' @description The function to make information on considering mutations
 #' @param dt_rel A data.table of information on relationships
-define_action_myu <- function(dt_rel){
-  index_pc <- which(dt_rel[, Pr_IBD1] == 1)
-
-  cons_mutations <- rep(FALSE, nrow(dt_rel))
-  cons_mutations[index_pc] <- TRUE
+make_info_myu <- function(dt_rel){
+  bool_pc_all <- dt_rel[, Pr_IBD1] == 1
 
   tree_persons <- dt_rel[, Tree_persons]
-  tree_persons_pc <- tree_persons[index_pc]
+  tree_persons_pc <- tree_persons[bool_pc_all]
   tree_persons_pc_split <- strsplit(tree_persons_pc, ", ")
 
   tree_fathers <- dt_rel[, Tree_fathers]
-  tree_fathers_pc <- tree_fathers[index_pc]
+  tree_fathers_pc <- tree_fathers[bool_pc_all]
   tree_fathers_pc_split <- strsplit(tree_fathers_pc, ", ")
 
   tree_mothers <- dt_rel[, Tree_mothers]
-  tree_mothers_pc <- tree_mothers[index_pc]
+  tree_mothers_pc <- tree_mothers[bool_pc_all]
   tree_mothers_pc_split <- strsplit(tree_mothers_pc, ", ")
 
-  n_pc <- length(index_pc)
-  parent_victim <- rep(FALSE, nrow(dt_rel))
-  for(i in 1:n_pc){
-    index_victim <- which(tree_persons_pc_split[[i]] == "Victim")
-    victim_father <- tree_fathers_pc_split[[i]][index_victim]
-    victim_mother <- tree_mothers_pc_split[[i]][index_victim]
-    if(victim_father != "Ref" && victim_mother != "Ref"){
-      parent_victim[index_pc[i]] <- TRUE
+  tree_sexes <- dt_rel[, Tree_sexes]
+  tree_sexes_pc <- tree_sexes[bool_pc_all]
+  tree_sexes_pc_split <- strsplit(tree_sexes_pc, ", ")
+
+  n_pc <- length(which(index_pc))
+  bool_parent_victim_all <- bool_parent_male_all <- rep(FALSE, nrow(dt_rel))
+  if(n_pc != 0){
+    for(i in 1:n_pc){
+      index_victim <- which(tree_persons_pc_split[[i]] == "Victim")
+      victim_father <- tree_fathers_pc_split[[i]][index_victim]
+      victim_mother <- tree_mothers_pc_split[[i]][index_victim]
+      if(victim_father != "Ref" && victim_mother != "Ref"){
+        bool_parent_victim_all[index_pc[i]] <- TRUE
+        bool_parent_male_all[index_pc[i]] <- tree_sexes_pc_split[[i]][index_victim] == "M"
+      }else{
+        index_ref <- which(tree_persons_pc_split[[i]] == "Ref")
+        bool_parent_male_all[index_pc[i]] <- tree_sexes_pc_split[[i]][index_ref] == "M"
+      }
     }
   }
 
-  return(list(cons_mutations, parent_victim))
+  return(list("bool_pc_all" = bool_pc_all,
+              "bool_parent_victim_all" = bool_parent_victim,
+              "bool_parent_male_all" = bool_parent_male))
 }
 
 #' make_dt_af_use
@@ -220,17 +229,39 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
 
   # Mutation rates
   locus_myu <- dt_myu[, Marker]
-  myu_all <- dt_myu[, Myu]
-  myus <- rep(0, n_mk)
+  myus_paternal_m2_all <- dt_myu[, Paternal_m2]
+  myus_paternal_m1_all <- dt_myu[, Paternal_m1]
+  myus_paternal_0_all <- dt_myu[, Paternal_0]
+  myus_paternal_p1_all <- dt_myu[, Paternal_p1]
+  myus_paternal_p2_all <- dt_myu[, Paternal_p2]
+  myus_maternal_m2_all <- dt_myu[, Maternal_m2]
+  myus_maternal_m1_all <- dt_myu[, Maternal_m1]
+  myus_maternal_0_all <- dt_myu[, Maternal_0]
+  myus_maternal_p1_all <- dt_myu[, Maternal_p1]
+  myus_maternal_p2_all <- dt_myu[, Maternal_p2]
+  myus_paternal_m2 <- myus_paternal_m1 <- myus_paternal_0 <- myus_paternal_p1 <- myus_paternal_p2 <- rep(0, n_mk)
+  names(myus_paternal_m2) <- names(myus_paternal_m1) <- names(myus_paternal_0) <- names(myus_paternal_p1) <- names(myus_paternal_p2) <- locus_auto
+  myus_maternal_m2 <- myus_maternal_m1 <- myus_maternal_0 <- myus_maternal_p1 <- myus_maternal_p2 <- rep(0, n_mk)
+  names(myus_maternal_m2) <- names(myus_maternal_m1) <- names(myus_maternal_0) <- names(myus_maternal_p1) <- names(myus_maternal_p2) <- locus_auto
   for(i in 1:n_mk){
-    myus[i] <- myu_all[which(locus_myu == locus_auto[i])]
+    index_mk <- which(locus_myu == locus_auto[i])
+    myus_paternal_m2[i] <- myus_paternal_m2_all[index_mk]
+    myus_paternal_m1[i] <- myus_paternal_m1_all[index_mk]
+    myus_paternal_0[i] <- myus_paternal_0_all[index_mk]
+    myus_paternal_p1[i] <- myus_paternal_p1_all[index_mk]
+    myus_paternal_p2[i] <- myus_paternal_p2_all[index_mk]
+    myus_maternal_m2[i] <- myus_maternal_m2_all[index_mk]
+    myus_maternal_m1[i] <- myus_maternal_m1_all[index_mk]
+    myus_maternal_0[i] <- myus_maternal_0_all[index_mk]
+    myus_maternal_p1[i] <- myus_maternal_p1_all[index_mk]
+    myus_maternal_p2[i] <- myus_maternal_p2_all[index_mk]
   }
-  names(myus) <- locus_auto
 
   # Consideration of mutations
-  tmp <- define_action_myu(dt_rel)
-  cons_mutations <- tmp[[1]]
-  parent_victim <- tmp[[2]]
+  tmp <- make_info_myu(dt_rel)
+  bool_pc_all <- tmp$bool_pc_all
+  bool_parent_victim_all <- tmp$bool_parent_victim_all
+  bool_parent_male_all <- tmp$bool_parent_male_all
 
   ###############################
   # Calculate likelihood ratios #
@@ -239,7 +270,10 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
   if(show_progress){
     withProgress(
       withCallingHandlers(
-        result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel, myus, cons_mutations, parent_victim),
+        result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel,
+                                       myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2,
+                                       myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2,
+                                       bool_pc_all, bool_parent_victim_all, bool_parent_male_all),
         message = function(m) if(grepl("STR_Victim-Reference_ : ", m$message)){
           val <- as.numeric(gsub("STR_Victim-Reference_ : ", "", m$message))
           setProgress(value = val)

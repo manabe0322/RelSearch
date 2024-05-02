@@ -14,6 +14,21 @@ std::vector<double> union_vr_al(std::vector<double> vgt, std::vector<double> rgt
 }
 
 
+/*########################################################
+# The function to calculate likelihoods for parent-child #
+########################################################*/
+
+// [[Rcpp::export]]
+std::vector<double> calc_kin_like_pc(std::vector<double> vgt,
+                                     std::vector<double> rgt,
+                                     std::vector<double> af,
+                                     std::vector<double> af_al){
+  std::vector<double> like_h12(2);
+
+  return(like_h12);
+}
+
+
 /*#####################################################################
 # The function to calculate likelihoods for pairwise kinship analysis #
 #####################################################################*/
@@ -249,13 +264,112 @@ std::vector<std::vector<double>> make_dummy_gt(std::vector<double> target_gt, st
 }
 
 
+/*############################################################
+# The function to set mutation rates per inheritance pattern #
+############################################################*/
+
+// [[Rcpp::export]]
+std::vector<double> set_myu_per_inheritance(std::vector<double> dvgt1,
+                                            std::vector<double> drgt1,
+                                            double myu_pat_m2,
+                                            double myu_pat_m1,
+                                            double myu_pat_0,
+                                            double myu_pat_p1,
+                                            double myu_pat_p2,
+                                            double myu_mat_m2,
+                                            double myu_mat_m1,
+                                            double myu_mat_0,
+                                            double myu_mat_p1,
+                                            double myu_mat_p2,
+                                            bool bool_parent_victim,
+                                            bool bool_parent_male){
+  std::vector<double> pgt(2);
+  std::vector<double> cgt(2);
+  double myu_m2;
+  double myu_m1;
+  double myu_0;
+  double myu_p1;
+  double myu_p2;
+
+  if(bool_parent_victim){
+    pgt = dvgt1;
+    cgt = drgt1;
+  }else{
+    pgt = drgt1;
+    cgt = dvgt1;
+  }
+
+  if(bool_parent_male){
+    myu_m2 = myu_pat_m2;
+    myu_m1 = myu_pat_m1;
+    myu_0 = myu_pat_0;
+    myu_p1 = myu_pat_p1;
+    myu_p2 = myu_pat_p2;
+  }else{
+    myu_m2 = myu_mat_m2;
+    myu_m1 = myu_mat_m1;
+    myu_0 = myu_mat_0;
+    myu_p1 = myu_mat_p1;
+    myu_p2 = myu_mat_p2;
+  }
+
+  std::vector<double> myu_per_inheritance(4);
+
+  for(int i = 0; i < 2; ++i){
+    double pal = pgt[i];
+
+    for(int j = 0; j < 2; ++i){
+      double cal = cgt[j];
+
+      double d = cal - pal;
+      if(is_integer(d)){
+        int step = (int)d;
+        if(step == -2){
+          myu_per_inheritance[2 * i + j] = myu_m2;
+        }else if(step == -1){
+          myu_per_inheritance[2 * i + j] = myu_m1;
+        }else if(step == 0){
+          myu_per_inheritance[2 * i + j] = myu_0;
+        }else if(step == 1){
+          myu_per_inheritance[2 * i + j] = myu_p1;
+        }else if(step == 2){
+          myu_per_inheritance[2 * i + j] = myu_p2;
+        }else{
+          myu_per_inheritance[2 * i + j] = 0;
+        }
+      }else{
+        myu_per_inheritance[2 * i + j] = 0;
+      }
+    }
+  }
+
+  return(myu_per_inheritance);
+}
+
+
 /*##########################################################################################
 # The function to calculate likelihoods for pairwise kinship analysis considering drop-out #
 ##########################################################################################*/
 
 // [[Rcpp::export]]
-std::vector<double> calc_kin_like_drop(std::vector<double> vgt, std::vector<double> rgt, std::vector<double> af, std::vector<double> af_al,
-                                       std::vector<double> pibd, double myu, bool cons_mu, bool par_vic){
+std::vector<double> calc_kin_like_drop(std::vector<double> vgt,
+                                       std::vector<double> rgt,
+                                       std::vector<double> af,
+                                       std::vector<double> af_al,
+                                       std::vector<double> pibd,
+                                       double myu_pat_m2,
+                                       double myu_pat_m1,
+                                       double myu_pat_0,
+                                       double myu_pat_p1,
+                                       double myu_pat_p2,
+                                       double myu_mat_m2,
+                                       double myu_mat_m1,
+                                       double myu_mat_0,
+                                       double myu_mat_p1,
+                                       double myu_mat_p2,
+                                       bool bool_pc,
+                                       bool bool_parent_victim,
+                                       bool bool_parent_male){
   double l_h1 = 0;
   double l_h2 = 0;
 
@@ -271,13 +385,35 @@ std::vector<double> calc_kin_like_drop(std::vector<double> vgt, std::vector<doub
   int size_dummy_vgt = dummy_vgt.size();
   int size_dummy_rgt = dummy_rgt.size();
 
+  if(bool_pc){
+    for(int i = 0; i < size_dummy_rgt; ++i){
+      std::vector<double> drgt1 = dummy_rgt.at(i);
+
+      for(int j = 0; j < size_dummy_vgt; ++j){
+        std::vector<double> dvgt1 = dummy_vgt.at(j);
+
+        std::vector<double> myu_per_inheritance = set_myu_per_inheritance(dvgt1, drgt1,
+                                                                          myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
+                                                                          myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
+                                                                          bool_parent_victim, bool_parent_male);
+
+        std::vector<double> l_h12_one = calc_kin_like_pc(dvgt1, drgt1, af_dummy, af_al_dummy, pibd, myu_per_inheritance);
+      }
+    }
+  }else{
+
+  }
+
   for(int i = 0; i < size_dummy_rgt; ++i){
     std::vector<double> drgt1 = dummy_rgt.at(i);
 
     for(int j = 0; j < size_dummy_vgt; ++j){
       std::vector<double> dvgt1 = dummy_vgt.at(j);
 
-      std::vector<double> l_h12_one = calc_kin_like(dvgt1, drgt1, af_dummy, af_al_dummy, pibd, myu, cons_mu, par_vic);
+      std::vector<double> l_h12_one = calc_kin_like(dvgt1, drgt1, af_dummy, af_al_dummy, pibd,
+                                                    myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
+                                                    myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
+                                                    cons_mu, par_vic);
       l_h1 += l_h12_one[0];
       l_h2 += l_h12_one[1];
     }
@@ -295,9 +431,25 @@ std::vector<double> calc_kin_like_drop(std::vector<double> vgt, std::vector<doub
 ##############################################*/
 
 // [[Rcpp::export]]
-std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim, std::vector<double> prof_ref,
-                                             std::vector<std::vector<double>> af_list, std::vector<std::vector<double>> af_al_list,
-                                             std::vector<double> pibd, std::vector<double> myus, bool cons_mu, bool par_vic){
+std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim,
+                                             std::vector<double> prof_ref,
+                                             std::vector<std::vector<double>> af_list,
+                                             std::vector<std::vector<double>> af_al_list,
+                                             std::vector<double> pibd,
+                                             std::vector<double> myus_paternal_m2,
+                                             std::vector<double> myus_paternal_m1,
+                                             std::vector<double> myus_paternal_0,
+                                             std::vector<double> myus_paternal_p1,
+                                             std::vector<double> myus_paternal_p2,
+                                             std::vector<double> myus_maternal_m2,
+                                             std::vector<double> myus_maternal_m1,
+                                             std::vector<double> myus_maternal_0,
+                                             std::vector<double> myus_maternal_p1,
+                                             std::vector<double> myus_maternal_p2,
+                                             bool bool_pc,
+                                             bool bool_parent_victim,
+                                             bool bool_parent_male
+                                             ){
   int n_l = prof_victim.size() / 2;
   std::vector<std::vector<double>> ans(3, std::vector<double>(n_l + 1));
   double cl_h1 = 1;
@@ -319,7 +471,16 @@ std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim, st
     std::vector<double> af = af_list[i];
     std::vector<double> af_al = af_al_list[i];
 
-    double myu = myus[i];
+    double myu_pat_m2 = myus_paternal_m2[i];
+    double myu_pat_m1 = myus_paternal_m1[i];
+    double myu_pat_0 = myus_paternal_0[i];
+    double myu_pat_p1 = myus_paternal_p1[i];
+    double myu_pat_p2 = myus_paternal_p2[i];
+    double myu_mat_m2 = myus_maternal_m2[i];
+    double myu_mat_m1 = myus_maternal_m1[i];
+    double myu_mat_0 = myus_maternal_0[i];
+    double myu_mat_p1 = myus_maternal_p1[i];
+    double myu_mat_p2 = myus_maternal_p2[i];
 
     /* Locus drop-out or no information */
     if(vgt.size() == 0 || rgt.size() == 0){
@@ -329,7 +490,10 @@ std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim, st
 
     /* Calculate likelihoods considering drop-out */
     }else{
-      std::vector<double> like_h12 = calc_kin_like_drop(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic);
+      std::vector<double> like_h12 = calc_kin_like_drop(vgt, rgt, af, af_al, pibd,
+                                                        myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
+                                                        myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
+                                                        bool_pc, bool_parent_victim, bool_parent_male);
 
       ans.at(0).at(i) = like_h12[0];
       ans.at(1).at(i) = like_h12[1];
@@ -359,9 +523,19 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
                                                               std::vector<std::vector<double>> af_al_list,
                                                               std::vector<std::string> names_rel,
                                                               std::vector<std::vector<double>> pibds_rel,
-                                                              std::vector<double> myus,
-                                                              std::vector<bool> cons_mutations,
-                                                              std::vector<bool> parent_victim
+                                                              std::vector<double> myus_paternal_m2,
+                                                              std::vector<double> myus_paternal_m1,
+                                                              std::vector<double> myus_paternal_0,
+                                                              std::vector<double> myus_paternal_p1,
+                                                              std::vector<double> myus_paternal_p2,
+                                                              std::vector<double> myus_maternal_m2,
+                                                              std::vector<double> myus_maternal_m1,
+                                                              std::vector<double> myus_maternal_0,
+                                                              std::vector<double> myus_maternal_p1,
+                                                              std::vector<double> myus_maternal_p2,
+                                                              std::vector<bool> bool_pc_all,
+                                                              std::vector<bool> bool_parent_victim_all,
+                                                              std::vector<bool> bool_parent_male_all
                                                               ){
   /* Call the R function "message" */
   Function message("message");
@@ -384,13 +558,17 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
     int pos_assumed_rel = search_pos_string(names_rel, assumed_rel);
     pibd = pibds_rel.at(pos_assumed_rel);
 
-    bool cons_mu = cons_mutations[pos_assumed_rel];
-    bool par_vic = parent_victim[pos_assumed_rel];
+    bool bool_pc = bool_pc_all[pos_assumed_rel];
+    bool bool_parent_victim = bool_parent_victim_all[pos_assumed_rel];
+    bool bool_parent_male = bool_parent_male_all[pos_assumed_rel];
 
     for(int j = 0; j < n_v; ++j){
       std::vector<double> prof_victim = gt_v_auto.at(j);
 
-      std::vector<std::vector<double>> ans = calc_kin_lr(prof_victim, prof_ref, af_list, af_al_list, pibd, myus, cons_mu, par_vic);
+      std::vector<std::vector<double>> ans = calc_kin_lr(prof_victim, prof_ref, af_list, af_al_list, pibd,
+                                                         myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2,
+                                                         myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2,
+                                                         bool_pc, bool_parent_victim, bool_parent_male);
 
       int pos = n_v * i + j;
 
