@@ -14,16 +14,72 @@ std::vector<double> union_vr_al(std::vector<double> vgt, std::vector<double> rgt
 }
 
 
+/*#################################################################################
+# The function to extract allele probabilities for victim and reference genotypes #
+#################################################################################*/
+
+// [[Rcpp::export]]
+std::vector<double> extract_al_prob(std::vector<double> gt1,
+                                    std::vector<double> gt2,
+                                    std::vector<double> af_dummy,
+                                    std::vector<double> af_al_dummy){
+  std::vector<double> allele_prob(4);
+  for(int i = 0; i < 2; ++i){
+    int pos_af = search_pos_double(af_al_dummy, gt1[i]);
+    allele_prob[i] = af_dummy[pos_af];
+  }
+  for(int i = 0; i < 2; ++i){
+    int pos_af = search_pos_double(af_al_dummy, gt2[i]);
+    allele_prob[i + 2] = af_dummy[pos_af];
+  }
+  return(allele_prob);
+}
+
+
+/*##################################################
+# The function to calculate a genotype probability #
+##################################################*/
+
+// [[Rcpp::export]]
+double calc_gt_prob(std::vector<double> gt,
+                    double al_prob_1,
+                    double al_prob_2){
+  double gt_prob = al_prob_1 * al_prob_2;
+  if(gt[0] != gt[1]){
+    gt_prob *= 2;
+  }
+  return(gt_prob);
+}
+
+
 /*########################################################
 # The function to calculate likelihoods for parent-child #
 ########################################################*/
 
 // [[Rcpp::export]]
-std::vector<double> calc_kin_like_pc(std::vector<double> vgt,
-                                     std::vector<double> rgt,
-                                     std::vector<double> af,
-                                     std::vector<double> af_al){
+std::vector<double> calc_kin_like_pc(std::vector<double> pgt,
+                                     std::vector<double> cgt,
+                                     std::vector<double> al_prob,
+                                     std::vector<double> myu_per_inheritance){
   std::vector<double> like_h12(2);
+
+  double a, b, c, d;
+  a = al_prob[0];
+  b = al_prob[1];
+  c = al_prob[2];
+  d = al_prob[3];
+
+  double myu1, myu2, myu3, myu4;
+  myu1 = myu_per_inheritance[0];
+  myu2 = myu_per_inheritance[1];
+  myu3 = myu_per_inheritance[2];
+  myu4 = myu_per_inheritance[3];
+
+  double pgt_prob = calc_gt_prob(pgt, a, b);
+  double cgt_prob = calc_gt_prob(cgt, c, d);
+
+  like_h12[0] = 0.5 * pgt_prob * (myu1 * d + myu2 * c + myu3 * d + myu4 * c);
+  like_h12[1] = pgt_prob * cgt_prob;
 
   return(like_h12);
 }
@@ -34,56 +90,48 @@ std::vector<double> calc_kin_like_pc(std::vector<double> vgt,
 #####################################################################*/
 
 // [[Rcpp::export]]
-std::vector<double> calc_kin_like(std::vector<double> vgt, std::vector<double> rgt, std::vector<double> af, std::vector<double> af_al,
-                                  std::vector<double> pibd, double myu, bool cons_mu, bool par_vic){
+std::vector<double> calc_kin_like(std::vector<double> vgt,
+                                  std::vector<double> rgt,
+                                  std::vector<double> al_prob,
+                                  std::vector<double> pibd){
   std::vector<double> like_h12(2);
 
-  std::sort(vgt.begin(), vgt.end());
-  vgt.erase(std::unique(vgt.begin(), vgt.end()), vgt.end());
-  std::sort(rgt.begin(), rgt.end());
-  rgt.erase(std::unique(rgt.begin(), rgt.end()), rgt.end());
+  double a, b, c, d;
+  a = al_prob[0];
+  b = al_prob[1];
+  c = al_prob[2];
+  d = al_prob[3];
+
+  double vgt_prob = calc_gt_prob(vgt, a, b);
+  double rgt_prob = calc_gt_prob(rgt, c, d);
 
   double k2 = pibd[0];
   double k1 = pibd[1] / 2;
   double k0 = pibd[2];
 
-  int size_vgt = vgt.size();
-  int size_rgt = rgt.size();
+  std::vector<double> v_al = vgt;
+  std::sort(v_al.begin(), v_al.end());
+  v_al.erase(std::unique(v_al.begin(), v_al.end()), v_al.end());
 
-  double a, b, c, d;
-  if(size_vgt == 1){
-    int pos_v = search_pos_double(af_al, vgt[0]);
-    a = af[pos_v];
-    b = af[pos_v];
-  }else{
-    int pos_v1 = search_pos_double(af_al, vgt[0]);
-    a = af[pos_v1];
-    int pos_v2 = search_pos_double(af_al, vgt[1]);
-    b = af[pos_v2];
-  }
-  if(size_rgt == 1){
-    int pos_r = search_pos_double(af_al, rgt[0]);
-    c = af[pos_r];
-    d = af[pos_r];
-  }else{
-    int pos_r1 = search_pos_double(af_al, rgt[0]);
-    c = af[pos_r1];
-    int pos_r2 = search_pos_double(af_al, rgt[1]);
-    d = af[pos_r2];
-  }
+  std::vector<double> r_al = rgt;
+  std::sort(r_al.begin(), r_al.end());
+  r_al.erase(std::unique(r_al.begin(), r_al.end()), r_al.end());
 
-  std::vector<double> uniq_vr_al = union_vr_al(vgt, rgt);
-  bool presence_v1 = search_pos_double(rgt, vgt[0]) != size_rgt;
-  bool presence_v2;
-  if(size_vgt == 2){
-    presence_v2 = search_pos_double(rgt, vgt[1]) != size_rgt;
+  int size_v_al = v_al.size();
+  int size_r_al = r_al.size();
+
+  std::vector<double> uniq_vr_al = union_vr_al(v_al, r_al);
+  bool presence_r1 = search_pos_double(v_al, r_al[0]) != size_v_al;
+  bool presence_r2;
+  if(size_r_al == 2){
+    presence_r2 = search_pos_double(v_al, r_al[1]) != size_v_al;
   }else{
-    presence_v2 = search_pos_double(rgt, vgt[0]) != size_rgt;
+    presence_r2 = search_pos_double(v_al, r_al[0]) != size_v_al;
   }
   bool equal_vr = true;
-  if(size_vgt == size_rgt){
-    for(int i = 0; i < size_vgt; ++i){
-      bool equal_al = vgt[i] == rgt[i];
+  if(size_v_al == size_r_al){
+    for(int i = 0; i < size_v_al; ++i){
+      bool equal_al = v_al[i] == r_al[i];
       if(!equal_al){
         equal_vr = false;
         break;
@@ -93,91 +141,26 @@ std::vector<double> calc_kin_like(std::vector<double> vgt, std::vector<double> r
     equal_vr = false;
   }
 
-  if(!presence_v1 && !presence_v2){
-    if(cons_mu){
-      if(size_vgt == 1){
-        if(size_rgt == 1){
-          if(par_vic){
-            like_h12[0] = a * a * myu * c;
-            like_h12[1] = a * a * c * c;
-          }else{
-            like_h12[0] = c * c * myu * a;
-            like_h12[1] = c * c * a * a;
-          }
-        }else{
-          if(par_vic){
-            like_h12[0] = a * a * myu * (c + d);
-            like_h12[1] =  a * a * 2 * c * d;
-          }else{
-            like_h12[0] = 2 * c * d * myu * a;
-            like_h12[1] = 2 * c * d * a * a;
-          }
-        }
-      }else{
-        if(size_rgt == 1){
-          if(par_vic){
-            like_h12[0] = 2 * a * b * myu * c;
-            like_h12[1] = 2 * a * b * c * c;
-          }else{
-            like_h12[0] = c * c * myu * (a + b);
-            like_h12[1] = c * c * 2 * a * b;
-          }
-        }else{
-          if(par_vic){
-            like_h12[0] = 2 * a * b * myu * (c + d);
-            like_h12[1] = 2 * a * b * 2 * c * d;
-          }else{
-            like_h12[0] = 2 * c * d * myu * (a + b);
-            like_h12[1] = 2 * c * d * 2 * a * b;
-          }
-        }
-      }
-    }else{
-      if(size_vgt == 1){
-        if(size_rgt == 1){
-          like_h12[0] = c * c * k0 * a * a;
-          like_h12[1] = c * c * a * a;
-        }else{
-          like_h12[0] = 2 * c * d * k0 * a * a;
-          like_h12[1] = 2 * c * d * a * a;
-        }
-      }else{
-        if(size_rgt == 1){
-          like_h12[0] = c * c * k0 * 2 * a * b;
-          like_h12[1] = c * c * 2 * a * b;
-        }else{
-          like_h12[0] = 2 * c * d * k0 * 2 * a * b;
-          like_h12[1] = 2 * c * d * 2 * a * b;
-        }
-      }
-    }
+  like_h12[1] = vgt_prob * rgt_prob;
+
+  if(!presence_r1 && !presence_r2){
+    like_h12[0] = vgt_prob * rgt_prob * k0;
   }else if(equal_vr){
-    if(size_vgt == 1){
-      like_h12[0] = c * c * (k2 + 2 * a * k1 + a * a * k0);
-      like_h12[1] = c * c * a * a;
-    }else{
-      like_h12[0] = 2 * c * d * (k2 + a * k1 + b * k1 + 2 * a * b * k0);
-      like_h12[1] = 2 * c * d * 2 * a * b;
-    }
+    like_h12[0] = vgt_prob * (k2 + c * k1 + d * k1 + rgt_prob * k0);
   }else if(uniq_vr_al.size() == 3){
-    if(presence_v1){
-      like_h12[0] = 2 * c * d * (b * k1 + 2 * a * b * k0);
-      like_h12[1] = 2 * c * d * 2 * a * b;
+    if(presence_r1){
+      like_h12[0] = vgt_prob * (d * k1 + rgt_prob * k0);
     }else{
-      like_h12[0] = 2 * c * d * (a * k1 + 2 * a * b * k0);
-      like_h12[1] = 2 * c * d * 2 * a * b;
+      like_h12[0] = vgt_prob * (c * k1 + rgt_prob * k0);
     }
   }else{
-    if(size_vgt == 1){
-      like_h12[0] = 2 * c * d * (a * k1 + a * a * k0);
-      like_h12[1] = 2 * c * d * a * a;
+    if(size_r_al == 1){
+      like_h12[0] = vgt_prob * (c * k1 + rgt_prob * k0);
     }else{
-      if(presence_v1){
-        like_h12[0] = c * c * (2 * b * k1 + 2 * a * b * k0);
-        like_h12[1] = c * c * 2 * a * b;
+      if(presence_r1){
+        like_h12[0] = vgt_prob * (2 * d * k1 + rgt_prob * k0);
       }else{
-        like_h12[0] = c * c * (2 * a * k1 + 2 * a * b * k0);
-        like_h12[1] = c * c * 2 * a * b;
+        like_h12[0] = vgt_prob * (2 * c * k1 + rgt_prob * k0);
       }
     }
   }
@@ -231,14 +214,14 @@ std::vector<std::vector<double>> make_dummy_af(std::vector<double> uniq_vr_al, s
 ###################################################################*/
 
 // [[Rcpp::export]]
-std::vector<std::vector<double>> make_dummy_gt(std::vector<double> target_gt, std::vector<double> uniq_vr_al){
-  int size_target_gt = target_gt.size();
+std::vector<std::vector<double>> make_dummy_gt(std::vector<double> target_al, std::vector<double> uniq_vr_al){
+  int size_target_al = target_al.size();
 
   /* No drop-out */
-  if(size_target_gt == 2){
+  if(size_target_al == 2){
     std::vector<std::vector<double>> dummy_gt(1, std::vector<double>(2));
-    dummy_gt.at(0).at(0) = target_gt[0];
-    dummy_gt.at(0).at(1) = target_gt[1];
+    dummy_gt.at(0).at(0) = target_al[0];
+    dummy_gt.at(0).at(1) = target_al[1];
 
     return(dummy_gt);
 
@@ -249,14 +232,14 @@ std::vector<std::vector<double>> make_dummy_gt(std::vector<double> target_gt, st
 
     for(int i = 0; i < size_uniq_vr_al; ++i){
       std::vector<double> dummy_gt_one(2);
-      dummy_gt_one[0] = target_gt[0];
+      dummy_gt_one[0] = target_al[0];
       dummy_gt_one[1] = uniq_vr_al[i];
 
       std::sort(dummy_gt_one.begin(), dummy_gt_one.end());
       dummy_gt.at(i) = dummy_gt_one;
     }
 
-    dummy_gt.at(size_uniq_vr_al).at(0) = target_gt[0];
+    dummy_gt.at(size_uniq_vr_al).at(0) = target_al[0];
     dummy_gt.at(size_uniq_vr_al).at(1) = 99;
 
     return(dummy_gt);
@@ -269,8 +252,8 @@ std::vector<std::vector<double>> make_dummy_gt(std::vector<double> target_gt, st
 ############################################################*/
 
 // [[Rcpp::export]]
-std::vector<double> set_myu_per_inheritance(std::vector<double> dvgt1,
-                                            std::vector<double> drgt1,
+std::vector<double> set_myu_per_inheritance(std::vector<double> pgt,
+                                            std::vector<double> cgt,
                                             double myu_pat_m2,
                                             double myu_pat_m1,
                                             double myu_pat_0,
@@ -283,22 +266,11 @@ std::vector<double> set_myu_per_inheritance(std::vector<double> dvgt1,
                                             double myu_mat_p2,
                                             bool bool_parent_victim,
                                             bool bool_parent_male){
-  std::vector<double> pgt(2);
-  std::vector<double> cgt(2);
   double myu_m2;
   double myu_m1;
   double myu_0;
   double myu_p1;
   double myu_p2;
-
-  if(bool_parent_victim){
-    pgt = dvgt1;
-    cgt = drgt1;
-  }else{
-    pgt = drgt1;
-    cgt = dvgt1;
-  }
-
   if(bool_parent_male){
     myu_m2 = myu_pat_m2;
     myu_m1 = myu_pat_m1;
@@ -352,8 +324,8 @@ std::vector<double> set_myu_per_inheritance(std::vector<double> dvgt1,
 ##########################################################################################*/
 
 // [[Rcpp::export]]
-std::vector<double> calc_kin_like_drop(std::vector<double> vgt,
-                                       std::vector<double> rgt,
+std::vector<double> calc_kin_like_drop(std::vector<double> v_al,
+                                       std::vector<double> r_al,
                                        std::vector<double> af,
                                        std::vector<double> af_al,
                                        std::vector<double> pibd,
@@ -373,10 +345,10 @@ std::vector<double> calc_kin_like_drop(std::vector<double> vgt,
   double l_h1 = 0;
   double l_h2 = 0;
 
-  std::vector<double> uniq_vr_al = union_vr_al(vgt, rgt);
+  std::vector<double> uniq_vr_al = union_vr_al(v_al, r_al);
 
-  std::vector<std::vector<double>> dummy_vgt = make_dummy_gt(vgt, uniq_vr_al);
-  std::vector<std::vector<double>> dummy_rgt = make_dummy_gt(rgt, uniq_vr_al);
+  std::vector<std::vector<double>> dummy_vgt = make_dummy_gt(v_al, uniq_vr_al);
+  std::vector<std::vector<double>> dummy_rgt = make_dummy_gt(r_al, uniq_vr_al);
 
   std::vector<std::vector<double>> dummy_af_data = make_dummy_af(uniq_vr_al, af, af_al);
   std::vector<double> af_dummy = dummy_af_data.at(0);
@@ -392,30 +364,41 @@ std::vector<double> calc_kin_like_drop(std::vector<double> vgt,
       for(int j = 0; j < size_dummy_vgt; ++j){
         std::vector<double> dvgt1 = dummy_vgt.at(j);
 
-        std::vector<double> myu_per_inheritance = set_myu_per_inheritance(dvgt1, drgt1,
+        std::vector<double> pgt(2);
+        std::vector<double> cgt(2);
+        if(bool_parent_victim){
+          pgt = dvgt1;
+          cgt = drgt1;
+        }else{
+          pgt = drgt1;
+          cgt = dvgt1;
+        }
+
+        std::vector<double> myu_per_inheritance = set_myu_per_inheritance(pgt, cgt,
                                                                           myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
                                                                           myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
                                                                           bool_parent_victim, bool_parent_male);
 
-        std::vector<double> l_h12_one = calc_kin_like_pc(dvgt1, drgt1, af_dummy, af_al_dummy, pibd, myu_per_inheritance);
+        std::vector<double> al_prob = extract_al_prob(pgt, cgt, af_dummy, af_al_dummy);
+
+        std::vector<double> l_h12_one = calc_kin_like_pc(pgt, cgt, al_prob, myu_per_inheritance);
+        l_h1 += l_h12_one[0];
+        l_h2 += l_h12_one[1];
       }
     }
   }else{
+    for(int i = 0; i < size_dummy_rgt; ++i){
+      std::vector<double> drgt1 = dummy_rgt.at(i);
 
-  }
+      for(int j = 0; j < size_dummy_vgt; ++j){
+        std::vector<double> dvgt1 = dummy_vgt.at(j);
 
-  for(int i = 0; i < size_dummy_rgt; ++i){
-    std::vector<double> drgt1 = dummy_rgt.at(i);
+        std::vector<double> al_prob = extract_al_prob(dvgt1, drgt1, af_dummy, af_al_dummy);
 
-    for(int j = 0; j < size_dummy_vgt; ++j){
-      std::vector<double> dvgt1 = dummy_vgt.at(j);
-
-      std::vector<double> l_h12_one = calc_kin_like(dvgt1, drgt1, af_dummy, af_al_dummy, pibd,
-                                                    myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
-                                                    myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
-                                                    cons_mu, par_vic);
-      l_h1 += l_h12_one[0];
-      l_h2 += l_h12_one[1];
+        std::vector<double> l_h12_one = calc_kin_like(dvgt1, drgt1, al_prob, pibd);
+        l_h1 += l_h12_one[0];
+        l_h2 += l_h12_one[1];
+      }
     }
   }
 
@@ -456,17 +439,17 @@ std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim,
   double cl_h2 = 1;
 
   for(int i = 0; i < n_l; ++i){
-    std::vector<double> vgt(2);
-    vgt[0] = prof_victim[2 * i];
-    vgt[1] = prof_victim[2 * i + 1];
-    auto vgt_end = std::remove(vgt.begin(), vgt.end(), -99);
-    vgt.erase(vgt_end, vgt.cend());
+    std::vector<double> v_al(2);
+    v_al[0] = prof_victim[2 * i];
+    v_al[1] = prof_victim[2 * i + 1];
+    auto v_al_end = std::remove(v_al.begin(), v_al.end(), -99);
+    v_al.erase(v_al_end, v_al.cend());
 
-    std::vector<double> rgt(2);
-    rgt[0] = prof_ref[2 * i];
-    rgt[1] = prof_ref[2 * i + 1];
-    auto rgt_end = std::remove(rgt.begin(), rgt.end(), -99);
-    rgt.erase(rgt_end, rgt.cend());
+    std::vector<double> r_al(2);
+    r_al[0] = prof_ref[2 * i];
+    r_al[1] = prof_ref[2 * i + 1];
+    auto r_al_end = std::remove(r_al.begin(), r_al.end(), -99);
+    r_al.erase(r_al_end, r_al.cend());
 
     std::vector<double> af = af_list[i];
     std::vector<double> af_al = af_al_list[i];
@@ -483,14 +466,14 @@ std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim,
     double myu_mat_p2 = myus_maternal_p2[i];
 
     /* Locus drop-out or no information */
-    if(vgt.size() == 0 || rgt.size() == 0){
+    if(v_al.size() == 0 || r_al.size() == 0){
       ans.at(0).at(i) = 1;
       ans.at(1).at(i) = 1;
       ans.at(2).at(i) = 1;
 
     /* Calculate likelihoods considering drop-out */
     }else{
-      std::vector<double> like_h12 = calc_kin_like_drop(vgt, rgt, af, af_al, pibd,
+      std::vector<double> like_h12 = calc_kin_like_drop(v_al, r_al, af, af_al, pibd,
                                                         myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
                                                         myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
                                                         bool_pc, bool_parent_victim, bool_parent_male);

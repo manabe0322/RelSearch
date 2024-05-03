@@ -5,28 +5,44 @@ union_vr_al <- function(vgt, rgt) {
     .Call(`_relsearch_union_vr_al`, vgt, rgt)
 }
 
-calc_kin_like <- function(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic) {
-    .Call(`_relsearch_calc_kin_like`, vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
+extract_al_prob <- function(gt1, gt2, af_dummy, af_al_dummy) {
+    .Call(`_relsearch_extract_al_prob`, gt1, gt2, af_dummy, af_al_dummy)
+}
+
+calc_gt_prob <- function(gt, al_prob_1, al_prob_2) {
+    .Call(`_relsearch_calc_gt_prob`, gt, al_prob_1, al_prob_2)
+}
+
+calc_kin_like_pc <- function(pgt, cgt, al_prob, myu_per_inheritance) {
+    .Call(`_relsearch_calc_kin_like_pc`, pgt, cgt, al_prob, myu_per_inheritance)
+}
+
+calc_kin_like <- function(vgt, rgt, al_prob, pibd) {
+    .Call(`_relsearch_calc_kin_like`, vgt, rgt, al_prob, pibd)
 }
 
 make_dummy_af <- function(uniq_vr_al, af, af_al) {
     .Call(`_relsearch_make_dummy_af`, uniq_vr_al, af, af_al)
 }
 
-make_dummy_gt <- function(target_gt, uniq_vr_al) {
-    .Call(`_relsearch_make_dummy_gt`, target_gt, uniq_vr_al)
+make_dummy_gt <- function(target_al, uniq_vr_al) {
+    .Call(`_relsearch_make_dummy_gt`, target_al, uniq_vr_al)
 }
 
-calc_kin_like_drop <- function(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic) {
-    .Call(`_relsearch_calc_kin_like_drop`, vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
+set_myu_per_inheritance <- function(pgt, cgt, myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2, myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2, bool_parent_victim, bool_parent_male) {
+    .Call(`_relsearch_set_myu_per_inheritance`, pgt, cgt, myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2, myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2, bool_parent_victim, bool_parent_male)
 }
 
-calc_kin_lr <- function(prof_victim, prof_ref, af_list, af_al_list, pibd, myus, cons_mu, par_vic) {
-    .Call(`_relsearch_calc_kin_lr`, prof_victim, prof_ref, af_list, af_al_list, pibd, myus, cons_mu, par_vic)
+calc_kin_like_drop <- function(v_al, r_al, af, af_al, pibd, myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2, myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2, bool_pc, bool_parent_victim, bool_parent_male) {
+    .Call(`_relsearch_calc_kin_like_drop`, v_al, r_al, af, af_al, pibd, myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2, myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2, bool_pc, bool_parent_victim, bool_parent_male)
 }
 
-calc_kin_lr_all <- function(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel, myus, cons_mutations, parent_victim) {
-    .Call(`_relsearch_calc_kin_lr_all`, gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel, myus, cons_mutations, parent_victim)
+calc_kin_lr <- function(prof_victim, prof_ref, af_list, af_al_list, pibd, myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2, myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2, bool_pc, bool_parent_victim, bool_parent_male) {
+    .Call(`_relsearch_calc_kin_lr`, prof_victim, prof_ref, af_list, af_al_list, pibd, myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2, myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2, bool_pc, bool_parent_victim, bool_parent_male)
+}
+
+calc_kin_lr_all <- function(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel, myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2, myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2, bool_pc_all, bool_parent_victim_all, bool_parent_male_all) {
+    .Call(`_relsearch_calc_kin_lr_all`, gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel, myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2, myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2, bool_pc_all, bool_parent_victim_all, bool_parent_male_all)
 }
 
 split <- function(str, del) {
