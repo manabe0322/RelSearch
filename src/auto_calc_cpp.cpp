@@ -78,7 +78,11 @@ std::vector<double> calc_kin_like_pc(std::vector<double> pgt,
   double pgt_prob = calc_gt_prob(pgt, a, b);
   double cgt_prob = calc_gt_prob(cgt, c, d);
 
-  like_h12[0] = 0.5 * pgt_prob * (myu1 * d + myu2 * c + myu3 * d + myu4 * c);
+  if(cgt[0] == cgt[1]){ /* homozygote of cgt: myu1 = myu2, myu3 = myu4, c = d */
+    like_h12[0] = 0.5 * pgt_prob * (myu1 * c + myu3 * c);
+  }else{
+    like_h12[0] = 0.5 * pgt_prob * (myu1 * d + myu2 * c + myu3 * d + myu4 * c);
+  }
   like_h12[1] = pgt_prob * cgt_prob;
 
   return(like_h12);
@@ -264,7 +268,6 @@ std::vector<double> set_myu_per_inheritance(std::vector<double> pgt,
                                             double myu_mat_0,
                                             double myu_mat_p1,
                                             double myu_mat_p2,
-                                            bool bool_parent_victim,
                                             bool bool_parent_male){
   double myu_m2;
   double myu_m1;
@@ -290,7 +293,7 @@ std::vector<double> set_myu_per_inheritance(std::vector<double> pgt,
   for(int i = 0; i < 2; ++i){
     double pal = pgt[i];
 
-    for(int j = 0; j < 2; ++i){
+    for(int j = 0; j < 2; ++j){
       double cal = cgt[j];
 
       double d = cal - pal;
@@ -377,7 +380,7 @@ std::vector<double> calc_kin_like_drop(std::vector<double> v_al,
         std::vector<double> myu_per_inheritance = set_myu_per_inheritance(pgt, cgt,
                                                                           myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
                                                                           myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
-                                                                          bool_parent_victim, bool_parent_male);
+                                                                          bool_parent_male);
 
         std::vector<double> al_prob = extract_al_prob(pgt, cgt, af_dummy, af_al_dummy);
 

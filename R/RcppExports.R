@@ -29,8 +29,8 @@ make_dummy_gt <- function(target_al, uniq_vr_al) {
     .Call(`_relsearch_make_dummy_gt`, target_al, uniq_vr_al)
 }
 
-set_myu_per_inheritance <- function(pgt, cgt, myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2, myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2, bool_parent_victim, bool_parent_male) {
-    .Call(`_relsearch_set_myu_per_inheritance`, pgt, cgt, myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2, myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2, bool_parent_victim, bool_parent_male)
+set_myu_per_inheritance <- function(pgt, cgt, myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2, myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2, bool_parent_male) {
+    .Call(`_relsearch_set_myu_per_inheritance`, pgt, cgt, myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2, myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2, bool_parent_male)
 }
 
 calc_kin_like_drop <- function(v_al, r_al, af, af_al, pibd, myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2, myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2, bool_pc, bool_parent_victim, bool_parent_male) {

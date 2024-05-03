@@ -103,8 +103,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // set_myu_per_inheritance
-std::vector<double> set_myu_per_inheritance(std::vector<double> pgt, std::vector<double> cgt, double myu_pat_m2, double myu_pat_m1, double myu_pat_0, double myu_pat_p1, double myu_pat_p2, double myu_mat_m2, double myu_mat_m1, double myu_mat_0, double myu_mat_p1, double myu_mat_p2, bool bool_parent_victim, bool bool_parent_male);
-RcppExport SEXP _relsearch_set_myu_per_inheritance(SEXP pgtSEXP, SEXP cgtSEXP, SEXP myu_pat_m2SEXP, SEXP myu_pat_m1SEXP, SEXP myu_pat_0SEXP, SEXP myu_pat_p1SEXP, SEXP myu_pat_p2SEXP, SEXP myu_mat_m2SEXP, SEXP myu_mat_m1SEXP, SEXP myu_mat_0SEXP, SEXP myu_mat_p1SEXP, SEXP myu_mat_p2SEXP, SEXP bool_parent_victimSEXP, SEXP bool_parent_maleSEXP) {
+std::vector<double> set_myu_per_inheritance(std::vector<double> pgt, std::vector<double> cgt, double myu_pat_m2, double myu_pat_m1, double myu_pat_0, double myu_pat_p1, double myu_pat_p2, double myu_mat_m2, double myu_mat_m1, double myu_mat_0, double myu_mat_p1, double myu_mat_p2, bool bool_parent_male);
+RcppExport SEXP _relsearch_set_myu_per_inheritance(SEXP pgtSEXP, SEXP cgtSEXP, SEXP myu_pat_m2SEXP, SEXP myu_pat_m1SEXP, SEXP myu_pat_0SEXP, SEXP myu_pat_p1SEXP, SEXP myu_pat_p2SEXP, SEXP myu_mat_m2SEXP, SEXP myu_mat_m1SEXP, SEXP myu_mat_0SEXP, SEXP myu_mat_p1SEXP, SEXP myu_mat_p2SEXP, SEXP bool_parent_maleSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -120,9 +120,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type myu_mat_0(myu_mat_0SEXP);
     Rcpp::traits::input_parameter< double >::type myu_mat_p1(myu_mat_p1SEXP);
     Rcpp::traits::input_parameter< double >::type myu_mat_p2(myu_mat_p2SEXP);
-    Rcpp::traits::input_parameter< bool >::type bool_parent_victim(bool_parent_victimSEXP);
     Rcpp::traits::input_parameter< bool >::type bool_parent_male(bool_parent_maleSEXP);
-    rcpp_result_gen = Rcpp::wrap(set_myu_per_inheritance(pgt, cgt, myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2, myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2, bool_parent_victim, bool_parent_male));
+    rcpp_result_gen = Rcpp::wrap(set_myu_per_inheritance(pgt, cgt, myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2, myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2, bool_parent_male));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -471,7 +470,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_relsearch_calc_kin_like", (DL_FUNC) &_relsearch_calc_kin_like, 4},
     {"_relsearch_make_dummy_af", (DL_FUNC) &_relsearch_make_dummy_af, 3},
     {"_relsearch_make_dummy_gt", (DL_FUNC) &_relsearch_make_dummy_gt, 2},
-    {"_relsearch_set_myu_per_inheritance", (DL_FUNC) &_relsearch_set_myu_per_inheritance, 14},
+    {"_relsearch_set_myu_per_inheritance", (DL_FUNC) &_relsearch_set_myu_per_inheritance, 13},
     {"_relsearch_calc_kin_like_drop", (DL_FUNC) &_relsearch_calc_kin_like_drop, 18},
     {"_relsearch_calc_kin_lr", (DL_FUNC) &_relsearch_calc_kin_lr, 18},
     {"_relsearch_calc_kin_lr_all", (DL_FUNC) &_relsearch_calc_kin_lr_all, 20},
