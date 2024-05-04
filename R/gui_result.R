@@ -600,11 +600,11 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
         output$result_assumed_rel <- renderDataTable(server = FALSE, {
           datatable(
             dt_rel,
-            colnames = c("Relationship", "Victim", "Reference", "Pr (IBD = 2)", "Pr (IBD = 1)", "Pr (IBD = 0)", "Paternal lineage", "Maternal lineage",
+            colnames = c("Relationship", "Pr (IBD = 2)", "Pr (IBD = 1)", "Pr (IBD = 0)", "Paternal lineage", "Maternal lineage",
                          "Tree_persons", "Tree_sexes", "Tree_fathers", "Tree_mothers", "Tree_founders"),
             selection = list(mode = "single", target = "row"),
             options = list(iDisplayLength = 10, ordering = FALSE,
-                           columnDefs = list(list(targets = 8:12, visible = FALSE))
+                           columnDefs = list(list(targets = 6:10, visible = FALSE))
             ),
             rownames = FALSE
           )
@@ -647,7 +647,7 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
         output$result_myu <- renderDataTable(server = FALSE, {
           datatable(
             dt_myu,
-            colnames = c("Locus", "Mutation rates"),
+            colnames = c("Locus", "Paternal -2 step", "Paternal -1 step", "Paternal 0 step", "Paternal +1 step", "Paternal +2 step", "Maternal -2 step", "Maternal -1 step", "Maternal 0 step", "Maternal +1 step", "Maternal +2 step"),
             selection = "none",
             options = list(iDisplayLength = 50, ordering = FALSE),
             rownames = FALSE

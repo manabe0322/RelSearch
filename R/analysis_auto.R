@@ -102,7 +102,8 @@ make_info_myu <- function(dt_rel){
   tree_sexes_pc <- tree_sexes[bool_pc_all]
   tree_sexes_pc_split <- strsplit(tree_sexes_pc, ", ")
 
-  n_pc <- length(which(index_pc))
+  index_pc <- which(bool_pc_all)
+  n_pc <- length(index_pc)
   bool_parent_victim_all <- bool_parent_male_all <- rep(FALSE, nrow(dt_rel))
   if(n_pc != 0){
     for(i in 1:n_pc){
@@ -120,8 +121,8 @@ make_info_myu <- function(dt_rel){
   }
 
   return(list("bool_pc_all" = bool_pc_all,
-              "bool_parent_victim_all" = bool_parent_victim,
-              "bool_parent_male_all" = bool_parent_male))
+              "bool_parent_victim_all" = bool_parent_victim_all,
+              "bool_parent_male_all" = bool_parent_male_all))
 }
 
 #' make_dt_af_use

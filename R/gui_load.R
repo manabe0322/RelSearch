@@ -63,7 +63,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_aut
 
       observe({
         req(rv_rel)
-        rv_file$dt_rel <- data.table(Relationship = rv_rel$name, Victim = rv_rel$victim, Reference = rv_rel$reference,
+        rv_file$dt_rel <- data.table(Relationship = rv_rel$name,
                                      Pr_IBD2 = rv_rel$pibd2, Pr_IBD1 = rv_rel$pibd1, Pr_IBD0 = rv_rel$pibd0,
                                      Paternal = rv_rel$paternal, Maternal = rv_rel$maternal,
                                      Tree_persons = rv_rel$tree_persons, Tree_sexes = rv_rel$tree_sexes, Tree_fathers = rv_rel$tree_fathers, Tree_mothers = rv_rel$tree_mothers, Tree_founders = rv_rel$tree_founders)

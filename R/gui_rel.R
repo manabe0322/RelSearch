@@ -48,8 +48,6 @@ tab_rel_server <- function(id, path_pack){
       init_dt_rel <- create_dt_rel(path_pack)
       rv_rel <- reactiveValues()
       rv_rel$name <- init_dt_rel[, Relationship]
-      rv_rel$victim <- init_dt_rel[, Victim]
-      rv_rel$reference <- init_dt_rel[, Reference]
       rv_rel$pibd2 <- init_dt_rel[, Pr_IBD2]
       rv_rel$pibd1 <- init_dt_rel[, Pr_IBD1]
       rv_rel$pibd0 <- init_dt_rel[, Pr_IBD0]
@@ -98,7 +96,7 @@ tab_rel_server <- function(id, path_pack){
 
         rv_rel$name[rv_rel$name == rel_old_edit] <- rel_new_edit
 
-        new_dt_rel <- data.table(Relationship = rv_rel$name, Victim = rv_rel$victim, Reference = rv_rel$reference,
+        new_dt_rel <- data.table(Relationship = rv_rel$name,
                                  Pr_IBD2 = rv_rel$pibd2, Pr_IBD1 = rv_rel$pibd1, Pr_IBD0 = rv_rel$pibd0,
                                  Paternal = rv_rel$paternal, Maternal = rv_rel$maternal,
                                  Tree_persons = rv_rel$tree_persons, Tree_sexes = rv_rel$tree_sexes, Tree_fathers = rv_rel$tree_fathers, Tree_mothers = rv_rel$tree_mothers, Tree_founders = rv_rel$tree_founders)
@@ -108,11 +106,11 @@ tab_rel_server <- function(id, path_pack){
         output$dt_rel <- renderDataTable({
           datatable(
             new_dt_rel,
-            colnames = c("Relationship", "Victim", "Reference", "Pr (IBD = 2)", "Pr (IBD = 1)", "Pr (IBD = 0)", "Paternal lineage", "Maternal lineage",
+            colnames = c("Relationship", "Pr (IBD = 2)", "Pr (IBD = 1)", "Pr (IBD = 0)", "Paternal lineage", "Maternal lineage",
                          "Tree_persons", "Tree_sexes", "Tree_fathers", "Tree_mothers", "Tree_founders"),
             selection = list(mode = "single", target = "row"),
             options = list(iDisplayLength = 10, ordering = FALSE,
-                           columnDefs = list(list(targets = 8:12, visible = FALSE))
+                           columnDefs = list(list(targets = 6:10, visible = FALSE))
             ),
             rownames = FALSE
           )
@@ -186,9 +184,7 @@ tab_rel_server <- function(id, path_pack){
           disable("act_rel_add_save")
         }else{
           rel_add <- input$input_rel_add
-          vic_add <- input$input_vic_add
-          ref_add <- input$input_ref_add
-          if(all(nchar(rel_add) != 0, !is.element(rel_add, rv_rel$name), nchar(vic_add) != 0, nchar(ref_add) != 0)){
+          if(all(nchar(rel_add) != 0, !is.element(rel_add, rv_rel$name))){
             enable("act_rel_add_save")
           }
         }
@@ -201,9 +197,7 @@ tab_rel_server <- function(id, path_pack){
           fluidRow(
             column(5,
                    wellPanel(
-                     textInput(session$ns("input_rel_add"), label = "Relationship", value = NULL),
-                     textInput(session$ns("input_vic_add"), label = "Victim", value = NULL),
-                     textInput(session$ns("input_ref_add"), label = "Reference", value = NULL)
+                     textInput(session$ns("input_rel_add"), label = "Relationship", value = NULL)
                    )
             ),
             column(7,
@@ -273,24 +267,6 @@ tab_rel_server <- function(id, path_pack){
           disable("act_rel_add_save")
         }else{
           hideFeedback("input_rel_add")
-          state_save_butt()
-        }
-      }, ignoreInit = TRUE)
-
-      observeEvent(input$input_vic_add, {
-        vic_add <- input$input_vic_add
-        if(nchar(vic_add) == 0){
-          disable("act_rel_add_save")
-        }else{
-          state_save_butt()
-        }
-      }, ignoreInit = TRUE)
-
-      observeEvent(input$input_ref_add, {
-        ref_add <- input$input_ref_add
-        if(nchar(ref_add) == 0){
-          disable("act_rel_add_save")
-        }else{
           state_save_butt()
         }
       }, ignoreInit = TRUE)
@@ -596,8 +572,6 @@ tab_rel_server <- function(id, path_pack){
 
         # Update information on the relationship
         rv_rel$name <- c(rv_rel$name, input$input_rel_add)
-        rv_rel$victim <- c(rv_rel$victim, input$input_vic_add)
-        rv_rel$reference <- c(rv_rel$reference, input$input_ref_add)
         rv_rel$pibd2 <- c(rv_rel$pibd2, pibd[1])
         rv_rel$pibd1 <- c(rv_rel$pibd1, pibd[2])
         rv_rel$pibd0 <- c(rv_rel$pibd0, pibd[3])
@@ -609,7 +583,7 @@ tab_rel_server <- function(id, path_pack){
         rv_rel$tree_mothers <- c(rv_rel$tree_mothers, paste(mid, collapse = ", "))
         rv_rel$tree_founders <- c(rv_rel$tree_founders, paste(founder_info, collapse = ", "))
 
-        new_dt_rel <- data.table(Relationship = rv_rel$name, Victim = rv_rel$victim, Reference = rv_rel$reference,
+        new_dt_rel <- data.table(Relationship = rv_rel$name,
                                  Pr_IBD2 = rv_rel$pibd2, Pr_IBD1 = rv_rel$pibd1, Pr_IBD0 = rv_rel$pibd0,
                                  Paternal = rv_rel$paternal, Maternal = rv_rel$maternal,
                                  Tree_persons = rv_rel$tree_persons, Tree_sexes = rv_rel$tree_sexes, Tree_fathers = rv_rel$tree_fathers, Tree_mothers = rv_rel$tree_mothers, Tree_founders = rv_rel$tree_founders)
@@ -619,11 +593,11 @@ tab_rel_server <- function(id, path_pack){
         output$dt_rel <- renderDataTable({
           datatable(
             new_dt_rel,
-            colnames = c("Relationship", "Victim", "Reference", "Pr (IBD = 2)", "Pr (IBD = 1)", "Pr (IBD = 0)", "Paternal lineage", "Maternal lineage",
+            colnames = c("Relationship", "Pr (IBD = 2)", "Pr (IBD = 1)", "Pr (IBD = 0)", "Paternal lineage", "Maternal lineage",
                          "Tree_persons", "Tree_sexes", "Tree_fathers", "Tree_mothers", "Tree_founders"),
             selection = list(mode = "single", target = "row"),
             options = list(iDisplayLength = 10, ordering = FALSE,
-                           columnDefs = list(list(targets = 8:12, visible = FALSE))
+                           columnDefs = list(list(targets = 6:10, visible = FALSE))
             ),
             rownames = FALSE
           )
@@ -675,8 +649,6 @@ tab_rel_server <- function(id, path_pack){
       observeEvent(input$act_rel_del_save, {
         pos_del <- which(rv_rel$name == input$rel_del)
         rv_rel$name <- rv_rel$name[- pos_del]
-        rv_rel$victim <- rv_rel$victim[- pos_del]
-        rv_rel$reference <- rv_rel$reference[- pos_del]
         rv_rel$pibd2 <- rv_rel$pibd2[- pos_del]
         rv_rel$pibd1 <- rv_rel$pibd1[- pos_del]
         rv_rel$pibd0 <- rv_rel$pibd0[- pos_del]
@@ -688,7 +660,7 @@ tab_rel_server <- function(id, path_pack){
         rv_rel$tree_mothers <- rv_rel$tree_mothers[- pos_del]
         rv_rel$tree_founders <- rv_rel$tree_founders[- pos_del]
 
-        new_dt_rel <- data.table(Relationship = rv_rel$name, Victim = rv_rel$victim, Reference = rv_rel$reference,
+        new_dt_rel <- data.table(Relationship = rv_rel$name,
                                  Pr_IBD2 = rv_rel$pibd2, Pr_IBD1 = rv_rel$pibd1, Pr_IBD0 = rv_rel$pibd0,
                                  Paternal = rv_rel$paternal, Maternal = rv_rel$maternal,
                                  Tree_persons = rv_rel$tree_persons, Tree_sexes = rv_rel$tree_sexes, Tree_fathers = rv_rel$tree_fathers, Tree_mothers = rv_rel$tree_mothers, Tree_founders = rv_rel$tree_founders)
@@ -698,11 +670,11 @@ tab_rel_server <- function(id, path_pack){
         output$dt_rel <- renderDataTable({
           datatable(
             new_dt_rel,
-            colnames = c("Relationship", "Victim", "Reference", "Pr (IBD = 2)", "Pr (IBD = 1)", "Pr (IBD = 0)", "Paternal lineage", "Maternal lineage",
+            colnames = c("Relationship", "Pr (IBD = 2)", "Pr (IBD = 1)", "Pr (IBD = 0)", "Paternal lineage", "Maternal lineage",
                          "Tree_persons", "Tree_sexes", "Tree_fathers", "Tree_mothers", "Tree_founders"),
             selection = list(mode = "single", target = "row"),
             options = list(iDisplayLength = 10, ordering = FALSE,
-                           columnDefs = list(list(targets = 8:12, visible = FALSE))
+                           columnDefs = list(list(targets = 6:10, visible = FALSE))
             ),
             rownames = FALSE
           )
@@ -730,8 +702,6 @@ tab_rel_server <- function(id, path_pack){
         new_dt_rel <- create_dt_rel(path_pack, FALSE)
 
         rv_rel$name <- new_dt_rel[, Relationship]
-        rv_rel$victim <- new_dt_rel[, Victim]
-        rv_rel$reference <- new_dt_rel[, Reference]
         rv_rel$pibd2 <- new_dt_rel[, Pr_IBD2]
         rv_rel$pibd1 <- new_dt_rel[, Pr_IBD1]
         rv_rel$pibd0 <- new_dt_rel[, Pr_IBD0]
@@ -746,11 +716,11 @@ tab_rel_server <- function(id, path_pack){
         output$dt_rel <- renderDataTable({
           datatable(
             new_dt_rel,
-            colnames = c("Relationship", "Victim", "Reference", "Pr (IBD = 2)", "Pr (IBD = 1)", "Pr (IBD = 0)", "Paternal lineage", "Maternal lineage",
+            colnames = c("Relationship", "Pr (IBD = 2)", "Pr (IBD = 1)", "Pr (IBD = 0)", "Paternal lineage", "Maternal lineage",
                          "Tree_persons", "Tree_sexes", "Tree_fathers", "Tree_mothers", "Tree_founders"),
             selection = list(mode = "single", target = "row"),
             options = list(iDisplayLength = 10, ordering = FALSE,
-                           columnDefs = list(list(targets = 8:12, visible = FALSE))
+                           columnDefs = list(list(targets = 6:10, visible = FALSE))
             ),
             rownames = FALSE
           )
@@ -800,11 +770,11 @@ tab_rel_server <- function(id, path_pack){
       output$dt_rel <- renderDataTable({
         datatable(
           init_dt_rel,
-          colnames = c("Relationship", "Victim", "Reference", "Pr (IBD = 2)", "Pr (IBD = 1)", "Pr (IBD = 0)", "Paternal lineage", "Maternal lineage",
+          colnames = c("Relationship", "Pr (IBD = 2)", "Pr (IBD = 1)", "Pr (IBD = 0)", "Paternal lineage", "Maternal lineage",
                        "Tree_persons", "Tree_sexes", "Tree_fathers", "Tree_mothers", "Tree_founders"),
           selection = list(mode = "single", target = "row"),
           options = list(iDisplayLength = 10, ordering = FALSE,
-                         columnDefs = list(list(targets = 8:12, visible = FALSE))
+                         columnDefs = list(list(targets = 6:10, visible = FALSE))
           ),
           rownames = FALSE
         )
