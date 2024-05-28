@@ -373,7 +373,7 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
         output$download_main <- downloadHandler(
           filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_relsearch_result.csv"),
           content = function(file){
-            dt_download <- rv_result$dt_display
+            dt_download <- copy(rv_result$dt_display)
             dt_download[, ColorBack:=NULL]
             dt_download[, ColorY:=NULL]
             dt_download[, ColorMt:=NULL]
