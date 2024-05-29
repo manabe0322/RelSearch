@@ -179,10 +179,10 @@ result_ui <- function(id){
                                                     h4("mtDNA"),
                                                     br(),
                                                     h5(div("Maximum number of inconsistency", style = "color:#555555;font-weight:bold;")),
-                                                    textOutput(ns("result_max_mismatch_mt")),
-                                                    br(),
-                                                    h5(div("Minimum shared length", style = "color:#555555;font-weight:bold;")),
-                                                    textOutput(ns("result_min_share_mt"))
+                                                    textOutput(ns("result_max_mismatch_mt")) #,
+#                                                    br(),
+#                                                    h5(div("Minimum shared length", style = "color:#555555;font-weight:bold;")),
+#                                                    textOutput(ns("result_min_share_mt"))
                                              )
                                            )
                                   ),
@@ -593,9 +593,9 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
         output$result_max_mismatch_mt <- renderText({
           paste0(dt_criteria$Value[dt_criteria$Criteria == "max_mismatch_mt"])
         })
-        output$result_min_share_mt <- renderText({
-          paste0(dt_criteria$Value[dt_criteria$Criteria == "min_share_mt"])
-        })
+#        output$result_min_share_mt <- renderText({
+#          paste0(dt_criteria$Value[dt_criteria$Criteria == "min_share_mt"])
+#        })
 
         output$result_assumed_rel <- renderDataTable(server = FALSE, {
           datatable(

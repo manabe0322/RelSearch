@@ -4,4 +4,4 @@ max_mismatch_y,2
 max_ignore_y,10000000
 max_mustep_y,2
 max_mismatch_mt,1
-min_share_mt,300
+min_share_mt,0
