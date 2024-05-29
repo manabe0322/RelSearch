@@ -146,13 +146,13 @@ datatable(dt_v_auto_ex,
 
 **Note**
 
-* File type: .csv
+- File type: .csv
 
-* This file requires the column "SampleName" and columns for each marker (two columns in each).
+- This file requires the column "SampleName" and columns for each marker (two columns in each).
 
-* The marker with two empty cells (e.g., TPOX of sample "Victim1" in the above table) is ignored when calculating the likelihood ratio.
+- The marker with two empty cells (e.g., TPOX of sample "Victim1" in the above table) is ignored when calculating the likelihood ratio.
 
-* The marker with one empty cell (e.g., vWA of sample "Victim1" in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.
+- The marker with one empty cell (e.g., vWA of sample "Victim1" in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.
 
 <br>
 
@@ -179,17 +179,17 @@ datatable(dt_r_auto_ex,
 
 **Note**
 
-* File type: .csv
+- File type: .csv
 
-* This file requires the columns "SampleName", "Relationship", and columns for each marker (two columns in each).
+- This file requires the columns "SampleName", "Relationship", and columns for each marker (two columns in each).
 
-* The relationship of a missing family member should be designated in the column "Relationship". The names of the relationship need to be pre-defined in **Settings** ▶ **Relationships** (see section [Setting](#sec_setting_rel)).
+- The relationship of a missing family member should be designated in the column "Relationship". The names of the relationship need to be pre-defined in **Settings** ▶ **Relationships** (see section [Setting](#sec_setting_rel)).
 
-* If a reference has multiple missing family members, add rows for each relationship of the members (e.g., sibling and parent-child of the sample "Reference7" in the above table).
+- If a reference has multiple missing family members, add rows for each relationship of the members (e.g., sibling and parent-child of the sample "Reference7" in the above table).
 
-* The marker with two empty cells (e.g., CSF1PO of sample "Reference10" in the above table) is ignored when calculating the likelihood ratio.
+- The marker with two empty cells (e.g., CSF1PO of sample "Reference10" in the above table) is ignored when calculating the likelihood ratio.
 
-* The marker with one empty cell (e.g., vWA of sample "Reference10" in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.
+- The marker with one empty cell (e.g., vWA of sample "Reference10" in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.
 
 <br>
 
@@ -210,9 +210,9 @@ datatable(dt_af_ex,
 
 **Note**
 
-* File type: .csv
+- File type: .csv
 
-* This file requires the columns "Allele" and columns for each marker (one column in each).
+- This file requires the columns "Allele" and columns for each marker (one column in each).
 
 <br>
 
@@ -224,13 +224,13 @@ dt_v_y_ex <- data.table()
 
 **Note**
 
-* File type: .csv
+- File type: .csv
 
-* This file requires the column "SampleName" and columns for each marker (one column in each).
+- This file requires the column "SampleName" and columns for each marker (one column in each).
 
-* In the marker with more than one allele, each allele must be separated by a comma without any spaces (e.g., DYS385).
+- In the marker with more than one allele, each allele must be separated by a comma without any spaces (e.g., DYS385).
 
-* The marker with an empty cell (e.g., DYS456 of sample ‘Victim6’) is ignored for analysis.
+- The marker with an empty cell (e.g., DYS456 of sample ‘Victim6’) is ignored for analysis.
 
 <br>
 
@@ -242,17 +242,17 @@ dt_r_y_ex <- data.table()
 
 **Note**
 
-* File type: .csv
+- File type: .csv
 
-* This file requires the column "SampleName", "Relationship", and columns for each marker (one column in each).
+- This file requires the column "SampleName", "Relationship", and columns for each marker (one column in each).
 
-* The relationship of a missing family member should be designated in the column "Relationship". The name of the relationship should be defined in Settings > Relationships.
+- The relationship of a missing family member should be designated in the column "Relationship". The name of the relationship should be defined in Settings > Relationships.
 
-* If a reference has multiple missing family members, add rows for each relationship of the members (e.g., sibling and parent-child of the sample "Reference7" in the above table).
+- If a reference has multiple missing family members, add rows for each relationship of the members (e.g., sibling and parent-child of the sample "Reference7" in the above table).
 
-* In the marker with more than one allele, each allele must be separated by a comma without any spaces (e.g., DYS385).
+- In the marker with more than one allele, each allele must be separated by a comma without any spaces (e.g., DYS385).
 
-* The marker with an empty cell (e.g., DYS518 of sample ‘Reference10’) is ignored for analysis.
+- The marker with an empty cell (e.g., DYS518 of sample ‘Reference10’) is ignored for analysis.
 
 <br>
 
@@ -264,9 +264,9 @@ dt_v_mt_ex <- data.table()
 
 **Note**
 
-* File type: .csv
+- File type: .csv
 
-* This file requires the column "SampleName", "Range", and "Haplotype".
+- This file requires the column "SampleName", "Range", and "Haplotype".
 
 <br>
 
@@ -278,13 +278,13 @@ dt_r_mt_ex <- data.table()
 
 **Note**
 
-* File type: .csv
+- File type: .csv
 
-* This file requires the column "SampleName", "Relationship", "Range", and "Haplotype".
+- This file requires the column "SampleName", "Relationship", "Range", and "Haplotype".
 
-* The relationship of a missing family member should be designated in the column "Relationship". The name of the relationship should be defined in Settings > Relationships.
+- The relationship of a missing family member should be designated in the column "Relationship". The name of the relationship should be defined in Settings > Relationships.
 
-* If a reference has multiple missing family members, add rows for each relationship of the members (e.g., sibling and parent-child of the sample "Reference7" in the above table).
+- If a reference has multiple missing family members, add rows for each relationship of the members (e.g., sibling and parent-child of the sample "Reference7" in the above table).
 
 <br>
 
@@ -295,6 +295,26 @@ dt_r_mt_ex <- data.table()
 ## Setting
 
 ### Criteria
+
+You can set the following criteria. Press the **Save** button to reflect the changes. Press the **Reset** button if you want to return to default values.
+
+**STR**
+
+- Minimum LR: The minimum likelihood ratio that supports the assumed relationship
+
+**Y-STR**
+
+- Maximum number of mismatched loci: How many loci do you allow for mismatches between victim and reference profiles
+
+- Maximum number of ignored loci: RelSearch can ignore loci that indicates partial profiles
+
+- Maximum total mutational steps
+
+**mtDNA**
+
+- Maximum number of inconsistency
+
+- Minimum shared length
 
 <a id="sec_setting_rel"></a>
 
