@@ -10,6 +10,9 @@ urlcolor: blue
 documentclass: article
 fontsize: 12pt
 geometry: margin = 1in
+header-includes:
+  - \usepackage{indentfirst}
+  - \parindent = 1em
 bibliography: relsearch_references.bib
 csl: forensic-science-international-genetics.csl
 ---
@@ -242,7 +245,7 @@ You can set the following criteria to support the assumed relationship. Press th
 
 ### STR
 
-- Minimum LR: The minimum likelihood ratio that supports the assumed relationship
+- Minimum LR: The minimum likelihood ratio that supports the assumed relationship.
 
 ### Y-STR
 
@@ -267,6 +270,42 @@ You can set the minimum allele frequency which is used for the unobserved allele
 \newpage
 
 # Result {#sec_result}
+
+## Summary
+
+After finishing the analysis, summary data is automatically displayed. You can change the displayed data from the left sidebar.
+
+### Default display
+
+Default display depends on whether the input data includes autosomal STR data or not.
+
+If the input data includes autosomal STR data, the data where the LR exceeds the minimum LR (see section [Setting](#sec_setting)) is displayed.
+
+If the input data is composed of only Y-STR and/or mtDNA data, the data that satisfies the criteria to support paternal/maternal lineage (see section [Setting](#sec_setting)) is displayed.
+
+If the number of data that satisfies the criteria is more than 10,000, the top 10,000 data is displayed.
+
+### Identified pairs
+
+If the data supports that a victim (or a reference) has the assumed relationship with only one reference (or victim), the victim-reference pair is categorized as the identified pair.
+
+### Multiple candidates
+
+If the data supports that a victim (or a reference) has the assumed relationship with multiple references (or victims), the victim-reference pair is categorized as the multiple candidates.
+
+### Not support lineage
+
+### Minimum LR displayed
+
+top 10000
+
+### Download summary data
+
+You can download summary data as a .csv file. Press the **Downlaod** button in Summary tab.
+
+## Selected data in detail
+
+## Analysis conditions
 
 \newpage
 
