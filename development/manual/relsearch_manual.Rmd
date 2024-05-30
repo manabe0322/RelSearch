@@ -306,7 +306,18 @@ In RelSearch, users can set the minimum threshold of the LR to support $H_{1}$. 
 
 The LR without considering allelic drop-out and mutations is calculated based on the method of Wenk et al[@Wenk1996].
 
+### Allelic drop-out
+
+### Mutation
+
 ## Y-STR
+
+RelSearch investigates whether the Y-STR profiles of each victim-reference pair support paternal lineage. There are two criteria to support paternal lineage as follows:
+
+- Maximum number of mismatched loci: The upper limit of the number of mismatched loci between victim and reference profiles to support paternal lineage.
+
+- Maximum total mutational steps: The upper limit of total mutational steps (i.e., sum of mutational steps of all loci) between victim and reference profiles to support paternal lineage.
+
 
 ## mtDNA
 
