@@ -93,9 +93,7 @@ relsearch()
 
 \newpage
 
-<a id="sec_files"></a>
-
-# Files
+# Files {#sec_files}
 
 ## STR: Victim database
 
@@ -236,9 +234,7 @@ df_af_ex <- data.frame(Allele = c("10", "10.1", "10.2", "10.3", "11", "11.1", "1
 
 \newpage
 
-<a id="sec_setting"></a>
-
-# Setting
+# Setting {#sec_setting}
 
 ## Criteria
 
@@ -260,7 +256,7 @@ You can set the following criteria to support the assumed relationship. Press th
 
 &nbsp;
 
-## Relationship
+## Relationship {#sec_setting_rel}
 
 ## Mutation rate
 
@@ -270,15 +266,11 @@ You can set the minimum allele frequency which is used for the unobserved allele
 
 \newpage
 
-<a id="sec_result"></a>
-
-# Result
+# Result {#sec_result}
 
 \newpage
 
-<a id="sec_other_func"></a>
-
-# Other functions
+# Other functions {#sec_other_func}
 
 ## Project
 
