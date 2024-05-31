@@ -152,7 +152,7 @@ df_r_auto_ex <- data.frame(SampleName = c("Reference1", "Reference2", "Reference
 
 - This file requires the columns "SampleName", "Relationship", and columns for each marker (two columns in each).
 
-- The relationship of a missing family member should be designated in the column "Relationship". The names of the relationship need to be pre-defined in **Settings** ▶ **Relationships** (see section [Setting](#sec_setting_rel)).
+- The names of the relationship need to be pre-defined in **Settings** ▶ **Relationships** (see section [Setting](#sec_setting_rel)).
 
 - If a reference has multiple missing family members, add rows for each relationship of the members (e.g., sibling and parent-child of the sample "Reference7" in the above table).
 
@@ -261,9 +261,95 @@ You can set the following criteria to support the assumed relationship. Press th
 
 ## Relationship {#sec_setting_rel}
 
-## Mutation rate
+The names of the relationship in each reference profile need to be pre-defined. There are 44 pre-defined victim-reference relationships as the default.
 
-## Other parameters
+Information on the table is as follows.
+
+- **Pr(IBD = 2)**: The probability that the identity by descent (IBD) is 2 in each relationship.
+
+- **Pr(IBD = 1)**: The probability that the identity by descent (IBD) is 1 in each relationship.
+
+- **Pr(IBD = 0)**: The probability that the identity by descent (IBD) is 0 in each relationship.
+
+- **Paternal lineage**: Information on whether each relationship is paternal lineage or not.
+
+- **Maternal lineage**: Information on whether each relationship is maternal lineage or not.
+
+You can edit, add, and delete the relationships from the left sidebar.
+
+### Edit
+
+You can edit the defined relationship name from the **Edit** button.
+
+In the pop-up window, select a relationship from the defined relationships, and enter a new name of the selected relationship. Press the **Save** button to reflect the new name.
+
+### Add
+
+You can define a new relationship from the **Add** button.
+
+In the pop-up window, you have to set the relationship name and make a family tree to define the relationship between a victim and a reference.
+
+The following is a list of functions to make a family tree.
+
+- **Add a person**: The function to add an unknown person (UK) to the list of persons.
+
+- **Delete a person**: The function to delete an unknown person (UK) from the list of person.
+
+- **Sex**: The function to select a biological sex (male: M or female: F).
+
+- **Father**: The function to select a person who is the father.
+
+- **Mother**: The function to select a person who is the mother.
+
+- **Founder**: The function to select whether the person is a founder of the family tree or not.
+
+After defining a family tree, press the **View family tree** button to check whether the family tree is correctly set up or not.
+
+If there is no problem in the family tree, press the **Save** button.
+
+**Note** Information on the probabilities of IBD, paternal lineage, and maternal lineage in the new relationship is automatically determined based on your-defined family tree.
+
+### Delete
+
+You can delete a defined relationship name from the **Delete** button.
+
+In the pop-up window, select a relationship from the defined relationships. Press the **Save** button to delete the selected relationship.
+
+### Reset
+
+If you want to return to default settings, press the **Reset** button. In the pop-up window, press the **Restore default** button.
+
+### Family tree
+
+You can check the family tree of each defined relationship. Select a row from the relationship table and press the **Family tree** button.
+
+## Mutation rate {#sec_setting_myu}
+
+Mutation rates of each autosomal STR marker need to be set to calculate the likelihood ratio (LR). The default mutation rates considering the difference between paternal and maternal and mutational steps (-1, +1, -2, and +2) are reported by Morimoto et al [@Morimoto2020]. You can edit, add, and delete these mutation rates from the left sidebar.
+
+### Edit
+
+You can edit the mutation rates from the **Edit** button.
+
+In the pop-up window, select a locus and change the mutation rates. Press the **Save** button to reflect the changes.
+
+### Add
+
+You can add a locus from the **Add** button.
+
+In the pop-up window, enter a locus name and enter the mutation rates. Press the **Save** button to add the locus.
+
+### Delete
+
+You can delete a locus from the **Delete** button.
+
+In the pop-up window, select a locus. Press the **Save** button to delete the selected locus.
+
+### Reset
+
+If you want to return to default settings, press the **Reset** button. In the pop-up window, press the **Restore default** button.
+
+## Other parameters {#sec_setting_param}
 
 You can set the minimum allele frequency which is used for the unobserved alleles. Press the **Save** button to reflect the changes. Press the **Reset** button if you want to return to the default value.
 
@@ -295,9 +381,11 @@ If the data supports that a victim (or a reference) has the assumed relationship
 
 ### Not support lineage
 
+If the LR exceeds the minimum LR but the data does not satisfy the criteria to support paternal/maternal lineage when assuming the paternal/maternal lineage relative, the victim-reference pair is categorized as not support lineage.
+
 ### Minimum LR displayed
 
-top 10000
+You can change the minimum LR displayed. The lower limit is LR = 1. If the number of data where the LR exceeds the minimum LR is more than 10,000, the top 10,000 data is displayed.
 
 ### Download summary data
 
@@ -305,7 +393,29 @@ You can download summary data as a .csv file. Press the **Downlaod** button in S
 
 ## Selected data in detail
 
+The data of a selected victim-reference pair is displayed in **Selected data in detail** tab.
+
+1. Select a row in the summary table.
+
+2. Go to **Selected data in detail** tab.
+
+In **Selected data in detail** tab, you can check and download the analyzed data of STR, Y-STR, and mtDNA in the selected victim-reference pair. 
+
 ## Analysis conditions
+
+You can check the following analysis conditions in **Analysis conditions** tab.
+
+- **Database**: Input .csv file names of each database are displayed.
+
+- **Allele probability**: Unobserved alleles in the population database are displayed, if any. The frequency of these alleles is set to the user-defined minimum allele frequency and the sum of the frequencies in each locus is corrected to 1.
+
+- **Criteria**: The user-defined criteria to support the assumed relationship (see section [Setting](#sec_setting)) is displayed.
+
+- **Assumed relationship**: Information on the user-defined relationships (see section [Setting](#sec_setting_rel)) is displayed.
+
+- **Mutation rate**: The user-defined mutation rates (see section [Setting](#sec_setting_myu)) are displayed.
+
+- **Parameter**: The user-defined minimum allele frequency (see section [Setting](#sec_setting_param)) is displayed.
 
 \newpage
 
@@ -313,7 +423,25 @@ You can download summary data as a .csv file. Press the **Downlaod** button in S
 
 ## Project
 
+### New project
+
+To start a new project, go to **Project** $\blacktriangleright$ **New project** and press the **New project** button.
+
+**Important**: The current project should be saved before starting a new project because the current project will be deleted.
+
+### Load project
+
+To load a previous project, go to **Project** $\blacktriangleright$ **Load project**. Select a project file from the **Browse...** button and press the **Load project** button.
+
+**Important**: The current project should be saved before loading another project because the current project will be deleted.
+
+### Save project
+
+To save the current project, go to **Project** $\blacktriangleright$ **Save project**. Enter the project name and press the **Save as** button.
+
 ## View database
+
+Each loaded database can be checked in **Database** tab.
 
 ## Example files
 
@@ -341,9 +469,9 @@ $$
 
 where $G_{v}$ and $G_{r}$ denote the genotypes of the victim and the reference, respectively.
 
-In RelSearch, users can set the minimum threshold of the LR to support $H_{1}$. The default threshold is 100, which is determined based on the verbal scale "Moderate Support" written in the Scientific Working Group on DNA Analysis Methods (SWGDAM) guideline[@SWGDAM2018].
+In RelSearch, users can set the minimum threshold of the LR to support $H_{1}$. The default threshold is 100, which is determined based on the verbal scale "Moderate Support" written in the Scientific Working Group on DNA Analysis Methods (SWGDAM) guideline [@SWGDAM2018].
 
-The LR without considering allelic drop-out and mutations is calculated based on the method of Wenk et al[@Wenk1996].
+The LR without considering allelic drop-out and mutations is calculated based on the method of Wenk et al [@Wenk1996].
 
 ### Allelic drop-out
 
