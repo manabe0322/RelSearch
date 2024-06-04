@@ -10,7 +10,6 @@ analyze_auto(
   dt_af,
   dt_rel,
   dt_myu,
-  dt_par_auto,
   dt_criteria,
   show_progress = TRUE
 )
@@ -25,8 +24,6 @@ analyze_auto(
 \item{dt_rel}{A data.table of information on relationships}
 
 \item{dt_myu}{A data.table of mutation rates}
-
-\item{dt_par_auto}{A data.table of parameters for autosomal STR}
 
 \item{dt_criteria}{A data.table of criteria}
 

@@ -49,8 +49,7 @@ relsearch <- function(){
                              navbarMenu("Settings",
                                         tab_criteria_ui("tab_criteria"),
                                         tab_rel_ui("tab_rel"),
-                                        tab_myu_ui("tab_myu"),
-                                        tab_par_auto_ui("tab_par_auto")
+                                        tab_myu_ui("tab_myu")
                              ),
 
                              example_ui("example"),
@@ -63,7 +62,6 @@ relsearch <- function(){
     rv_criteria <- tab_criteria_server("tab_criteria", path_pack, keep_min_lr)
     rv_rel <- tab_rel_server("tab_rel", path_pack)
     rv_myu <- tab_myu_server("tab_myu", path_pack)
-    rv_par_auto <- tab_par_auto_server("tab_par_auto", path_pack)
     example_server("example", path_pack)
     manual_server("manual", path_pack)
     rv_file <- load_server("load", session, rv_criteria, rv_rel, rv_myu, rv_par_auto, keep_min_lr, max_data)

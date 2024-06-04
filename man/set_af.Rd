@@ -4,7 +4,7 @@
 \alias{set_af}
 \title{set_af}
 \usage{
-set_af(dt_v_auto, dt_r_auto, dt_af, maf)
+set_af(dt_v_auto, dt_r_auto, dt_af)
 }
 \arguments{
 \item{dt_v_auto}{A data.table of victim profiles (autosomal STR)}
@@ -12,8 +12,6 @@ set_af(dt_v_auto, dt_r_auto, dt_af, maf)
 \item{dt_r_auto}{A data.table of reference profiles (autosomal STR)}
 
 \item{dt_af}{A data.table of allele frequencies (autosomal STR)}
-
-\item{maf}{The minimum allele frequency}
 }
 \description{
 The function to set allele frequencies

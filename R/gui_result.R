@@ -200,11 +200,6 @@ result_ui <- function(id){
                                   tabPanel("Mutation rate",
                                            br(),
                                            dataTableOutput(ns("result_myu"))
-                                  ),
-                                  tabPanel("Parameter",
-                                           br(),
-                                           h5(div("Minimum allele frequency", style = "color:#555555;font-weight:bold;")),
-                                           textOutput(ns("result_maf"))
                                   )
                                 )
                        ),
@@ -238,7 +233,6 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
         dt_criteria <- data_list$dt_criteria
         dt_rel <- data_list$dt_rel
         dt_myu <- data_list$dt_myu
-        dt_par_auto <- data_list$dt_par_auto
         fn_v_auto <- data_list$fn_v_auto
         fn_r_auto <- data_list$fn_r_auto
         fn_af <- data_list$fn_af
@@ -653,8 +647,6 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
             rownames = FALSE
           )
         })
-
-        output$result_maf <- renderText({paste0(dt_par_auto$Value[dt_par_auto$Parameter == "maf"])})
       }
     }
   )

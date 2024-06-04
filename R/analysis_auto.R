@@ -1,11 +1,32 @@
+#' correct_af_dirichlet
+#'
+#' @description The function to correct allele frequencies based on the Dirichlet distribution
+#' @param pop_al A vector of the alleles in the population database
+#' @param pop_freq A vector of the allele frequencies in the population database
+#' @param unobs_al A vector of the unobserved alleles in the population database
+correct_af_dirichlet <- function(pop_al, pop_freq, unobs_al = numeric(0)){
+  n_unobs <- length(unobs_al)
+  if(n_unobs > 0){
+    pop_al <- c(pop_al, unobs_al)
+    pop_freq <- c(pop_freq, rep(0, n_unobs))
+  }
+  pop_prob <- (pop_freq + 1) / (sum(pop_freq) + length(pop_al))
+
+  order_al <- order(pop_al)
+  pop_al <- pop_al[order_al]
+  pop_prob <- pop_prob[order_al]
+
+  return(list("pop_al" = pop_al,
+              "pop_prob" = pop_prob))
+}
+
 #' set_af
 #'
 #' @description The function to set allele frequencies
 #' @param dt_v_auto A data.table of victim profiles (autosomal STR)
 #' @param dt_r_auto A data.table of reference profiles (autosomal STR)
 #' @param dt_af A data.table of allele frequencies (autosomal STR)
-#' @param maf The minimum allele frequency
-set_af <- function(dt_v_auto, dt_r_auto, dt_af, maf){
+set_af <- function(dt_v_auto, dt_r_auto, dt_af){
   n_mk <- ncol(dt_af) - 1
   name_al <- dt_af[, Allele]
   name_mk <- setdiff(names(dt_v_auto), c("SampleName", "Relationship"))
@@ -19,22 +40,17 @@ set_af <- function(dt_v_auto, dt_r_auto, dt_af, maf){
     vs_als <- unique(c(dt_v_auto[[pos_v[1]]], dt_v_auto[[pos_v[2]]], dt_r_auto[[pos_r[1]]], dt_r_auto[[pos_r[2]]]))
     vs_als <- vs_als[!is.na(vs_als)]
 
-    af <- dt_af[[pos_af]]
-    pos_al <- !is.na(af)
-    af <- af[pos_al]
-    af_al <- name_al[pos_al]
+    pop_freq <- dt_af[[pos_af]]
+    pos_al <- !is.na(pop_freq)
+    pop_freq <- pop_freq[pos_al]
+    pop_al <- name_al[pos_al]
 
-    pos_unobs <- which(is.element(vs_als, af_al) == FALSE)
+    pos_unobs <- which(is.element(vs_als, pop_al) == FALSE)
     unobs_al <- vs_als[pos_unobs]
-    if(length(pos_unobs) > 0){
-      af_al <- c(af_al, unobs_al)
-      af <- c(af, rep(maf, length(pos_unobs)))
-      index_order <- order(af_al)
-      af_al <- af_al[index_order]
-      af <- af[index_order]
-    }
-    af_list[[i]] <- af / sum(af)
-    af_al_list[[i]] <- af_al
+
+    tmp <- correct_af_dirichlet(pop_al, pop_freq, unobs_al)
+    af_al_list[[i]] <- tmp$pop_al
+    af_list[[i]] <- tmp$pop_prob
     unobs_al_list[[i]] <- unobs_al
   }
   names(af_list) <- name_mk
@@ -178,11 +194,10 @@ make_dt_unobs_al <- function(unobs_al_list){
 #' @param dt_af A data.table of allele frequencies (autosomal STR)
 #' @param dt_rel A data.table of information on relationships
 #' @param dt_myu A data.table of mutation rates
-#' @param dt_par_auto A data.table of parameters for autosomal STR
 #' @param dt_criteria A data.table of criteria
 #' @param show_progress Whether the progress is shown or not
 analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
-                         dt_rel, dt_myu, dt_par_auto, dt_criteria,
+                         dt_rel, dt_myu, dt_criteria,
                          show_progress = TRUE){
 
   ##################################################
@@ -192,9 +207,6 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
   # Locus
   locus_auto <- setdiff(names(dt_v_auto), c("SampleName", "Relationship"))
   n_mk <- length(locus_auto)
-
-  # Parameters
-  maf <- dt_par_auto$Value[dt_par_auto$Parameter == "maf"]
 
   # Sample names
   sn_v_auto <- dt_v_auto[, SampleName]
@@ -218,7 +230,7 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
   assumed_rel_all <- dt_r_auto[, Relationship]
 
   # Allele frequencies
-  tmp <- set_af(dt_v_auto, dt_r_auto, dt_af, maf)
+  tmp <- set_af(dt_v_auto, dt_r_auto, dt_af)
   af_list <- tmp$af_list
   af_al_list <- tmp$af_al_list
   unobs_al_list <- tmp$unobs_al_list

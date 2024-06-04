@@ -449,30 +449,3 @@ create_dt_myu <- function(path_pack, init = TRUE){
 
   return(dt_myu)
 }
-
-#' create_dt_par_auto
-#'
-#' @description The function to create the data.table for parameters of autosomal STR
-#' @param path_pack Package path
-create_dt_par_auto <- function(path_pack, init = TRUE){
-  fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
-
-  if(init && is.element("par_auto.csv", fn_par)){
-    dt_par_auto <- fread(paste0(path_pack, "/extdata/parameters/par_auto.csv"))
-
-    col_char <- c("Parameter")
-    options(warn = -1)
-    dt_par_auto[, (col_char) := lapply(.SD, as.character), .SDcols = col_char]
-    options(warn = 0)
-
-    col_numeric <- c("Value")
-    options(warn = -1)
-    dt_par_auto[, (col_numeric) := lapply(.SD, as.numeric), .SDcols = col_numeric]
-    options(warn = 0)
-  }else{
-    dt_par_auto <- data.table(Parameter = c("maf"), Value = c(0.001))
-    write.csv(dt_par_auto, paste0(path_pack, "/extdata/parameters/par_auto.csv"), row.names = FALSE)
-  }
-
-  return(dt_par_auto)
-}

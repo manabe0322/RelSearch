@@ -52,7 +52,6 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_aut
       rv_file$dt_criteria <- NULL
       rv_file$dt_rel <- NULL
       rv_file$dt_myu <- NULL
-      rv_file$dt_par_auto <- NULL
       rv_file$data_list <- NULL
 
       observe({
@@ -82,11 +81,6 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_aut
                                      Maternal_0 = rv_myu$maternal_0,
                                      Maternal_p1 = rv_myu$maternal_p1,
                                      Maternal_p2 = rv_myu$maternal_p2)
-      })
-
-      observe({
-        req(rv_par_auto)
-        rv_file$dt_par_auto <- data.table(Parameter = c("maf"), Value = c(rv_par_auto$maf))
       })
 
       #################
@@ -172,7 +166,6 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_aut
         dt_criteria <- rv_file$dt_criteria
         dt_rel <- rv_file$dt_rel
         dt_myu <- rv_file$dt_myu
-        dt_par_auto <- rv_file$dt_par_auto
 
         # Fix file names of each database
         fn_v_auto <- input$file_v_auto$name
@@ -203,7 +196,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_aut
             dt_r_auto <- tmp[[2]]
             dt_af <- tmp[[3]]
 
-            tmp <- analyze_auto(dt_v_auto, dt_r_auto, dt_af, dt_rel, dt_myu, dt_par_auto, dt_criteria)
+            tmp <- analyze_auto(dt_v_auto, dt_r_auto, dt_af, dt_rel, dt_myu, dt_criteria)
             dt_result_auto <- tmp$dt_result_auto
             dt_af_use <- tmp$dt_af_use
             dt_unobs_al <- tmp$dt_unobs_al
@@ -274,7 +267,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_aut
                                 "dt_v_auto", "dt_r_auto", "dt_af", "dt_af_use", "dt_unobs_al",
                                 "dt_v_y", "dt_r_y",
                                 "dt_v_mt", "dt_r_mt",
-                                "dt_criteria", "dt_rel", "dt_myu", "dt_par_auto",
+                                "dt_criteria", "dt_rel", "dt_myu",
                                 "fn_v_auto", "fn_r_auto", "fn_af", "fn_v_y", "fn_r_y", "fn_v_mt", "fn_r_mt")
           data_list$bool_check_auto <- bool_check_auto
           data_list$bool_check_y <- bool_check_y
@@ -293,7 +286,6 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_aut
           data_list$dt_criteria <- dt_criteria
           data_list$dt_rel <- dt_rel
           data_list$dt_myu <- dt_myu
-          data_list$dt_par_auto <- dt_par_auto
           data_list$fn_v_auto <- fn_v_auto
           data_list$fn_r_auto <- fn_r_auto
           data_list$fn_af <- fn_af
