@@ -471,19 +471,23 @@ where $G_{v}$ and $G_{r}$ denote the genotypes of the victim and the reference, 
 
 In RelSearch, users can set the minimum threshold of the LR to support $H_{1}$. The default threshold is 100, which is determined based on the verbal scale "Moderate Support" written in the Scientific Working Group on DNA Analysis Methods (SWGDAM) guideline [@SWGDAM2018].
 
-The numerator and the denominator of the LR are calculated using the probabilities that two, one and zero alleles are identity by descent (IBD).
+If full profiles are obtained for a victim-reference pair other than parent-child (i.e., without considering drop-out and mutations in calculation), the numerator of the LR is calculated using the probabilities that two, one and zero alleles are identity by descent (IBD).
 
 $$
 \begin{aligned}
-Pr(G_{v}, G_{r}|H) &= Pr(G_{v}, G_{r}|IBD = 2)Pr(IBD = 2)
+Pr(G_{v}, G_{r}|H_{1}) &= Pr(G_{v}, G_{r}|IBD = 2)Pr(IBD = 2)
 \\ &+ Pr(G_{v}, G_{r}|IBD = 1)Pr(IBD = 1)
 \\ &+ Pr(G_{v}, G_{r}|IBD = 0)Pr(IBD = 0)
 \end{aligned}
 $$
 
-The method of calculating the LR uses the probabilities that two, one and zero alleles are identity by descent (IBD). If full profiles are obtained for a victim-reference pair other than parent-child (i.e., without considering drop-out and mutations in calculation), the LR is calculated according to the method of Wenk et al [@Wenk1996].
+In RelSearch, the $H_{2}$ is assumed to be unrelated between the victim and the reference; therefore, the denominator of the LR is simply calculated as follows:
 
+$$
+Pr(G_{v}, G_{r}|H_{2}) = Pr(G_{v})Pr(G_{r})
+$$
 
+The specific method for these calculations is based on the method of Wenk et al [@Wenk1996].
 
 ### Allelic drop-out
 
