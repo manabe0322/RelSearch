@@ -4,7 +4,7 @@
 \alias{tab_criteria_server}
 \title{tab_criteria_server}
 \usage{
-tab_criteria_server(id, path_pack, keep_min_lr)
+tab_criteria_server(id, path_pack)
 }
 \arguments{
 \item{path_pack}{Package path}

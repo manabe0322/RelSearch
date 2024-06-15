@@ -36,8 +36,8 @@ create_background_color <- function(dt_combined, index_warning){
 #' @param dt_result_y A data.table of the result for the Y-STR
 #' @param dt_result_mt A data.table of the result for the mtDNA
 #' @param dt_rel A data.table of information on relationships
-#' @param keep_min_lr The minimum LR to keep data in dt_combined
-create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_rel, keep_min_lr = 1){
+#' @param dt_other_par A data.table of other parameters
+create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_rel, dt_other_par){
   # Combine data.table
   dt_combined <- NULL
   if(!is.null(dt_result_auto)){
@@ -127,6 +127,7 @@ create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_r
 
   # Keep only important data
   if(!is.null(dt_result_auto)){
+    keep_min_lr <- dt_other_par$Value[dt_other_par$Parameter == "keep_min_lr"]
     dt_combined <- dt_combined[LR_Total >= keep_min_lr]
   }else{
     dt_combined <- dt_combined[Paternal == "Support" | Maternal == "Support"]
@@ -141,8 +142,8 @@ create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_r
 #' @param dt_combined A data.table of the combined data
 #' @param fltr_type The filtering method
 #' @param min_lr The minimum LR displayed
-#' @param max_data The maximum data displayed
-create_displayed_data <- function(dt_combined, fltr_type = "with_auto", min_lr = 100, max_data = 10000){
+#' @param max_data_displayed The maximum data displayed
+create_displayed_data <- function(dt_combined, fltr_type = "with_auto", min_lr = 100, max_data_displayed = 10000){
   setkey(dt_combined, Victim, Reference, AssumedRel)
 
   dt_display <- dt_combined[, list(Victim, Reference, AssumedRel, LR_Total, EstimatedRel, Paternal, Maternal, ColorBack, ColorY, ColorMt)]
@@ -158,8 +159,8 @@ create_displayed_data <- function(dt_combined, fltr_type = "with_auto", min_lr =
     dt_display <- dt_display[ColorBack == 0]
   }
 
-  if(nrow(dt_display) > max_data){
-    dt_display <- dt_display[1:max_data, ]
+  if(nrow(dt_display) > max_data_displayed){
+    dt_display <- dt_display[1:max_data_displayed, ]
   }
 
   return(dt_display)

@@ -200,6 +200,14 @@ result_ui <- function(id){
                                   tabPanel("Mutation rate",
                                            br(),
                                            dataTableOutput(ns("result_myu"))
+                                  ),
+                                  tabPanel("Other parameters",
+                                           br(),
+                                           h5(div("Minimum LR to be stored", style = "color:#555555;font-weight:bold;")),
+                                           textOutput(ns("result_keep_min_lr")),
+                                           br(),
+                                           h5(div("Maximum data displayed", style = "color:#555555;font-weight:bold;")),
+                                           textOutput(ns("result_max_data_displayed"))
                                   )
                                 )
                        ),
@@ -210,7 +218,7 @@ result_ui <- function(id){
 #' result_server
 #'
 #' @description The function to create the server module for displaying results
-result_server <- function(id, rv_file, keep_min_lr, max_data){
+result_server <- function(id, rv_file){
   moduleServer(
     id,
     function(input, output, session){
@@ -233,6 +241,8 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
         dt_criteria <- data_list$dt_criteria
         dt_rel <- data_list$dt_rel
         dt_myu <- data_list$dt_myu
+        dt_other_par <- data_list$dt_other_par
+        max_data_displayed <- dt_other_par$Value[dt_other_par$Parameter == "max_data_displayed"]
         fn_v_auto <- data_list$fn_v_auto
         fn_r_auto <- data_list$fn_r_auto
         fn_af <- data_list$fn_af
@@ -265,13 +275,13 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
 
         observeEvent(input$act_default, {
           if(bool_check_auto){
-            dt_display <- create_displayed_data(dt_combined, fltr_type = "with_auto", min_lr = dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"], max_data = max_data)
+            dt_display <- create_displayed_data(dt_combined, fltr_type = "with_auto", min_lr = dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"], max_data_displayed = max_data_displayed)
           }else{
-            dt_display <- create_displayed_data(dt_combined, fltr_type = "without_auto", max_data = max_data)
+            dt_display <- create_displayed_data(dt_combined, fltr_type = "without_auto", max_data_displayed = max_data_displayed)
           }
           rv_result$dt_display <- dt_display
-          if(nrow(dt_display) == max_data){
-            showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
+          if(nrow(dt_display) == max_data_displayed){
+            showModal(modalDialog(title = "Information", paste0("Top ", max_data_displayed, " data is displayed."), easyClose = TRUE, footer = NULL))
           }else if(bool_check_auto){
             showModal(modalDialog(title = "Information", "Data that satisfies the criterion of the minimum LR is displayed.", easyClose = TRUE, footer = NULL))
           }else{
@@ -280,26 +290,26 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
         }, ignoreInit = TRUE)
 
         observeEvent(input$act_identified, {
-          dt_display <- create_displayed_data(dt_combined, fltr_type = "identified", max_data = max_data)
+          dt_display <- create_displayed_data(dt_combined, fltr_type = "identified", max_data_displayed = max_data_displayed)
           rv_result$dt_display <- dt_display
-          if(nrow(dt_display) == max_data){
-            showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
+          if(nrow(dt_display) == max_data_displayed){
+            showModal(modalDialog(title = "Information", paste0("Top ", max_data_displayed, " data is displayed."), easyClose = TRUE, footer = NULL))
           }
         }, ignoreInit = TRUE)
 
         observeEvent(input$act_multiple, {
-          dt_display <- create_displayed_data(dt_combined, fltr_type = "multiple", max_data = max_data)
+          dt_display <- create_displayed_data(dt_combined, fltr_type = "multiple", max_data_displayed = max_data_displayed)
           rv_result$dt_display <- dt_display
-          if(nrow(dt_display) == max_data){
-            showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
+          if(nrow(dt_display) == max_data_displayed){
+            showModal(modalDialog(title = "Information", paste0("Top ", max_data_displayed, " data is displayed."), easyClose = TRUE, footer = NULL))
           }
         }, ignoreInit = TRUE)
 
         observeEvent(input$act_warning, {
-          dt_display <- create_displayed_data(dt_combined, fltr_type = "warning", max_data = max_data)
+          dt_display <- create_displayed_data(dt_combined, fltr_type = "warning", max_data_displayed = max_data_displayed)
           rv_result$dt_display <- dt_display
-          if(nrow(dt_display) == max_data){
-            showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
+          if(nrow(dt_display) == max_data_displayed){
+            showModal(modalDialog(title = "Information", paste0("Top ", max_data_displayed, " data is displayed."), easyClose = TRUE, footer = NULL))
           }
         }, ignoreInit = TRUE)
 
@@ -308,8 +318,8 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
           if(!is.numeric(summary_min_lr)){
             hideFeedback("input_summary_min_lr")
             disable("act_fltr_lr")
-          }else if(summary_min_lr < keep_min_lr){
-            showFeedbackDanger(inputId = "input_summary_min_lr", text = paste0("The minimum LR value should be greater than ", keep_min_lr, "."))
+          }else if(summary_min_lr < 0){
+            showFeedbackDanger(inputId = "input_summary_min_lr", text = "The negative number is not allowed.")
             disable("act_fltr_lr")
           }else{
             hideFeedback("input_summary_min_lr")
@@ -320,11 +330,11 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
         observeEvent(input$act_fltr_lr, {
           summary_min_lr <- input$input_summary_min_lr
           if(isTruthy(summary_min_lr)){
-            if(summary_min_lr >= keep_min_lr){
-              dt_display <- create_displayed_data(dt_combined, fltr_type = "with_auto", min_lr = summary_min_lr, max_data = max_data)
+            if(summary_min_lr >= 0){
+              dt_display <- create_displayed_data(dt_combined, fltr_type = "with_auto", min_lr = summary_min_lr, max_data_displayed = max_data_displayed)
               rv_result$dt_display <- dt_display
-              if(nrow(dt_display) == max_data){
-                showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
+              if(nrow(dt_display) == max_data_displayed){
+                showModal(modalDialog(title = "Information", paste0("Top ", max_data_displayed, " data is displayed."), easyClose = TRUE, footer = NULL))
               }
             }
           }
@@ -646,6 +656,14 @@ result_server <- function(id, rv_file, keep_min_lr, max_data){
             options = list(iDisplayLength = 50, ordering = FALSE),
             rownames = FALSE
           )
+        })
+
+        output$result_keep_min_lr <- renderText({
+          paste0(dt_other_par$Value[dt_other_par$Parameter == "keep_min_lr"])
+        })
+
+        output$result_max_data_displayed <- renderText({
+          paste0(dt_other_par$Value[dt_other_par$Parameter == "max_data_displayed"])
         })
       }
     }

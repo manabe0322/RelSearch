@@ -37,7 +37,7 @@ load_ui <- function(id){
 #' load_server
 #'
 #' @description The function to create the server module for loading files
-load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_auto, keep_min_lr, max_data){
+load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_other_par){
   moduleServer(
     id,
     function(input, output, session){
@@ -52,6 +52,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_aut
       rv_file$dt_criteria <- NULL
       rv_file$dt_rel <- NULL
       rv_file$dt_myu <- NULL
+      rv_file$dt_other_par <- NULL
       rv_file$data_list <- NULL
 
       observe({
@@ -81,6 +82,12 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_aut
                                      Maternal_0 = rv_myu$maternal_0,
                                      Maternal_p1 = rv_myu$maternal_p1,
                                      Maternal_p2 = rv_myu$maternal_p2)
+      })
+
+      observe({
+        req(rv_other_par)
+        rv_file$dt_other_par <- data.table(Parameter = c("keep_min_lr", "max_data_displayed"),
+                                           Value = c(rv_other_par$keep_min_lr, rv_other_par$max_data_displayed))
       })
 
       #################
@@ -166,6 +173,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_aut
         dt_criteria <- rv_file$dt_criteria
         dt_rel <- rv_file$dt_rel
         dt_myu <- rv_file$dt_myu
+        dt_other_par <- rv_file$dt_other_par
 
         # Fix file names of each database
         fn_v_auto <- input$file_v_auto$name
@@ -244,17 +252,18 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_aut
           # Create the combined data #
           ############################
 
-          dt_combined <- create_combined_data(dt_result_auto, dt_result_y, dt_result_mt, dt_rel, keep_min_lr)
+          dt_combined <- create_combined_data(dt_result_auto, dt_result_y, dt_result_mt, dt_rel, dt_other_par)
 
           #############################
           # Create the displayed data #
           #############################
 
           min_lr_auto <- dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"]
+          max_data_displayed <- dt_other_par$Value[dt_other_par$Parameter == "max_data_displayed"]
           if(bool_check_auto){
-            dt_display <- create_displayed_data(dt_combined, fltr_type = "with_auto", min_lr = min_lr_auto, max_data = max_data)
+            dt_display <- create_displayed_data(dt_combined, fltr_type = "with_auto", min_lr = min_lr_auto, max_data_displayed = max_data_displayed)
           }else{
-            dt_display <- create_displayed_data(dt_combined, fltr_type = "without_auto", max_data = max_data)
+            dt_display <- create_displayed_data(dt_combined, fltr_type = "without_auto", max_data_displayed = max_data_displayed)
           }
 
           ###############################
@@ -286,6 +295,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_aut
           data_list$dt_criteria <- dt_criteria
           data_list$dt_rel <- dt_rel
           data_list$dt_myu <- dt_myu
+          data_list$dt_other_par <- dt_other_par
           data_list$fn_v_auto <- fn_v_auto
           data_list$fn_r_auto <- fn_r_auto
           data_list$fn_af <- fn_af
@@ -306,8 +316,8 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_par_aut
           waiter_hide()
 
           # Show a message for displayed data
-          if(nrow(dt_display) == max_data){
-            showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
+          if(nrow(dt_display) == max_data_displayed){
+            showModal(modalDialog(title = "Information", paste0("Top ", max_data_displayed, " data is displayed."), easyClose = TRUE, footer = NULL))
           }else if(bool_check_auto){
             showModal(modalDialog(title = "Information", "Data that satisfies the criterion of the minimum LR is displayed.", easyClose = TRUE, footer = NULL))
           }else{

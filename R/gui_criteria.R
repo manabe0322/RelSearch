@@ -40,7 +40,7 @@ tab_criteria_ui <- function(id){
 #'
 #' @description The function to create the server module for criteria
 #' @param path_pack Package path
-tab_criteria_server <- function(id, path_pack, keep_min_lr){
+tab_criteria_server <- function(id, path_pack){
   moduleServer(
     id,
     function(input, output, session){
@@ -78,8 +78,8 @@ tab_criteria_server <- function(id, path_pack, keep_min_lr){
         if(!is.numeric(min_lr_auto)){
           hideFeedback("input_min_lr_auto")
           disable("act_criteria_save")
-        }else if(min_lr_auto < keep_min_lr){
-          showFeedbackDanger(inputId = "input_min_lr_auto", text = paste0("The positive number greater than ", keep_min_lr, " is allowed."))
+        }else if(min_lr_auto < 1){
+          showFeedbackDanger(inputId = "input_min_lr_auto", text = "The number smaller than 1 is not allowed.")
           disable("act_criteria_save")
         }else{
           hideFeedback("input_min_lr_auto")
@@ -112,7 +112,7 @@ tab_criteria_server <- function(id, path_pack, keep_min_lr){
           max_mismatch_mt <- input$input_max_mismatch_mt
 #          min_share_mt <- input$input_min_share_mt
           if(all(is.numeric(min_lr_auto), is.integer(max_mustep_y), is.integer(max_mismatch_mt))){ # Remove is.integer(max_ignore_y), is.integer(min_share_mt)
-            if(all(min_lr_auto >= keep_min_lr, max_mustep_y >= 0, max_mismatch_mt >= 0)){ # Remove max_ignore_y >= 0, min_share_mt >= 0
+            if(all(min_lr_auto >= 1, max_mustep_y >= 0, max_mismatch_mt >= 0)){ # Remove max_ignore_y >= 0, min_share_mt >= 0
               enable("act_criteria_save")
             }
           }
@@ -135,7 +135,7 @@ tab_criteria_server <- function(id, path_pack, keep_min_lr){
 #          max_mismatch_mt <- input$input_max_mismatch_mt
 #          min_share_mt <- input$input_min_share_mt
 #          if(all(is.numeric(min_lr_auto), is.integer(max_mismatch_y), is.integer(max_mustep_y), is.integer(max_mismatch_mt), is.integer(min_share_mt))){
-#            if(all(min_lr_auto >= keep_min_lr, max_mismatch_y >= 0, max_mustep_y >= 0, max_mismatch_mt >= 0, min_share_mt >= 0)){
+#            if(all(min_lr_auto >= 1, max_mismatch_y >= 0, max_mustep_y >= 0, max_mismatch_mt >= 0, min_share_mt >= 0)){
 #              enable("act_criteria_save")
 #            }
 #          }
@@ -158,7 +158,7 @@ tab_criteria_server <- function(id, path_pack, keep_min_lr){
           max_mismatch_mt <- input$input_max_mismatch_mt
 #          min_share_mt <- input$input_min_share_mt
           if(all(is.numeric(min_lr_auto), is.integer(max_mismatch_y), is.integer(max_mismatch_mt))){ # Remove is.integer(max_ignore_y), is.integer(min_share_mt)
-            if(all(min_lr_auto >= keep_min_lr, max_mismatch_y >= 0, max_mismatch_mt >= 0)){ # Remove max_ignore_y >= 0, min_share_mt >= 0
+            if(all(min_lr_auto >= 1, max_mismatch_y >= 0, max_mismatch_mt >= 0)){ # Remove max_ignore_y >= 0, min_share_mt >= 0
               enable("act_criteria_save")
             }
           }
@@ -181,7 +181,7 @@ tab_criteria_server <- function(id, path_pack, keep_min_lr){
           max_mustep_y <- input$input_max_mustep_y
 #          min_share_mt <- input$input_min_share_mt
           if(all(is.numeric(min_lr_auto), is.integer(max_mismatch_y), is.integer(max_mustep_y))){ # Remove is.integer(max_ignore_y), is.integer(min_share_mt)
-            if(all(min_lr_auto >= keep_min_lr, max_mismatch_y >= 0, max_mustep_y >= 0)){ # Remove max_ignore_y >= 0, min_share_mt >= 0
+            if(all(min_lr_auto >= 1, max_mismatch_y >= 0, max_mustep_y >= 0)){ # Remove max_ignore_y >= 0, min_share_mt >= 0
               enable("act_criteria_save")
             }
           }
@@ -204,7 +204,7 @@ tab_criteria_server <- function(id, path_pack, keep_min_lr){
 #          max_mustep_y <- input$input_max_mustep_y
 #          max_mismatch_mt <- input$input_max_mismatch_mt
 #          if(all(is.numeric(min_lr_auto), is.integer(max_mismatch_y), is.integer(max_mustep_y), is.integer(max_mismatch_mt))){ # Remove is.integer(max_ignore_y)
-#            if(all(min_lr_auto >= keep_min_lr, max_mismatch_y >= 0, max_mustep_y >= 0, max_mismatch_mt >= 0)){ # Remove max_ignore_y >= 0
+#            if(all(min_lr_auto >= 1, max_mismatch_y >= 0, max_mustep_y >= 0, max_mismatch_mt >= 0)){ # Remove max_ignore_y >= 0
 #              enable("act_criteria_save")
 #            }
 #          }

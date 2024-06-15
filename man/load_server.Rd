@@ -4,16 +4,7 @@
 \alias{load_server}
 \title{load_server}
 \usage{
-load_server(
-  id,
-  session_top,
-  rv_criteria,
-  rv_rel,
-  rv_myu,
-  rv_par_auto,
-  keep_min_lr,
-  max_data
-)
+load_server(id, session_top, rv_criteria, rv_rel, rv_myu, rv_other_par)
 }
 \description{
 The function to create the server module for loading files

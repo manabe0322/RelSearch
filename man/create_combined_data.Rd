@@ -9,7 +9,7 @@ create_combined_data(
   dt_result_y,
   dt_result_mt,
   dt_rel,
-  keep_min_lr = 1
+  dt_other_par
 )
 }
 \arguments{
@@ -21,7 +21,7 @@ create_combined_data(
 
 \item{dt_rel}{A data.table of information on relationships}
 
-\item{keep_min_lr}{The minimum LR to keep data in dt_combined}
+\item{dt_other_par}{A data.table of other parameters}
 }
 \description{
 The function to create combined data

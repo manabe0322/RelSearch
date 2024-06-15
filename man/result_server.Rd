@@ -4,7 +4,7 @@
 \alias{result_server}
 \title{result_server}
 \usage{
-result_server(id, rv_file, keep_min_lr, max_data)
+result_server(id, rv_file)
 }
 \description{
 The function to create the server module for displaying results

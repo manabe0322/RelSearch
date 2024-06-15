@@ -8,7 +8,7 @@ create_displayed_data(
   dt_combined,
   fltr_type = "with_auto",
   min_lr = 100,
-  max_data = 10000
+  max_data_displayed = 10000
 )
 }
 \arguments{
@@ -18,7 +18,7 @@ create_displayed_data(
 
 \item{min_lr}{The minimum LR displayed}
 
-\item{max_data}{The maximum data displayed}
+\item{max_data_displayed}{The maximum data displayed}
 }
 \description{
 The function to create the displayed data

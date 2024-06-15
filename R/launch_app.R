@@ -6,8 +6,6 @@
 relsearch <- function(){
   ver_soft <- packageVersion("relsearch")
   path_pack <- path.package("relsearch", quiet = FALSE)
-  max_data <- 10000
-  keep_min_lr <- 1
   options(shiny.maxRequestSize = 500 * 1024^2)
 
   # Install and activate pandoc
@@ -49,7 +47,8 @@ relsearch <- function(){
                              navbarMenu("Settings",
                                         tab_criteria_ui("tab_criteria"),
                                         tab_rel_ui("tab_rel"),
-                                        tab_myu_ui("tab_myu")
+                                        tab_myu_ui("tab_myu"),
+                                        tab_other_par_ui("tab_other_par")
                              ),
 
                              example_ui("example"),
@@ -59,12 +58,13 @@ relsearch <- function(){
   )
 
   server <- function(input, output, session){
-    rv_criteria <- tab_criteria_server("tab_criteria", path_pack, keep_min_lr)
+    rv_criteria <- tab_criteria_server("tab_criteria", path_pack)
     rv_rel <- tab_rel_server("tab_rel", path_pack)
     rv_myu <- tab_myu_server("tab_myu", path_pack)
+    rv_other_par <- tab_other_par_server("tab_other_par", path_pack)
     example_server("example", path_pack)
     manual_server("manual", path_pack)
-    rv_file <- load_server("load", session, rv_criteria, rv_rel, rv_myu, rv_par_auto, keep_min_lr, max_data)
+    rv_file <- load_server("load", session, rv_criteria, rv_rel, rv_myu, rv_other_par)
 
     observe({
       req(rv_file)
@@ -75,7 +75,7 @@ relsearch <- function(){
       tab_view_dt_r_y_server("view_dt_r_y", rv_file)
       tab_view_dt_v_mt_server("view_dt_v_mt", rv_file)
       tab_view_dt_r_mt_server("view_dt_r_mt", rv_file)
-      result_server("result", rv_file, keep_min_lr, max_data)
+      result_server("result", rv_file)
       save_proj_server("save_proj", rv_file)
     })
 
