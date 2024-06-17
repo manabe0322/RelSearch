@@ -83,7 +83,7 @@ relsearch <- function(){
       refresh()
     })
 
-    rv_load_proj <- load_proj_server("load_proj", session, max_data)
+    rv_load_proj <- load_proj_server("load_proj", session, rv_other_par)
     observe({
       req(rv_load_proj)
       data_list <- rv_load_proj$data_list

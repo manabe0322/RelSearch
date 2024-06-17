@@ -17,12 +17,18 @@ load_proj_ui <- function(id){
 #' load_proj_server
 #'
 #' @description The function to create the server module for loading the project
-load_proj_server <- function(id, session_top, max_data){
+load_proj_server <- function(id, session_top, rv_other_par){
   moduleServer(
     id,
     function(input, output, session){
       rv_load_proj <- reactiveValues()
       rv_load_proj$data_list <- NULL
+      rv_load_proj$max_data_displayed <- NULL
+
+      observe({
+        req(rv_other_par)
+        rv_load_proj$max_data_displayed <- rv_other_par$max_data_displayed
+      })
 
       load_proj <- reactive({
         file_input <- input$file_proj
@@ -45,12 +51,15 @@ load_proj_server <- function(id, session_top, max_data){
           waiter_hide()
 
           # Show a message for displayed data
-          if(nrow(data_list$dt_display) == max_data){
-            showModal(modalDialog(title = "Information", paste0("Top ", max_data, " data is displayed."), easyClose = TRUE, footer = NULL))
-          }else if(data_list$bool_check_auto){
-            showModal(modalDialog(title = "Information", "Data that satisfies the criterion of the minimum LR is displayed.", easyClose = TRUE, footer = NULL))
-          }else{
-            showModal(modalDialog(title = "Information", "Data that satisfies the criteria for Y-STR or mtDNA is displayed.", easyClose = TRUE, footer = NULL))
+          max_data_displayed <- rv_load_proj$max_data_displayed
+          if(!is.null(max_data_displayed)){
+            if(nrow(data_list$dt_display) == max_data_displayed){
+              showModal(modalDialog(title = "Information", paste0("Top ", max_data_displayed, " data is displayed."), easyClose = TRUE, footer = NULL))
+            }else if(data_list$bool_check_auto){
+              showModal(modalDialog(title = "Information", "Data that satisfies the criterion of the minimum LR is displayed.", easyClose = TRUE, footer = NULL))
+            }else{
+              showModal(modalDialog(title = "Information", "Data that satisfies the criteria for Y-STR or mtDNA is displayed.", easyClose = TRUE, footer = NULL))
+            }
           }
         }
       }, ignoreInit = TRUE)
