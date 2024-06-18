@@ -1,6 +1,6 @@
 ---
 title: "RelSearch version 1.0.0 user manual"
-output: 
+output:
   pdf_document:
     latex_engine: xelatex
     number_sections: true
@@ -471,42 +471,112 @@ where $G_{v}$ and $G_{r}$ denote the genotypes of the victim and the reference, 
 
 In RelSearch, users can set the minimum threshold of the LR to support $H_{1}$. The default threshold is 100, which is determined based on the verbal scale "Moderate Support" written in the Scientific Working Group on DNA Analysis Methods (SWGDAM) guideline [@SWGDAM2018].
 
-If full profiles are obtained for a victim-reference pair other than parent-child (i.e., without considering drop-out and mutations in calculation), the numerator of the LR is calculated using the probabilities that two, one and zero alleles are identity by descent (IBD).
+If full profiles are obtained for a victim-reference pair under the assumption of the relationship other than the parent-child (i.e., without considering drop-out and mutations in calculation), the numerator and the denominator of the LR are calculated using the probabilities that two, one and zero alleles are identity by descent (IBD).
 
 $$
-\begin{aligned}
-Pr(G_{v}, G_{r}|H_{1}) &= Pr(G_{v}, G_{r}|IBD = 2)Pr(IBD = 2)
-\\ &+ Pr(G_{v}, G_{r}|IBD = 1)Pr(IBD = 1)
-\\ &+ Pr(G_{v}, G_{r}|IBD = 0)Pr(IBD = 0)
-\end{aligned}
-$$
-
-In RelSearch, the $H_{2}$ is assumed to be unrelated between the victim and the reference; therefore, the denominator of the LR is simply calculated as follows:
-
-$$
-Pr(G_{v}, G_{r}|H_{2}) = Pr(G_{v})Pr(G_{r})
+\begin{align}
+Pr(G_{v}, G_{r}|H) &= Pr(G_{v}, G_{r}|IBD = 2)Pr(IBD = 2|H)
+\\ &+ Pr(G_{v}, G_{r}|IBD = 1)Pr(IBD = 1|H)
+\\ &+ Pr(G_{v}, G_{r}|IBD = 0)Pr(IBD = 0|H)
+\end{align}
 $$
 
 The specific method for these calculations is based on the method of Wenk et al [@Wenk1996].
 
+### Allele probabilities
+
+The allele probabilities are assumed to be based on Dirichlet distributions in each locus [@Morimoto2020]. The probability of allele $x$ ($p_x$) can be estimated using the following formula:
+
+$$
+p_a = \frac{\alpha_x + 1}{\sum_{x = 1}^X(\alpha_x + 1)}
+$$
+
+where $\alpha_x$ is the number of observations of the $x$th allele ($x = 1, 2, ..., X$) and X is the number of observed allele types.
+
+If some alleles of victims or references are unobserved in the population database, these alleles are added to the observed allele types as zero observation (i.e., $\alpha_x = 0$), and $p_x$ of all alleles are re-estimated [@Morimoto2020].
+
 ### Allelic drop-out
+
+When only one allele is observed and another allele may have dropped out in a locus, RelSearch assumes that the genotype is both homozygous (i.e., no drop-out allele) and heterozygous (i.e., one drop-out allele). The probability of observing the profile is the same in all candidate genotypes. The method corresponds to the "Method 1" proposed by Dørum et al [@Dorum2015].
+
+Here, $G_{v}^*$ and $G_{r}^*$ denote the observed profiles of the victim and the reference, respectively. $G_{v_i}$ and $G_{r_j}$ denote the $i$th candidate genotype of the victim and the $j$th candidate genotype of the reference, respectively.
+
+Suppose that $G_{v}^*$ is 15/- (i.e., partial profile) and $G_{r}^*$ is 16/17. In this case, RelSearch considers the following candidate genotypes of the victim:
+
+$G_{v_1}$: 15/15, 
+
+$G_{v_2}$: 15/16, 
+
+$G_{v_3}$: 15/17, and
+
+$G_{v_4}$: 15/Q.
+
+Q denotes any undetected alleles other than 15, 16, and 17.
+
+The candidate genotype of the reference is only 16, 17 because two heterozygote alleles are detected.
+
+In this case, the likelihood function considering allelic drop-out is as follows:
+
+$$
+\begin{flalign}
+Pr(G_{v}^* = 15/-, G_{r}^* = 16/17|H)
+\\ &= Pr(G_{v}^* = 15/-, G_{r}^* = 16/17|G_{v_i} = 15/15, G_{r} = 16/17)Pr(G_{v_i} = 15/15, G_{r} = 16/17|H)
+\\ &+ Pr(G_{v}^* = 15/-, G_{r}^* = 16/17|G_{v_i} = 15/16, G_{r} = 16/17)Pr(G_{v_i} = 15/16, G_{r} = 16/17|H)
+\\ &+ Pr(G_{v}^* = 15/-, G_{r}^* = 16/17|G_{v_i} = 15/17, G_{r} = 16/17)Pr(G_{v_i} = 15/17, G_{r} = 16/17|H)
+\\ &+ Pr(G_{v}^* = 15/-, G_{r}^* = 16/17|G_{v_i} = 15/Q, G_{r} = 16/17)Pr(G_{v_i} = 15/Q, G_{r} = 16/17|H)
+\end{flalign}
+$$
+
+This equation is generalized as follows:
+
+$$
+\begin{aligned}
+Pr(G_{v}^*, G_{r}^*|H) &= \sum_i \sum_j Pr(G_{v}^*, G_{r}^*|G_{v_i}, G_{r_j})Pr(G_{v_i}, G_{r_j}|H)
+\end{aligned}
+$$
+
+$Pr(G_{v}^*, G_{r}^*|G_{v_i}, G_{r_j})$ can be ignored because the probability of observing $G_{v}^*$ and $G_{r}^*$ is the same irrespective of the candidate genotypes. Therefore, the likelihood function can be rewritten as follows:
+
+$$
+\begin{aligned}
+Pr(G_{v}^*, G_{r}^*|H) &= \sum_i \sum_j Pr(G_{v_i}, G_{r_j}|H)
+\end{aligned}
+$$
+
+$Pr(G_{v_i}, G_{r_j}|H)$ values are calculated according to equation (1) under the assumption of the relationship other than the parent-child. When assuming the parent-child relationship, mutational events are considered for the calculation as explained in the next session.
 
 ### Mutation
 
+When assuming the parent-child relationship, mutational events are considered for the calculation of $Pr(G_{v_i}, G_{r_j}|H)$ in equation (2). Suppose that a victim-reference pair is assumed to be parent-child, and $G_{v_i}$ is a/b and $G_{r_j}$ is c/d. RelSearch assumes all inheritance patterns from the parent to the child including mutational events. The LR is calculated according to [@Ricciardi2014; @Egeland2017].
+
+$$
+LR = \frac {(\mu_{a \rightarrow c} + \mu_{b \rightarrow c})p_{d} + (\mu_{a \rightarrow d} + \mu_{b \rightarrow d})p_{c}}{4p_{c}p_{d}}
+$$
+
+where $p_a$, $p_b$, $p_c$, and $p_d$ denote the probabilities of the allele $a$, $b$, $c$, and $d$, respectively. $\mu_{a \rightarrow c}$ denotes the probability that the parent allele $a$ is inherited as the allele $c$ to the child. $\mu_{a \rightarrow c}$, $\mu_{b \rightarrow c}$, $\mu_{a \rightarrow d}$, and $\mu_{b \rightarrow d}$ depend on the sex of the parent (i.e., paternal or maternal), and the mutational steps are assumed to be -2, -1, +1, and +2 steps. The mutation rates reported by Morimoto et al [@Morimoto2020] are used as the default values.
+
 ## Y-STR
 
-RelSearch investigates whether the Y-STR profiles of each victim-reference pair support paternal lineage. There are two criteria to support paternal lineage as follows:
+RelSearch analyzes whether the Y-STR profiles of each victim-reference pair support paternal lineage. There are two criteria to support paternal lineage as follows:
 
 - Maximum number of mismatched loci: The upper limit of the number of mismatched loci between victim and reference profiles to support paternal lineage.
 
 - Maximum total mutational steps: The upper limit of total mutational steps (i.e., sum of mutational steps of all loci) between victim and reference profiles to support paternal lineage.
 
+If a locus has no alleles in at least one of the victim and the reference, the locus is ignored for the analysis. In addition, if one of the profiles of victim and the reference is partial in a duplicated marker (e.g., DYS385), and the profiles can be explained as paternal lineage (e.g., victim profile: 15, reference profile: 15/16), the locus is also ignored for the analysis.
 
 ## mtDNA
+
+RelSearch analyzes whether the mtDNA profiles of each victim-reference pair support maternal lineage. There is one criterion to support maternal lineage as follow:
+
+- Maximum number of inconsistency: The upper limit of the number of inconcistency between victim and reference profiles to support maternal lineage.
+
+Information on the ranges of the mtDNA sequences in each profile is needed because RelSearch targets the ranges read in both victim and reference profiles. The mtDNA profiles are expressed as the differences to a reference sequence such as the revised Cambridge Reference Sequence [@Andrews1999] (e.g., 73G, 315.1C, and so on). RelSearch only recongizes differences in strings of each mtDNA profile; therefore, the rule of the notation for mtDNA profiles should be aligned in each profile by software users.
+
+The default criterion has been determined according to the sensitivity and specificity studies as explained in section 2.5.3.
 
 \newpage
 
 # Reference {-}
 
 <div id="refs"></div>
-
