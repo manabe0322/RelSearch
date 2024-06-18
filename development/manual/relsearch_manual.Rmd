@@ -519,7 +519,7 @@ In this case, the likelihood function considering allelic drop-out is as follows
 
 $$
 \begin{aligned}
-\\ &Pr(G_{v}^* = 15/-, G_{r}^* = 16/17|H)
+&Pr(G_{v}^* = 15/-, G_{r}^* = 16/17|H)
 \\ &= Pr(G_{v}^* = 15/-, G_{r}^* = 16/17|G_{v_i} = 15/15, G_{r} = 16/17)Pr(G_{v_i} = 15/15, G_{r} = 16/17|H)
 \\ &+ Pr(G_{v}^* = 15/-, G_{r}^* = 16/17|G_{v_i} = 15/16, G_{r} = 16/17)Pr(G_{v_i} = 15/16, G_{r} = 16/17|H)
 \\ &+ Pr(G_{v}^* = 15/-, G_{r}^* = 16/17|G_{v_i} = 15/17, G_{r} = 16/17)Pr(G_{v_i} = 15/17, G_{r} = 16/17|H)
