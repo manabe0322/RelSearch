@@ -474,11 +474,11 @@ In RelSearch, users can set the minimum threshold of the LR to support $H_{1}$. 
 If full profiles are obtained for a victim-reference pair under the assumption of the relationship other than the parent-child (i.e., without considering drop-out and mutations in calculation), the numerator and the denominator of the LR are calculated using the probabilities that two, one and zero alleles are identity by descent (IBD).
 
 $$
-\begin{align}
+\begin{aligned}
 Pr(G_{v}, G_{r}|H) &= Pr(G_{v}, G_{r}|IBD = 2)Pr(IBD = 2|H)
 \\ &+ Pr(G_{v}, G_{r}|IBD = 1)Pr(IBD = 1|H)
 \\ &+ Pr(G_{v}, G_{r}|IBD = 0)Pr(IBD = 0|H)
-\end{align}
+\end{aligned}
 $$
 
 The specific method for these calculations is based on the method of Wenk et al [@Wenk1996].
@@ -518,13 +518,13 @@ The candidate genotype of the reference is only 16, 17 because two heterozygote 
 In this case, the likelihood function considering allelic drop-out is as follows:
 
 $$
-\begin{flalign}
-Pr(G_{v}^* = 15/-, G_{r}^* = 16/17|H)
+\begin{aligned}
+\\ &Pr(G_{v}^* = 15/-, G_{r}^* = 16/17|H)
 \\ &= Pr(G_{v}^* = 15/-, G_{r}^* = 16/17|G_{v_i} = 15/15, G_{r} = 16/17)Pr(G_{v_i} = 15/15, G_{r} = 16/17|H)
 \\ &+ Pr(G_{v}^* = 15/-, G_{r}^* = 16/17|G_{v_i} = 15/16, G_{r} = 16/17)Pr(G_{v_i} = 15/16, G_{r} = 16/17|H)
 \\ &+ Pr(G_{v}^* = 15/-, G_{r}^* = 16/17|G_{v_i} = 15/17, G_{r} = 16/17)Pr(G_{v_i} = 15/17, G_{r} = 16/17|H)
 \\ &+ Pr(G_{v}^* = 15/-, G_{r}^* = 16/17|G_{v_i} = 15/Q, G_{r} = 16/17)Pr(G_{v_i} = 15/Q, G_{r} = 16/17|H)
-\end{flalign}
+\end{aligned}
 $$
 
 This equation is generalized as follows:
