@@ -530,17 +530,13 @@ $$
 This equation is generalized as follows:
 
 $$
-\begin{aligned}
-Pr(G_{v}^*, G_{r}^*|H) &= \sum_i \sum_j Pr(G_{v}^*, G_{r}^*|G_{v_i}, G_{r_j})Pr(G_{v_i}, G_{r_j}|H)
-\end{aligned}
+Pr(G_{v}^*, G_{r}^*|H) = \sum_i \sum_j Pr(G_{v}^*, G_{r}^*|G_{v_i}, G_{r_j})Pr(G_{v_i}, G_{r_j}|H)
 $$
 
 $Pr(G_{v}^*, G_{r}^*|G_{v_i}, G_{r_j})$ can be ignored because the probability of observing $G_{v}^*$ and $G_{r}^*$ is the same irrespective of the candidate genotypes. Therefore, the likelihood function can be rewritten as follows:
 
 $$
-\begin{aligned}
-Pr(G_{v}^*, G_{r}^*|H) &= \sum_i \sum_j Pr(G_{v_i}, G_{r_j}|H)
-\end{aligned}
+Pr(G_{v}^*, G_{r}^*|H) = \sum_i \sum_j Pr(G_{v_i}, G_{r_j}|H)
 $$
 
 $Pr(G_{v_i}, G_{r_j}|H)$ values are calculated according to equation (1) under the assumption of the relationship other than the parent-child. When assuming the parent-child relationship, mutational events are considered for the calculation as explained in the next session.
@@ -572,8 +568,6 @@ RelSearch analyzes whether the mtDNA profiles of each victim-reference pair supp
 - Maximum number of inconsistency: The upper limit of the number of inconcistency between victim and reference profiles to support maternal lineage.
 
 Information on the ranges of the mtDNA sequences in each profile is needed because RelSearch targets the ranges read in both victim and reference profiles. The mtDNA profiles are expressed as the differences to a reference sequence such as the revised Cambridge Reference Sequence [@Andrews1999] (e.g., 73G, 315.1C, and so on). RelSearch only recongizes differences in strings of each mtDNA profile; therefore, the rule of the notation for mtDNA profiles should be aligned in each profile by software users.
-
-The default criterion has been determined according to the sensitivity and specificity studies as explained in section 2.5.3.
 
 \newpage
 
