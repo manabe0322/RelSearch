@@ -4,7 +4,6 @@
 #' @usage RelSearch()
 #' @export
 RelSearch <- function(){
-  # Test
   ver_soft <- packageVersion("RelSearch")
   path_pack <- path.package("RelSearch", quiet = FALSE)
   options(shiny.maxRequestSize = 500 * 1024^2)
