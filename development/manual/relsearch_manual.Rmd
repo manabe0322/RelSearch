@@ -1,5 +1,8 @@
 ---
-title: "RelSearch version 1.0.0 user manual"
+title: "RelSearch version 1.0.0"
+subtitle: "User Manual"
+author: "Sho Manabe"
+date: "`r Sys.Date()`"
 output:
   pdf_document:
     latex_engine: xelatex
@@ -7,7 +10,7 @@ output:
     toc: true
     toc_depth: 3
 urlcolor: blue
-documentclass: article
+documentclass: report
 fontsize: 12pt
 geometry: margin = 1in
 header-includes:
@@ -181,7 +184,7 @@ kable(df_af_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
 
 - This file requires the columns "Allele" and columns for each marker (one column in each).
 
-- Allele counts in the population database are entered in columns for each marker.
+- Allele counts in the population database are entered in the columns for each marker.
 
 &nbsp;
 
@@ -207,7 +210,7 @@ kable(df_v_y_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
 
 - In the marker with more than one allele, each allele must be separated by a comma without any spaces (e.g., DYS385).
 
-- The marker with an empty cell (e.g., DYS392 of the sample ‘Victim5’) is ignored for analysis.
+- The marker with an empty cell (e.g., DYS392 of the sample ‘Victim5’) is ignored for the analysis.
 
 &nbsp;
 
@@ -238,7 +241,7 @@ kable(df_v_y_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
 
 - In the marker with more than one allele, each allele must be separated by a comma without any spaces (e.g., DYS385).
 
-- The marker with an empty cell (e.g., DYS518 of the sample ‘Reference5’) is ignored for analysis.
+- The marker with an empty cell (e.g., DYS518 of the sample ‘Reference5’) is ignored for the analysis.
 
 &nbsp;
 
@@ -263,11 +266,11 @@ kable(df_v_mt_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
 
 - This file requires the column "SampleName", "Range", and "Haplotype".
 
-- In the 'Range' column, the first and the last positions in each readable sequence must be written with a hyphen between these positions (e.g, 73-340). Readable sequences must be separated by a single blank space.
+- In the 'Range' column, the first and the last positions in each readable sequence must be written with a hyphen between these positions (e.g, 73-340). The readable sequences must be separated by a single blank space.
 
 - In the 'Haplotype' column, the mtDNA types are expressed as the differences to a reference sequence such as the revised Cambridge Reference Sequence [@Andrews1999] (e.g., 73G, 315.1C, and so on). Each mtDNA type must be separated by a single blank space.
 
-- Empty cells in the 'Range' and 'Haplotype' columns (e.g., the sample ‘Victim5’) mean that there is no readable sequence.
+- The empty cells in the 'Range' and 'Haplotype' columns (e.g., the sample ‘Victim5’ in the above table) mean that there is no readable sequence.
 
 &nbsp;
 
@@ -298,11 +301,11 @@ kable(df_r_mt_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
 
 - If a reference has multiple missing family members, add rows for each relationship of the members (e.g., Brother_Brother and Father_Son of the sample "Reference3" in the above table).
 
-- In the 'Range' column, the first and the last positions in each readable sequence must be written with a hyphen between these positions (e.g, 73-340). Readable sequences must be separated by a single blank space.
+- In the 'Range' column, the first and the last positions in each readable sequence must be written with a hyphen between these positions (e.g, 73-340). The readable sequences must be separated by a single blank space.
 
 - In the 'Haplotype' column, the mtDNA types are expressed as the differences to a reference sequence such as the revised Cambridge Reference Sequence [@Andrews1999] (e.g., 73G, 315.1C, and so on). Each mtDNA type must be separated by a single blank space.
 
-- Empty cells in the 'Range' and 'Haplotype' columns (e.g., the sample ‘Reference5’) mean that there is no readable sequence.
+- The empty cells in the 'Range' and 'Haplotype' columns (e.g., the sample ‘Reference5’ in the above table) mean that there is no readable sequence.
 
 &nbsp;
 
@@ -420,9 +423,13 @@ In the pop-up window, select a locus. Press the **Save** button to delete the se
 
 If you want to return to default settings, press the **Reset** button. In the pop-up window, press the **Restore default** button.
 
-## Other parameters {#sec_setting_param}
+## Data management {#sec_setting_data_manage}
 
-You can set the minimum allele frequency which is used for the unobserved alleles. Press the **Save** button to reflect the changes. Press the **Reset** button if you want to return to the default value.
+You can set the following conditions for data management. Press the **Save** button to reflect the changes. Press the **Reset** button if you want to return to default values.
+
+- Minimum LR to be stored: The minimum LR to be stored in the project data. If you want to reduce the file size of the project data, the minimum LR should be increased.
+
+- Maximum number of displayed data: The maximum number of displayed data in the Result tab. If this number is set too large, it may lead to insufficient memory of RelSearch. overload.
 
 \newpage
 
@@ -486,7 +493,7 @@ You can check the following analysis conditions in **Analysis conditions** tab.
 
 - **Mutation rate**: The user-defined mutation rates (see section [Setting](#sec_setting_myu)) are displayed.
 
-- **Parameter**: The user-defined minimum allele frequency (see section [Setting](#sec_setting_param)) is displayed.
+- **Data management**: The user-defined conditions for data management (see section [Setting](#sec_setting_data_manage)) is displayed.
 
 \newpage
 
