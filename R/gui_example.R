@@ -63,9 +63,9 @@ example_server <- function(id, path_pack){
       )
 
       output$download_af <- downloadHandler(
-        filename = "str_af_example.csv",
+        filename = "str_allele-count_example.csv",
         content = function(file){
-          csvfile <- read.csv(paste0(path_pack, "/extdata/examples/str_af_example.csv"))
+          csvfile <- read.csv(paste0(path_pack, "/extdata/examples/str_allele-count_example.csv"))
           csvfile[is.na(csvfile)] <- ""
           write.csv(csvfile, file, row.names = FALSE)
         }

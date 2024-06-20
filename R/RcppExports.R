@@ -2,130 +2,130 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 union_vr_al <- function(vgt, rgt) {
-    .Call(`_relsearch_union_vr_al`, vgt, rgt)
+    .Call(`_RelSearch_union_vr_al`, vgt, rgt)
 }
 
 extract_al_prob <- function(gt1, gt2, af_dummy, af_al_dummy) {
-    .Call(`_relsearch_extract_al_prob`, gt1, gt2, af_dummy, af_al_dummy)
+    .Call(`_RelSearch_extract_al_prob`, gt1, gt2, af_dummy, af_al_dummy)
 }
 
 calc_gt_prob <- function(gt, al_prob_1, al_prob_2) {
-    .Call(`_relsearch_calc_gt_prob`, gt, al_prob_1, al_prob_2)
+    .Call(`_RelSearch_calc_gt_prob`, gt, al_prob_1, al_prob_2)
 }
 
 calc_kin_like_pc <- function(pgt, cgt, al_prob, myu_per_inheritance) {
-    .Call(`_relsearch_calc_kin_like_pc`, pgt, cgt, al_prob, myu_per_inheritance)
+    .Call(`_RelSearch_calc_kin_like_pc`, pgt, cgt, al_prob, myu_per_inheritance)
 }
 
 calc_kin_like <- function(vgt, rgt, al_prob, pibd) {
-    .Call(`_relsearch_calc_kin_like`, vgt, rgt, al_prob, pibd)
+    .Call(`_RelSearch_calc_kin_like`, vgt, rgt, al_prob, pibd)
 }
 
 make_dummy_af <- function(uniq_vr_al, af, af_al) {
-    .Call(`_relsearch_make_dummy_af`, uniq_vr_al, af, af_al)
+    .Call(`_RelSearch_make_dummy_af`, uniq_vr_al, af, af_al)
 }
 
 make_dummy_gt <- function(target_al, uniq_vr_al) {
-    .Call(`_relsearch_make_dummy_gt`, target_al, uniq_vr_al)
+    .Call(`_RelSearch_make_dummy_gt`, target_al, uniq_vr_al)
 }
 
 set_myu_per_inheritance <- function(pgt, cgt, myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2, myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2, bool_parent_male) {
-    .Call(`_relsearch_set_myu_per_inheritance`, pgt, cgt, myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2, myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2, bool_parent_male)
+    .Call(`_RelSearch_set_myu_per_inheritance`, pgt, cgt, myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2, myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2, bool_parent_male)
 }
 
 calc_kin_like_drop <- function(v_al, r_al, af, af_al, pibd, myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2, myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2, bool_pc, bool_parent_victim, bool_parent_male) {
-    .Call(`_relsearch_calc_kin_like_drop`, v_al, r_al, af, af_al, pibd, myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2, myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2, bool_pc, bool_parent_victim, bool_parent_male)
+    .Call(`_RelSearch_calc_kin_like_drop`, v_al, r_al, af, af_al, pibd, myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2, myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2, bool_pc, bool_parent_victim, bool_parent_male)
 }
 
 calc_kin_lr <- function(prof_victim, prof_ref, af_list, af_al_list, pibd, myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2, myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2, bool_pc, bool_parent_victim, bool_parent_male) {
-    .Call(`_relsearch_calc_kin_lr`, prof_victim, prof_ref, af_list, af_al_list, pibd, myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2, myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2, bool_pc, bool_parent_victim, bool_parent_male)
+    .Call(`_RelSearch_calc_kin_lr`, prof_victim, prof_ref, af_list, af_al_list, pibd, myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2, myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2, bool_pc, bool_parent_victim, bool_parent_male)
 }
 
 calc_kin_lr_all <- function(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel, myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2, myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2, bool_pc_all, bool_parent_victim_all, bool_parent_male_all) {
-    .Call(`_relsearch_calc_kin_lr_all`, gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel, myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2, myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2, bool_pc_all, bool_parent_victim_all, bool_parent_male_all)
+    .Call(`_RelSearch_calc_kin_lr_all`, gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel, myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2, myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2, bool_pc_all, bool_parent_victim_all, bool_parent_male_all)
 }
 
 split <- function(str, del) {
-    .Call(`_relsearch_split`, str, del)
+    .Call(`_RelSearch_split`, str, del)
 }
 
 str_to_int <- function(str) {
-    .Call(`_relsearch_str_to_int`, str)
+    .Call(`_RelSearch_str_to_int`, str)
 }
 
 int_to_str <- function(num) {
-    .Call(`_relsearch_int_to_str`, num)
+    .Call(`_RelSearch_int_to_str`, num)
 }
 
 tousa <- function(start, end, interval) {
-    .Call(`_relsearch_tousa`, start, end, interval)
+    .Call(`_RelSearch_tousa`, start, end, interval)
 }
 
 search_pos_double <- function(vec, target) {
-    .Call(`_relsearch_search_pos_double`, vec, target)
+    .Call(`_RelSearch_search_pos_double`, vec, target)
 }
 
 search_pos_int <- function(vec, target) {
-    .Call(`_relsearch_search_pos_int`, vec, target)
+    .Call(`_RelSearch_search_pos_int`, vec, target)
 }
 
 search_pos_string <- function(vec, target) {
-    .Call(`_relsearch_search_pos_string`, vec, target)
+    .Call(`_RelSearch_search_pos_string`, vec, target)
 }
 
 extract_integer <- function(target) {
-    .Call(`_relsearch_extract_integer`, target)
+    .Call(`_RelSearch_extract_integer`, target)
 }
 
 is_integer <- function(x) {
-    .Call(`_relsearch_is_integer`, x)
+    .Call(`_RelSearch_is_integer`, x)
 }
 
 setdiff_string <- function(vec_str1, vec_str2) {
-    .Call(`_relsearch_setdiff_string`, vec_str1, vec_str2)
+    .Call(`_RelSearch_setdiff_string`, vec_str1, vec_str2)
 }
 
 setdiff_int <- function(vec_int1, vec_int2) {
-    .Call(`_relsearch_setdiff_int`, vec_int1, vec_int2)
+    .Call(`_RelSearch_setdiff_int`, vec_int1, vec_int2)
 }
 
 setdiff_double <- function(vec_num1, vec_num2) {
-    .Call(`_relsearch_setdiff_double`, vec_num1, vec_num2)
+    .Call(`_RelSearch_setdiff_double`, vec_num1, vec_num2)
 }
 
 extract_pos_mt <- function(range) {
-    .Call(`_relsearch_extract_pos_mt`, range)
+    .Call(`_RelSearch_extract_pos_mt`, range)
 }
 
 extract_pos_mt_vr <- function(range_victim, range_ref) {
-    .Call(`_relsearch_extract_pos_mt_vr`, range_victim, range_ref)
+    .Call(`_RelSearch_extract_pos_mt_vr`, range_victim, range_ref)
 }
 
 make_share_range <- function(pos_mt_vr) {
-    .Call(`_relsearch_make_share_range`, pos_mt_vr)
+    .Call(`_RelSearch_make_share_range`, pos_mt_vr)
 }
 
 match_mt <- function(prof_victim, range_victim, prof_ref, range_ref) {
-    .Call(`_relsearch_match_mt`, prof_victim, range_victim, prof_ref, range_ref)
+    .Call(`_RelSearch_match_mt`, prof_victim, range_victim, prof_ref, range_ref)
 }
 
 match_mt_all <- function(hap_v_mt, hap_r_mt, range_v_mt, range_r_mt) {
-    .Call(`_relsearch_match_mt_all`, hap_v_mt, hap_r_mt, range_v_mt, range_r_mt)
+    .Call(`_RelSearch_match_mt_all`, hap_v_mt, hap_r_mt, range_v_mt, range_r_mt)
 }
 
 obtain_al <- function(hap) {
-    .Call(`_relsearch_obtain_al`, hap)
+    .Call(`_RelSearch_obtain_al`, hap)
 }
 
 calc_mu_step <- function(v_al, r_al) {
-    .Call(`_relsearch_calc_mu_step`, v_al, r_al)
+    .Call(`_RelSearch_calc_mu_step`, v_al, r_al)
 }
 
 match_y <- function(prof_victim, prof_ref) {
-    .Call(`_relsearch_match_y`, prof_victim, prof_ref)
+    .Call(`_RelSearch_match_y`, prof_victim, prof_ref)
 }
 
 match_y_all <- function(hap_v_y, hap_r_y) {
-    .Call(`_relsearch_match_y_all`, hap_v_y, hap_r_y)
+    .Call(`_RelSearch_match_y_all`, hap_v_y, hap_r_y)
 }
 

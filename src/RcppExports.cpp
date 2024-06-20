@@ -12,7 +12,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // union_vr_al
 std::vector<double> union_vr_al(std::vector<double> vgt, std::vector<double> rgt);
-RcppExport SEXP _relsearch_union_vr_al(SEXP vgtSEXP, SEXP rgtSEXP) {
+RcppExport SEXP _RelSearch_union_vr_al(SEXP vgtSEXP, SEXP rgtSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -24,7 +24,7 @@ END_RCPP
 }
 // extract_al_prob
 std::vector<double> extract_al_prob(std::vector<double> gt1, std::vector<double> gt2, std::vector<double> af_dummy, std::vector<double> af_al_dummy);
-RcppExport SEXP _relsearch_extract_al_prob(SEXP gt1SEXP, SEXP gt2SEXP, SEXP af_dummySEXP, SEXP af_al_dummySEXP) {
+RcppExport SEXP _RelSearch_extract_al_prob(SEXP gt1SEXP, SEXP gt2SEXP, SEXP af_dummySEXP, SEXP af_al_dummySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -38,7 +38,7 @@ END_RCPP
 }
 // calc_gt_prob
 double calc_gt_prob(std::vector<double> gt, double al_prob_1, double al_prob_2);
-RcppExport SEXP _relsearch_calc_gt_prob(SEXP gtSEXP, SEXP al_prob_1SEXP, SEXP al_prob_2SEXP) {
+RcppExport SEXP _RelSearch_calc_gt_prob(SEXP gtSEXP, SEXP al_prob_1SEXP, SEXP al_prob_2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -51,7 +51,7 @@ END_RCPP
 }
 // calc_kin_like_pc
 std::vector<double> calc_kin_like_pc(std::vector<double> pgt, std::vector<double> cgt, std::vector<double> al_prob, std::vector<double> myu_per_inheritance);
-RcppExport SEXP _relsearch_calc_kin_like_pc(SEXP pgtSEXP, SEXP cgtSEXP, SEXP al_probSEXP, SEXP myu_per_inheritanceSEXP) {
+RcppExport SEXP _RelSearch_calc_kin_like_pc(SEXP pgtSEXP, SEXP cgtSEXP, SEXP al_probSEXP, SEXP myu_per_inheritanceSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -65,7 +65,7 @@ END_RCPP
 }
 // calc_kin_like
 std::vector<double> calc_kin_like(std::vector<double> vgt, std::vector<double> rgt, std::vector<double> al_prob, std::vector<double> pibd);
-RcppExport SEXP _relsearch_calc_kin_like(SEXP vgtSEXP, SEXP rgtSEXP, SEXP al_probSEXP, SEXP pibdSEXP) {
+RcppExport SEXP _RelSearch_calc_kin_like(SEXP vgtSEXP, SEXP rgtSEXP, SEXP al_probSEXP, SEXP pibdSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -79,7 +79,7 @@ END_RCPP
 }
 // make_dummy_af
 std::vector<std::vector<double>> make_dummy_af(std::vector<double> uniq_vr_al, std::vector<double> af, std::vector<double> af_al);
-RcppExport SEXP _relsearch_make_dummy_af(SEXP uniq_vr_alSEXP, SEXP afSEXP, SEXP af_alSEXP) {
+RcppExport SEXP _RelSearch_make_dummy_af(SEXP uniq_vr_alSEXP, SEXP afSEXP, SEXP af_alSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -92,7 +92,7 @@ END_RCPP
 }
 // make_dummy_gt
 std::vector<std::vector<double>> make_dummy_gt(std::vector<double> target_al, std::vector<double> uniq_vr_al);
-RcppExport SEXP _relsearch_make_dummy_gt(SEXP target_alSEXP, SEXP uniq_vr_alSEXP) {
+RcppExport SEXP _RelSearch_make_dummy_gt(SEXP target_alSEXP, SEXP uniq_vr_alSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -104,7 +104,7 @@ END_RCPP
 }
 // set_myu_per_inheritance
 std::vector<double> set_myu_per_inheritance(std::vector<double> pgt, std::vector<double> cgt, double myu_pat_m2, double myu_pat_m1, double myu_pat_0, double myu_pat_p1, double myu_pat_p2, double myu_mat_m2, double myu_mat_m1, double myu_mat_0, double myu_mat_p1, double myu_mat_p2, bool bool_parent_male);
-RcppExport SEXP _relsearch_set_myu_per_inheritance(SEXP pgtSEXP, SEXP cgtSEXP, SEXP myu_pat_m2SEXP, SEXP myu_pat_m1SEXP, SEXP myu_pat_0SEXP, SEXP myu_pat_p1SEXP, SEXP myu_pat_p2SEXP, SEXP myu_mat_m2SEXP, SEXP myu_mat_m1SEXP, SEXP myu_mat_0SEXP, SEXP myu_mat_p1SEXP, SEXP myu_mat_p2SEXP, SEXP bool_parent_maleSEXP) {
+RcppExport SEXP _RelSearch_set_myu_per_inheritance(SEXP pgtSEXP, SEXP cgtSEXP, SEXP myu_pat_m2SEXP, SEXP myu_pat_m1SEXP, SEXP myu_pat_0SEXP, SEXP myu_pat_p1SEXP, SEXP myu_pat_p2SEXP, SEXP myu_mat_m2SEXP, SEXP myu_mat_m1SEXP, SEXP myu_mat_0SEXP, SEXP myu_mat_p1SEXP, SEXP myu_mat_p2SEXP, SEXP bool_parent_maleSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -127,7 +127,7 @@ END_RCPP
 }
 // calc_kin_like_drop
 std::vector<double> calc_kin_like_drop(std::vector<double> v_al, std::vector<double> r_al, std::vector<double> af, std::vector<double> af_al, std::vector<double> pibd, double myu_pat_m2, double myu_pat_m1, double myu_pat_0, double myu_pat_p1, double myu_pat_p2, double myu_mat_m2, double myu_mat_m1, double myu_mat_0, double myu_mat_p1, double myu_mat_p2, bool bool_pc, bool bool_parent_victim, bool bool_parent_male);
-RcppExport SEXP _relsearch_calc_kin_like_drop(SEXP v_alSEXP, SEXP r_alSEXP, SEXP afSEXP, SEXP af_alSEXP, SEXP pibdSEXP, SEXP myu_pat_m2SEXP, SEXP myu_pat_m1SEXP, SEXP myu_pat_0SEXP, SEXP myu_pat_p1SEXP, SEXP myu_pat_p2SEXP, SEXP myu_mat_m2SEXP, SEXP myu_mat_m1SEXP, SEXP myu_mat_0SEXP, SEXP myu_mat_p1SEXP, SEXP myu_mat_p2SEXP, SEXP bool_pcSEXP, SEXP bool_parent_victimSEXP, SEXP bool_parent_maleSEXP) {
+RcppExport SEXP _RelSearch_calc_kin_like_drop(SEXP v_alSEXP, SEXP r_alSEXP, SEXP afSEXP, SEXP af_alSEXP, SEXP pibdSEXP, SEXP myu_pat_m2SEXP, SEXP myu_pat_m1SEXP, SEXP myu_pat_0SEXP, SEXP myu_pat_p1SEXP, SEXP myu_pat_p2SEXP, SEXP myu_mat_m2SEXP, SEXP myu_mat_m1SEXP, SEXP myu_mat_0SEXP, SEXP myu_mat_p1SEXP, SEXP myu_mat_p2SEXP, SEXP bool_pcSEXP, SEXP bool_parent_victimSEXP, SEXP bool_parent_maleSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -155,7 +155,7 @@ END_RCPP
 }
 // calc_kin_lr
 std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim, std::vector<double> prof_ref, std::vector<std::vector<double>> af_list, std::vector<std::vector<double>> af_al_list, std::vector<double> pibd, std::vector<double> myus_paternal_m2, std::vector<double> myus_paternal_m1, std::vector<double> myus_paternal_0, std::vector<double> myus_paternal_p1, std::vector<double> myus_paternal_p2, std::vector<double> myus_maternal_m2, std::vector<double> myus_maternal_m1, std::vector<double> myus_maternal_0, std::vector<double> myus_maternal_p1, std::vector<double> myus_maternal_p2, bool bool_pc, bool bool_parent_victim, bool bool_parent_male);
-RcppExport SEXP _relsearch_calc_kin_lr(SEXP prof_victimSEXP, SEXP prof_refSEXP, SEXP af_listSEXP, SEXP af_al_listSEXP, SEXP pibdSEXP, SEXP myus_paternal_m2SEXP, SEXP myus_paternal_m1SEXP, SEXP myus_paternal_0SEXP, SEXP myus_paternal_p1SEXP, SEXP myus_paternal_p2SEXP, SEXP myus_maternal_m2SEXP, SEXP myus_maternal_m1SEXP, SEXP myus_maternal_0SEXP, SEXP myus_maternal_p1SEXP, SEXP myus_maternal_p2SEXP, SEXP bool_pcSEXP, SEXP bool_parent_victimSEXP, SEXP bool_parent_maleSEXP) {
+RcppExport SEXP _RelSearch_calc_kin_lr(SEXP prof_victimSEXP, SEXP prof_refSEXP, SEXP af_listSEXP, SEXP af_al_listSEXP, SEXP pibdSEXP, SEXP myus_paternal_m2SEXP, SEXP myus_paternal_m1SEXP, SEXP myus_paternal_0SEXP, SEXP myus_paternal_p1SEXP, SEXP myus_paternal_p2SEXP, SEXP myus_maternal_m2SEXP, SEXP myus_maternal_m1SEXP, SEXP myus_maternal_0SEXP, SEXP myus_maternal_p1SEXP, SEXP myus_maternal_p2SEXP, SEXP bool_pcSEXP, SEXP bool_parent_victimSEXP, SEXP bool_parent_maleSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -183,7 +183,7 @@ END_RCPP
 }
 // calc_kin_lr_all
 std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::vector<double>> gt_v_auto, std::vector<std::vector<double>> gt_r_auto, std::vector<std::string> assumed_rel_all, std::vector<std::vector<double>> af_list, std::vector<std::vector<double>> af_al_list, std::vector<std::string> names_rel, std::vector<std::vector<double>> pibds_rel, std::vector<double> myus_paternal_m2, std::vector<double> myus_paternal_m1, std::vector<double> myus_paternal_0, std::vector<double> myus_paternal_p1, std::vector<double> myus_paternal_p2, std::vector<double> myus_maternal_m2, std::vector<double> myus_maternal_m1, std::vector<double> myus_maternal_0, std::vector<double> myus_maternal_p1, std::vector<double> myus_maternal_p2, std::vector<bool> bool_pc_all, std::vector<bool> bool_parent_victim_all, std::vector<bool> bool_parent_male_all);
-RcppExport SEXP _relsearch_calc_kin_lr_all(SEXP gt_v_autoSEXP, SEXP gt_r_autoSEXP, SEXP assumed_rel_allSEXP, SEXP af_listSEXP, SEXP af_al_listSEXP, SEXP names_relSEXP, SEXP pibds_relSEXP, SEXP myus_paternal_m2SEXP, SEXP myus_paternal_m1SEXP, SEXP myus_paternal_0SEXP, SEXP myus_paternal_p1SEXP, SEXP myus_paternal_p2SEXP, SEXP myus_maternal_m2SEXP, SEXP myus_maternal_m1SEXP, SEXP myus_maternal_0SEXP, SEXP myus_maternal_p1SEXP, SEXP myus_maternal_p2SEXP, SEXP bool_pc_allSEXP, SEXP bool_parent_victim_allSEXP, SEXP bool_parent_male_allSEXP) {
+RcppExport SEXP _RelSearch_calc_kin_lr_all(SEXP gt_v_autoSEXP, SEXP gt_r_autoSEXP, SEXP assumed_rel_allSEXP, SEXP af_listSEXP, SEXP af_al_listSEXP, SEXP names_relSEXP, SEXP pibds_relSEXP, SEXP myus_paternal_m2SEXP, SEXP myus_paternal_m1SEXP, SEXP myus_paternal_0SEXP, SEXP myus_paternal_p1SEXP, SEXP myus_paternal_p2SEXP, SEXP myus_maternal_m2SEXP, SEXP myus_maternal_m1SEXP, SEXP myus_maternal_0SEXP, SEXP myus_maternal_p1SEXP, SEXP myus_maternal_p2SEXP, SEXP bool_pc_allSEXP, SEXP bool_parent_victim_allSEXP, SEXP bool_parent_male_allSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -213,7 +213,7 @@ END_RCPP
 }
 // split
 std::vector<std::string> split(std::string str, const char* del);
-RcppExport SEXP _relsearch_split(SEXP strSEXP, SEXP delSEXP) {
+RcppExport SEXP _RelSearch_split(SEXP strSEXP, SEXP delSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -225,7 +225,7 @@ END_RCPP
 }
 // str_to_int
 int str_to_int(std::string str);
-RcppExport SEXP _relsearch_str_to_int(SEXP strSEXP) {
+RcppExport SEXP _RelSearch_str_to_int(SEXP strSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -236,7 +236,7 @@ END_RCPP
 }
 // int_to_str
 std::string int_to_str(int num);
-RcppExport SEXP _relsearch_int_to_str(SEXP numSEXP) {
+RcppExport SEXP _RelSearch_int_to_str(SEXP numSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -247,7 +247,7 @@ END_RCPP
 }
 // tousa
 std::vector<int> tousa(int start, int end, int interval);
-RcppExport SEXP _relsearch_tousa(SEXP startSEXP, SEXP endSEXP, SEXP intervalSEXP) {
+RcppExport SEXP _RelSearch_tousa(SEXP startSEXP, SEXP endSEXP, SEXP intervalSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -260,7 +260,7 @@ END_RCPP
 }
 // search_pos_double
 int search_pos_double(std::vector<double> vec, double target);
-RcppExport SEXP _relsearch_search_pos_double(SEXP vecSEXP, SEXP targetSEXP) {
+RcppExport SEXP _RelSearch_search_pos_double(SEXP vecSEXP, SEXP targetSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -272,7 +272,7 @@ END_RCPP
 }
 // search_pos_int
 int search_pos_int(std::vector<int> vec, int target);
-RcppExport SEXP _relsearch_search_pos_int(SEXP vecSEXP, SEXP targetSEXP) {
+RcppExport SEXP _RelSearch_search_pos_int(SEXP vecSEXP, SEXP targetSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -284,7 +284,7 @@ END_RCPP
 }
 // search_pos_string
 int search_pos_string(std::vector<std::string> vec, std::string target);
-RcppExport SEXP _relsearch_search_pos_string(SEXP vecSEXP, SEXP targetSEXP) {
+RcppExport SEXP _RelSearch_search_pos_string(SEXP vecSEXP, SEXP targetSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -296,7 +296,7 @@ END_RCPP
 }
 // extract_integer
 int extract_integer(std::string target);
-RcppExport SEXP _relsearch_extract_integer(SEXP targetSEXP) {
+RcppExport SEXP _RelSearch_extract_integer(SEXP targetSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -307,7 +307,7 @@ END_RCPP
 }
 // is_integer
 bool is_integer(double x);
-RcppExport SEXP _relsearch_is_integer(SEXP xSEXP) {
+RcppExport SEXP _RelSearch_is_integer(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -318,7 +318,7 @@ END_RCPP
 }
 // setdiff_string
 std::vector<std::string> setdiff_string(std::vector<std::string> vec_str1, std::vector<std::string> vec_str2);
-RcppExport SEXP _relsearch_setdiff_string(SEXP vec_str1SEXP, SEXP vec_str2SEXP) {
+RcppExport SEXP _RelSearch_setdiff_string(SEXP vec_str1SEXP, SEXP vec_str2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -330,7 +330,7 @@ END_RCPP
 }
 // setdiff_int
 std::vector<int> setdiff_int(std::vector<int> vec_int1, std::vector<int> vec_int2);
-RcppExport SEXP _relsearch_setdiff_int(SEXP vec_int1SEXP, SEXP vec_int2SEXP) {
+RcppExport SEXP _RelSearch_setdiff_int(SEXP vec_int1SEXP, SEXP vec_int2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -342,7 +342,7 @@ END_RCPP
 }
 // setdiff_double
 std::vector<double> setdiff_double(std::vector<double> vec_num1, std::vector<double> vec_num2);
-RcppExport SEXP _relsearch_setdiff_double(SEXP vec_num1SEXP, SEXP vec_num2SEXP) {
+RcppExport SEXP _RelSearch_setdiff_double(SEXP vec_num1SEXP, SEXP vec_num2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -354,7 +354,7 @@ END_RCPP
 }
 // extract_pos_mt
 std::vector<int> extract_pos_mt(std::string range);
-RcppExport SEXP _relsearch_extract_pos_mt(SEXP rangeSEXP) {
+RcppExport SEXP _RelSearch_extract_pos_mt(SEXP rangeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -365,7 +365,7 @@ END_RCPP
 }
 // extract_pos_mt_vr
 std::vector<int> extract_pos_mt_vr(std::string range_victim, std::string range_ref);
-RcppExport SEXP _relsearch_extract_pos_mt_vr(SEXP range_victimSEXP, SEXP range_refSEXP) {
+RcppExport SEXP _RelSearch_extract_pos_mt_vr(SEXP range_victimSEXP, SEXP range_refSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -377,7 +377,7 @@ END_RCPP
 }
 // make_share_range
 std::string make_share_range(std::vector<int> pos_mt_vr);
-RcppExport SEXP _relsearch_make_share_range(SEXP pos_mt_vrSEXP) {
+RcppExport SEXP _RelSearch_make_share_range(SEXP pos_mt_vrSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -388,7 +388,7 @@ END_RCPP
 }
 // match_mt
 std::vector<std::string> match_mt(std::vector<std::string> prof_victim, std::string range_victim, std::vector<std::string> prof_ref, std::string range_ref);
-RcppExport SEXP _relsearch_match_mt(SEXP prof_victimSEXP, SEXP range_victimSEXP, SEXP prof_refSEXP, SEXP range_refSEXP) {
+RcppExport SEXP _RelSearch_match_mt(SEXP prof_victimSEXP, SEXP range_victimSEXP, SEXP prof_refSEXP, SEXP range_refSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -402,7 +402,7 @@ END_RCPP
 }
 // match_mt_all
 std::vector<std::vector<std::string>> match_mt_all(std::vector<std::vector<std::string>> hap_v_mt, std::vector<std::vector<std::string>> hap_r_mt, std::vector<std::string> range_v_mt, std::vector<std::string> range_r_mt);
-RcppExport SEXP _relsearch_match_mt_all(SEXP hap_v_mtSEXP, SEXP hap_r_mtSEXP, SEXP range_v_mtSEXP, SEXP range_r_mtSEXP) {
+RcppExport SEXP _RelSearch_match_mt_all(SEXP hap_v_mtSEXP, SEXP hap_r_mtSEXP, SEXP range_v_mtSEXP, SEXP range_r_mtSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -416,7 +416,7 @@ END_RCPP
 }
 // obtain_al
 std::vector<double> obtain_al(std::string hap);
-RcppExport SEXP _relsearch_obtain_al(SEXP hapSEXP) {
+RcppExport SEXP _RelSearch_obtain_al(SEXP hapSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -427,7 +427,7 @@ END_RCPP
 }
 // calc_mu_step
 int calc_mu_step(std::vector<double> v_al, std::vector<double> r_al);
-RcppExport SEXP _relsearch_calc_mu_step(SEXP v_alSEXP, SEXP r_alSEXP) {
+RcppExport SEXP _RelSearch_calc_mu_step(SEXP v_alSEXP, SEXP r_alSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -439,7 +439,7 @@ END_RCPP
 }
 // match_y
 std::vector<std::vector<int>> match_y(std::vector<std::string> prof_victim, std::vector<std::string> prof_ref);
-RcppExport SEXP _relsearch_match_y(SEXP prof_victimSEXP, SEXP prof_refSEXP) {
+RcppExport SEXP _RelSearch_match_y(SEXP prof_victimSEXP, SEXP prof_refSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -451,7 +451,7 @@ END_RCPP
 }
 // match_y_all
 std::vector<std::vector<std::vector<int>>> match_y_all(std::vector<std::vector<std::string>> hap_v_y, std::vector<std::vector<std::string>> hap_r_y);
-RcppExport SEXP _relsearch_match_y_all(SEXP hap_v_ySEXP, SEXP hap_r_ySEXP) {
+RcppExport SEXP _RelSearch_match_y_all(SEXP hap_v_ySEXP, SEXP hap_r_ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -463,42 +463,42 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_relsearch_union_vr_al", (DL_FUNC) &_relsearch_union_vr_al, 2},
-    {"_relsearch_extract_al_prob", (DL_FUNC) &_relsearch_extract_al_prob, 4},
-    {"_relsearch_calc_gt_prob", (DL_FUNC) &_relsearch_calc_gt_prob, 3},
-    {"_relsearch_calc_kin_like_pc", (DL_FUNC) &_relsearch_calc_kin_like_pc, 4},
-    {"_relsearch_calc_kin_like", (DL_FUNC) &_relsearch_calc_kin_like, 4},
-    {"_relsearch_make_dummy_af", (DL_FUNC) &_relsearch_make_dummy_af, 3},
-    {"_relsearch_make_dummy_gt", (DL_FUNC) &_relsearch_make_dummy_gt, 2},
-    {"_relsearch_set_myu_per_inheritance", (DL_FUNC) &_relsearch_set_myu_per_inheritance, 13},
-    {"_relsearch_calc_kin_like_drop", (DL_FUNC) &_relsearch_calc_kin_like_drop, 18},
-    {"_relsearch_calc_kin_lr", (DL_FUNC) &_relsearch_calc_kin_lr, 18},
-    {"_relsearch_calc_kin_lr_all", (DL_FUNC) &_relsearch_calc_kin_lr_all, 20},
-    {"_relsearch_split", (DL_FUNC) &_relsearch_split, 2},
-    {"_relsearch_str_to_int", (DL_FUNC) &_relsearch_str_to_int, 1},
-    {"_relsearch_int_to_str", (DL_FUNC) &_relsearch_int_to_str, 1},
-    {"_relsearch_tousa", (DL_FUNC) &_relsearch_tousa, 3},
-    {"_relsearch_search_pos_double", (DL_FUNC) &_relsearch_search_pos_double, 2},
-    {"_relsearch_search_pos_int", (DL_FUNC) &_relsearch_search_pos_int, 2},
-    {"_relsearch_search_pos_string", (DL_FUNC) &_relsearch_search_pos_string, 2},
-    {"_relsearch_extract_integer", (DL_FUNC) &_relsearch_extract_integer, 1},
-    {"_relsearch_is_integer", (DL_FUNC) &_relsearch_is_integer, 1},
-    {"_relsearch_setdiff_string", (DL_FUNC) &_relsearch_setdiff_string, 2},
-    {"_relsearch_setdiff_int", (DL_FUNC) &_relsearch_setdiff_int, 2},
-    {"_relsearch_setdiff_double", (DL_FUNC) &_relsearch_setdiff_double, 2},
-    {"_relsearch_extract_pos_mt", (DL_FUNC) &_relsearch_extract_pos_mt, 1},
-    {"_relsearch_extract_pos_mt_vr", (DL_FUNC) &_relsearch_extract_pos_mt_vr, 2},
-    {"_relsearch_make_share_range", (DL_FUNC) &_relsearch_make_share_range, 1},
-    {"_relsearch_match_mt", (DL_FUNC) &_relsearch_match_mt, 4},
-    {"_relsearch_match_mt_all", (DL_FUNC) &_relsearch_match_mt_all, 4},
-    {"_relsearch_obtain_al", (DL_FUNC) &_relsearch_obtain_al, 1},
-    {"_relsearch_calc_mu_step", (DL_FUNC) &_relsearch_calc_mu_step, 2},
-    {"_relsearch_match_y", (DL_FUNC) &_relsearch_match_y, 2},
-    {"_relsearch_match_y_all", (DL_FUNC) &_relsearch_match_y_all, 2},
+    {"_RelSearch_union_vr_al", (DL_FUNC) &_RelSearch_union_vr_al, 2},
+    {"_RelSearch_extract_al_prob", (DL_FUNC) &_RelSearch_extract_al_prob, 4},
+    {"_RelSearch_calc_gt_prob", (DL_FUNC) &_RelSearch_calc_gt_prob, 3},
+    {"_RelSearch_calc_kin_like_pc", (DL_FUNC) &_RelSearch_calc_kin_like_pc, 4},
+    {"_RelSearch_calc_kin_like", (DL_FUNC) &_RelSearch_calc_kin_like, 4},
+    {"_RelSearch_make_dummy_af", (DL_FUNC) &_RelSearch_make_dummy_af, 3},
+    {"_RelSearch_make_dummy_gt", (DL_FUNC) &_RelSearch_make_dummy_gt, 2},
+    {"_RelSearch_set_myu_per_inheritance", (DL_FUNC) &_RelSearch_set_myu_per_inheritance, 13},
+    {"_RelSearch_calc_kin_like_drop", (DL_FUNC) &_RelSearch_calc_kin_like_drop, 18},
+    {"_RelSearch_calc_kin_lr", (DL_FUNC) &_RelSearch_calc_kin_lr, 18},
+    {"_RelSearch_calc_kin_lr_all", (DL_FUNC) &_RelSearch_calc_kin_lr_all, 20},
+    {"_RelSearch_split", (DL_FUNC) &_RelSearch_split, 2},
+    {"_RelSearch_str_to_int", (DL_FUNC) &_RelSearch_str_to_int, 1},
+    {"_RelSearch_int_to_str", (DL_FUNC) &_RelSearch_int_to_str, 1},
+    {"_RelSearch_tousa", (DL_FUNC) &_RelSearch_tousa, 3},
+    {"_RelSearch_search_pos_double", (DL_FUNC) &_RelSearch_search_pos_double, 2},
+    {"_RelSearch_search_pos_int", (DL_FUNC) &_RelSearch_search_pos_int, 2},
+    {"_RelSearch_search_pos_string", (DL_FUNC) &_RelSearch_search_pos_string, 2},
+    {"_RelSearch_extract_integer", (DL_FUNC) &_RelSearch_extract_integer, 1},
+    {"_RelSearch_is_integer", (DL_FUNC) &_RelSearch_is_integer, 1},
+    {"_RelSearch_setdiff_string", (DL_FUNC) &_RelSearch_setdiff_string, 2},
+    {"_RelSearch_setdiff_int", (DL_FUNC) &_RelSearch_setdiff_int, 2},
+    {"_RelSearch_setdiff_double", (DL_FUNC) &_RelSearch_setdiff_double, 2},
+    {"_RelSearch_extract_pos_mt", (DL_FUNC) &_RelSearch_extract_pos_mt, 1},
+    {"_RelSearch_extract_pos_mt_vr", (DL_FUNC) &_RelSearch_extract_pos_mt_vr, 2},
+    {"_RelSearch_make_share_range", (DL_FUNC) &_RelSearch_make_share_range, 1},
+    {"_RelSearch_match_mt", (DL_FUNC) &_RelSearch_match_mt, 4},
+    {"_RelSearch_match_mt_all", (DL_FUNC) &_RelSearch_match_mt_all, 4},
+    {"_RelSearch_obtain_al", (DL_FUNC) &_RelSearch_obtain_al, 1},
+    {"_RelSearch_calc_mu_step", (DL_FUNC) &_RelSearch_calc_mu_step, 2},
+    {"_RelSearch_match_y", (DL_FUNC) &_RelSearch_match_y, 2},
+    {"_RelSearch_match_y_all", (DL_FUNC) &_RelSearch_match_y_all, 2},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_relsearch(DllInfo *dll) {
+RcppExport void R_init_RelSearch(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }
