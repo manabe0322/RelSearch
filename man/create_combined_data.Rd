@@ -9,7 +9,7 @@ create_combined_data(
   dt_result_y,
   dt_result_mt,
   dt_rel,
-  dt_other_par
+  dt_data_manage
 )
 }
 \arguments{
@@ -21,7 +21,7 @@ create_combined_data(
 
 \item{dt_rel}{A data.table of information on relationships}
 
-\item{dt_other_par}{A data.table of other parameters}
+\item{dt_data_manage}{A data.table for data management}
 }
 \description{
 The function to create combined data

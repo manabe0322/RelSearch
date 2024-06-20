@@ -450,30 +450,30 @@ create_dt_myu <- function(path_pack, init = TRUE){
   return(dt_myu)
 }
 
-#' create_dt_other_par
+#' create_dt_data_manage
 #'
-#' @description The function to create the data.table for other parameters
+#' @description The function to create the data.table for setting of data management
 #' @param path_pack Package path
-create_dt_other_par <- function(path_pack, init = TRUE){
+create_dt_data_manage <- function(path_pack, init = TRUE){
   fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
 
-  if(init && is.element("other_par.csv", fn_par)){
-    dt_other_par <- fread(paste0(path_pack, "/extdata/parameters/other_par.csv"))
+  if(init && is.element("data_manage.csv", fn_par)){
+    dt_data_manage <- fread(paste0(path_pack, "/extdata/parameters/data_manage.csv"))
 
     col_char <- c("Parameter")
     options(warn = -1)
-    dt_other_par[, (col_char) := lapply(.SD, as.character), .SDcols = col_char]
+    dt_data_manage[, (col_char) := lapply(.SD, as.character), .SDcols = col_char]
     options(warn = 0)
 
     col_numeric <- c("Value")
     options(warn = -1)
-    dt_other_par[, (col_numeric) := lapply(.SD, as.numeric), .SDcols = col_numeric]
+    dt_data_manage[, (col_numeric) := lapply(.SD, as.numeric), .SDcols = col_numeric]
     options(warn = 0)
   }else{
-    dt_other_par <- data.table(Parameter = c("keep_min_lr", "max_data_displayed"),
+    dt_data_manage <- data.table(Parameter = c("keep_min_lr", "max_data_displayed"),
                                Value = c(1, 100))
-    write.csv(dt_other_par, paste0(path_pack, "/extdata/parameters/other_par.csv"), row.names = FALSE)
+    write.csv(dt_data_manage, paste0(path_pack, "/extdata/parameters/data_manage.csv"), row.names = FALSE)
   }
 
-  return(dt_other_par)
+  return(dt_data_manage)
 }

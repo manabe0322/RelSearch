@@ -37,7 +37,7 @@ load_ui <- function(id){
 #' load_server
 #'
 #' @description The function to create the server module for loading files
-load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_other_par){
+load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_manage){
   moduleServer(
     id,
     function(input, output, session){
@@ -52,7 +52,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_other_p
       rv_file$dt_criteria <- NULL
       rv_file$dt_rel <- NULL
       rv_file$dt_myu <- NULL
-      rv_file$dt_other_par <- NULL
+      rv_file$dt_data_manage <- NULL
       rv_file$data_list <- NULL
 
       observe({
@@ -85,9 +85,9 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_other_p
       })
 
       observe({
-        req(rv_other_par)
-        rv_file$dt_other_par <- data.table(Parameter = c("keep_min_lr", "max_data_displayed"),
-                                           Value = c(rv_other_par$keep_min_lr, rv_other_par$max_data_displayed))
+        req(rv_data_manage)
+        rv_file$dt_data_manage <- data.table(Parameter = c("keep_min_lr", "max_data_displayed"),
+                                             Value = c(rv_data_manage$keep_min_lr, rv_data_manage$max_data_displayed))
       })
 
       #################
@@ -173,7 +173,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_other_p
         dt_criteria <- rv_file$dt_criteria
         dt_rel <- rv_file$dt_rel
         dt_myu <- rv_file$dt_myu
-        dt_other_par <- rv_file$dt_other_par
+        dt_data_manage <- rv_file$dt_data_manage
 
         # Fix file names of each database
         fn_v_auto <- input$file_v_auto$name
@@ -252,14 +252,14 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_other_p
           # Create the combined data #
           ############################
 
-          dt_combined <- create_combined_data(dt_result_auto, dt_result_y, dt_result_mt, dt_rel, dt_other_par)
+          dt_combined <- create_combined_data(dt_result_auto, dt_result_y, dt_result_mt, dt_rel, dt_data_manage)
 
           #############################
           # Create the displayed data #
           #############################
 
           min_lr_auto <- dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"]
-          max_data_displayed <- dt_other_par$Value[dt_other_par$Parameter == "max_data_displayed"]
+          max_data_displayed <- dt_data_manage$Value[dt_data_manage$Parameter == "max_data_displayed"]
           if(bool_check_auto){
             dt_display <- create_displayed_data(dt_combined, fltr_type = "with_auto", min_lr = min_lr_auto, max_data_displayed = max_data_displayed)
           }else{
@@ -295,7 +295,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_other_p
           data_list$dt_criteria <- dt_criteria
           data_list$dt_rel <- dt_rel
           data_list$dt_myu <- dt_myu
-          data_list$dt_other_par <- dt_other_par
+          data_list$dt_data_manage <- dt_data_manage
           data_list$fn_v_auto <- fn_v_auto
           data_list$fn_r_auto <- fn_r_auto
           data_list$fn_af <- fn_af

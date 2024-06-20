@@ -17,7 +17,7 @@ load_proj_ui <- function(id){
 #' load_proj_server
 #'
 #' @description The function to create the server module for loading the project
-load_proj_server <- function(id, session_top, rv_other_par){
+load_proj_server <- function(id, session_top, rv_data_manage){
   moduleServer(
     id,
     function(input, output, session){
@@ -26,8 +26,8 @@ load_proj_server <- function(id, session_top, rv_other_par){
       rv_load_proj$max_data_displayed <- NULL
 
       observe({
-        req(rv_other_par)
-        rv_load_proj$max_data_displayed <- rv_other_par$max_data_displayed
+        req(rv_data_manage)
+        rv_load_proj$max_data_displayed <- rv_data_manage$max_data_displayed
       })
 
       load_proj <- reactive({

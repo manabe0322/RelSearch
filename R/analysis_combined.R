@@ -36,8 +36,8 @@ create_background_color <- function(dt_combined, index_warning){
 #' @param dt_result_y A data.table of the result for the Y-STR
 #' @param dt_result_mt A data.table of the result for the mtDNA
 #' @param dt_rel A data.table of information on relationships
-#' @param dt_other_par A data.table of other parameters
-create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_rel, dt_other_par){
+#' @param dt_data_manage A data.table for data management
+create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_rel, dt_data_manage){
   # Combine data.table
   dt_combined <- NULL
   if(!is.null(dt_result_auto)){
@@ -127,7 +127,7 @@ create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_r
 
   # Keep only important data
   if(!is.null(dt_result_auto)){
-    keep_min_lr <- dt_other_par$Value[dt_other_par$Parameter == "keep_min_lr"]
+    keep_min_lr <- dt_data_manage$Value[dt_data_manage$Parameter == "keep_min_lr"]
     dt_combined <- dt_combined[LR_Total >= keep_min_lr]
   }else{
     dt_combined <- dt_combined[Paternal == "Support" | Maternal == "Support"]

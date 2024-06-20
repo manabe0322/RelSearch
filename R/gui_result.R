@@ -201,7 +201,7 @@ result_ui <- function(id){
                                            br(),
                                            dataTableOutput(ns("result_myu"))
                                   ),
-                                  tabPanel("Other parameters",
+                                  tabPanel("Data management",
                                            br(),
                                            h5(div("Minimum LR to be stored", style = "color:#555555;font-weight:bold;")),
                                            textOutput(ns("result_keep_min_lr")),
@@ -241,8 +241,8 @@ result_server <- function(id, rv_file){
         dt_criteria <- data_list$dt_criteria
         dt_rel <- data_list$dt_rel
         dt_myu <- data_list$dt_myu
-        dt_other_par <- data_list$dt_other_par
-        max_data_displayed <- dt_other_par$Value[dt_other_par$Parameter == "max_data_displayed"]
+        dt_data_manage <- data_list$dt_data_manage
+        max_data_displayed <- dt_data_manage$Value[dt_data_manage$Parameter == "max_data_displayed"]
         fn_v_auto <- data_list$fn_v_auto
         fn_r_auto <- data_list$fn_r_auto
         fn_af <- data_list$fn_af
@@ -659,11 +659,11 @@ result_server <- function(id, rv_file){
         })
 
         output$result_keep_min_lr <- renderText({
-          paste0(dt_other_par$Value[dt_other_par$Parameter == "keep_min_lr"])
+          paste0(dt_data_manage$Value[dt_data_manage$Parameter == "keep_min_lr"])
         })
 
         output$result_max_data_displayed <- renderText({
-          paste0(dt_other_par$Value[dt_other_par$Parameter == "max_data_displayed"])
+          paste0(dt_data_manage$Value[dt_data_manage$Parameter == "max_data_displayed"])
         })
       }
     }

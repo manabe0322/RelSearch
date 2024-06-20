@@ -48,7 +48,7 @@ RelSearch <- function(){
                                         tab_criteria_ui("tab_criteria"),
                                         tab_rel_ui("tab_rel"),
                                         tab_myu_ui("tab_myu"),
-                                        tab_other_par_ui("tab_other_par")
+                                        tab_data_manage_ui("tab_data_manage")
                              ),
 
                              example_ui("example"),
@@ -61,10 +61,10 @@ RelSearch <- function(){
     rv_criteria <- tab_criteria_server("tab_criteria", path_pack)
     rv_rel <- tab_rel_server("tab_rel", path_pack)
     rv_myu <- tab_myu_server("tab_myu", path_pack)
-    rv_other_par <- tab_other_par_server("tab_other_par", path_pack)
+    rv_data_manage <- tab_data_manage_server("tab_data_manage", path_pack)
     example_server("example", path_pack)
     manual_server("manual", path_pack)
-    rv_file <- load_server("load", session, rv_criteria, rv_rel, rv_myu, rv_other_par)
+    rv_file <- load_server("load", session, rv_criteria, rv_rel, rv_myu, rv_data_manage)
 
     observe({
       req(rv_file)
@@ -83,7 +83,7 @@ RelSearch <- function(){
       refresh()
     })
 
-    rv_load_proj <- load_proj_server("load_proj", session, rv_other_par)
+    rv_load_proj <- load_proj_server("load_proj", session, rv_data_manage)
     observe({
       req(rv_load_proj)
       data_list <- rv_load_proj$data_list
