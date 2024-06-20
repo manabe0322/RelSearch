@@ -101,19 +101,18 @@ RelSearch()
 ## STR: Victim database
 
 ```{r, echo = FALSE}
-df_v_auto_ex <- data.frame(SampleName = c("Victim1", "Victim2", "Victim3", "Victim4", "Victim5", "Victim6", "Victim7", "Victim8", "Victim9", "Victim10", "︙"), 
-                           D3S1358 = c("17", "17", "15", "15", "15", "16", "14", "16", "15", "15", "︙"), 
-                           D3S1358 = c("17", "", "17", "18", "15", "16", "15", "18", "15", "16", "︙"), 
-                           vWA = c("17", "18", "17", "15", "18", "17", "17", "17", "16", "18", "︙"), 
-                           vWA = c("", "18", "18", "18", "", "", "18", "18", "18", "19", "︙"), 
-                           D16S539 = c("11", "", "10", "9", "9", "", "12", "11", "11", "9", "︙"), 
-                           D16S539 = c("", "", "10", "12", "9", "", "", "", "11", "10", "︙"), 
-                           CSF1PO = c("12", "10", "10", "11", "10", "10", "", "9", "12", "12", "︙"), 
-                           CSF1PO = c("", "11", "12", "12", "", "13", "", "12", "12", "12", "︙"), 
-                           TPOX = c("", "8", "8", "8", "9", "8", "8", "8", "8", "8", "︙"), 
-                           TPOX = c("", "", "11", "8", "11", "8", "8", "", "11", "11", "︙"))
+df_v_auto_ex <- data.frame(SampleName = c("Victim1", "Victim2", "Victim3", "Victim4", "Victim5"), 
+                           D3S1358 = c("17", "17", "15", "15", "15"), 
+                           D3S1358 = c("17", "", "17", "18", "15"), 
+                           vWA = c("17", "18", "17", "15", "18"), 
+                           vWA = c("", "18", "18", "18", ""), 
+                           D16S539 = c("11", "", "10", "9", "9"), 
+                           D16S539 = c("", "", "10", "12", "9"), 
+                           CSF1PO = c("12", "10", "10", "11", "10"), 
+                           CSF1PO = c("", "11", "12", "12", ""))
+names(df_v_auto_ex) <- c("SampleName", "D3S1358", "D3S1358", "vWA", "vWA", "D16S539", "D16S539", "CSF1PO", "CSF1PO")
 
-kable(df_v_auto_ex, format = "latex", booktabs = T, label = NA) %>%
+kable(df_v_auto_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
   kable_styling(latex_options = "HOLD_position", font_size = 10)
 ```
 
@@ -123,27 +122,29 @@ kable(df_v_auto_ex, format = "latex", booktabs = T, label = NA) %>%
 
 - This file requires the column "SampleName" and columns for each marker (two columns in each).
 
-- The marker with two empty cells (e.g., TPOX of sample "Victim1" in the above table) is ignored when calculating the likelihood ratio.
+- The marker with two empty cells (e.g., D16S539 of the sample "Victim2" in the above table) is ignored when calculating the likelihood ratio.
 
-- The marker with one empty cell (e.g., vWA of sample "Victim1" in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.
+- The marker with one empty cell (e.g., vWA of the sample "Victim1" in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.
 
 &nbsp;
 
 ## STR: Reference database
 
 ```{r, echo = FALSE}
-df_r_auto_ex <- data.frame(SampleName = c("Reference1", "Reference2", "Reference3", "Reference4", "Reference5", "Reference6", "Reference7", "Reference7", "Reference8", "Reference9", "Reference10", "︙"), 
-                           Relationship = c("Father_Son", "Father_Son", "Father_Son", "Father_Son", "Brother_Brother", "Brother_Brother", "Brother_Brother", "Father_Son", "Brother_Brother", "Uncle_Nephew", "Uncle_Nephew", "︙"),
-                           D3S1358 = c("17", "17", "15", "15", "15", "16", "16", "16", "15", "15", "15", "︙"), 
-                           D3S1358 = c("17", "18", "16", "16", "16", "17", "17", "17", "16", "15", "16", "︙"), 
-                           vWA = c("14", "17", "17", "15", "15", "17", "14", "14", "17", "14", "17", "︙"), 
-                           vWA = c("17", "18", "18", "18", "18", "17", "18", "18", "18", "16", "", "︙"), 
-                           D16S539 = c("10", "12", "9", "9", "9", "10", "9", "9", "9", "10", "9", "︙"), 
-                           D16S539 = c("10", "13", "10", "9", "9", "12", "9", "9", "12", "11", "12", "︙"), 
-                           CSF1PO = c("12", "10", "11", "10", "10", "13", "12", "12", "11", "11", "", "︙"), 
-                           CSF1PO = c("12", "11", "12", "12", "12", "13", "15", "15", "12", "12", "", "︙"), 
-                           TPOX = c("8", "11", "8", "9", "9", "9", "8", "8", "8", "8", "8", "︙"), 
-                           TPOX = c("8", "11", "8", "11", "11", "11", "8", "8", "9", "9", "12", "︙"))
+df_r_auto_ex <- data.frame(SampleName = c("Reference1", "Reference2", "Reference3", "Reference3", "Reference4", "Reference5"), 
+                           Relationship = c("Father_Son", "Brother_Brother", "Brother_Brother", "Father_Son", "Brother_Brother", "Uncle_Nephew"),
+                           D3S1358 = c("17", "16", "16", "16", "15", "15"), 
+                           D3S1358 = c("17", "17", "17", "17", "16", "15"), 
+                           vWA = c("14", "17", "14", "14", "17", "14"), 
+                           vWA = c("17", "17", "18", "18", "", "16"), 
+                           D16S539 = c("10", "10", "9", "9", "9", "10"), 
+                           D16S539 = c("10", "12", "9", "9", "12", "11"), 
+                           CSF1PO = c("12", "13", "12", "12", "11", ""), 
+                           CSF1PO = c("12", "13", "15", "15", "12", ""))
+names(df_r_auto_ex) <- c("SampleName", "Relationship", "D3S1358", "D3S1358", "vWA", "vWA", "D16S539", "D16S539", "CSF1PO", "CSF1PO")
+
+kable(df_r_auto_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
+  kable_styling(latex_options = "HOLD_position", font_size = 10)
 ```
 
 **Note**
@@ -152,23 +153,26 @@ df_r_auto_ex <- data.frame(SampleName = c("Reference1", "Reference2", "Reference
 
 - This file requires the columns "SampleName", "Relationship", and columns for each marker (two columns in each).
 
-- The names of the relationship need to be pre-defined in **Settings** ▶ **Relationships** (see section [Setting](#sec_setting_rel)).
+- The names of the relationship need to be pre-defined in **Settings** $\blacktriangleright$ **Relationships** (see section [Setting](#sec_setting_rel)).
 
-- If a reference has multiple missing family members, add rows for each relationship of the members (e.g., sibling and parent-child of the sample "Reference7" in the above table).
+- If a reference has multiple missing family members, add rows for each relationship of the members (e.g., Brother_Brother and Father_Son of the sample "Reference3" in the above table).
 
-- The marker with two empty cells (e.g., CSF1PO of sample "Reference10" in the above table) is ignored when calculating the likelihood ratio.
+- The marker with two empty cells (e.g., CSF1PO of the sample "Reference5" in the above table) is ignored when calculating the likelihood ratio.
 
-- The marker with one empty cell (e.g., vWA of sample "Reference10" in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.
+- The marker with one empty cell (e.g., vWA of the sample "Reference4" in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.
 
 ## STR: Allele frequencies
 
 ```{r, echo = FALSE}
-df_af_ex <- data.frame(Allele = c("10", "10.1", "10.2", "10.3", "11", "11.1", "11.2", "11.3", "12", "12.2", "13", "13.2", "14", "︙"), 
-                       D3S1358 = c("", "", "", "", "", "", "", "", "0.02324", "", "0.001328", "", "0.02656", "︙"), 
-                       vWA = c("", "", "", "", "", "", "", "", "", "", "0.000664", "", "0.194887", "︙"), 
-                       D16S539 = c("0.200266", "", "", "", "0.186981", "", "", "", "0.172036", "", "0.069744", "", "0.008967", "︙"), 
-                       CSF1PO = c("0.215471", "", "", "", "0.206175", "", "", "", "0.420983", "", "0.069389", "", "0.017596", "︙"), 
-                       TPOX = c("0.033566", "", "", "", "0.356597", "", "", "", "0.038219", "", "0.001329", "", "0.000997", "︙"))
+df_af_ex <- data.frame(Allele = c("10", "11", "12", "13", "14", "15"), 
+                       D3S1358 = c("", "", "6", "3", "79", "1192"), 
+                       vWA = c("", "", "", "1", "586", "78"), 
+                       D16S539 = c("602", "562", "517", "209", "26", "3"), 
+                       CSF1PO = c("648", "620", "1267", "208", "52", "14"), 
+                       TPOX = c("100", "1072", "114", "3", "2", ""))
+
+kable(df_af_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
+  kable_styling(latex_options = "HOLD_position", font_size = 10)
 ```
 
 **Note**
@@ -177,9 +181,23 @@ df_af_ex <- data.frame(Allele = c("10", "10.1", "10.2", "10.3", "11", "11.1", "1
 
 - This file requires the columns "Allele" and columns for each marker (one column in each).
 
+- Allele counts in the population database are entered in columns for each marker.
+
 &nbsp;
 
 ## Y-STR: Victim database
+
+```{r, echo = FALSE}
+df_v_y_ex <- data.frame(SampleName = c("Victim1", "Victim2", "Victim3", "Victim4", "Victim5"), 
+                        DYS392 = c("11", "13", "11", "11", ""), 
+                        DYS518 = c("37", "38", "37", "37", ""), 
+                        DYS570 = c("17", "19", "17", "16", "18"), 
+                        DYS437 = c("14", "14", "14", "14", ""), 
+                        DYS385 = c("13,17", "10,20", "14", "13", "13,17"))
+
+kable(df_v_y_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
+  kable_styling(latex_options = "HOLD_position", font_size = 10)
+```
 
 **Note**
 
@@ -189,11 +207,24 @@ df_af_ex <- data.frame(Allele = c("10", "10.1", "10.2", "10.3", "11", "11.1", "1
 
 - In the marker with more than one allele, each allele must be separated by a comma without any spaces (e.g., DYS385).
 
-- The marker with an empty cell (e.g., DYS456 of sample ‘Victim6’) is ignored for analysis.
+- The marker with an empty cell (e.g., DYS392 of the sample ‘Victim5’) is ignored for analysis.
 
 &nbsp;
 
 ## Y-STR: Reference database
+
+```{r, echo = FALSE}
+df_v_y_ex <- data.frame(SampleName = c("Reference1", "Reference2", "Reference3", "Reference3", "Reference4", "Reference5"), 
+                        Relationship = c("Father_Son", "Brother_Brother", "Brother_Brother", "Father_Son", "Brother_Brother", "Uncle_Nephew"), 
+                        DYS392 = c("13", "11", "11", "11", "11", "14"), 
+                        DYS518 = c("38", "37", "38", "38", "38", ""), 
+                        DYS570 = c("19", "17", "16", "16", "19", "18"), 
+                        DYS437 = c("14", "14", "14", "14", "14", "14"), 
+                        DYS385 = c("10,20", "14,17", "11", "11", "13,15", "13,18"))
+
+kable(df_v_y_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
+  kable_styling(latex_options = "HOLD_position", font_size = 10)
+```
 
 **Note**
 
@@ -201,17 +232,30 @@ df_af_ex <- data.frame(Allele = c("10", "10.1", "10.2", "10.3", "11", "11.1", "1
 
 - This file requires the column "SampleName", "Relationship", and columns for each marker (one column in each).
 
-- The relationship of a missing family member should be designated in the column "Relationship". The name of the relationship should be defined in Settings > Relationships.
+- The names of the relationship need to be pre-defined in **Settings** $\blacktriangleright$ **Relationships** (see section [Setting](#sec_setting_rel)).
 
-- If a reference has multiple missing family members, add rows for each relationship of the members (e.g., sibling and parent-child of the sample "Reference7" in the above table).
+- If a reference has multiple missing family members, add rows for each relationship of the members (e.g., Brother_Brother and Father_Son of the sample "Reference3" in the above table).
 
 - In the marker with more than one allele, each allele must be separated by a comma without any spaces (e.g., DYS385).
 
-- The marker with an empty cell (e.g., DYS518 of sample ‘Reference10’) is ignored for analysis.
+- The marker with an empty cell (e.g., DYS518 of the sample ‘Reference5’) is ignored for analysis.
 
 &nbsp;
 
 ## mtDNA: Victim database
+
+```{r, echo = FALSE}
+df_v_mt_ex <- data.frame(SampleName = c("Victim1", "Victim2", "Victim3", "Victim4", "Victim5"), 
+                         Range = c("73-340 16024-16365", "73-340 16024-16365", "73-167 240-340 16024-16365", "73-265 16024-16284", ""), 
+                         Haplotype = c("16183C 16189C 16217C 16311C 73G 263G 309.1C 315.1C", 
+                                       "16093C 16114A 16223T 16362C 73G 191.1A 194T 263G 309.1C 315.1C", 
+                                       "16095T 16189C 16223T 16265C 16274A 16362C 73G 143A 152C 263G", 
+                                       "16223T 73G 152C 263G", 
+                                       ""))
+
+kable(df_v_mt_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
+  kable_styling(latex_options = "HOLD_position", font_size = 10)
+```
 
 **Note**
 
@@ -219,9 +263,30 @@ df_af_ex <- data.frame(Allele = c("10", "10.1", "10.2", "10.3", "11", "11.1", "1
 
 - This file requires the column "SampleName", "Range", and "Haplotype".
 
+- In the 'Range' column, the first and the last positions in each readable sequence must be written with a hyphen between these positions (e.g, 73-340). Readable sequences must be separated by a single blank space.
+
+- In the 'Haplotype' column, the mtDNA types are expressed as the differences to a reference sequence such as the revised Cambridge Reference Sequence [@Andrews1999] (e.g., 73G, 315.1C, and so on). Each mtDNA type must be separated by a single blank space.
+
+- Empty cells in the 'Range' and 'Haplotype' columns (e.g., the sample ‘Victim5’) mean that there is no readable sequence.
+
 &nbsp;
 
 ## mtDNA: Reference database
+
+```{r, echo = FALSE}
+df_r_mt_ex <- data.frame(SampleName = c("Reference1", "Reference2", "Reference3", "Reference3", "Reference4", "Reference5"), 
+                         Relationship = c("Mother_Daughter", "Mother_Daughter", "Brother_Brother", "Father_Son", "Sister_Sister", "Aunt_Niece"), 
+                         Range = c("73-340 16024-16365", "73-340 16024-16365", "73-340 16024-16365", "73-340 16024-16365", "73-340 16024-16365", ""), 
+                         Haplotype = c("16223T 16319A 16362C 73G 152C 263G 309.1C 315.1C", 
+                                       "16172C 16223T 16250T 16257A 16261T 73G 150T 263G", 
+                                       "16172C 16189C 16223T 16355T 16362C 73G 150T 263G", 
+                                       "16172C 16189C 16223T 16355T 16362C 73G 150T 263G", 
+                                       "16223T 16362C 73G 263G 315.1C", 
+                                       ""))
+
+kable(df_r_mt_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
+  kable_styling(latex_options = "HOLD_position", font_size = 10)
+```
 
 **Note**
 
@@ -229,9 +294,15 @@ df_af_ex <- data.frame(Allele = c("10", "10.1", "10.2", "10.3", "11", "11.1", "1
 
 - This file requires the column "SampleName", "Relationship", "Range", and "Haplotype".
 
-- The relationship of a missing family member should be designated in the column "Relationship". The name of the relationship should be defined in Settings > Relationships.
+- The names of the relationship need to be pre-defined in **Settings** $\blacktriangleright$ **Relationships** (see section [Setting](#sec_setting_rel)).
 
-- If a reference has multiple missing family members, add rows for each relationship of the members (e.g., sibling and parent-child of the sample "Reference7" in the above table).
+- If a reference has multiple missing family members, add rows for each relationship of the members (e.g., Brother_Brother and Father_Son of the sample "Reference3" in the above table).
+
+- In the 'Range' column, the first and the last positions in each readable sequence must be written with a hyphen between these positions (e.g, 73-340). Readable sequences must be separated by a single blank space.
+
+- In the 'Haplotype' column, the mtDNA types are expressed as the differences to a reference sequence such as the revised Cambridge Reference Sequence [@Andrews1999] (e.g., 73G, 315.1C, and so on). Each mtDNA type must be separated by a single blank space.
+
+- Empty cells in the 'Range' and 'Haplotype' columns (e.g., the sample ‘Reference5’) mean that there is no readable sequence.
 
 &nbsp;
 
