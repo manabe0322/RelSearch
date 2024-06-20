@@ -44,9 +44,9 @@ check_error <- function(dt_v_auto, dt_r_auto, dt_af,
       bool_rel_1 <- all(is.element(unique(dt_r_auto[, Relationship]), dt_rel[, Relationship]))
 
       if(!bool_locus_1){
-        error_message <- "Locus set is not the same between victim database and reference database!"
+        error_message <- "Locus set of the victim database is not the same as that of the reference database!"
       }else if(!bool_locus_2){
-        error_message <- "Locus set is not the same between victim database and allele frequencies!"
+        error_message <- "Locus set of the victim database is not the same as that of the allele frequencies!"
       }else if(!bool_locus_3){
         error_message <- "There are some loci without mutation rates!"
       }else if(!bool_rel_1){
@@ -64,7 +64,7 @@ check_error <- function(dt_v_auto, dt_r_auto, dt_af,
       bool_locus_1 <- setequal(locus_v_y, locus_r_y)
 
       if(!bool_locus_1){
-        error_message <- "Locus set is not the same between victim database and reference database!"
+        error_message <- "Locus set of the victim database is not the same as that of the reference database!"
       }
     }
   }
