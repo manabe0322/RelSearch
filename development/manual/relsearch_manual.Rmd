@@ -13,7 +13,7 @@ geometry: margin = 1in
 header-includes:
   - \usepackage{indentfirst}
   - \parindent = 1em
-bibliography: relsearch_references.bib
+bibliography: RelSearch_references.bib
 csl: forensic-science-international-genetics.csl
 ---
 
@@ -41,9 +41,9 @@ install.packages(c("shiny", "data.table", "dplyr", "DT", "magrittr", "pandoc", "
 
 &nbsp;
 
-4. Download ”relsearch_1.0.0.zip” from the [GitHub repository page](https://github.com/manabe0322/relsearch/releases).
+4. Download ”RelSearch_1.0.0.zip” from the [GitHub repository page](https://github.com/manabe0322/RelSearch/releases).
 
-5. Install ”relsearch_1.0.0.zip” from ”Install package(s) from local files...”.
+5. Install ”RelSearch_1.0.0.zip” from ”Install package(s) from local files...”.
 
 \newpage
 
@@ -54,8 +54,8 @@ install.packages(c("shiny", "data.table", "dplyr", "DT", "magrittr", "pandoc", "
 &nbsp;
 
 ```{r eval = FALSE}
-library(relsearch)
-relsearch()
+library(RelSearch)
+RelSearch()
 ```
 
 &nbsp;

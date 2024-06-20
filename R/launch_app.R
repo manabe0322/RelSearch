@@ -1,11 +1,11 @@
-#' relsearch
+#' RelSearch
 #'
 #' @description Main window
-#' @usage relsearch()
+#' @usage RelSearch()
 #' @export
-relsearch <- function(){
-  ver_soft <- packageVersion("relsearch")
-  path_pack <- path.package("relsearch", quiet = FALSE)
+RelSearch <- function(){
+  ver_soft <- packageVersion("RelSearch")
+  path_pack <- path.package("RelSearch", quiet = FALSE)
   options(shiny.maxRequestSize = 500 * 1024^2)
 
   # Install and activate pandoc
@@ -14,7 +14,7 @@ relsearch <- function(){
 
   ui <- fluidPage(theme = shinytheme("cerulean"),
                   tags$style(type = "text/css", "body{padding-top: 70px;}"),
-                  navbarPage(title = paste0("relsearch ver. ", ver_soft),
+                  navbarPage(title = paste0("RelSearch ver. ", ver_soft),
                              id = "navbar",
                              selected = "Load",
                              position = c("fixed-top"),

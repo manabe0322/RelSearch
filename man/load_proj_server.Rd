@@ -4,7 +4,7 @@
 \alias{load_proj_server}
 \title{load_proj_server}
 \usage{
-load_proj_server(id, session_top, max_data)
+load_proj_server(id, session_top, rv_other_par)
 }
 \description{
 The function to create the server module for loading the project
