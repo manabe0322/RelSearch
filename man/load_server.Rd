@@ -6,6 +6,17 @@
 \usage{
 load_server(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_manage)
 }
+\arguments{
+\item{session_top}{The top session}
+
+\item{rv_criteria}{The reactive values for criteria}
+
+\item{rv_rel}{The reactive values for information on the relationships}
+
+\item{rv_myu}{The reactive values for mutation rates}
+
+\item{rv_data_manage}{The reactive values for data management}
+}
 \description{
 The function to create the server module for loading files
 }

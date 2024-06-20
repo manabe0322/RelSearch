@@ -17,6 +17,8 @@ load_proj_ui <- function(id){
 #' load_proj_server
 #'
 #' @description The function to create the server module for loading the project
+#' @param session_top The top session
+#' @param rv_data_manage The reactive values for data management
 load_proj_server <- function(id, session_top, rv_data_manage){
   moduleServer(
     id,

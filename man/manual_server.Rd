@@ -6,6 +6,9 @@
 \usage{
 manual_server(id, path_pack)
 }
+\arguments{
+\item{path_pack}{Package path}
+}
 \description{
 The function to create the server module for the manual
 }

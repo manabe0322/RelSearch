@@ -2,6 +2,7 @@
 #'
 #' @description The function to create the data.table for criteria
 #' @param path_pack Package path
+#' @param init Whether initial creation or not
 create_dt_criteria <- function(path_pack, init = TRUE){
   fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
 
@@ -454,6 +455,7 @@ create_dt_myu <- function(path_pack, init = TRUE){
 #'
 #' @description The function to create the data.table for setting of data management
 #' @param path_pack Package path
+#' @param init Whether initial creation or not
 create_dt_data_manage <- function(path_pack, init = TRUE){
   fn_par <- list.files(paste0(path_pack, "/extdata/parameters"))
 

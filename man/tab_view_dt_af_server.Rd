@@ -6,6 +6,9 @@
 \usage{
 tab_view_dt_af_server(id, rv_file)
 }
+\arguments{
+\item{rv_file}{The reactive valus for the load data and the analysis results}
+}
 \description{
 The function to create the server module for viewing allele frequency database of the autosomal STR
 }

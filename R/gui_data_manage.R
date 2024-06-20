@@ -25,6 +25,7 @@ tab_data_manage_ui <- function(id){
 #' tab_data_manage_server
 #'
 #' @description The function to create the server module for data management
+#' @param path_pack Package path
 tab_data_manage_server <- function(id, path_pack){
   moduleServer(
     id,

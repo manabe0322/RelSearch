@@ -32,6 +32,7 @@ example_ui <- function(id){
 #' example_server
 #'
 #' @description The function to create the server module for downloading example files
+#' @param path_pack Package path
 example_server <- function(id, path_pack){
   moduleServer(
     id,

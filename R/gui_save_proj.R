@@ -18,6 +18,7 @@ save_proj_ui <- function(id){
 #' save_proj_server
 #'
 #' @description The function to create the server module for saving the project
+#' @param rv_file The reactive valus for the load data and the analysis results
 save_proj_server <- function(id, rv_file){
   moduleServer(
     id,

@@ -6,6 +6,9 @@
 \usage{
 tab_view_dt_r_y_server(id, rv_file)
 }
+\arguments{
+\item{rv_file}{The reactive valus for the load data and the analysis results}
+}
 \description{
 The function to create the server module for viewing reference database of the Y-STR
 }

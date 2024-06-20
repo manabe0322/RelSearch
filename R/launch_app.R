@@ -98,7 +98,7 @@ RelSearch <- function(){
         rv_file$dt_criteria <- data_list$dt_criteria
         rv_file$dt_rel <- data_list$dt_rel
         rv_file$dt_myu <- data_list$dt_myu
-        rv_file$dt_par_auto <- data_list$dt_par_auto
+        rv_file$dt_data_manage <- data_list$dt_data_manage
         rv_file$data_list <- data_list
       }
     })

@@ -6,6 +6,9 @@
 \usage{
 tab_view_dt_v_mt_server(id, rv_file)
 }
+\arguments{
+\item{rv_file}{The reactive valus for the load data and the analysis results}
+}
 \description{
 The function to create the server module for viewing victim database of the mtDNA
 }

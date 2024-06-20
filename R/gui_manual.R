@@ -14,6 +14,7 @@ manual_ui <- function(id){
 #' manual_server
 #'
 #' @description The function to create the server module for the manual
+#' @param path_pack Package path
 manual_server <- function(id, path_pack){
   moduleServer(
     id,

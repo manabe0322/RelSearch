@@ -8,6 +8,8 @@ create_dt_data_manage(path_pack, init = TRUE)
 }
 \arguments{
 \item{path_pack}{Package path}
+
+\item{init}{Whether initial creation or not}
 }
 \description{
 The function to create the data.table for setting of data management

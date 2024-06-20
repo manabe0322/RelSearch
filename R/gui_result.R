@@ -218,6 +218,7 @@ result_ui <- function(id){
 #' result_server
 #'
 #' @description The function to create the server module for displaying results
+#' @param rv_file The reactive valus for the load data and the analysis results
 result_server <- function(id, rv_file){
   moduleServer(
     id,

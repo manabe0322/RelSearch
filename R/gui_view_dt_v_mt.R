@@ -10,6 +10,7 @@ tab_view_dt_v_mt_ui <- function(id){
 #' tab_view_dt_v_mt_server
 #'
 #' @description The function to create the server module for viewing victim database of the mtDNA
+#' @param rv_file The reactive valus for the load data and the analysis results
 tab_view_dt_v_mt_server <- function(id, rv_file){
   moduleServer(
     id,

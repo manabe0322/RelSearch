@@ -6,6 +6,11 @@
 \usage{
 load_proj_server(id, session_top, rv_data_manage)
 }
+\arguments{
+\item{session_top}{The top session}
+
+\item{rv_data_manage}{The reactive values for data management}
+}
 \description{
 The function to create the server module for loading the project
 }

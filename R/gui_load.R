@@ -37,6 +37,11 @@ load_ui <- function(id){
 #' load_server
 #'
 #' @description The function to create the server module for loading files
+#' @param session_top The top session
+#' @param rv_criteria The reactive values for criteria
+#' @param rv_rel The reactive values for information on the relationships
+#' @param rv_myu The reactive values for mutation rates
+#' @param rv_data_manage The reactive values for data management
 load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_manage){
   moduleServer(
     id,
