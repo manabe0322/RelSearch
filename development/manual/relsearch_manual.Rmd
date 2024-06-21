@@ -39,7 +39,7 @@ library(kableExtra)
 &nbsp;
 
 ```{r eval = FALSE}
-install.packages(c("shiny", "data.table", "dplyr", "DT", "magrittr", "pandoc", "pedtools", "Rcpp", "ribd", "rmarkdown", "shinyFeedback", "shinyjs", "shinythemes", "waiter"))
+install.packages(c("shiny", "data.table", "dplyr", "DT", "magrittr", "pedtools", "Rcpp", "ribd", "rmarkdown", "shinyFeedback", "shinyjs", "shinythemes", "waiter"))
 ```
 
 &nbsp;

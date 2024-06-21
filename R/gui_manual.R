@@ -20,11 +20,9 @@ manual_server <- function(id, path_pack){
     id,
     function(input, output, session){
       output$download_manual <- downloadHandler(
-        filename = "relsearch_manual.html",
+        filename = "RelSearch_manual.pdf",
         content = function(file){
-          manual_tmp <- file.path(tempdir(), "relsearch_manual.Rmd")
-          file.copy(paste0(path_pack, "/extdata/manual/relsearch_manual.Rmd"), manual_tmp, overwrite = TRUE)
-          render(manual_tmp, output_file = file, envir = new.env(parent = globalenv()))
+          file.copy(paste0(path_pack, "/extdata/manual/RelSearch_manual.pdf"), file)
         }
       )
     }

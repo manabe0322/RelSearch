@@ -4,7 +4,6 @@
 #' @importFrom dplyr full_join mutate_all
 #' @importFrom DT datatable dataTableOutput formatSignif formatStyle styleEqual styleRow renderDataTable
 #' @importFrom magrittr "%>%"
-#' @importFrom pandoc pandoc_activate pandoc_install
 #' @importFrom pedtools ped
 #' @importFrom Rcpp sourceCpp
 #' @importFrom ribd coeffTable

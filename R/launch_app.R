@@ -8,10 +8,6 @@ RelSearch <- function(){
   path_pack <- path.package("RelSearch", quiet = FALSE)
   options(shiny.maxRequestSize = 500 * 1024^2)
 
-  # Install and activate pandoc
-  pandoc_install()
-  pandoc_activate()
-
   ui <- fluidPage(theme = shinytheme("cerulean"),
                   tags$style(type = "text/css", "body{padding-top: 70px;}"),
                   navbarPage(title = paste0("RelSearch ver. ", ver_soft),
