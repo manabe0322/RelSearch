@@ -104,3 +104,18 @@ test_that("extract_pos_mt_vr pattern 6", {
   # Test
   expect_equal(length(pos_mt_vr), 0)
 })
+
+test_that("extract_pos_mt_vr pattern 7", {
+
+  # Condition
+  v_range <- "73-80 16024-16030"
+  r_range <- "16024-16030 73-80"
+
+  # Run
+  pos_mt_vr <- extract_pos_mt_vr(v_range, r_range)
+
+  # Test
+  expect_equal(length(pos_mt_vr), 15)
+  expect_equal(pos_mt_vr[1], 73)
+  expect_equal(pos_mt_vr[15], 16030)
+})
