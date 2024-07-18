@@ -128,3 +128,41 @@ test_that("match_mt pattern 7 (231107)", {
   expect_equal(result[2], "73-340 16024-16365")
   expect_equal(result[3], "610")
 })
+
+test_that("match_mt pattern 8 (240718)", {
+
+  # Condition
+  v_hap <- "-"
+  v_range <- ""
+  r_hap <- "-"
+  r_range <- ""
+
+  # Run
+  result <- match_mt(v_hap, v_range, r_hap, r_range)
+
+  # Test
+  expect_equal(result[1], "")
+  expect_equal(result[2], "")
+  expect_equal(result[3], "0")
+})
+
+test_that("match_mt pattern 9 (240718)", {
+
+  # Condition
+  v_hap <- "73N  152N   164N"
+  v_hap <- strsplit(v_hap, " ")
+  v_hap <- lapply(v_hap, setdiff, "")[[1]]
+  v_range <- "73-340"
+  r_hap <- "73N 152N 164N"
+  r_hap <- strsplit(r_hap, " ")
+  r_hap <- lapply(r_hap, setdiff, "")[[1]]
+  r_range <- "73-340"
+
+  # Run
+  result <- match_mt(v_hap, v_range, r_hap, r_range)
+
+  # Test
+  expect_equal(result[1], "0")
+  expect_equal(result[2], "73-340")
+  expect_equal(result[3], "268")
+})
