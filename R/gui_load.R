@@ -192,7 +192,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
         # Check data.table
         error_message <- check_error(dt_v_auto, dt_r_auto, dt_af, dt_v_y, dt_r_y, dt_v_mt, dt_r_mt, dt_rel, dt_myu)
         if(error_message != ""){
-          showModal(modalDialog(title = "Error", error_message, easyClose = TRUE, footer = NULL))
+          showModal(modalDialog(title = "Error", HTML(error_message), easyClose = TRUE, footer = NULL))
         }else{
           start_time <- proc.time()
           waiter_show(html = spin_3k(), color = "white")
