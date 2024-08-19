@@ -54,10 +54,10 @@ example_server <- function(id, path_pack){
         filename = "str_ref_example.csv",
         content = function(file){
           csvfile <- read.csv(paste0(path_pack, "/extdata/examples/str_ref_example.csv"))
-          mk <- setdiff(colnames(csvfile), c("SampleName", "Relationship"))
+          mk <- setdiff(colnames(csvfile), c("SampleName", "Family", "Relationship"))
           id_mk <- 1:length(mk)
           mk <- mk[id_mk[id_mk %% 2 == 1]]
-          colnames(csvfile) <- c("SampleName", "Relationship", as.vector(sapply(mk, rep, 2)))
+          colnames(csvfile) <- c("SampleName", "Family", "Relationship", as.vector(sapply(mk, rep, 2)))
           csvfile[is.na(csvfile)] <- ""
           write.csv(csvfile, file, row.names = FALSE)
         }
