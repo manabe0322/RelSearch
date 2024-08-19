@@ -48,9 +48,10 @@ analyze_mt <- function(dt_v_mt, dt_r_mt, dt_criteria, show_progress = TRUE){
 
   result_sn_v_mt <- rep(sn_v_mt, length(sn_r_mt))
   result_sn_r_mt <- as.vector(sapply(sn_r_mt, rep, length(sn_v_mt)))
+  result_family <- as.vector(sapply(dt_r_mt[, Family], rep, length(sn_v_mt)))
   result_assumed_rel <- as.vector(sapply(dt_r_mt[, Relationship], rep, length(sn_v_mt)))
 
-  dt_left <- data.table(Victim = result_sn_v_mt, Reference = result_sn_r_mt, AssumedRel = result_assumed_rel)
+  dt_left <- data.table(Victim = result_sn_v_mt, Reference = result_sn_r_mt, Family = result_family, AssumedRel = result_assumed_rel)
   result_mt <- unlist(result_mt)
   result_mt <- matrix(result_mt, nrow = length(sn_v_mt) * length(sn_r_mt), ncol = 3, byrow = TRUE)
   dt_right <- as.data.frame(result_mt)

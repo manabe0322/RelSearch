@@ -4,20 +4,21 @@
 #' @param dt_v_y A data.table of victim profiles (Y-STR)
 #' @param dt_r_y A data.table of reference profiles (Y-STR)
 order_loci_y <- function(dt_v_y, dt_r_y){
-  locus_y <- setdiff(names(dt_v_y), c("SampleName", "Relationship"))
+  locus_y <- setdiff(names(dt_v_y), c("SampleName", "Family", "Relationship"))
   n_l <- length(locus_y)
 
   # Define objects for the column position
   pos_v <- rep(0, n_l + 1)
-  pos_r <- rep(0, n_l + 2)
+  pos_r <- rep(0, n_l + 3)
 
   pos_v[1] <- which(is.element(names(dt_v_y), "SampleName"))
   pos_r[1] <- which(is.element(names(dt_r_y), "SampleName"))
-  pos_r[2] <- which(is.element(names(dt_r_y), "Relationship"))
+  pos_r[2] <- which(is.element(names(dt_r_y), "Family"))
+  pos_r[3] <- which(is.element(names(dt_r_y), "Relationship"))
 
   for(i in 1:n_l){
     pos_v[i + 1] <- which(is.element(names(dt_v_y), locus_y[i]))
-    pos_r[i + 2] <- which(is.element(names(dt_r_y), locus_y[i]))
+    pos_r[i + 3] <- which(is.element(names(dt_r_y), locus_y[i]))
   }
 
   dt_v_y <- dt_v_y[, pos_v, with = FALSE]
@@ -39,7 +40,7 @@ analyze_y <- function(dt_v_y, dt_r_y, dt_criteria, show_progress = TRUE){
   # Prepare objects to analyze Y-STR data #
   #########################################
 
-  locus_y <- setdiff(names(dt_v_y), c("SampleName", "Relationship"))
+  locus_y <- setdiff(names(dt_v_y), c("SampleName", "Family", "Relationship"))
   n_l <- length(locus_y)
 
   sn_v_y <- dt_v_y[, SampleName]
@@ -85,9 +86,10 @@ analyze_y <- function(dt_v_y, dt_r_y, dt_criteria, show_progress = TRUE){
 
   result_sn_v_y <- rep(sn_v_y, length(sn_r_y))
   result_sn_r_y <- as.vector(sapply(sn_r_y, rep, length(sn_v_y)))
+  result_family <- as.vector(sapply(dt_r_y[, Family], rep, length(sn_v_y)))
   result_assumed_rel <- as.vector(sapply(dt_r_y[, Relationship], rep, length(sn_v_y)))
 
-  dt_left <- data.table(Victim = result_sn_v_y, Reference = result_sn_r_y, AssumedRel = result_assumed_rel)
+  dt_left <- data.table(Victim = result_sn_v_y, Reference = result_sn_r_y, Family = result_family, AssumedRel = result_assumed_rel)
   result_y <- unlist(result_y)
   result_y <- matrix(result_y, nrow = length(sn_v_y) * length(sn_r_y), ncol = 3 * (n_l + 1), byrow = TRUE)
   dt_right <- as.data.frame(result_y)

@@ -33,8 +33,8 @@ check_error <- function(dt_v_auto, dt_r_auto, dt_af,
     ################################
 
     if(bool_check_auto){
-      locus_v_auto <- setdiff(names(dt_v_auto), c("SampleName", "Relationship"))
-      locus_r_auto <- setdiff(names(dt_r_auto), c("SampleName", "Relationship"))
+      locus_v_auto <- setdiff(names(dt_v_auto), c("SampleName", "Family", "Relationship"))
+      locus_r_auto <- setdiff(names(dt_r_auto), c("SampleName", "Family", "Relationship"))
       locus_af <- setdiff(names(dt_af), "Allele")
       locus_myu <- dt_myu[, Marker]
 
@@ -59,8 +59,8 @@ check_error <- function(dt_v_auto, dt_r_auto, dt_af,
     ########################
 
     if(error_message == "" && bool_check_y){
-      locus_v_y <- setdiff(names(dt_v_y), c("SampleName", "Relationship"))
-      locus_r_y <- setdiff(names(dt_r_y), c("SampleName", "Relationship"))
+      locus_v_y <- setdiff(names(dt_v_y), c("SampleName", "Family", "Relationship"))
+      locus_r_y <- setdiff(names(dt_r_y), c("SampleName", "Family", "Relationship"))
       bool_locus_1 <- setequal(locus_v_y, locus_r_y)
 
       if(!bool_locus_1){

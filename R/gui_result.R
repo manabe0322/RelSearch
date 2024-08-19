@@ -59,7 +59,10 @@ result_ui <- function(id){
                                            textOutput(ns("paternal_select")),
                                            br(),
                                            h4("Maternal lineage"),
-                                           textOutput(ns("maternal_select"))
+                                           textOutput(ns("maternal_select")),
+                                           br(),
+                                           h4("Family members"),
+                                           textOutput(ns("family_member"))
                                          ),
                                          disabled(downloadButton(ns("download_auto"), "Download (STR)")),
                                          br(),
@@ -259,6 +262,7 @@ result_server <- function(id, rv_file){
         rv_result$dt_detail_mt <- NULL
         rv_result$sn_v_select <- NULL
         rv_result$sn_r_select <- NULL
+        rv_result$family_member <- NULL
         rv_result$estimated_rel_select <- NULL
         rv_result$paternal_select <- NULL
         rv_result$maternal_select <- NULL
@@ -361,11 +365,11 @@ result_server <- function(id, rv_file){
 
           datatable(
             dt_display,
-            colnames = c("Victim", "Reference", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage", "ColorBack", "ColorY", "ColorMt"),
+            colnames = c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage", "ColorBack", "ColorY", "ColorMt"),
             filter = "top",
             selection = list(mode = "single", target = "row"),
-            options = list(iDisplayLength = 10, ordering = FALSE, autoWidth = TRUE,
-                           columnDefs = list(list(targets = 3, searchable = FALSE), list(targets = 7:9, visible = FALSE))
+            options = list(iDisplayLength = 10, autoWidth = TRUE,
+                           columnDefs = list(list(targets = 4, searchable = FALSE), list(targets = 8:10, visible = FALSE))
             ),
             rownames = FALSE
           ) %>%
@@ -382,7 +386,7 @@ result_server <- function(id, rv_file){
             dt_download[, ColorBack:=NULL]
             dt_download[, ColorY:=NULL]
             dt_download[, ColorMt:=NULL]
-            colnames(dt_download) <- c("Victim", "Reference", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage")
+            colnames(dt_download) <- c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage")
             write.csv(dt_download, file, row.names = FALSE)
           }
         )
@@ -464,6 +468,7 @@ result_server <- function(id, rv_file){
 
         output$sn_v_select <- renderText({paste0(rv_result$sn_v_select)})
         output$sn_r_select <- renderText({paste0(rv_result$sn_r_select)})
+        output$family_member <- renderText({paste0(rv_result$family_member)})
         output$estimated_rel_select <- renderText({paste0(rv_result$estimated_rel_select)})
         output$paternal_select <- renderText({paste0(rv_result$paternal_select)})
         output$maternal_select <- renderText({paste0(rv_result$maternal_select)})
@@ -484,6 +489,7 @@ result_server <- function(id, rv_file){
             rv_result$dt_detail_mt <- NULL
             rv_result$sn_v_select <- NULL
             rv_result$sn_r_select <- NULL
+            rv_result$family_member <- NULL
             rv_result$estimated_rel_select <- NULL
             rv_result$paternal_select <- NULL
             rv_result$maternal_select <- NULL
@@ -494,6 +500,7 @@ result_server <- function(id, rv_file){
             dt_display <- rv_result$dt_display
             sn_v_select <- dt_display[pos_select, Victim]
             sn_r_select <- dt_display[pos_select, Reference]
+            family_select <- dt_display[pos_select, Family]
             assumed_rel_select <- dt_display[pos_select, AssumedRel]
             estimated_rel_select <- dt_display[pos_select, EstimatedRel]
             if(is.na(estimated_rel_select)){
@@ -511,24 +518,31 @@ result_server <- function(id, rv_file){
             result_selected <- dt_combined[.(sn_v_select, sn_r_select, assumed_rel_select)]
 
             if(bool_check_auto){
+              tmp_fam_auto <- dt_r_auto$SampleName[dt_r_auto$Family == family_select]
               rv_result$dt_detail_auto <- dt_detail_auto <- create_detailed_data_auto(dt_v_auto, dt_r_auto, sn_v_select, sn_r_select, assumed_rel_select, estimated_rel_select, result_selected)
               if(is.null(dt_detail_auto)){
                 disable("download_auto")
               }else{
                 enable("download_auto")
               }
+            }else{
+              tmp_fam_auto <- character(0)
             }
 
             if(bool_check_y){
+              tmp_fam_y <- dt_r_y$SampleName[dt_r_y$Family == family_select]
               rv_result$dt_detail_y <- dt_detail_y <- create_detailed_data_y(dt_v_y, dt_r_y, sn_v_select, sn_r_select, assumed_rel_select, paternal_select, result_selected)
               if(is.null(dt_detail_y)){
                 disable("download_y")
               }else{
                 enable("download_y")
               }
+            }else{
+              tmp_fam_y <- character(0)
             }
 
             if(bool_check_mt){
+              tmp_fam_mt <- dt_r_mt$SampleName[dt_r_mt$Family == family_select]
               rv_result$dt_detail_mt <- dt_detail_mt <- create_detailed_data_mt(dt_v_mt, dt_r_mt, sn_v_select, sn_r_select, assumed_rel_select, maternal_select, result_selected)
               if(is.null(dt_detail_mt)){
                 mismatch_mt <- NULL
@@ -544,10 +558,16 @@ result_server <- function(id, rv_file){
               rv_result$mismatch_mt <- mismatch_mt
               rv_result$share_range_mt <- share_range_mt
               rv_result$share_length_mt <- share_length_mt
+            }else{
+              tmp_fam_mt <- character(0)
             }
+
+            family_member <- sort(unique(c(tmp_fam_auto, tmp_fam_y, tmp_fam_mt)))
+            family_member <- paste0(family_member, collapse = ", ")
 
             rv_result$sn_v_select <- sn_v_select
             rv_result$sn_r_select <- sn_r_select
+            rv_result$family_member <- family_member
             rv_result$estimated_rel_select <- estimated_rel_select
             rv_result$paternal_select <- paternal_select
             rv_result$maternal_select <- maternal_select

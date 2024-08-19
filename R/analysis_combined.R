@@ -47,14 +47,14 @@ create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_r
     if(is.null(dt_combined)){
       dt_combined <- copy(dt_result_y)
     }else{
-      dt_combined <- full_join(dt_combined, dt_result_y, by = c("Victim", "Reference", "AssumedRel"))
+      dt_combined <- full_join(dt_combined, dt_result_y, by = c("Victim", "Reference", "Family", "AssumedRel"))
     }
   }
   if(!is.null(dt_result_mt)){
     if(is.null(dt_combined)){
       dt_combined <- copy(dt_result_mt)
     }else{
-      dt_combined <- full_join(dt_combined, dt_result_mt, by = c("Victim", "Reference", "AssumedRel"))
+      dt_combined <- full_join(dt_combined, dt_result_mt, by = c("Victim", "Reference", "Family", "AssumedRel"))
     }
   }
 
@@ -146,7 +146,7 @@ create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_r
 create_displayed_data <- function(dt_combined, fltr_type = "with_auto", min_lr = 100, max_data_displayed = 10000){
   setkey(dt_combined, Victim, Reference, AssumedRel)
 
-  dt_display <- dt_combined[, list(Victim, Reference, AssumedRel, LR_Total, EstimatedRel, Paternal, Maternal, ColorBack, ColorY, ColorMt)]
+  dt_display <- dt_combined[, list(Victim, Reference, Family, AssumedRel, LR_Total, EstimatedRel, Paternal, Maternal, ColorBack, ColorY, ColorMt)]
   setorder(dt_display, - LR_Total, Paternal, Maternal, na.last = TRUE)
 
   if(fltr_type == "with_auto"){

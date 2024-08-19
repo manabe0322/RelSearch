@@ -41,8 +41,8 @@ create_detailed_data_auto <- function(dt_v_auto, dt_r_auto, sn_v_select, sn_r_se
 
   if(nrow(dt_v_auto_select) == 1 && nrow(dt_r_auto_select) == 1){
     options(warn = -1)
-    prof_v_select <- as.numeric(dt_v_auto_select[, -c("SampleName", "Relationship"), with = FALSE])
-    prof_r_select <- as.numeric(dt_r_auto_select[, -c("SampleName", "Relationship"), with = FALSE])
+    prof_v_select <- as.numeric(dt_v_auto_select[, -c("SampleName", "Family", "Relationship"), with = FALSE])
+    prof_r_select <- as.numeric(dt_r_auto_select[, -c("SampleName", "Family", "Relationship"), with = FALSE])
     options(warn = 0)
 
     prof_v_display <- c(display_gt(prof_v_select), "")
@@ -82,12 +82,12 @@ create_detailed_data_y <- function(dt_v_y, dt_r_y, sn_v_select, sn_r_select, ass
 
   if(nrow(dt_v_y_select) == 1 && nrow(dt_r_y_select) == 1){
     options(warn = -1)
-    prof_v_display <- c(as.character(dt_v_y_select[, -c("SampleName", "Relationship"), with = FALSE]), "")
+    prof_v_display <- c(as.character(dt_v_y_select[, -c("SampleName", "Family", "Relationship"), with = FALSE]), "")
     prof_v_display[is.na(prof_v_display)] <- ""
     options(warn = 0)
 
     options(warn = -1)
-    prof_r_display <- c(as.character(dt_r_y_select[, -c("SampleName", "Relationship"), with = FALSE]), "")
+    prof_r_display <- c(as.character(dt_r_y_select[, -c("SampleName", "Family", "Relationship"), with = FALSE]), "")
     prof_r_display[is.na(prof_r_display)] <- ""
     options(warn = 0)
 
@@ -127,14 +127,14 @@ create_detailed_data_mt <- function(dt_v_mt, dt_r_mt, sn_v_select, sn_r_select, 
 
   if(nrow(dt_v_mt_select) == 1 && nrow(dt_r_mt_select) == 1){
     options(warn = -1)
-    type_v <- as.character(dt_v_mt_select[, -c("SampleName", "Relationship", "Range"), with = FALSE])
+    type_v <- as.character(dt_v_mt_select[, -c("SampleName", "Family", "Relationship", "Range"), with = FALSE])
     options(warn = 0)
     type_v <- strsplit(type_v, " ")[[1]]
     type_v <- setdiff(type_v, "")
     type_v <- type_v[order(sapply(type_v, extract_integer))]
 
     options(warn = -1)
-    type_r <- as.character(dt_r_mt_select[, -c("SampleName", "Relationship", "Range"), with = FALSE])
+    type_r <- as.character(dt_r_mt_select[, -c("SampleName", "Family", "Relationship", "Range"), with = FALSE])
     options(warn = 0)
     type_r <- strsplit(type_r, " ")[[1]]
     type_r <- setdiff(type_r, "")

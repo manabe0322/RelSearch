@@ -6,7 +6,7 @@ change_data_type_auto <- function(dt){
   col_init <- names(dt)
 
   col_tmp <- col_init
-  pos_mk <- which(!is.element(col_init, c("SampleName", "Relationship")))
+  pos_mk <- which(!is.element(col_init, c("SampleName", "Family", "Relationship")))
   col_tmp[pos_mk] <- paste0("Col", 1:length(pos_mk))
   names(dt) <- col_tmp
 
@@ -15,7 +15,7 @@ change_data_type_auto <- function(dt){
   dt[, (col_numeric) := lapply(.SD, as.numeric), .SDcols = col_numeric]
   options(warn = 0)
 
-  col_char <- col_tmp[which(is.element(col_init, c("SampleName", "Relationship")))]
+  col_char <- col_tmp[which(is.element(col_init, c("SampleName", "Family", "Relationship")))]
   options(warn = -1)
   dt[, (col_char) := lapply(.SD, as.character), .SDcols = col_char]
   options(warn = 0)
@@ -44,8 +44,8 @@ change_data_type_af <- function(dt){
 change_data_type_y <- function(dt){
   col_char <- names(dt)
 
-  pos_not_mk <- which(is.element(col_char, c("SampleName", "Relationship")))
-  pos_mk <- which(!is.element(col_char, c("SampleName", "Relationship")))
+  pos_not_mk <- which(is.element(col_char, c("SampleName", "Family", "Relationship")))
+  pos_mk <- which(!is.element(col_char, c("SampleName", "Family", "Relationship")))
   dt_left <- dt[, pos_not_mk, with = FALSE]
   dt_right <- dt[, pos_mk, with = FALSE]
   dt_right <- mutate_all(dt_right, ~ifelse(.=="-", "",.))
@@ -65,8 +65,8 @@ change_data_type_y <- function(dt){
 change_data_type_mt <- function(dt){
   col_char <- names(dt)
 
-  pos_left <- which(is.element(col_char, c("SampleName", "Relationship")))
-  pos_right <- which(!is.element(col_char, c("SampleName", "Relationship")))
+  pos_left <- which(is.element(col_char, c("SampleName", "Family", "Relationship")))
+  pos_right <- which(!is.element(col_char, c("SampleName", "Family", "Relationship")))
   dt_left <- dt[, pos_left, with = FALSE]
   dt_right <- dt[, pos_right, with = FALSE]
   dt_right <- mutate_all(dt_right, ~ifelse(.=="-", "",.))

@@ -29,7 +29,7 @@ correct_af_dirichlet <- function(pop_al, pop_freq, unobs_al = numeric(0)){
 set_af <- function(dt_v_auto, dt_r_auto, dt_af){
   n_mk <- ncol(dt_af) - 1
   name_al <- dt_af[, Allele]
-  name_mk <- setdiff(names(dt_v_auto), c("SampleName", "Relationship"))
+  name_mk <- setdiff(names(dt_v_auto), c("SampleName", "Family", "Relationship"))
   af_list <- af_al_list <- unobs_al_list <- list()
 
   for(i in 1:n_mk){
@@ -68,22 +68,23 @@ set_af <- function(dt_v_auto, dt_r_auto, dt_af){
 #' @param dt_r_auto A data.table of reference profiles (autosomal STR)
 #' @param dt_af A data.table of allele frequencies (autosomal STR)
 order_loci_auto <- function(dt_v_auto, dt_r_auto, dt_af){
-  locus_auto <- setdiff(names(dt_v_auto), c("SampleName", "Relationship"))
+  locus_auto <- setdiff(names(dt_v_auto), c("SampleName", "Family", "Relationship"))
   n_mk <- length(locus_auto)
 
   # Define objects for the column position
   pos_v <- rep(0, 2 * n_mk + 1)
-  pos_r <- rep(0, 2 * n_mk + 2)
+  pos_r <- rep(0, 2 * n_mk + 3)
   pos_af <- rep(0, n_mk + 1)
 
   pos_v[1] <- which(is.element(names(dt_v_auto), "SampleName"))
   pos_r[1] <- which(is.element(names(dt_r_auto), "SampleName"))
-  pos_r[2] <- which(is.element(names(dt_r_auto), "Relationship"))
+  pos_r[2] <- which(is.element(names(dt_r_auto), "Family"))
+  pos_r[3] <- which(is.element(names(dt_r_auto), "Relationship"))
   pos_af[1] <- which(is.element(names(dt_af), "Allele"))
 
   for(i in 1:n_mk){
     pos_v[c(2 * i, 2 * i + 1)] <- which(is.element(names(dt_v_auto), locus_auto[i]))
-    pos_r[c(2 * i + 1, 2 * i + 2)] <- which(is.element(names(dt_r_auto), locus_auto[i]))
+    pos_r[c(2 * i + 2, 2 * i + 3)] <- which(is.element(names(dt_r_auto), locus_auto[i]))
     pos_af[i + 1] <- which(is.element(names(dt_af), locus_auto[i]))
   }
 
@@ -205,7 +206,7 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
   ##################################################
 
   # Locus
-  locus_auto <- setdiff(names(dt_v_auto), c("SampleName", "Relationship"))
+  locus_auto <- setdiff(names(dt_v_auto), c("SampleName", "Family", "Relationship"))
   n_mk <- length(locus_auto)
 
   # Sample names
@@ -214,8 +215,8 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
 
   # Genotypes
   options(warn = -1)
-  gt_v_auto <- as.matrix(dt_v_auto[, -c("SampleName", "Relationship")])
-  gt_r_auto <- as.matrix(dt_r_auto[, -c("SampleName", "Relationship")])
+  gt_v_auto <- as.matrix(dt_v_auto[, -c("SampleName", "Family", "Relationship")])
+  gt_r_auto <- as.matrix(dt_r_auto[, -c("SampleName", "Family", "Relationship")])
   options(warn = 0)
 
   # The NA in genotypes is replaced to -99 to deal with the C++ program
@@ -225,6 +226,9 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
   # Change matrix to list for genotypes
   gt_v_auto <- asplit(gt_v_auto, 1)
   gt_r_auto <- asplit(gt_r_auto, 1)
+
+  # Family
+  family_all <- dt_r_auto[, Family]
 
   # Assumed relationships
   assumed_rel_all <- dt_r_auto[, Relationship]
@@ -306,9 +310,10 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
 
   result_sn_v_auto <- rep(sn_v_auto, length(sn_r_auto))
   result_sn_r_auto <- as.vector(sapply(sn_r_auto, rep, length(sn_v_auto)))
+  result_family <- as.vector(sapply(family_all, rep, length(sn_v_auto)))
   result_assumed_rel <- as.vector(sapply(assumed_rel_all, rep, length(sn_v_auto)))
 
-  dt_left <- data.table(Victim = result_sn_v_auto, Reference = result_sn_r_auto, AssumedRel = result_assumed_rel)
+  dt_left <- data.table(Victim = result_sn_v_auto, Reference = result_sn_r_auto, Family = result_family, AssumedRel = result_assumed_rel)
   result_auto <- unlist(result_auto)
   result_auto <- matrix(result_auto, nrow = length(sn_v_auto) * length(sn_r_auto), ncol = 3 * (n_mk + 1), byrow = TRUE)
   dt_right <- as.data.frame(result_auto)
