@@ -370,35 +370,18 @@ result_server <- function(id, rv_file){
         output$dt_display <- renderDataTable(server = FALSE, {
           dt_display <- rv_result$dt_display
 
-          # The function to change colors does not work when dealing with big data
-          #index_warning_y <- which(dt_display[, ColorY] == 2)
-          #color_display_y <- "red"
-          #if(length(index_warning_y) == 0){
-          #  index_warning_y <- 1
-          #  color_display_y <- "#333333"
-          #}
-
-          #index_warning_mt <- which(dt_display[, ColorMt] == 2)
-          #color_display_mt <- "red"
-          #if(length(index_warning_mt) == 0){
-          #  index_warning_mt <- 1
-          #  color_display_mt <- "#333333"
-          #}
-
           datatable(
             dt_display,
-            colnames = c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage", "ColorBack", "ColorY", "ColorMt"),
+            colnames = c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage", "ColorBack"),
             filter = "top",
             selection = list(mode = "single", target = "row"),
             options = list(iDisplayLength = 10, autoWidth = TRUE,
-                           columnDefs = list(list(targets = 4, searchable = FALSE), list(targets = 8:10, visible = FALSE))
+                           columnDefs = list(list(targets = 4, searchable = FALSE), list(targets = 8, visible = FALSE))
             ),
             rownames = FALSE
           ) %>%
             formatSignif(columns = c("LR_Total"), digits = 3) %>%
-            formatStyle(columns = "ColorBack", target = "row", backgroundColor = styleEqual(c(0, 1, 2), c("#ffe0ef", "#e0ffe0", "#ffffe0"))) #%>%
-          #formatStyle(columns = "Paternal", target = "cell", color = styleRow(index_warning_y, color_display_y)) %>%
-          #formatStyle(columns = "Maternal", target = "cell", color = styleRow(index_warning_mt, color_display_mt))
+            formatStyle(columns = "ColorBack", target = "row", backgroundColor = styleEqual(c(0, 1, 2), c("#ffe0ef", "#e0ffe0", "#ffffe0")))
         })
 
         output$download_main <- downloadHandler(
@@ -406,8 +389,6 @@ result_server <- function(id, rv_file){
           content = function(file){
             dt_download <- copy(rv_result$dt_display)
             dt_download[, ColorBack:=NULL]
-            dt_download[, ColorY:=NULL]
-            dt_download[, ColorMt:=NULL]
             colnames(dt_download) <- c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage")
             write.csv(dt_download, file, row.names = FALSE)
           }
@@ -615,11 +596,11 @@ result_server <- function(id, rv_file){
           if(!is.null(dt_other_cand)){
             datatable(
               dt_other_cand,
-              colnames = c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage", "ColorBack", "ColorY", "ColorMt"),
+              colnames = c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage", "ColorBack"),
               filter = "top",
               selection = "none",
               options = list(iDisplayLength = 10, autoWidth = TRUE,
-                             columnDefs = list(list(targets = 4, searchable = FALSE), list(targets = 8:10, visible = FALSE))
+                             columnDefs = list(list(targets = 4, searchable = FALSE), list(targets = 8, visible = FALSE))
               ),
               rownames = FALSE
             ) %>%
@@ -633,8 +614,6 @@ result_server <- function(id, rv_file){
           content = function(file){
             dt_download <- copy(rv_result$dt_other_cand)
             dt_download[, ColorBack:=NULL]
-            dt_download[, ColorY:=NULL]
-            dt_download[, ColorMt:=NULL]
             colnames(dt_download) <- c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage")
             write.csv(dt_download, file, row.names = FALSE)
           }

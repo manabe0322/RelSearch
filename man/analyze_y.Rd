@@ -4,7 +4,7 @@
 \alias{analyze_y}
 \title{analyze_y}
 \usage{
-analyze_y(dt_v_y, dt_r_y, dt_criteria, show_progress = TRUE)
+analyze_y(dt_v_y, dt_r_y, dt_criteria, dt_rel, show_progress = TRUE)
 }
 \arguments{
 \item{dt_v_y}{A data.table of victim profiles (Y-STR)}
@@ -12,6 +12,8 @@ analyze_y(dt_v_y, dt_r_y, dt_criteria, show_progress = TRUE)
 \item{dt_r_y}{A data.table of reference profiles (Y-STR)}
 
 \item{dt_criteria}{A data.table of criteria}
+
+\item{dt_rel}{A data.table of information on relationships}
 
 \item{show_progress}{Whether the progress is shown or not}
 }

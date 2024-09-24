@@ -34,10 +34,12 @@ create_background_color <- function(dt_combined, index_warning){
 #' @description The function to create combined data
 #' @param dt_result_auto A data.table of the result for the autosomal STR
 #' @param dt_result_y A data.table of the result for the Y-STR
+#' @param sn_v_y_male A character vector of the victim names who are estimated to be male
+#' @param sn_r_y_male A character vector of the reference names who are estimated to be male
 #' @param dt_result_mt A data.table of the result for the mtDNA
 #' @param dt_rel A data.table of information on relationships
 #' @param dt_data_manage A data.table for data management
-create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_rel, dt_data_manage){
+create_combined_data <- function(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_y_male, dt_result_mt, dt_rel, dt_data_manage){
   # Combine data.table
   dt_combined <- NULL
   if(!is.null(dt_result_auto)){
@@ -73,7 +75,7 @@ create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_r
   }
   options(warn = 0)
 
-  # Investigate unexpected results of Y-STR and mtDNA
+  # Investigate indices of data that does not support lineage unexpectedly
   index_unexpected_y <- index_unexpected_mt <- integer(0)
   est_rel_all <- dt_combined[, EstimatedRel]
   est_paternal_all <- dt_combined[, Paternal]
@@ -94,14 +96,21 @@ create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_r
       }
     }
   }
-  color_y <- color_mt <- rep(1, n_data)
-  color_y[index_unexpected_y] <- 2
-  color_mt[index_unexpected_mt] <- 2
+
+  # Investigate indices of sex mismatches
+  rel_female_v <- dt_rel$Relationship[dt_rel$Sex_Victim == "F"]
+  rel_female_r <- dt_rel$Relationship[dt_rel$Sex_Reference == "F"]
+
+  index_sex_mismatch_v <- intersect(which(is.element(dt_combined$AssumedRel, rel_female_v)), which(is.element(dt_combined$Victim, sn_v_y_male)))
+  index_sex_mismatch_r <- intersect(which(is.element(dt_combined$AssumedRel, rel_female_r)), which(is.element(dt_combined$Reference, sn_r_y_male)))
+  index_sex_mismatch <- sort(union(index_sex_mismatch_v, index_sex_mismatch_r))
+
+  dt_combined$Paternal[index_sex_mismatch] <- "Sex mismatch"
 
   # Update estimated relationships
   index_satisfy_lr <- which(!is.na(est_rel_all))
-  index_unexpected_y_mt <- sort(unique(c(index_unexpected_y, index_unexpected_mt)))
-  index_warning <- intersect(index_satisfy_lr, index_unexpected_y_mt)
+  index_exclude_y_mt <- sort(unique(c(index_unexpected_y, index_unexpected_mt, index_sex_mismatch)))
+  index_warning <- intersect(index_satisfy_lr, index_exclude_y_mt)
   est_rel_all[index_warning] <- NA
   dt_combined[, EstimatedRel := est_rel_all]
 
@@ -121,8 +130,6 @@ create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_r
   # Additional columns
   options(warn = -1)
   dt_combined[, ColorBack := background_color]
-  dt_combined[, ColorY := color_y]
-  dt_combined[, ColorMt := color_mt]
   options(warn = 0)
 
   # Keep only important data
@@ -146,7 +153,7 @@ create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_r
 create_displayed_data <- function(dt_combined, fltr_type = "with_auto", min_lr = 100, max_data_displayed = 10000){
   setkey(dt_combined, Victim, Reference, AssumedRel)
 
-  dt_display <- dt_combined[, list(Victim, Reference, Family, AssumedRel, LR_Total, EstimatedRel, Paternal, Maternal, ColorBack, ColorY, ColorMt)]
+  dt_display <- dt_combined[, list(Victim, Reference, Family, AssumedRel, LR_Total, EstimatedRel, Paternal, Maternal, ColorBack)]
   setorder(dt_display, - LR_Total, Paternal, Maternal, na.last = TRUE)
 
   if(fltr_type == "with_auto"){

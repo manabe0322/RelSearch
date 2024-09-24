@@ -69,6 +69,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
       observe({
         req(rv_rel)
         rv_file$dt_rel <- data.table(Relationship = rv_rel$name,
+                                     Sex_Victim = rv_rel$sex_v, Sex_Reference = rv_rel$sex_r,
                                      Pr_IBD2 = rv_rel$pibd2, Pr_IBD1 = rv_rel$pibd1, Pr_IBD0 = rv_rel$pibd0,
                                      Paternal = rv_rel$paternal, Maternal = rv_rel$maternal,
                                      Tree_persons = rv_rel$tree_persons, Tree_sexes = rv_rel$tree_sexes, Tree_fathers = rv_rel$tree_fathers, Tree_mothers = rv_rel$tree_mothers, Tree_founders = rv_rel$tree_founders)
@@ -226,9 +227,14 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
           bool_check_y <- all(!is.null(dt_v_y), !is.null(dt_r_y))
 
           if(bool_check_y){
-            dt_result_y <- analyze_y(dt_v_y, dt_r_y, dt_criteria, dt_rel)
+            tmp <- analyze_y(dt_v_y, dt_r_y, dt_criteria, dt_rel)
+            dt_result_y <- tmp$dt_result_y
+            sn_v_y_male <- tmp$sn_v_y_male
+            sn_r_y_male <- tmp$sn_r_y_male
           }else{
             dt_result_y <- NULL
+            sn_v_y_male <- NULL
+            sn_r_y_male <- NULL
           }
 
           ######################
@@ -253,7 +259,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
           # Create the combined data #
           ############################
 
-          dt_combined <- create_combined_data(dt_result_auto, dt_result_y, dt_result_mt, dt_rel, dt_data_manage)
+          dt_combined <- create_combined_data(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_y_male, dt_result_mt, dt_rel, dt_data_manage)
 
           #############################
           # Create the displayed data #
