@@ -372,11 +372,11 @@ result_server <- function(id, rv_file){
 
           datatable(
             dt_display,
-            colnames = c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage", "ColorBack"),
+            colnames = c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Estimated sex (Victim)", "Estimated sex (Reference)", "Paternal lineage", "Maternal lineage", "ColorBack"),
             filter = "top",
             selection = list(mode = "single", target = "row"),
             options = list(iDisplayLength = 10, autoWidth = TRUE,
-                           columnDefs = list(list(targets = 4, searchable = FALSE), list(targets = 8, visible = FALSE))
+                           columnDefs = list(list(targets = 4, searchable = FALSE), list(targets = 10, visible = FALSE))
             ),
             rownames = FALSE
           ) %>%
@@ -389,7 +389,7 @@ result_server <- function(id, rv_file){
           content = function(file){
             dt_download <- copy(rv_result$dt_display)
             dt_download[, ColorBack:=NULL]
-            colnames(dt_download) <- c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage")
+            colnames(dt_download) <- c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Estimated sex (Victim)", "Estimated sex (Reference)", "Paternal lineage", "Maternal lineage")
             write.csv(dt_download, file, row.names = FALSE)
           }
         )
@@ -596,11 +596,11 @@ result_server <- function(id, rv_file){
           if(!is.null(dt_other_cand)){
             datatable(
               dt_other_cand,
-              colnames = c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage", "ColorBack"),
+              colnames = c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Estimated sex (Victim)", "Estimated sex (Reference)", "Paternal lineage", "Maternal lineage", "ColorBack"),
               filter = "top",
               selection = "none",
               options = list(iDisplayLength = 10, autoWidth = TRUE,
-                             columnDefs = list(list(targets = 4, searchable = FALSE), list(targets = 8, visible = FALSE))
+                             columnDefs = list(list(targets = 4, searchable = FALSE), list(targets = 10, visible = FALSE))
               ),
               rownames = FALSE
             ) %>%
@@ -614,7 +614,7 @@ result_server <- function(id, rv_file){
           content = function(file){
             dt_download <- copy(rv_result$dt_other_cand)
             dt_download[, ColorBack:=NULL]
-            colnames(dt_download) <- c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage")
+            colnames(dt_download) <- c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Estimated sex (Victim)", "Estimated sex (Reference)", "Paternal lineage", "Maternal lineage")
             write.csv(dt_download, file, row.names = FALSE)
           }
         )

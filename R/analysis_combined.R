@@ -101,11 +101,18 @@ create_combined_data <- function(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_
   rel_female_v <- dt_rel$Relationship[dt_rel$Sex_Victim == "F"]
   rel_female_r <- dt_rel$Relationship[dt_rel$Sex_Reference == "F"]
 
-  index_sex_mismatch_v <- intersect(which(is.element(dt_combined$AssumedRel, rel_female_v)), which(is.element(dt_combined$Victim, sn_v_y_male)))
-  index_sex_mismatch_r <- intersect(which(is.element(dt_combined$AssumedRel, rel_female_r)), which(is.element(dt_combined$Reference, sn_r_y_male)))
+  index_male_v <- which(is.element(dt_combined$Victim, sn_v_y_male))
+  index_male_r <- which(is.element(dt_combined$Reference, sn_r_y_male))
+
+  index_sex_mismatch_v <- intersect(which(is.element(dt_combined$AssumedRel, rel_female_v)), index_male_v)
+  index_sex_mismatch_r <- intersect(which(is.element(dt_combined$AssumedRel, rel_female_r)), index_male_r)
   index_sex_mismatch <- sort(union(index_sex_mismatch_v, index_sex_mismatch_r))
 
   dt_combined$Paternal[index_sex_mismatch] <- "Sex mismatch"
+
+  est_sex_v <- est_sex_r <- rep(NA, n_data)
+  est_sex_v[index_male_v] <- "Male"
+  est_sex_r[index_male_r] <- "Male"
 
   # Update estimated relationships
   index_satisfy_lr <- which(!is.na(est_rel_all))
@@ -129,6 +136,8 @@ create_combined_data <- function(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_
 
   # Additional columns
   options(warn = -1)
+  dt_combined[, EstSexV := est_sex_v]
+  dt_combined[, EstSexR := est_sex_r]
   dt_combined[, ColorBack := background_color]
   options(warn = 0)
 
@@ -153,7 +162,7 @@ create_combined_data <- function(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_
 create_displayed_data <- function(dt_combined, fltr_type = "with_auto", min_lr = 100, max_data_displayed = 10000){
   setkey(dt_combined, Victim, Reference, AssumedRel)
 
-  dt_display <- dt_combined[, list(Victim, Reference, Family, AssumedRel, LR_Total, EstimatedRel, Paternal, Maternal, ColorBack)]
+  dt_display <- dt_combined[, list(Victim, Reference, Family, AssumedRel, LR_Total, EstimatedRel, EstSexV, EstSexR, Paternal, Maternal, ColorBack)]
   setorder(dt_display, - LR_Total, Paternal, Maternal, na.last = TRUE)
 
   if(fltr_type == "with_auto"){
