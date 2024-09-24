@@ -21,10 +21,10 @@ result_ui <- function(id){
                                            actionButton(ns("act_default"), label = "Default display", class = "btn btn-primary"),
                                            br(),
                                            br(),
-                                           actionButton(ns("act_identified"), label = "Identified pairs", class = "btn btn-success"),
+                                           actionButton(ns("act_identified"), label = "Identified", class = "btn btn-success"),
                                            br(),
                                            br(),
-                                           actionButton(ns("act_multiple"), label = "Multiple candidates", class = "btn btn-warning"),
+                                           actionButton(ns("act_multiple"), label = "Inconclusive", class = "btn btn-warning"),
                                            br(),
                                            br(),
                                            actionButton(ns("act_warning"), label = "Not support lineage", class = "btn btn-danger"),
@@ -44,13 +44,13 @@ result_ui <- function(id){
                        tabPanel("Selected data in detail",
                                 br(),
                                 fluidRow(
-                                  column(2,
+                                  column(3,
                                          wellPanel(
-                                           h4("Victim"),
-                                           textOutput(ns("sn_v_select")),
+                                           h4("Selected victim"),
+                                           textOutput(ns("sn_v_select_detail")),
                                            br(),
-                                           h4("Reference"),
-                                           textOutput(ns("sn_r_select")),
+                                           h4("Selected reference"),
+                                           textOutput(ns("sn_r_select_detail")),
                                            br(),
                                            h4("Estimated relationship"),
                                            textOutput(ns("estimated_rel_select")),
@@ -61,7 +61,7 @@ result_ui <- function(id){
                                            h4("Maternal lineage"),
                                            textOutput(ns("maternal_select")),
                                            br(),
-                                           h4("Family members"),
+                                           h4("All family members"),
                                            textOutput(ns("family_member"))
                                          ),
                                          disabled(downloadButton(ns("download_auto"), "Download (STR)")),
@@ -72,7 +72,7 @@ result_ui <- function(id){
                                          br(),
                                          disabled(downloadButton(ns("download_mt"), "Download (mtDNA)"))
                                   ),
-                                  column(10,
+                                  column(9,
                                          tabsetPanel(
                                            tabPanel("STR",
                                                     br(),
@@ -103,6 +103,25 @@ result_ui <- function(id){
                                                     dataTableOutput(ns("dt_detail_mt"))
                                            )
                                          )
+                                  )
+                                )
+                       ),
+                       tabPanel("Other candidates",
+                                br(),
+                                fluidRow(
+                                  column(3,
+                                         wellPanel(
+                                           h4("Selected victim"),
+                                           textOutput(ns("sn_v_select_other_cand")),
+                                           br(),
+                                           h4("Selected reference"),
+                                           textOutput(ns("sn_r_select_other_cand"))
+                                         ),
+                                         disabled(downloadButton(ns("download_other_cand"), "Download", class = "btn btn-primary btn-lg"))
+                                  ),
+                                  column(9,
+                                         br(),
+                                         dataTableOutput(ns("dt_other_cand"))
                                   )
                                 )
                        ),
@@ -260,8 +279,8 @@ result_server <- function(id, rv_file){
         rv_result$dt_detail_auto <- NULL
         rv_result$dt_detail_y <- NULL
         rv_result$dt_detail_mt <- NULL
-        rv_result$sn_v_select <- NULL
-        rv_result$sn_r_select <- NULL
+        rv_result$sn_v_select_detail <- NULL
+        rv_result$sn_r_select_detail <- NULL
         rv_result$family_member <- NULL
         rv_result$estimated_rel_select <- NULL
         rv_result$paternal_select <- NULL
@@ -269,6 +288,9 @@ result_server <- function(id, rv_file){
         rv_result$mismatch_mt <- NULL
         rv_result$share_range_mt <- NULL
         rv_result$share_length_mt <- NULL
+        rv_result$dt_other_cand <- NULL
+        rv_result$sn_v_select_other_cand <- NULL
+        rv_result$sn_r_select_other_cand <- NULL
 
         ########################
         # Display summary data #
@@ -466,8 +488,8 @@ result_server <- function(id, rv_file){
           }
         )
 
-        output$sn_v_select <- renderText({paste0(rv_result$sn_v_select)})
-        output$sn_r_select <- renderText({paste0(rv_result$sn_r_select)})
+        output$sn_v_select_detail <- renderText({paste0(rv_result$sn_v_select)})
+        output$sn_r_select_detail <- renderText({paste0(rv_result$sn_r_select)})
         output$family_member <- renderText({paste0(rv_result$family_member)})
         output$estimated_rel_select <- renderText({paste0(rv_result$estimated_rel_select)})
         output$paternal_select <- renderText({paste0(rv_result$paternal_select)})
@@ -484,6 +506,7 @@ result_server <- function(id, rv_file){
             disable("download_auto")
             disable("download_y")
             disable("download_mt")
+            disable("download_other_cand")
             rv_result$dt_detail_auto <- NULL
             rv_result$dt_detail_y <- NULL
             rv_result$dt_detail_mt <- NULL
@@ -496,6 +519,7 @@ result_server <- function(id, rv_file){
             rv_result$mismatch_mt <- NULL
             rv_result$share_range_mt <- NULL
             rv_result$share_length_mt <- NULL
+            rv_result$dt_other_cand <- NULL
           }else{
             dt_display <- rv_result$dt_display
             sn_v_select <- dt_display[pos_select, Victim]
@@ -571,8 +595,50 @@ result_server <- function(id, rv_file){
             rv_result$estimated_rel_select <- estimated_rel_select
             rv_result$paternal_select <- paternal_select
             rv_result$maternal_select <- maternal_select
+
+            # Other candidates
+            enable("download_other_cand")
+            rv_result$dt_other_cand <- extract_other_cand(dt_display, sn_v_select, sn_r_select)
           }
         }, ignoreInit = TRUE)
+
+        ############################
+        # Display other candidates #
+        ############################
+
+        output$sn_v_select_other_cand <- renderText({paste0(rv_result$sn_v_select)})
+        output$sn_r_select_other_cand <- renderText({paste0(rv_result$sn_r_select)})
+
+        output$dt_other_cand <- renderDataTable(server = FALSE, {
+          dt_other_cand <- rv_result$dt_other_cand
+
+          if(!is.null(dt_other_cand)){
+            datatable(
+              dt_other_cand,
+              colnames = c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage", "ColorBack", "ColorY", "ColorMt"),
+              filter = "top",
+              selection = "none",
+              options = list(iDisplayLength = 10, autoWidth = TRUE,
+                             columnDefs = list(list(targets = 4, searchable = FALSE), list(targets = 8:10, visible = FALSE))
+              ),
+              rownames = FALSE
+            ) %>%
+              formatSignif(columns = c("LR_Total"), digits = 3) %>%
+              formatStyle(columns = "ColorBack", target = "row", backgroundColor = styleEqual(c(0, 1, 2), c("#ffe0ef", "#e0ffe0", "#ffffe0")))
+          }
+        })
+
+        output$download_other_cand <- downloadHandler(
+          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_other_candidates.csv"),
+          content = function(file){
+            dt_download <- copy(rv_result$dt_other_cand)
+            dt_download[, ColorBack:=NULL]
+            dt_download[, ColorY:=NULL]
+            dt_download[, ColorMt:=NULL]
+            colnames(dt_download) <- c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Paternal lineage", "Maternal lineage")
+            write.csv(dt_download, file, row.names = FALSE)
+          }
+        )
 
         ###############################
         # Display analysis conditions #
