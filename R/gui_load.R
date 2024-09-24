@@ -226,11 +226,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
           bool_check_y <- all(!is.null(dt_v_y), !is.null(dt_r_y))
 
           if(bool_check_y){
-            tmp <- order_loci_y(dt_v_y, dt_r_y)
-            dt_v_y <- tmp[[1]]
-            dt_r_y <- tmp[[2]]
-
-            dt_result_y <- analyze_y(dt_v_y, dt_r_y, dt_criteria)
+            dt_result_y <- analyze_y(dt_v_y, dt_r_y, dt_criteria, dt_rel)
           }else{
             dt_result_y <- NULL
           }

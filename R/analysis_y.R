@@ -27,14 +27,31 @@ order_loci_y <- function(dt_v_y, dt_r_y){
   return(list(dt_v_y, dt_r_y))
 }
 
+#' judge_male_y
+#'
+#' @description The function to judge whether each individual is male or not based on the Y-STR profiles
+#' @param dt_y A data.table of the Y-STR profiles
+judge_male_y <- function(dt_y){
+  return(!apply(is.na(dt_y), 1, all)) # If at least one allele is detected, the individual is estimated to be male.
+}
+
 #' analyze_y
 #'
 #' @description The function to analyze data for Y-STR
 #' @param dt_v_y A data.table of victim profiles (Y-STR)
 #' @param dt_r_y A data.table of reference profiles (Y-STR)
 #' @param dt_criteria A data.table of criteria
+#' @param dt_rel A data.table of information on relationships
 #' @param show_progress Whether the progress is shown or not
-analyze_y <- function(dt_v_y, dt_r_y, dt_criteria, show_progress = TRUE){
+analyze_y <- function(dt_v_y, dt_r_y, dt_criteria, dt_rel, show_progress = TRUE){
+
+  #################################################
+  # Rearrange in order of loci for Y-STR database #
+  #################################################
+
+  tmp <- order_loci_y(dt_v_y, dt_r_y)
+  dt_v_y <- tmp[[1]]
+  dt_r_y <- tmp[[2]]
 
   #########################################
   # Prepare objects to analyze Y-STR data #
@@ -45,11 +62,9 @@ analyze_y <- function(dt_v_y, dt_r_y, dt_criteria, show_progress = TRUE){
 
   sn_v_y <- dt_v_y[, SampleName]
   hap_v_y <- as.matrix(dt_v_y)
-  hap_v_y <- hap_v_y[, which(is.element(names(dt_v_y), locus_y))]
 
   sn_r_y <- dt_r_y[, SampleName]
   hap_r_y <- as.matrix(dt_r_y)
-  hap_r_y <- hap_r_y[, which(is.element(names(dt_r_y), locus_y))]
 
   # The NA in genotypes is replaced to "" to deal with the C++ program
   hap_v_y[which(is.na(hap_v_y) == TRUE, arr.ind = TRUE)] <- ""
@@ -97,6 +112,25 @@ analyze_y <- function(dt_v_y, dt_r_y, dt_criteria, show_progress = TRUE){
   names(dt_right) <- c(paste0("Mismatch_", c(locus_y, "Total")), paste0("Ignore_", c(locus_y, "Total")), paste0("MuStep_", c(locus_y, "Total")))
   dt_result_y <- cbind(dt_left, dt_right)
 
+  ##############################
+  # Investigate sex mismatches #
+  ##############################
+
+  bool_male_v <- judge_male_y(dt_v_y)
+  sn_v_y_male <- sn_v_y[bool_male_v]
+  bool_male_r <- judge_male_y(dt_r_y)
+  sn_r_y_male <- sn_r_y[bool_male_r]
+
+  result_male_v <- is.element(result_sn_v_y, sn_v_y_male)
+  result_male_r <- is.element(result_sn_r_y, sn_r_y_male)
+
+  rel_female_v <- dt_rel$Relationship[dt_rel$Sex_Victim == "F"]
+  rel_female_r <- dt_rel$Relationship[dt_rel$Sex_Reference == "F"]
+
+  index_sex_mismatch_v <- intersect(which(is.element(result_assumed_rel, rel_female_v)), which(result_male_v))
+  index_sex_mismatch_r <- intersect(which(is.element(result_assumed_rel, rel_female_r)), which(result_male_r))
+  index_sex_mismatch <- sort(union(index_sex_mismatch_v, index_sex_mismatch_r))
+
   ###############################
   # Estimate paternal relatives #
   ###############################
@@ -114,6 +148,9 @@ analyze_y <- function(dt_v_y, dt_r_y, dt_criteria, show_progress = TRUE){
   bool_meet_criteria_y[, 4] <- dt_result_y[, "MuStep_Total"] %% 1 == 0
   pos_meet_criteria_y <- which(apply(bool_meet_criteria_y, 1, all))
   paternal_all[pos_meet_criteria_y] <- "Support"
+
+  # Add information on sex mismatches
+  paternal_all[index_sex_mismatch] <- "Sex mismatch"
 
   options(warn = -1)
   dt_result_y[, Paternal := paternal_all]

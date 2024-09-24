@@ -27,7 +27,7 @@ result_ui <- function(id){
                                            actionButton(ns("act_multiple"), label = "Inconclusive", class = "btn btn-warning"),
                                            br(),
                                            br(),
-                                           actionButton(ns("act_warning"), label = "Not support lineage", class = "btn btn-danger"),
+                                           actionButton(ns("act_warning"), label = "Excluded by Y-STR or mtDNA", class = "btn btn-danger"),
                                            br(),
                                            br(),
                                            uiOutput(ns("summary_min_lr")),
@@ -691,11 +691,11 @@ result_server <- function(id, rv_file){
         output$result_assumed_rel <- renderDataTable(server = FALSE, {
           datatable(
             dt_rel,
-            colnames = c("Relationship", "Pr (IBD = 2)", "Pr (IBD = 1)", "Pr (IBD = 0)", "Paternal lineage", "Maternal lineage",
+            colnames = c("Relationship", "Sex (Victim)", "Sex (Reference)", "Pr (IBD = 2)", "Pr (IBD = 1)", "Pr (IBD = 0)", "Paternal lineage", "Maternal lineage",
                          "Tree_persons", "Tree_sexes", "Tree_fathers", "Tree_mothers", "Tree_founders"),
             selection = list(mode = "single", target = "row"),
             options = list(iDisplayLength = 10, ordering = FALSE,
-                           columnDefs = list(list(targets = 6:10, visible = FALSE))
+                           columnDefs = list(list(targets = 8:12, visible = FALSE))
             ),
             rownames = FALSE
           )

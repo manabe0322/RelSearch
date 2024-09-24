@@ -112,7 +112,7 @@ create_combined_data <- function(dt_result_auto, dt_result_y, dt_result_mt, dt_r
   dt_combined$Reference <- factor(dt_combined$Reference, levels = sn_r, labels = sn_r)
   dt_combined$AssumedRel <- factor(dt_combined$AssumedRel, levels = names_rel, labels = names_rel)
   dt_combined$EstimatedRel <- factor(dt_combined$EstimatedRel, levels = names_rel, labels = names_rel)
-  dt_combined$Paternal <- factor(dt_combined$Paternal, levels = c("Support", "Not support"), labels = c("Support", "Not support"))
+  dt_combined$Paternal <- factor(dt_combined$Paternal, levels = c("Support", "Not support", "Sex mismatch"), labels = c("Support", "Not support", "Sex mismatch"))
   dt_combined$Maternal <- factor(dt_combined$Maternal, levels = c("Support", "Not support"), labels = c("Support", "Not support"))
 
   # Create the sign of the number of candidates

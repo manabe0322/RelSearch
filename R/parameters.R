@@ -38,7 +38,7 @@ create_dt_rel <- function(path_pack, init = TRUE){
   if(init && is.element("rel.csv", fn_par)){
     dt_rel <- fread(paste0(path_pack, "/extdata/parameters/rel.csv"))
 
-    col_char <- c("Relationship", "Paternal", "Maternal", "Tree_persons", "Tree_sexes", "Tree_fathers", "Tree_mothers", "Tree_founders")
+    col_char <- c("Relationship", "Sex_Victim", "Sex_Reference", "Paternal", "Maternal", "Tree_persons", "Tree_sexes", "Tree_fathers", "Tree_mothers", "Tree_founders")
     options(warn = -1)
     dt_rel[, (col_char) := lapply(.SD, as.character), .SDcols = col_char]
     options(warn = 0)
@@ -71,6 +71,28 @@ create_dt_rel <- function(path_pack, init = TRUE){
                    "Paternal-grandmother", "Paternal-grandmother", "Maternal-grandmother", "Maternal-grandmother")
 
     name <- mapply(paste, victim, reference, sep = "_")
+
+    sex_v <- c("M", "M", "F", "F", "M", "M", "F", "F",
+               "M", "M", "F", "F",
+               "M", "M", "M", "M",
+               "F", "F", "F", "F",
+               "M", "F", "M", "F",
+               "M", "F", "M", "F",
+               "M", "M", "M", "M",
+               "F", "F", "F", "F",
+               "M", "F", "M", "F",
+               "M", "F", "M", "F")
+
+    sex_r <- c("M", "F", "M", "F", "M", "F", "M", "F",
+               "M", "F", "M", "F",
+               "M", "F", "M", "F",
+               "M", "F", "M", "F",
+               "M", "M", "M", "M",
+               "F", "F", "F", "F",
+               "M", "F", "M", "F",
+               "M", "F", "M", "F",
+               "M", "M", "M", "M",
+               "F", "F", "F", "F")
 
     pibd2 <- c(0, 0, 0, 0, 0, 0, 0, 0,
                0.25, 0.25, 0.25, 0.25,
@@ -183,6 +205,7 @@ create_dt_rel <- function(path_pack, init = TRUE){
                        "No, Yes, Yes, No, Yes", "No, Yes, Yes, No, Yes", "No, Yes, Yes, No, Yes", "No, Yes, Yes, No, Yes")
 
     dt_rel <- data.table(Relationship = name,
+                         Sex_Victim = sex_v, Sex_Reference = sex_r,
                          Pr_IBD2 = pibd2, Pr_IBD1 = pibd1, Pr_IBD0 = pibd0,
                          Paternal = paternal, Maternal = maternal,
                          Tree_persons = tree_persons, Tree_sexes = tree_sexes, Tree_fathers = tree_fathers, Tree_mothers = tree_mothers, Tree_founders = tree_founders)
