@@ -106,22 +106,22 @@ result_ui <- function(id){
                                   )
                                 )
                        ),
-                       tabPanel("Other candidates",
+                       tabPanel("All candidates",
                                 br(),
                                 fluidRow(
                                   column(3,
                                          wellPanel(
                                            h4("Selected victim"),
-                                           textOutput(ns("sn_v_select_other_cand")),
+                                           textOutput(ns("sn_v_select_all_cand")),
                                            br(),
                                            h4("Selected reference"),
-                                           textOutput(ns("sn_r_select_other_cand"))
+                                           textOutput(ns("sn_r_select_all_cand"))
                                          ),
-                                         disabled(downloadButton(ns("download_other_cand"), "Download", class = "btn btn-primary btn-lg"))
+                                         disabled(downloadButton(ns("download_all_cand"), "Download", class = "btn btn-primary btn-lg"))
                                   ),
                                   column(9,
                                          br(),
-                                         dataTableOutput(ns("dt_other_cand"))
+                                         dataTableOutput(ns("dt_all_cand"))
                                   )
                                 )
                        ),
@@ -288,9 +288,9 @@ result_server <- function(id, rv_file){
         rv_result$mismatch_mt <- NULL
         rv_result$share_range_mt <- NULL
         rv_result$share_length_mt <- NULL
-        rv_result$dt_other_cand <- NULL
-        rv_result$sn_v_select_other_cand <- NULL
-        rv_result$sn_r_select_other_cand <- NULL
+        rv_result$dt_all_cand <- NULL
+        rv_result$sn_v_select_all_cand <- NULL
+        rv_result$sn_r_select_all_cand <- NULL
 
         ########################
         # Display summary data #
@@ -487,7 +487,7 @@ result_server <- function(id, rv_file){
             disable("download_auto")
             disable("download_y")
             disable("download_mt")
-            disable("download_other_cand")
+            disable("download_all_cand")
             rv_result$dt_detail_auto <- NULL
             rv_result$dt_detail_y <- NULL
             rv_result$dt_detail_mt <- NULL
@@ -500,7 +500,7 @@ result_server <- function(id, rv_file){
             rv_result$mismatch_mt <- NULL
             rv_result$share_range_mt <- NULL
             rv_result$share_length_mt <- NULL
-            rv_result$dt_other_cand <- NULL
+            rv_result$dt_all_cand <- NULL
           }else{
             dt_display <- rv_result$dt_display
             sn_v_select <- dt_display[pos_select, Victim]
@@ -578,8 +578,8 @@ result_server <- function(id, rv_file){
             rv_result$maternal_select <- maternal_select
 
             # Other candidates
-            enable("download_other_cand")
-            rv_result$dt_other_cand <- extract_other_cand(dt_display, sn_v_select, sn_r_select)
+            enable("download_all_cand")
+            rv_result$dt_all_cand <- extract_all_cand(dt_display, sn_v_select, sn_r_select)
           }
         }, ignoreInit = TRUE)
 
@@ -587,15 +587,15 @@ result_server <- function(id, rv_file){
         # Display other candidates #
         ############################
 
-        output$sn_v_select_other_cand <- renderText({paste0(rv_result$sn_v_select)})
-        output$sn_r_select_other_cand <- renderText({paste0(rv_result$sn_r_select)})
+        output$sn_v_select_all_cand <- renderText({paste0(rv_result$sn_v_select)})
+        output$sn_r_select_all_cand <- renderText({paste0(rv_result$sn_r_select)})
 
-        output$dt_other_cand <- renderDataTable(server = FALSE, {
-          dt_other_cand <- rv_result$dt_other_cand
+        output$dt_all_cand <- renderDataTable(server = FALSE, {
+          dt_all_cand <- rv_result$dt_all_cand
 
-          if(!is.null(dt_other_cand)){
+          if(!is.null(dt_all_cand)){
             datatable(
-              dt_other_cand,
+              dt_all_cand,
               colnames = c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Estimated sex (Victim)", "Estimated sex (Reference)", "Paternal lineage", "Maternal lineage", "ColorBack"),
               filter = "top",
               selection = "none",
@@ -609,10 +609,10 @@ result_server <- function(id, rv_file){
           }
         })
 
-        output$download_other_cand <- downloadHandler(
-          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_other_candidates.csv"),
+        output$download_all_cand <- downloadHandler(
+          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_all_candidates.csv"),
           content = function(file){
-            dt_download <- copy(rv_result$dt_other_cand)
+            dt_download <- copy(rv_result$dt_all_cand)
             dt_download[, ColorBack:=NULL]
             colnames(dt_download) <- c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Estimated sex (Victim)", "Estimated sex (Reference)", "Paternal lineage", "Maternal lineage")
             write.csv(dt_download, file, row.names = FALSE)
