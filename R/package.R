@@ -7,7 +7,6 @@
 #' @importFrom pedtools ped
 #' @importFrom Rcpp sourceCpp
 #' @importFrom ribd coeffTable
-#' @import rmarkdown
 #' @importFrom shinyFeedback showFeedbackDanger hideFeedback useShinyFeedback
 #' @importFrom shinyjs disable disabled enable refresh useShinyjs
 #' @importFrom shinythemes shinytheme

@@ -12,16 +12,21 @@ output:
 urlcolor: blue
 documentclass: report
 fontsize: 12pt
-geometry: margin = 1in
+geometry: margin=1in
 header-includes:
   - \usepackage{indentfirst}
-  - \parindent = 1em
+  - \usepackage{fontspec}
+  - \setmainfont{Segoe UI}
+  - \usepackage{fvextra}
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+  - \parindent=1em
 bibliography: RelSearch_references.bib
 csl: forensic-science-international-genetics.csl
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(tidy = TRUE, tidy.opts = list(width.cutoff = 60))
+#knitr::opts_chunk$set(tidy = TRUE, tidy.opts = list(width.cutoff = 60))
+
 library(knitr)
 library(kableExtra)
 ```
@@ -38,21 +43,16 @@ library(kableExtra)
 
 &nbsp;
 
-```{r eval = FALSE}
-install.packages(c("shiny", "data.table", "dplyr", "DT", "magrittr", "pedtools", "Rcpp", "ribd", "rmarkdown", "shinyFeedback", "shinyjs", "shinythemes", "waiter"))
+```{r, eval = FALSE}
+install.packages('https://github.com/manabe0322/RelSearch/releases/download/ v1.0.0/RelSearch_1.0.0.zip', repos = NULL, type = 'win.binary')
+install.packages(c("shiny", "data.table", "dplyr", "DT", "magrittr", "pedtools", "Rcpp", "ribd", "shinyFeedback", "shinyjs", "shinythemes", "waiter"))
 ```
-
-&nbsp;
-
-4. Download ”RelSearch_1.0.0.zip” from the [GitHub repository page](https://github.com/manabe0322/RelSearch/releases).
-
-5. Install ”RelSearch_1.0.0.zip” from ”Install package(s) from local files...”.
 
 \newpage
 
 # Quick guide
 
-1. Execute the following commands in R to start GUI.
+1. Execute the following commands in R to open RelSearch.
 
 &nbsp;
 
@@ -135,16 +135,15 @@ kable(df_v_auto_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>
 
 ```{r, echo = FALSE}
 df_r_auto_ex <- data.frame(SampleName = c("Reference1", "Reference2", "Reference3", "Reference3", "Reference4", "Reference5"), 
+                           Family = c("Family 1", "Family 2", "Family 3", "Family 3", "Family 4", "Family 4"), 
                            Relationship = c("Father_Son", "Brother_Brother", "Brother_Brother", "Father_Son", "Brother_Brother", "Uncle_Nephew"),
                            D3S1358 = c("17", "16", "16", "16", "15", "15"), 
                            D3S1358 = c("17", "17", "17", "17", "16", "15"), 
                            vWA = c("14", "17", "14", "14", "17", "14"), 
                            vWA = c("17", "17", "18", "18", "", "16"), 
-                           D16S539 = c("10", "10", "9", "9", "9", "10"), 
-                           D16S539 = c("10", "12", "9", "9", "12", "11"), 
-                           CSF1PO = c("12", "13", "12", "12", "11", ""), 
-                           CSF1PO = c("12", "13", "15", "15", "12", ""))
-names(df_r_auto_ex) <- c("SampleName", "Relationship", "D3S1358", "D3S1358", "vWA", "vWA", "D16S539", "D16S539", "CSF1PO", "CSF1PO")
+                           D16S539 = c("10", "10", "9", "9", "9", ""), 
+                           D16S539 = c("10", "12", "9", "9", "12", ""))
+names(df_r_auto_ex) <- c("SampleName", "Family", "Relationship", "D3S1358", "D3S1358", "vWA", "vWA", "D16S539", "D16S539")
 
 kable(df_r_auto_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
   kable_styling(latex_options = "HOLD_position", font_size = 10)
@@ -154,13 +153,13 @@ kable(df_r_auto_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>
 
 - File type: .csv
 
-- This file requires the columns "SampleName", "Relationship", and columns for each marker (two columns in each).
+- This file requires the columns "SampleName", "Family", "Relationship", and columns for each marker (two columns in each).
 
 - The names of the relationship need to be pre-defined in **Settings** $\blacktriangleright$ **Relationships** (see section [Setting](#sec_setting_rel)).
 
 - If a reference has multiple missing family members, add rows for each relationship of the members (e.g., Brother_Brother and Father_Son of the sample "Reference3" in the above table).
 
-- The marker with two empty cells (e.g., CSF1PO of the sample "Reference5" in the above table) is ignored when calculating the likelihood ratio.
+- The marker with two empty cells (e.g., D16S539 of the sample "Reference5" in the above table) is ignored when calculating the likelihood ratio.
 
 - The marker with one empty cell (e.g., vWA of the sample "Reference4" in the above table) can be regarded as both homozygote (i.e., no drop-out) and heterozygote with drop-out of one allele when calculating the likelihood ratio.
 
@@ -218,6 +217,7 @@ kable(df_v_y_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
 
 ```{r, echo = FALSE}
 df_v_y_ex <- data.frame(SampleName = c("Reference1", "Reference2", "Reference3", "Reference3", "Reference4", "Reference5"), 
+                        Family = c("Family 1", "Family 2", "Family 3", "Family 3", "Family 4", "Family 4"), 
                         Relationship = c("Father_Son", "Brother_Brother", "Brother_Brother", "Father_Son", "Brother_Brother", "Uncle_Nephew"), 
                         DYS392 = c("13", "11", "11", "11", "11", "14"), 
                         DYS518 = c("38", "37", "38", "38", "38", ""), 
@@ -233,7 +233,7 @@ kable(df_v_y_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
 
 - File type: .csv
 
-- This file requires the column "SampleName", "Relationship", and columns for each marker (one column in each).
+- This file requires the column "SampleName", "Family", "Relationship", and columns for each marker (one column in each).
 
 - The names of the relationship need to be pre-defined in **Settings** $\blacktriangleright$ **Relationships** (see section [Setting](#sec_setting_rel)).
 
@@ -278,6 +278,7 @@ kable(df_v_mt_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
 
 ```{r, echo = FALSE}
 df_r_mt_ex <- data.frame(SampleName = c("Reference1", "Reference2", "Reference3", "Reference3", "Reference4", "Reference5"), 
+                         Family = c("Family 1", "Family 2", "Family 3", "Family 3", "Family 4", "Family 4"), 
                          Relationship = c("Mother_Daughter", "Mother_Daughter", "Brother_Brother", "Father_Son", "Sister_Sister", "Aunt_Niece"), 
                          Range = c("73-340 16024-16365", "73-340 16024-16365", "73-340 16024-16365", "73-340 16024-16365", "73-340 16024-16365", ""), 
                          Haplotype = c("16223T 16319A 16362C 73G 152C 263G 309.1C 315.1C", 
@@ -295,7 +296,7 @@ kable(df_r_mt_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
 
 - File type: .csv
 
-- This file requires the column "SampleName", "Relationship", "Range", and "Haplotype".
+- This file requires the column "SampleName", "Family", "Relationship", "Range", and "Haplotype".
 
 - The names of the relationship need to be pre-defined in **Settings** $\blacktriangleright$ **Relationships** (see section [Setting](#sec_setting_rel)).
 
@@ -331,7 +332,7 @@ You can set the following criteria to support the assumed relationship. Press th
 
 - Maximum number of inconsistency: The upper limit of inconcistency between victim and reference profiles to support maternal lineage.
 
-&nbsp;
+\newpage
 
 ## Relationship {#sec_setting_rel}
 
@@ -396,6 +397,8 @@ If you want to return to default settings, press the **Reset** button. In the po
 ### Family tree
 
 You can check the family tree of each defined relationship. Select a row from the relationship table and press the **Family tree** button.
+
+\newpage
 
 ## Mutation rate {#sec_setting_myu}
 
