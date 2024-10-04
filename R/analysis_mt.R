@@ -21,6 +21,9 @@ analyze_mt <- function(dt_v_mt, dt_r_mt, dt_criteria, show_progress = TRUE){
   hap_r_mt <- strsplit(dt_r_mt[, Haplotype], " ")
   hap_r_mt <- lapply(hap_r_mt, setdiff, "")
 
+  # Number of pairs
+  n_pair <- length(sn_v_mt) * length(sn_r_mt)
+
   ##########################
   # Analyze data for mtDNA #
   ##########################
@@ -31,10 +34,9 @@ analyze_mt <- function(dt_v_mt, dt_r_mt, dt_criteria, show_progress = TRUE){
         result_mt <- match_mt_all(hap_v_mt, hap_r_mt, range_v_mt, range_r_mt),
         message = function(m) if(grepl("mtDNA_Victim-Reference_ : ", m$message)){
           val <- as.numeric(gsub("mtDNA_Victim-Reference_ : ", "", m$message))
-          setProgress(value = val)
+          setProgress(value = val, message = paste0(round(100 * val / n_pair, 0), "% done"))
         }
       ),
-      message = "Analyzing mtDNA data...",
       max = length(sn_v_mt) * length(sn_r_mt),
       value = 0
     )

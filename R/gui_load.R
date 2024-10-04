@@ -60,6 +60,10 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
       rv_file$dt_data_manage <- NULL
       rv_file$data_list <- NULL
 
+      waiter_ui <- Waiter$new(html = tagList(spin_3k(),
+                                             h3("Initialising")),
+                              color = transparent(.5))
+
       observe({
         req(rv_criteria)
         rv_file$dt_criteria <- data.table(Criteria = c("min_lr_auto", "max_mismatch_y", "max_ignore_y", "max_mustep_y", "max_mismatch_mt", "min_share_mt"),
@@ -196,7 +200,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
           showModal(modalDialog(title = "Error", HTML(error_message), easyClose = TRUE, footer = NULL))
         }else{
           start_time <- proc.time()
-          waiter_show(html = spin_3k(), color = "white")
+          waiter_ui$show()
 
           ##############################
           # Analysis for autosomal STR #
@@ -205,6 +209,9 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
           bool_check_auto <- all(!is.null(dt_v_auto), !is.null(dt_r_auto), !is.null(dt_af))
 
           if(bool_check_auto){
+            waiter_ui$update(html = tagList(spin_3k(),
+                                            h3("Analyzing autosomal STR profiles...")))
+
             tmp <- order_loci_auto(dt_v_auto, dt_r_auto, dt_af)
             dt_v_auto <- tmp[[1]]
             dt_r_auto <- tmp[[2]]
@@ -227,6 +234,9 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
           bool_check_y <- all(!is.null(dt_v_y), !is.null(dt_r_y))
 
           if(bool_check_y){
+            waiter_ui$update(html = tagList(spin_3k(),
+                                            h3("Analyzing Y-STR profiles...")))
+
             tmp <- analyze_y(dt_v_y, dt_r_y, dt_criteria, dt_rel)
             dt_result_y <- tmp$dt_result_y
             sn_v_y_male <- tmp$sn_v_y_male
@@ -244,6 +254,8 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
           bool_check_mt <- all(!is.null(dt_v_mt), !is.null(dt_r_mt))
 
           if(bool_check_mt){
+            waiter_ui$update(html = tagList(spin_3k(),
+                                            h3("Analyzing mtDNA profiles...")))
             dt_result_mt <- analyze_mt(dt_v_mt, dt_r_mt, dt_criteria)
           }else{
             dt_result_mt <- NULL
@@ -259,6 +271,8 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
           # Create the combined data #
           ############################
 
+          waiter_ui$update(html = tagList(spin_3k(),
+                                          h3("Preparing analysis results...")))
           dt_combined <- create_combined_data(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_y_male, dt_result_mt, dt_rel, dt_data_manage)
 
           #############################
@@ -320,7 +334,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
           cat(paste0("\n", "Calculation time : ", run_time[3], " sec", "\n"))
           #disable(selector = '.navbar-nav a[data-value = "Settings"]')
           updateNavbarPage(session = session_top, "navbar", selected = "Result")
-          waiter_hide()
+          waiter_ui$hide()
 
           # Show a message for displayed data
           if(nrow(dt_display) == max_data_displayed){

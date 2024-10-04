@@ -213,6 +213,9 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
   sn_v_auto <- dt_v_auto[, SampleName]
   sn_r_auto <- dt_r_auto[, SampleName]
 
+  # Number of pairs
+  n_pair <- length(sn_v_auto) * length(sn_r_auto)
+
   # Genotypes
   options(warn = -1)
   gt_v_auto <- as.matrix(dt_v_auto[, -c("SampleName", "Family", "Relationship")])
@@ -293,10 +296,9 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
                                        bool_pc_all, bool_parent_victim_all, bool_parent_male_all),
         message = function(m) if(grepl("STR_Victim-Reference_ : ", m$message)){
           val <- as.numeric(gsub("STR_Victim-Reference_ : ", "", m$message))
-          setProgress(value = val)
+          setProgress(value = val, message = paste0(round(100 * val / n_pair, 0), "% done"))
         }
       ),
-      message = "Analyzing STR data...",
       max = length(sn_v_auto) * length(sn_r_auto),
       value = 0
     )

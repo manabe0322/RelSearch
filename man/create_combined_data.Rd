@@ -7,6 +7,8 @@
 create_combined_data(
   dt_result_auto,
   dt_result_y,
+  sn_v_y_male,
+  sn_r_y_male,
   dt_result_mt,
   dt_rel,
   dt_data_manage
@@ -16,6 +18,10 @@ create_combined_data(
 \item{dt_result_auto}{A data.table of the result for the autosomal STR}
 
 \item{dt_result_y}{A data.table of the result for the Y-STR}
+
+\item{sn_v_y_male}{A character vector of the victim names who are estimated to be male}
+
+\item{sn_r_y_male}{A character vector of the reference names who are estimated to be male}
 
 \item{dt_result_mt}{A data.table of the result for the mtDNA}
 

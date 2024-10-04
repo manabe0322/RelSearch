@@ -69,6 +69,9 @@ analyze_y <- function(dt_v_y, dt_r_y, dt_criteria, dt_rel, show_progress = TRUE)
   hap_r_y <- as.matrix(dt_r_y)
   hap_r_y <- hap_r_y[, which(is.element(names(dt_r_y), locus_y))]
 
+  # Number of pairs
+  n_pair <- length(sn_v_y) * length(sn_r_y)
+
   # The NA in genotypes is replaced to "" to deal with the C++ program
   hap_v_y[which(is.na(hap_v_y) == TRUE, arr.ind = TRUE)] <- ""
   hap_r_y[which(is.na(hap_r_y) == TRUE, arr.ind = TRUE)] <- ""
@@ -87,10 +90,9 @@ analyze_y <- function(dt_v_y, dt_r_y, dt_criteria, dt_rel, show_progress = TRUE)
         result_y <- match_y_all(hap_v_y, hap_r_y),
         message = function(m) if(grepl("Y-STR_Victim-Reference_ : ", m$message)){
           val <- as.numeric(gsub("Y-STR_Victim-Reference_ : ", "", m$message))
-          setProgress(value = val)
+          setProgress(value = val, message = paste0(round(100 * val / n_pair, 0), "% done"))
         }
       ),
-      message = "Analyzing Y-STR data...",
       max = length(sn_v_y) * length(sn_r_y),
       value = 0
     )
