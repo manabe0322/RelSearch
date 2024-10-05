@@ -13,7 +13,14 @@ check_error(
   dt_v_mt,
   dt_r_mt,
   dt_rel,
-  dt_myu
+  dt_myu,
+  bool_load_v_auto,
+  bool_load_r_auto,
+  bool_load_af,
+  bool_load_v_y,
+  bool_load_r_y,
+  bool_load_v_mt,
+  bool_load_r_mt
 )
 }
 \arguments{
@@ -34,6 +41,20 @@ check_error(
 \item{dt_rel}{A data.table of information on relationships}
 
 \item{dt_myu}{A data.table of mutation rates}
+
+\item{bool_load_v_auto}{Whether autosomal STR database for victims has been loaded or not}
+
+\item{bool_load_r_auto}{Whether autosomal STR database for references has been loaded or not}
+
+\item{bool_load_af}{Whether allele frequency database has been loaded or not}
+
+\item{bool_load_v_y}{Whether Y-STR database for victims has been loaded or not}
+
+\item{bool_load_r_y}{Whether Y-STR database for references has been loaded or not}
+
+\item{bool_load_v_mt}{Whether mtDNA database for victims has been loaded or not}
+
+\item{bool_load_r_mt}{Whether mtDNA database for references has been loaded or not}
 }
 \description{
 The function to check loaded data

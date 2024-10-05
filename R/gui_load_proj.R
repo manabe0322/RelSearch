@@ -27,6 +27,10 @@ load_proj_server <- function(id, session_top, rv_data_manage){
       rv_load_proj$data_list <- NULL
       rv_load_proj$max_data_displayed <- NULL
 
+      waiter_ui <- Waiter$new(html = tagList(spin_3k(),
+                                             h3("Loading...")),
+                              color = transparent(.5))
+
       observe({
         req(rv_data_manage)
         rv_load_proj$max_data_displayed <- rv_data_manage$max_data_displayed
@@ -46,11 +50,11 @@ load_proj_server <- function(id, session_top, rv_data_manage){
         if(is.null(proj)){
           showModal(modalDialog(title = "Error", "Select a project file!", easyClose = TRUE, footer = NULL))
         }else{
-          waiter_show(html = spin_3k(), color = "white")
+          waiter_ui$show()
           load(input$file_proj$datapath)
           rv_load_proj$data_list <- data_list
           updateNavbarPage(session = session_top, "navbar", selected = "Result")
-          waiter_hide()
+          waiter_ui$hide()
 
           # Show a message for displayed data
           max_data_displayed <- rv_load_proj$max_data_displayed

@@ -25,6 +25,10 @@ save_proj_server <- function(id, rv_file){
     function(input, output, session){
       data_list <- rv_file$data_list
 
+      waiter_ui <- Waiter$new(html = tagList(spin_3k(),
+                                             h3("Preparing...")),
+                              color = transparent(.5))
+
       if(is.null(data_list)){
         disable("name_proj")
         disable("download_proj")
@@ -42,9 +46,9 @@ save_proj_server <- function(id, rv_file){
           },
 
           content = function(file){
-            waiter_show(html = spin_3k(), color = "white")
+            waiter_ui$show()
             save(list = c("data_list"), file = file)
-            waiter_hide()
+            waiter_ui$hide()
           }
         )
       }

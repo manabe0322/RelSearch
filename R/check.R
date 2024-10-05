@@ -10,10 +10,20 @@
 #' @param dt_r_mt A data.table of reference profiles (mtDNA)
 #' @param dt_rel A data.table of information on relationships
 #' @param dt_myu A data.table of mutation rates
+#' @param bool_load_v_auto Whether autosomal STR database for victims has been loaded or not
+#' @param bool_load_r_auto Whether autosomal STR database for references has been loaded or not
+#' @param bool_load_af Whether allele frequency database has been loaded or not
+#' @param bool_load_v_y Whether Y-STR database for victims has been loaded or not
+#' @param bool_load_r_y Whether Y-STR database for references has been loaded or not
+#' @param bool_load_v_mt Whether mtDNA database for victims has been loaded or not
+#' @param bool_load_r_mt Whether mtDNA database for references has been loaded or not
 check_error <- function(dt_v_auto, dt_r_auto, dt_af,
                         dt_v_y, dt_r_y,
                         dt_v_mt, dt_r_mt,
-                        dt_rel, dt_myu){
+                        dt_rel, dt_myu,
+                        bool_load_v_auto, bool_load_r_auto, bool_load_af,
+                        bool_load_v_y, bool_load_r_y,
+                        bool_load_v_mt, bool_load_r_mt){
   error_message <- ""
   rel_defined <- dt_rel$Relationship
   rel_undefined <- character(0)
@@ -22,9 +32,9 @@ check_error <- function(dt_v_auto, dt_r_auto, dt_af,
   # check whether all required data is loaded or not #
   ####################################################
 
-  bool_check_auto <- all(!is.null(dt_v_auto), !is.null(dt_r_auto), !is.null(dt_af))
-  bool_check_y <- all(!is.null(dt_v_y), !is.null(dt_r_y))
-  bool_check_mt <- all(!is.null(dt_v_mt), !is.null(dt_r_mt))
+  bool_check_auto <- all(bool_load_v_auto, bool_load_r_auto, bool_load_af)
+  bool_check_y <- all(bool_load_v_y, bool_load_r_y)
+  bool_check_mt <- all(bool_load_v_mt, bool_load_r_mt)
 
   if(!any(c(bool_check_auto, bool_check_y, bool_check_mt))){
     error_message <- "Load required file(s)!"

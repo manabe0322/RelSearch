@@ -88,7 +88,7 @@ RelSearch <- function(){
         rv_file$dt_r_auto <- data_list$dt_r_auto
         rv_file$dt_af <- data_list$dt_af
         rv_file$dt_v_y <- data_list$dt_v_y
-        rv_file$dt_v_y <- data_list$dt_v_y
+        rv_file$dt_r_y <- data_list$dt_r_y
         rv_file$dt_v_mt <- data_list$dt_v_mt
         rv_file$dt_r_mt <- data_list$dt_r_mt
         rv_file$dt_criteria <- data_list$dt_criteria
@@ -96,6 +96,13 @@ RelSearch <- function(){
         rv_file$dt_myu <- data_list$dt_myu
         rv_file$dt_data_manage <- data_list$dt_data_manage
         rv_file$data_list <- data_list
+        rv_file$bool_load_v_auto <- FALSE
+        rv_file$bool_load_r_auto <- FALSE
+        rv_file$bool_load_af <- FALSE
+        rv_file$bool_load_v_y <- FALSE
+        rv_file$bool_load_r_y <- FALSE
+        rv_file$bool_load_v_mt <- FALSE
+        rv_file$bool_load_r_mt <- FALSE
       }
     })
   }
