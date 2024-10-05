@@ -496,7 +496,7 @@ create_dt_data_manage <- function(path_pack, init = TRUE){
     options(warn = 0)
   }else{
     dt_data_manage <- data.table(Parameter = c("keep_min_lr", "max_data_displayed"),
-                               Value = c(1, 100))
+                               Value = c(1, 10000))
     write.csv(dt_data_manage, paste0(path_pack, "/extdata/parameters/data_manage.csv"), row.names = FALSE)
   }
 
