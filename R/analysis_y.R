@@ -135,14 +135,13 @@ analyze_y <- function(dt_v_y, dt_r_y, dt_criteria, dt_rel, show_progress = TRUE)
   ###############################
 
   max_mismatch_y <- dt_criteria$Value[dt_criteria$Criteria == "max_mismatch_y"]
-  max_ignore_y <- dt_criteria$Value[dt_criteria$Criteria == "max_ignore_y"]
   max_mustep_y <- dt_criteria$Value[dt_criteria$Criteria == "max_mustep_y"]
 
   n_data <- nrow(dt_result_y)
   paternal_all <- rep("Not support", n_data)
   bool_meet_criteria_y <- matrix(FALSE, n_data, 4)
   bool_meet_criteria_y[, 1] <- dt_result_y[, "Mismatch_Total"] <= max_mismatch_y
-  bool_meet_criteria_y[, 2] <- dt_result_y[, "Ignore_Total"] <= max_ignore_y
+  bool_meet_criteria_y[, 2] <- TRUE # Old version: dt_result_y[, "Ignore_Total"] <= max_ignore_y
   bool_meet_criteria_y[, 3] <- dt_result_y[, "MuStep_Total"] <= max_mustep_y
   bool_meet_criteria_y[, 4] <- dt_result_y[, "MuStep_Total"] %% 1 == 0
   pos_meet_criteria_y <- which(apply(bool_meet_criteria_y, 1, all))

@@ -191,9 +191,6 @@ result_ui <- function(id){
                                                     h5(div("Maximum number of mismatched loci", style = "color:#555555;font-weight:bold;")),
                                                     textOutput(ns("result_max_mismatch_y")),
                                                     br(),
-#                                                    h5(div("Maximum number of ignored loci", style = "color:#555555;font-weight:bold;")),
-#                                                    textOutput(ns("result_max_ignore_y")),
-#                                                    br(),
                                                     h5(div("Maximum total mutational steps", style = "color:#555555;font-weight:bold;")),
                                                     textOutput(ns("result_max_mustep_y"))
                                              ),
@@ -201,10 +198,7 @@ result_ui <- function(id){
                                                     h4("mtDNA"),
                                                     br(),
                                                     h5(div("Maximum number of inconsistency", style = "color:#555555;font-weight:bold;")),
-                                                    textOutput(ns("result_max_mismatch_mt")) #,
-#                                                    br(),
-#                                                    h5(div("Minimum shared length", style = "color:#555555;font-weight:bold;")),
-#                                                    textOutput(ns("result_min_share_mt"))
+                                                    textOutput(ns("result_max_mismatch_mt"))
                                              )
                                            )
                                   ),
@@ -654,18 +648,12 @@ result_server <- function(id, rv_file){
         output$result_max_mismatch_y <- renderText({
           paste0(dt_criteria$Value[dt_criteria$Criteria == "max_mismatch_y"])
         })
-#        output$result_max_ignore_y <- renderText({
-#          paste0(dt_criteria$Value[dt_criteria$Criteria == "max_ignore_y"])
-#        })
         output$result_max_mustep_y <- renderText({
           paste0(dt_criteria$Value[dt_criteria$Criteria == "max_mustep_y"])
         })
         output$result_max_mismatch_mt <- renderText({
           paste0(dt_criteria$Value[dt_criteria$Criteria == "max_mismatch_mt"])
         })
-#        output$result_min_share_mt <- renderText({
-#          paste0(dt_criteria$Value[dt_criteria$Criteria == "min_share_mt"])
-#        })
 
         output$result_assumed_rel <- renderDataTable(server = FALSE, {
           datatable(

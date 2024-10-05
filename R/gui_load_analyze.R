@@ -73,8 +73,8 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
 
       observe({
         req(rv_criteria)
-        rv_file$dt_criteria <- data.table(Criteria = c("min_lr_auto", "max_mismatch_y", "max_ignore_y", "max_mustep_y", "max_mismatch_mt", "min_share_mt"),
-                                          Value = c(rv_criteria$min_lr_auto, rv_criteria$max_mismatch_y, rv_criteria$max_ignore_y, rv_criteria$max_mustep_y, rv_criteria$max_mismatch_mt, rv_criteria$min_share_mt))
+        rv_file$dt_criteria <- data.table(Criteria = c("min_lr_auto", "max_mismatch_y", "max_mustep_y", "max_mismatch_mt"),
+                                          Value = c(rv_criteria$min_lr_auto, rv_criteria$max_mismatch_y, rv_criteria$max_mustep_y, rv_criteria$max_mismatch_mt))
       })
 
       observe({
