@@ -93,7 +93,8 @@ analyze_y <- function(dt_v_y, dt_r_y, dt_criteria, dt_rel, show_progress = TRUE)
           setProgress(value = val, message = paste0(round(100 * val / n_pair, 0), "% done"))
         }
       ),
-      max = length(sn_v_y) * length(sn_r_y),
+      message = "0% done",
+      max = n_pair,
       value = 0
     )
   }else{

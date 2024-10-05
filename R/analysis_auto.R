@@ -299,7 +299,8 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
           setProgress(value = val, message = paste0(round(100 * val / n_pair, 0), "% done"))
         }
       ),
-      max = length(sn_v_auto) * length(sn_r_auto),
+      message = "0% done",
+      max = n_pair,
       value = 0
     )
   }else{

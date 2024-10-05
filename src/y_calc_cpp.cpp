@@ -197,8 +197,8 @@ std::vector<std::vector<std::vector<int>>> match_y_all(std::vector<std::vector<s
 
   std::vector<std::vector<std::vector<int>>> result_y(n_vr, std::vector<std::vector<int>>(3, std::vector<int>(n_l + 1)));
 
-  int counter_base = n_vr * 0.001;
-  int counter = counter_base;
+  double counter_base = n_vr * 0.01;
+  double counter = counter_base;
 
   for(int i = 0; i < n_r; ++i){
     std::vector<std::string> prof_ref = hap_r_y.at(i);

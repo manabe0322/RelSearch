@@ -533,8 +533,8 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
 
   std::vector<std::vector<std::vector<double>>> result_auto(n_vr, std::vector<std::vector<double>>(3, std::vector<double>(n_l + 1)));
 
-  int counter_base = n_vr * 0.001;
-  int counter = counter_base;
+  double counter_base = n_vr * 0.01;
+  double counter = counter_base;
 
   for(int i = 0; i < n_r; ++i){
     std::string assumed_rel = assumed_rel_all[i];

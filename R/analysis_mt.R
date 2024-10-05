@@ -37,7 +37,8 @@ analyze_mt <- function(dt_v_mt, dt_r_mt, dt_criteria, show_progress = TRUE){
           setProgress(value = val, message = paste0(round(100 * val / n_pair, 0), "% done"))
         }
       ),
-      max = length(sn_v_mt) * length(sn_r_mt),
+      message = "0% done",
+      max = n_pair,
       value = 0
     )
   }else{

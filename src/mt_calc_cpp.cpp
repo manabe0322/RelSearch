@@ -179,8 +179,8 @@ std::vector<std::vector<std::string>> match_mt_all(std::vector<std::vector<std::
 
   std::vector<std::vector<std::string>> result_mt(std::vector<std::vector<std::string>>(n_vr, std::vector<std::string>(3)));
 
-  int counter_base = n_vr * 0.001;
-  int counter = counter_base;
+  double counter_base = n_vr * 0.01;
+  double counter = counter_base;
 
   for(int i = 0; i < n_r; ++i){
     std::vector<std::string> prof_ref = hap_r_mt.at(i);
