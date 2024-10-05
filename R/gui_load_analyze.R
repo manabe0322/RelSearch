@@ -59,6 +59,13 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
       rv_file$dt_myu <- NULL
       rv_file$dt_data_manage <- NULL
       rv_file$data_list <- NULL
+      rv_file$bool_load_v_auto <- FALSE
+      rv_file$bool_load_r_auto <- FALSE
+      rv_file$bool_load_af <- FALSE
+      rv_file$bool_load_v_y <- FALSE
+      rv_file$bool_load_r_y <- FALSE
+      rv_file$bool_load_v_mt <- FALSE
+      rv_file$bool_load_r_mt <- FALSE
 
       waiter_ui <- Waiter$new(html = tagList(spin_3k(),
                                              h3("Initialising")),
@@ -110,6 +117,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
           dt <- fread(file_input$datapath)
           dt <- change_data_type_auto(dt)
           rv_file$dt_v_auto <- dt
+          rv_file$bool_load_v_auto <- TRUE
         }
       })
 
@@ -119,6 +127,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
           dt <- fread(file_input$datapath)
           dt <- change_data_type_auto(dt)
           rv_file$dt_r_auto <- dt
+          rv_file$bool_load_r_auto <- TRUE
         }
       })
 
@@ -128,6 +137,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
           dt <- fread(file_input$datapath)
           dt <- change_data_type_af(dt)
           rv_file$dt_af <- dt
+          rv_file$bool_load_af <- TRUE
         }
       })
 
@@ -137,6 +147,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
           dt <- fread(file_input$datapath)
           dt <- change_data_type_y(dt)
           rv_file$dt_v_y <- dt
+          rv_file$bool_load_v_y <- TRUE
         }
       })
 
@@ -146,6 +157,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
           dt <- fread(file_input$datapath)
           dt <- change_data_type_y(dt)
           rv_file$dt_r_y <- dt
+          rv_file$bool_load_r_y <- TRUE
         }
       })
 
@@ -155,6 +167,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
           dt <- fread(file_input$datapath)
           dt <- change_data_type_mt(dt)
           rv_file$dt_v_mt <- dt
+          rv_file$bool_load_v_mt <- TRUE
         }
       })
 
@@ -164,6 +177,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
           dt <- fread(file_input$datapath)
           dt <- change_data_type_mt(dt)
           rv_file$dt_r_mt <- dt
+          rv_file$bool_load_r_mt <- TRUE
         }
       })
 
@@ -184,6 +198,13 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
         dt_rel <- rv_file$dt_rel
         dt_myu <- rv_file$dt_myu
         dt_data_manage <- rv_file$dt_data_manage
+        bool_load_v_auto <- rv_file$bool_load_v_auto
+        bool_load_r_auto <- rv_file$bool_load_r_auto
+        bool_load_af <- rv_file$bool_load_af
+        bool_load_v_y <- rv_file$bool_load_v_y
+        bool_load_r_y <- rv_file$bool_load_r_y
+        bool_load_v_mt <- rv_file$bool_load_v_mt
+        bool_load_r_mt <- rv_file$bool_load_r_mt
 
         # Fix file names of each database
         fn_v_auto <- input$file_v_auto$name
@@ -195,7 +216,10 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
         fn_r_mt <- input$file_r_mt$name
 
         # Check data.table
-        error_message <- check_error(dt_v_auto, dt_r_auto, dt_af, dt_v_y, dt_r_y, dt_v_mt, dt_r_mt, dt_rel, dt_myu)
+        error_message <- check_error(dt_v_auto, dt_r_auto, dt_af, dt_v_y, dt_r_y, dt_v_mt, dt_r_mt, dt_rel, dt_myu,
+                                     bool_load_v_auto, bool_load_r_auto, bool_load_af,
+                                     bool_load_v_y, bool_load_r_y,
+                                     bool_load_v_mt, bool_load_r_mt)
         if(error_message != ""){
           showModal(modalDialog(title = "Error", HTML(error_message), easyClose = TRUE, footer = NULL))
         }else{
@@ -206,7 +230,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
           # Analysis for autosomal STR #
           ##############################
 
-          bool_check_auto <- all(!is.null(dt_v_auto), !is.null(dt_r_auto), !is.null(dt_af))
+          bool_check_auto <- all(bool_load_v_auto, bool_load_r_auto, bool_load_af)
 
           if(bool_check_auto){
             waiter_ui$update(html = tagList(spin_3k(),
@@ -231,7 +255,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
           # Analysis for Y-STR #
           ######################
 
-          bool_check_y <- all(!is.null(dt_v_y), !is.null(dt_r_y))
+          bool_check_y <- all(bool_load_v_y, bool_load_r_y)
 
           if(bool_check_y){
             waiter_ui$update(html = tagList(spin_3k(),
@@ -251,7 +275,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
           # Analysis for mtDNA #
           ######################
 
-          bool_check_mt <- all(!is.null(dt_v_mt), !is.null(dt_r_mt))
+          bool_check_mt <- all(bool_load_v_mt, bool_load_r_mt)
 
           if(bool_check_mt){
             waiter_ui$update(html = tagList(spin_3k(),
