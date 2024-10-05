@@ -53,7 +53,7 @@ example_server <- function(id, path_pack){
       output$download_r_auto <- downloadHandler(
         filename = "str_ref_example.csv",
         content = function(file){
-          csvfile <- read.csv(paste0(path_pack, "/extdata/examples/str_ref_example.csv"))
+          csvfile <- read.csv(paste0(path_pack, "/extdata/examples/str_reference_example.csv"))
           mk <- setdiff(colnames(csvfile), c("SampleName", "Family", "Relationship"))
           id_mk <- 1:length(mk)
           mk <- mk[id_mk[id_mk %% 2 == 1]]
@@ -66,7 +66,7 @@ example_server <- function(id, path_pack){
       output$download_af <- downloadHandler(
         filename = "str_allele-count_example.csv",
         content = function(file){
-          csvfile <- read.csv(paste0(path_pack, "/extdata/examples/str_allele-count_example.csv"))
+          csvfile <- read.csv(paste0(path_pack, "/extdata/examples/str_allele-freq_example.csv"))
           csvfile[is.na(csvfile)] <- ""
           write.csv(csvfile, file, row.names = FALSE)
         }
@@ -84,7 +84,7 @@ example_server <- function(id, path_pack){
       output$download_r_y <- downloadHandler(
         filename = "y_ref_example.csv",
         content = function(file){
-          csvfile <- read.csv(paste0(path_pack, "/extdata/examples/y_ref_example.csv"))
+          csvfile <- read.csv(paste0(path_pack, "/extdata/examples/y_reference_example.csv"))
           csvfile[is.na(csvfile)] <- ""
           write.csv(csvfile, file, row.names = FALSE)
         }
@@ -102,7 +102,7 @@ example_server <- function(id, path_pack){
       output$download_r_mt <- downloadHandler(
         filename = "mt_ref_example.csv",
         content = function(file){
-          csvfile <- read.csv(paste0(path_pack, "/extdata/examples/mt_ref_example.csv"))
+          csvfile <- read.csv(paste0(path_pack, "/extdata/examples/mt_reference_example.csv"))
           csvfile[is.na(csvfile)] <- ""
           write.csv(csvfile, file, row.names = FALSE)
         }
