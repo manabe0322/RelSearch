@@ -52,7 +52,7 @@ install.packages(c("shiny", "data.table", "dplyr", "DT", "magrittr", "pedtools",
 
 # Quick guide
 
-1. Execute the following commands in R to open RelSearch.
+1. Execute the following commands in R to launch the software interface.
 
 &nbsp;
 
@@ -63,11 +63,25 @@ RelSearch()
 
 &nbsp;
 
+Then, the software interface will open automatically.
+
+\newpage
+
 2. Load files from each **"Browse..."** button.
 
 ![](fig_quick_1.jpg)
 
-**Note** See section [Files](#sec_files) for information on each file.
+**Note** 
+
+- RelSearch can analyze data for each marker type separately as well as for all marker types together.
+
+- Victim, reference, and allele frequency databases are required to analyze autosomal STR profiles.
+
+- Victim and reference databases are required to analyze Y-STR profiles.
+
+- Victim and reference databases are required to analyze mtDNA profiles.
+
+- See section [Files](#sec_files) for information on each file.
 
 \newpage
 
@@ -77,11 +91,13 @@ RelSearch()
 
 \newpage
 
-4. After finishing the analysis, the result window is automatically opened.
+4. After finishing the analysis, the result window will open automatically.
 
 ![](fig_quick_3.jpg)
 
-**Note** See section [Result](#sec_result) for navigation of the result window.
+**Note**
+
+- See section [Result](#sec_result) for navigation of the result window.
 
 \newpage
 
@@ -95,7 +111,11 @@ RelSearch()
 
 ![](fig_quick_5.jpg)
 
-**Note** The saved project can be loaded from **Project** $\blacktriangleright$ **Load project**. How to handle projects is described in section [Other functions](#sec_other_func).
+**Note**
+
+- The saved project can be loaded from **Project** $\blacktriangleright$ **Load project**.
+
+- How to handle projects is described in section [Other functions](#sec_other_func).
 
 \newpage
 
@@ -157,7 +177,7 @@ kable(df_r_auto_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>
 
 - The names of the relationship need to be pre-defined in **Settings** $\blacktriangleright$ **Relationships** (see section [Setting](#sec_setting_rel)).
 
-- If a reference has multiple missing family members, add rows for each relationship of the members (e.g., Brother_Brother and Father_Son of the sample "Reference3" in the above table).
+- If there are multiple missing family members for a reference, add rows for each relationship of the members (e.g., Brother_Brother and Father_Son of the sample "Reference3" in the above table).
 
 - The marker with two empty cells (e.g., D16S539 of the sample "Reference5" in the above table) is ignored when calculating the likelihood ratio.
 
@@ -207,9 +227,9 @@ kable(df_v_y_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
 
 - This file requires the column "SampleName" and columns for each marker (one column in each).
 
-- In the marker with more than one allele, each allele must be separated by a comma without any spaces (e.g., DYS385).
+- In the marker with more than one allele, each allele must be separated by a comma without any spaces (e.g., DYS385 in the above table).
 
-- The marker with an empty cell (e.g., DYS392 of the sample ‘Victim5’) is ignored for the analysis.
+- The marker with an empty cell (e.g., DYS392 of the sample ‘Victim5’ in the above table) is ignored for the analysis.
 
 &nbsp;
 
@@ -237,11 +257,11 @@ kable(df_v_y_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
 
 - The names of the relationship need to be pre-defined in **Settings** $\blacktriangleright$ **Relationships** (see section [Setting](#sec_setting_rel)).
 
-- If a reference has multiple missing family members, add rows for each relationship of the members (e.g., Brother_Brother and Father_Son of the sample "Reference3" in the above table).
+- If there are multiple missing family members for a reference, add rows for each relationship of the members (e.g., Brother_Brother and Father_Son of the sample "Reference3" in the above table).
 
-- In the marker with more than one allele, each allele must be separated by a comma without any spaces (e.g., DYS385).
+- In the marker with more than one allele, each allele must be separated by a comma without any spaces (e.g., DYS385 in the above table).
 
-- The marker with an empty cell (e.g., DYS518 of the sample ‘Reference5’) is ignored for the analysis.
+- The marker with an empty cell (e.g., DYS518 of the sample ‘Reference5’ in the above table) is ignored for the analysis.
 
 &nbsp;
 
@@ -251,8 +271,8 @@ kable(df_v_y_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
 df_v_mt_ex <- data.frame(SampleName = c("Victim1", "Victim2", "Victim3", "Victim4", "Victim5"), 
                          Range = c("73-340 16024-16365", "73-340 16024-16365", "73-167 240-340 16024-16365", "73-265 16024-16284", ""), 
                          Haplotype = c("16183C 16189C 16217C 16311C 73G 263G 309.1C 315.1C", 
-                                       "16093C 16114A 16223T 16362C 73G 191.1A 194T 263G 309.1C 315.1C", 
-                                       "16095T 16189C 16223T 16265C 16274A 16362C 73G 143A 152C 263G", 
+                                       "16093C 16114A 16223T 16362C 73G 263G 309.1C 315.1C", 
+                                       "16095T 16189C 16223T 16265C 16274A 16362C 73G 263G", 
                                        "16223T 73G 152C 263G", 
                                        ""))
 
@@ -281,10 +301,10 @@ df_r_mt_ex <- data.frame(SampleName = c("Reference1", "Reference2", "Reference3"
                          Family = c("Family 1", "Family 2", "Family 3", "Family 3", "Family 4", "Family 4"), 
                          Relationship = c("Mother_Daughter", "Mother_Daughter", "Brother_Brother", "Father_Son", "Sister_Sister", "Aunt_Niece"), 
                          Range = c("73-340 16024-16365", "73-340 16024-16365", "73-340 16024-16365", "73-340 16024-16365", "73-340 16024-16365", ""), 
-                         Haplotype = c("16223T 16319A 16362C 73G 152C 263G 309.1C 315.1C", 
-                                       "16172C 16223T 16250T 16257A 16261T 73G 150T 263G", 
-                                       "16172C 16189C 16223T 16355T 16362C 73G 150T 263G", 
-                                       "16172C 16189C 16223T 16355T 16362C 73G 150T 263G", 
+                         Haplotype = c("16223T 73G 263G 309.1C 315.1C", 
+                                       "16172C 16223T 73G 150T 263G", 
+                                       "16172C 16189C 16223T 73G 263G", 
+                                       "16172C 16189C 16223T 73G 263G", 
                                        "16223T 16362C 73G 263G 315.1C", 
                                        ""))
 
@@ -300,7 +320,7 @@ kable(df_r_mt_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
 
 - The names of the relationship need to be pre-defined in **Settings** $\blacktriangleright$ **Relationships** (see section [Setting](#sec_setting_rel)).
 
-- If a reference has multiple missing family members, add rows for each relationship of the members (e.g., Brother_Brother and Father_Son of the sample "Reference3" in the above table).
+- If there are multiple missing family members for a reference, add rows for each relationship of the members (e.g., Brother_Brother and Father_Son of the sample "Reference3" in the above table).
 
 - In the 'Range' column, the first and the last positions in each readable sequence must be written with a hyphen between these positions (e.g, 73-340). The readable sequences must be separated by a single blank space.
 
@@ -316,21 +336,29 @@ kable(df_r_mt_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
 
 ## Criteria
 
-You can set the following criteria to support the assumed relationship. Press the **Save** button to reflect the changes. Press the **Reset** button if you want to return to default values.
+In RelSearch, there are some criteria to determine whether each victim-reference pair has an assumed relationship or not. For autosomal STR, RelSearch calculates LR values for each victim-reference pair and investigates whether these LR values are greater than an LR threshold or not. For Y-STR, RelSearch analyzes the number of mismatched loci and the total mismatched steps between victim and reference Y-STR profiles to search paternal lineages. For mtDNA, RelSearch investigates the number of mismatched nucleotides between the victim and the reference sequences to search maternal lineages.
 
-### STR
+To set criteria, select **Setting** $\blacktriangleright$ **Criteria**. Then the criteria setting window will open automatically.
 
-- Minimum LR: The minimum likelihood ratio that supports the assumed relationship.
+\newpage
 
-### Y-STR
+The criteria for each marker type is as follows:
 
-- Maximum number of mismatched loci: The upper limit of the number of mismatched loci between victim and reference profiles to support paternal lineage.
+**STR**
 
-- Maximum total mutational steps: The upper limit of total mutational steps (i.e., sum of mutational steps of all loci) between victim and reference profiles to support paternal lineage.
+- Minimum LR: The minimum likelihood ratio that the victim and reference profiles support the assumed relationship.
 
-### mtDNA
+**Y-STR**
 
-- Maximum number of inconsistency: The upper limit of inconcistency between victim and reference profiles to support maternal lineage.
+- Maximum number of mismatched loci: The upper limit of the number of mismatched loci between victim and reference profiles that the profiles support paternal lineage.
+
+- Maximum total mutational steps: The upper limit of total mutational steps (i.e., sum of mutational steps of all loci) between victim and reference profiles that the profiles support paternal lineage.
+
+**mtDNA**
+
+- Maximum number of inconsistency: The upper limit of inconcistency between victim and reference profiles that the profiles support maternal lineage.
+
+After changing the criteria, press the **Save** button to reflect the changes. Press the **Reset** button if you want to return to default values.
 
 \newpage
 
