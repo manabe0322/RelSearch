@@ -14,7 +14,7 @@ documentclass: report
 fontsize: 12pt
 geometry: margin=1in
 header-includes:
-  - \usepackage{indentfirst}
+  - \usepackage{enumitem}
   - \usepackage{fontspec}
   - \setmainfont{Segoe UI}
   - \usepackage{fvextra}
@@ -328,8 +328,6 @@ kable(df_r_mt_ex, format = "latex", booktabs = T, label = NA, linesep = "") %>%
 
 - The empty cells in the 'Range' and 'Haplotype' columns (e.g., the sample ‘Reference5’ in the above table) mean that there is no readable sequence.
 
-&nbsp;
-
 \newpage
 
 # Setting {#sec_setting}
@@ -346,17 +344,19 @@ The criteria for each marker type is as follows:
 
 **STR**
 
-- Minimum LR: The minimum likelihood ratio that the victim and reference profiles support the assumed relationship.
+- Minimum LR: The minimum likelihood ratio for which the victim and reference are estimated to have the assumed relationship.
 
 **Y-STR**
 
-- Maximum number of mismatched loci: The upper limit of the number of mismatched loci between victim and reference profiles that the profiles support paternal lineage.
+- Maximum number of mismatched loci: The upper limit of the number of mismatched loci between victim and reference profiles for which paternal lineage is not negated.
 
-- Maximum total mutational steps: The upper limit of total mutational steps (i.e., sum of mutational steps of all loci) between victim and reference profiles that the profiles support paternal lineage.
+- Maximum total mutational steps: The upper limit of total mutational steps (i.e., sum of mutational steps of all loci) between victim and reference profiles for which paternal lineage is not negated.
 
 **mtDNA**
 
-- Maximum number of inconsistency: The upper limit of inconcistency between victim and reference profiles that the profiles support maternal lineage.
+- Maximum number of inconsistency: The upper limit of inconcistency between victim and reference profiles for which maternal lineage is not negated.
+
+&nbsp;
 
 After changing the criteria, press the **Save** button to reflect the changes. Press the **Reset** button if you want to return to default values.
 
@@ -364,9 +364,17 @@ After changing the criteria, press the **Save** button to reflect the changes. P
 
 ## Relationship {#sec_setting_rel}
 
-The names of the relationship in each reference profile need to be pre-defined. There are 44 pre-defined victim-reference relationships as the default.
+The names of the relationship in each reference profile need to be pre-defined. To define the relationship names, select **Setting** $\blacktriangleright$ **Relationships**. Then the relationship setting window will open automatically. 
+
+\newpage
+
+There are 44 pre-defined victim-reference relationships as the default. The names of these relationships are determined in the order of victim_reference (e.g., Father_Son means that a victim is the father and a reference is the son). You are free to change these names.
 
 Information on the table is as follows.
+
+- **Sex (Victim)**: The biological sex of the victim
+
+- **Sex (Reference)**: The biological sex of the reference
 
 - **Pr(IBD = 2)**: The probability that two alleles are identity by descent (IBD).
 
@@ -380,19 +388,23 @@ Information on the table is as follows.
 
 You can edit, add, and delete the relationships from the left sidebar.
 
+&nbsp;
+
 ### Edit
 
-You can edit the defined relationship name from the **Edit** button.
+You can edit the relationship names from the **Edit** button.
 
 In the pop-up window, select a relationship from the defined relationships, and enter a new name of the selected relationship. Press the **Save** button to reflect the new name.
 
+\newpage
+
 ### Add
 
-You can define a new relationship from the **Add** button.
+You can define a new relationship from the **Add** button. The procedure is as follows.
 
-In the pop-up window, you have to set the relationship name and make a family tree to define the relationship between a victim and a reference.
+1. Enter a relationship name.
 
-The following is a list of functions to make a family tree.
+2. Make a family tree to define the relationship between a victim and a reference. The following is a list of functions to make a family tree.
 
 - **Add a person**: The function to add an unknown person (UK) to the list of persons.
 
@@ -406,15 +418,39 @@ The following is a list of functions to make a family tree.
 
 - **Founder**: The function to select whether the person is a founder of the family tree or not.
 
-After defining a family tree, press the **View family tree** button to check whether the family tree is correctly set up or not.
+&nbsp;
 
-If there is no problem in the family tree, press the **Save** button.
+\noindent Here is an example of defining the brother-brother relationship for the victim-reference pair.
 
-**Note** Information on the IBD probabilities, paternal lineage, and maternal lineage in the new relationship is automatically determined based on your-defined family tree.
+\begin{enumerate}[label = 2.\arabic*., left = 1cm]
+
+  \item Press the **Add** button twice to add the untyped father and mother. UK1 and UK2 are assumed to be the father and mother, respectively.
+
+  \item Set the sex of the Victim, Ref, UK1, and UK2 to "M", "M", "M", and "F", respectively.
+
+  \item In the Founder column, select "No" for Victim and Ref, and select "Yes" for UK1 and UK2.
+
+  \item In the Father column, select "UK1" for Victim and Ref.
+
+  \item In the Mother column, select "UK2" for Victim and Ref.
+
+\end{enumerate}
+
+&nbsp;
+
+3. Press the **View family tree** button to check whether the family tree is correctly set up or not.
+
+4. Press the **Save** button.
+
+&nbsp;
+
+\noindent \textbf{Note}
+
+\noindent Information on the biological sex, IBD probabilities, paternal lineage, and maternal lineage in the new relationship is automatically determined based on your-defined family tree.
 
 ### Delete
 
-You can delete a defined relationship name from the **Delete** button.
+You can delete a defined relationship from the **Delete** button.
 
 In the pop-up window, select a relationship from the defined relationships. Press the **Save** button to delete the selected relationship.
 
@@ -430,7 +466,9 @@ You can check the family tree of each defined relationship. Select a row from th
 
 ## Mutation rate {#sec_setting_myu}
 
-Mutation rates of each autosomal STR marker need to be set to calculate the likelihood ratio (LR). The default mutation rates considering the difference between paternal and maternal and mutational steps (-1, +1, -2, and +2) are reported by Morimoto et al [@Morimoto2020]. You can edit, add, and delete these mutation rates from the left sidebar.
+Mutation rates of each autosomal STR marker need to be set to calculate the likelihood ratio (LR) for parent-child relationship. The default mutation rates considering the difference between paternal and maternal and mutational steps (-1, +1, -2, and +2) are reported by Morimoto et al [@Morimoto2020].
+
+To set mutation rates, select **Setting** $\blacktriangleright$ **Mutation rates**. Then the setting window for mutation rates will open automatically. 
 
 ### Edit
 
@@ -454,51 +492,53 @@ In the pop-up window, select a locus. Press the **Save** button to delete the se
 
 If you want to return to default settings, press the **Reset** button. In the pop-up window, press the **Restore default** button.
 
-## Data management {#sec_setting_data_manage}
+## Conditions for data storage {#sec_setting_data_storage}
 
-You can set the following conditions for data management. Press the **Save** button to reflect the changes. Press the **Reset** button if you want to return to default values.
+When handling a large number of victim and reference profiles, it may be difficult to store all the results because RelSearch may run out of memory (see ??? for information on computational burden of RelSearch). You can set the conditions for data storage. 
+
+To set the conditions, select **Setting** $\blacktriangleright$ **Conditions for data storage**. Then the setting window for data storage will open automatically. 
 
 - Minimum LR to be stored: The minimum LR to be stored in the project data. If you want to reduce the file size of the project data, the minimum LR should be increased.
 
-- Maximum number of displayed data: The maximum number of displayed data in the Result tab. If this number is set too large, it may lead to insufficient memory of RelSearch. overload.
+- Maximum number of displayed data: The maximum number of data displayed in the Results tab. If this number is set too high, RelSearch may run out of memory.
+
+Press the **Save** button to reflect the changes. Press the **Reset** button if you want to return to default values.
 
 \newpage
 
 # Result {#sec_result}
 
+This section describes the display of results on the Results tab.
+
 ## Summary
 
-After finishing the analysis, summary data is automatically displayed. You can change the displayed data from the left sidebar.
+When the analysis is complete, summary data is automatically displayed. You can change the data displayed using the buttons in the left sidebar. You can also download the displayed data as a .csv file using the **Downlaod** button.
 
-### Default display
+\noindent \textbf{Default display}
 
-Default display depends on whether the input data includes autosomal STR data or not.
+\noindent Default display depends on whether the input data includes autosomal STR data or not.
 
-If the input data includes autosomal STR data, the data where the LR exceeds the minimum LR (see section [Setting](#sec_setting)) is displayed.
+If the input data includes autosomal STR data, the data that satisfies the criterion of the minimum LR (see section [Setting](#sec_setting)) is displayed.
 
 If the input data is composed of only Y-STR and/or mtDNA data, the data that satisfies the criteria to support paternal/maternal lineage (see section [Setting](#sec_setting)) is displayed.
 
-If the number of data that satisfies the criteria is more than 10,000, the top 10,000 data is displayed.
+If the number of data that satisfies the above conditions is more than the upper limit (i.e., the maximum number of displayed data explained in section [Conditions for data storage](#sec_setting_data_storage)), the number of data displayed is the upper limit. 
 
-### Identified pairs
+\noindent \textbf{Identified pairs}
 
-If the data supports that a victim (or a reference) has the assumed relationship with only one reference (or victim), the victim-reference pair is categorized as the identified pair.
+\noindent If the data supports that a victim (or a reference) has the assumed relationship with only one reference (or victim), the victim-reference pair is categorized as the identified pair.
 
-### Multiple candidates
+\noindent \textbf{Multiple candidates}
 
-If the data supports that a victim (or a reference) has the assumed relationship with multiple references (or victims), the victim-reference pair is categorized as the multiple candidates.
+\noindent If the data supports that a victim (or a reference) has the assumed relationship with multiple references (or victims), the victim-reference pair is categorized as the multiple candidates.
 
-### Not support lineage
+\noindent \textbf{Not support lineage}
 
-If the LR exceeds the minimum LR but the data does not satisfy the criteria to support paternal/maternal lineage when assuming the paternal/maternal lineage relative, the victim-reference pair is categorized as not support lineage.
+\noindent If the LR exceeds the minimum LR but the data does not satisfy the criteria to support paternal/maternal lineage when assuming the paternal/maternal lineage relative, the victim-reference pair is categorized as not support lineage.
 
-### Minimum LR displayed
+\noindent \textbf{Minimum LR displayed}
 
-You can change the minimum LR displayed. The lower limit is LR = 1. If the number of data where the LR exceeds the minimum LR is more than 10,000, the top 10,000 data is displayed.
-
-### Download summary data
-
-You can download summary data as a .csv file. Press the **Downlaod** button in Summary tab.
+\noindent You can change the minimum LR displayed. After setting the value, press the **Apply** button. Please note that the amount of data stored in the project data is limited according to the data storage conditions (see [Conditions for data storage](#sec_setting_data_storage)). Even if you set the minimum LR displayed to less than 1, you cannot do so as long as the minimum LR to be stored in the project data is set to 1.
 
 ## Selected data in detail
 
@@ -524,7 +564,7 @@ You can check the following analysis conditions in **Analysis conditions** tab.
 
 - **Mutation rate**: The user-defined mutation rates (see section [Setting](#sec_setting_myu)) are displayed.
 
-- **Data management**: The user-defined conditions for data management (see section [Setting](#sec_setting_data_manage)) is displayed.
+- **Data management**: The user-defined conditions for data management (see section [Setting](#sec_setting_data_storage)) is displayed.
 
 \newpage
 
