@@ -619,6 +619,30 @@ Example files for each database can be downloaded from the **Example files** tab
 
 \newpage
 
+# Computational burden
+
+When handling a large number of victim and reference profiles, the computational load of RelSearch will be high. The following table shows approximate computation time and memory limits as a guide.
+
+```{r, echo = FALSE}
+df_comp <- data.frame(n_vic = c("1,000", "2,000", "3,000", "4,000", "5,000"), 
+                      n_ref = c("1,000", "2,000", "3,000", "4,000", "5,000"), 
+                      n_pair = c("1 million", "4 million", "9 million", "16 million", "25 million"), 
+                      marker = c("STR, Y-STR, mtDNA", "", "", "", ""),
+                      time = c("3 min", "15 min", "35 min", "", "130 min"))
+names(df_comp) <- c("Number of victims", "Number of references", "Number of victim-reference pairs", "Marker type", "Computational time")
+
+kable(df_comp, format = "latex", booktabs = T, label = NA, linesep = "", escape = FALSE) %>%
+  kable_styling(latex_options = "HOLD_position", font_size = 10)
+```
+
+Computer specifications are Windows 10 64 bit, Intel Core i9-9900K CPU, 3.6 GHz, 32 GB RAM. Data storage conditions are as follows:
+
+- Minimum LR to be stored: 1
+
+- Maximum number of displayed data: 10,000
+
+\newpage
+
 # Computational principle {#sec_principle}
 
 ## STR
@@ -728,14 +752,14 @@ where $p_a$, $p_b$, $p_c$, and $p_d$ denote the probabilities of the allele $a$,
 RelSearch analyzes the number of mismatched loci and the total mutational steps between victim and reference Y-STR profiles. The following table shows some examples of the analysis results in one locus.
 
 ```{r, echo = FALSE}
-df_v_auto_ex <- data.frame(vic_prof = c("15", "15", "15", "-", "15", "15", "15, 16", "15, 16", "15, 17"), 
-                           ref_prof = c("15", "16", "17", "15", "15, 17", "16, 17", "15, 17", "15, 18", "16, 18"), 
-                           mismatch = c("", "Yes", "Yes", "", "", "Yes", "Yes", "Yes", "Yes"), 
-                           mu_step = c("0", "1", "2", "", "", "1", "1", "2", "Unable to calculate"), 
-                           ignore_do = c("", "", "", "Yes", "Yes", "", "", "", ""))
-names(df_v_auto_ex) <- c("Victim profile", "Reference profile", "Mismatch", "Mutational steps", "Ignore due to allelic drop-out")
+df_y_interpret_ex <- data.frame(vic_prof = c("15", "15", "15", "-", "15", "15", "15, 16", "15, 16", "15, 17"), 
+                                ref_prof = c("15", "16", "17", "15", "15, 17", "16, 17", "15, 17", "15, 18", "16, 18"), 
+                                mismatch = c("", "Yes", "Yes", "", "", "Yes", "Yes", "Yes", "Yes"), 
+                                mu_step = c("0", "1", "2", "", "", "1", "1", "2", "Unable to calculate"), 
+                                ignore_do = c("", "", "", "Yes", "Yes", "", "", "", ""))
+names(df_y_interpret_ex) <- c("Victim profile", "Reference profile", "Mismatch", "Mutational steps", "Ignore due to allelic drop-out")
 
-kable(df_v_auto_ex, format = "latex", booktabs = T, label = NA, linesep = "", escape = FALSE) %>%
+kable(df_y_interpret_ex, format = "latex", booktabs = T, label = NA, linesep = "", escape = FALSE) %>%
   kable_styling(latex_options = "HOLD_position", font_size = 10)
 ```
 
