@@ -20,6 +20,11 @@ header-includes:
   - \usepackage{fvextra}
   - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
   - \parindent=1em
+  - \usepackage{amsmath}
+  - \renewcommand{\theequation}{\arabic{equation}}
+  - \usepackage{unicode-math}
+  - \setmathfont{Cambria Math}
+mathjax: null
 bibliography: RelSearch_references.bib
 csl: forensic-science-international-genetics.csl
 ---
@@ -492,11 +497,11 @@ In the pop-up window, select a locus. Press the **Save** button to delete the se
 
 If you want to return to default settings, press the **Reset** button. In the pop-up window, press the **Restore default** button.
 
-## Conditions for data storage {#sec_setting_data_storage}
+## Data storage conditions {#sec_setting_data_storage}
 
-When handling a large number of victim and reference profiles, it may be difficult to store all the results because RelSearch may run out of memory (see ??? for information on computational burden of RelSearch). You can set the conditions for data storage. 
+When handling a large number of victim and reference profiles, it may be difficult to store all the results because RelSearch may run out of memory (see ??? for information on computational burden of RelSearch). You can set the data storage conditions. 
 
-To set the conditions, select **Setting** $\blacktriangleright$ **Conditions for data storage**. Then the setting window for data storage will open automatically. 
+To set the conditions, select **Setting** $\blacktriangleright$ **Data storage conditions**. Then the setting window for data storage will open automatically. 
 
 - Minimum LR to be stored: The minimum LR to be stored in the project data. If you want to reduce the file size of the project data, the minimum LR should be increased.
 
@@ -522,49 +527,65 @@ If the input data includes autosomal STR data, the data that satisfies the crite
 
 If the input data is composed of only Y-STR and/or mtDNA data, the data that satisfies the criteria to support paternal/maternal lineage (see section [Setting](#sec_setting)) is displayed.
 
-If the number of data that satisfies the above conditions is more than the upper limit (i.e., the maximum number of displayed data explained in section [Conditions for data storage](#sec_setting_data_storage)), the number of data displayed is the upper limit. 
+If the number of data that satisfies the above conditions is more than the upper limit (i.e., the maximum number of displayed data explained in section [Data storage conditions](#sec_setting_data_storage)), the number of data displayed is the upper limit. 
 
-\noindent \textbf{Identified pairs}
+\noindent \textbf{Identified}
 
-\noindent If the data supports that a victim (or a reference) has the assumed relationship with only one reference (or victim), the victim-reference pair is categorized as the identified pair.
+\noindent If the data supports that a victim (or a reference) has the assumed relationship with only one reference (or victim), the victim-reference pair is classified as "Identified".
 
-\noindent \textbf{Multiple candidates}
+\noindent \textbf{Inconclusive}
 
-\noindent If the data supports that a victim (or a reference) has the assumed relationship with multiple references (or victims), the victim-reference pair is categorized as the multiple candidates.
+\noindent If the data supports that a victim (or a reference) has the assumed relationship with multiple references (or victims), the victim-reference pair is categorized as "Inconclusive".
 
-\noindent \textbf{Not support lineage}
+\noindent \textbf{Excluded by Y-STR or mtDNA}
 
-\noindent If the LR exceeds the minimum LR but the data does not satisfy the criteria to support paternal/maternal lineage when assuming the paternal/maternal lineage relative, the victim-reference pair is categorized as not support lineage.
+\noindent The victim-reference pair is excluded if the LR exceeds the minimum LR but the data does not satisfy the criteria to support paternal/maternal lineage when assuming the paternal/maternal lineage relative.
 
 \noindent \textbf{Minimum LR displayed}
 
-\noindent You can change the minimum LR displayed. After setting the value, press the **Apply** button. Please note that the amount of data stored in the project data is limited according to the data storage conditions (see [Conditions for data storage](#sec_setting_data_storage)). Even if you set the minimum LR displayed to less than 1, you cannot do so as long as the minimum LR to be stored in the project data is set to 1.
+\noindent You can change the minimum LR displayed. After setting the value, press the **Apply** button. Please note that the amount of data stored in the project data is limited according to the data storage conditions (see [Data storage conditions](#sec_setting_data_storage)). Even if you set the minimum LR displayed to less than 1, you cannot check the data with LR < 1 as long as the minimum LR to be stored in the project data is set to 1.
 
 ## Selected data in detail
 
-The data of a selected victim-reference pair is displayed in **Selected data in detail** tab.
+The detailed data of a selected victim-reference pair is displayed in **Selected data in detail** tab.
 
 1. Select a row in the summary table.
 
 2. Go to **Selected data in detail** tab.
 
-In **Selected data in detail** tab, you can check and download the analyzed data of STR, Y-STR, and mtDNA in the selected victim-reference pair. 
+In **Selected data in detail** tab, you can review and download the analyzed STR, Y-STR, and mtDNA data for the selected victim-reference pair. You can check all members of the family to which the selected reference belongs.
+
+\noindent \textbf{STR tab}
+
+\noindent \textbf{Y-STR tab}
+
+\noindent \textbf{mtDNA tab}
+
+## All candidates
+
+All candidate relatives that relate to the selected victim-reference pair is displayed in **All candidates** tab. This function is useful when the victim-reference pair is classified as "Inconclusive". 
+
+1. Select a row in the summary table.
+
+2. Go to **All candidates** tab.
+
+In **All candidates** tab, you can download the displayed data.
 
 ## Analysis conditions
 
-You can check the following analysis conditions in **Analysis conditions** tab.
+You can review the following analysis conditions in **Analysis conditions** tab.
 
 - **Database**: Input .csv file names of each database are displayed.
 
-- **Allele probability**: Unobserved alleles in the population database are displayed, if any. The frequency of these alleles is set to the user-defined minimum allele frequency and the sum of the frequencies in each locus is corrected to 1.
+- **Allele probability**: Unobserved alleles in the population database are displayed, if any. You can download the allele probabilities that are estimated based on Dirichlet distribution (see section [Computational principle](#sec_principle)).
 
-- **Criteria**: The user-defined criteria to support the assumed relationship (see section [Setting](#sec_setting)) is displayed.
+- **Criteria**: The user-defined criteria to determine whether each victim-reference pair has an assumed relationship or not (see section [Setting](#sec_setting)) is displayed.
 
 - **Assumed relationship**: Information on the user-defined relationships (see section [Setting](#sec_setting_rel)) is displayed.
 
 - **Mutation rate**: The user-defined mutation rates (see section [Setting](#sec_setting_myu)) are displayed.
 
-- **Data management**: The user-defined conditions for data management (see section [Setting](#sec_setting_data_storage)) is displayed.
+- **Data storage conditions**: The user-defined conditions for data storage (see section [Setting](#sec_setting_data_storage)) is displayed.
 
 \newpage
 
@@ -590,7 +611,7 @@ To save the current project, go to **Project** $\blacktriangleright$ **Save proj
 
 ## View database
 
-Each loaded database can be checked in **Database** tab.
+Each loaded database can be reviewed in **Database** tab.
 
 ## Example files
 
@@ -598,7 +619,7 @@ Example files for each database can be downloaded from the **Example files** tab
 
 \newpage
 
-# Computational principle
+# Computational principle {#sec_principle}
 
 ## STR
 
@@ -612,23 +633,23 @@ $H_{2}$: The victim and the reference are unrelated.
 
 The equation of the LR is as follows:
 
-$$
+\begin{equation}
 LR = \frac{Pr(G_{v}, G_{r}|H_{1})}{Pr(G_{v}, G_{r}|H_{2})}
-$$
+\end{equation}
 
-where $G_{v}$ and $G_{r}$ denote the genotypes of the victim and the reference, respectively.
+\noindent where $G_{v}$ and $G_{r}$ denote the genotypes of the victim and the reference, respectively.
 
-In RelSearch, users can set the minimum threshold of the LR to support $H_{1}$. The default threshold is 100, which is determined based on the verbal scale "Moderate Support" written in the Scientific Working Group on DNA Analysis Methods (SWGDAM) guideline [@SWGDAM2018].
+In RelSearch, users can set the minimum threshold of the LR to estimate that the victim and reference have the relationship assumed in $H_{1}$. The default threshold is 100, which is determined based on the verbal scale "Moderate Support" written in the Scientific Working Group on DNA Analysis Methods (SWGDAM) guideline [@SWGDAM2018].
 
 If full profiles are obtained for a victim-reference pair under the assumption of the relationship other than the parent-child (i.e., without considering drop-out and mutations in calculation), the numerator and the denominator of the LR are calculated using the probabilities that two, one and zero alleles are identity by descent (IBD).
 
-$$
+\begin{equation}
 \begin{aligned}
 Pr(G_{v}, G_{r}|H) &= Pr(G_{v}, G_{r}|IBD = 2)Pr(IBD = 2|H)
 \\ &+ Pr(G_{v}, G_{r}|IBD = 1)Pr(IBD = 1|H)
 \\ &+ Pr(G_{v}, G_{r}|IBD = 0)Pr(IBD = 0|H)
 \end{aligned}
-$$
+\end{equation}
 
 The specific method for these calculations is based on the method of Wenk et al [@Wenk1996].
 
@@ -636,9 +657,9 @@ The specific method for these calculations is based on the method of Wenk et al 
 
 The allele probabilities are assumed to be based on Dirichlet distributions in each locus [@Morimoto2020]. The probability of allele $x$ ($p_x$) can be estimated using the following formula:
 
-$$
-p_a = \frac{\alpha_x + 1}{\sum_{x = 1}^X(\alpha_x + 1)}
-$$
+\begin{equation}
+p_x = \frac{\alpha_x + 1}{\sum_{x = 1}^X(\alpha_x + 1)}
+\end{equation}
 
 where $\alpha_x$ is the number of observations of the $x$th allele ($x = 1, 2, ..., X$) and X is the number of observed allele types.
 
@@ -666,27 +687,27 @@ The candidate genotype of the reference is only 16, 17 because two heterozygote 
 
 In this case, the likelihood function considering allelic drop-out is as follows:
 
-$$
+\begin{equation}
 \begin{aligned}
-&Pr(G_{v}^* = 15/-, G_{r}^* = 16/17|H)
-\\ &= Pr(G_{v}^* = 15/-, G_{r}^* = 16/17|G_{v_i} = 15/15, G_{r} = 16/17)Pr(G_{v_i} = 15/15, G_{r} = 16/17|H)
-\\ &+ Pr(G_{v}^* = 15/-, G_{r}^* = 16/17|G_{v_i} = 15/16, G_{r} = 16/17)Pr(G_{v_i} = 15/16, G_{r} = 16/17|H)
-\\ &+ Pr(G_{v}^* = 15/-, G_{r}^* = 16/17|G_{v_i} = 15/17, G_{r} = 16/17)Pr(G_{v_i} = 15/17, G_{r} = 16/17|H)
-\\ &+ Pr(G_{v}^* = 15/-, G_{r}^* = 16/17|G_{v_i} = 15/Q, G_{r} = 16/17)Pr(G_{v_i} = 15/Q, G_{r} = 16/17|H)
+&Pr(G_{v}^* : 15/-, G_{r}^* : 16/17|H)
+\\ &= Pr(G_{v}^* : 15/-, G_{r}^* : 16/17|G_{v_i} : 15/15, G_{r} : 16/17)Pr(G_{v_i} : 15/15, G_{r} : 16/17|H)
+\\ &+ Pr(G_{v}^* : 15/-, G_{r}^* : 16/17|G_{v_i} : 15/16, G_{r} : 16/17)Pr(G_{v_i} : 15/16, G_{r} : 16/17|H)
+\\ &+ Pr(G_{v}^* : 15/-, G_{r}^* : 16/17|G_{v_i} : 15/17, G_{r} : 16/17)Pr(G_{v_i} : 15/17, G_{r} : 16/17|H)
+\\ &+ Pr(G_{v}^* : 15/-, G_{r}^* : 16/17|G_{v_i} : 15/Q, G_{r} : 16/17)Pr(G_{v_i} : 15/Q, G_{r} : 16/17|H)
 \end{aligned}
-$$
+\end{equation}
 
 This equation is generalized as follows:
 
-$$
+\begin{equation}
 Pr(G_{v}^*, G_{r}^*|H) = \sum_i \sum_j Pr(G_{v}^*, G_{r}^*|G_{v_i}, G_{r_j})Pr(G_{v_i}, G_{r_j}|H)
-$$
+\end{equation}
 
-$Pr(G_{v}^*, G_{r}^*|G_{v_i}, G_{r_j})$ can be ignored because the probability of observing $G_{v}^*$ and $G_{r}^*$ is the same irrespective of the candidate genotypes. Therefore, the likelihood function can be rewritten as follows:
+$Pr(G_{v}^*, G_{r}^*|G_{v_i}, G_{r_j})$ is assumed to be the same irrespective of the candidate genotypes. Therefore, the likelihood function can be rewritten as follows:
 
-$$
+\begin{equation}
 Pr(G_{v}^*, G_{r}^*|H) = \sum_i \sum_j Pr(G_{v_i}, G_{r_j}|H)
-$$
+\end{equation}
 
 $Pr(G_{v_i}, G_{r_j}|H)$ values are calculated according to equation (1) under the assumption of the relationship other than the parent-child. When assuming the parent-child relationship, mutational events are considered for the calculation as explained in the next session.
 
@@ -694,29 +715,53 @@ $Pr(G_{v_i}, G_{r_j}|H)$ values are calculated according to equation (1) under t
 
 When assuming the parent-child relationship, mutational events are considered for the calculation of $Pr(G_{v_i}, G_{r_j}|H)$ in equation (2). Suppose that a victim-reference pair is assumed to be parent-child, and $G_{v_i}$ is a/b and $G_{r_j}$ is c/d. RelSearch assumes all inheritance patterns from the parent to the child including mutational events. The LR is calculated according to [@Ricciardi2014; @Egeland2017].
 
-$$
+\begin{equation}
 LR = \frac {(\mu_{a \rightarrow c} + \mu_{b \rightarrow c})p_{d} + (\mu_{a \rightarrow d} + \mu_{b \rightarrow d})p_{c}}{4p_{c}p_{d}}
-$$
+\end{equation}
 
 where $p_a$, $p_b$, $p_c$, and $p_d$ denote the probabilities of the allele $a$, $b$, $c$, and $d$, respectively. $\mu_{a \rightarrow c}$ denotes the probability that the parent allele $a$ is inherited as the allele $c$ to the child. $\mu_{a \rightarrow c}$, $\mu_{b \rightarrow c}$, $\mu_{a \rightarrow d}$, and $\mu_{b \rightarrow d}$ depend on the sex of the parent (i.e., paternal or maternal), and the mutational steps are assumed to be -2, -1, +1, and +2 steps. The mutation rates reported by Morimoto et al [@Morimoto2020] are used as the default values.
 
+\newpage
+
 ## Y-STR
 
-RelSearch analyzes whether the Y-STR profiles of each victim-reference pair support paternal lineage. There are two criteria to support paternal lineage as follows:
+RelSearch analyzes the number of mismatched loci and the total mutational steps between victim and reference Y-STR profiles. The following table shows some examples of the analysis results in one locus.
 
-- Maximum number of mismatched loci: The upper limit of the number of mismatched loci between victim and reference profiles to support paternal lineage.
+```{r, echo = FALSE}
+df_v_auto_ex <- data.frame(vic_prof = c("15", "15", "15", "-", "15", "15", "15, 16", "15, 16", "15, 17"), 
+                           ref_prof = c("15", "16", "17", "15", "15, 17", "16, 17", "15, 17", "15, 18", "16, 18"), 
+                           mismatch = c("", "Yes", "Yes", "", "", "Yes", "Yes", "Yes", "Yes"), 
+                           mu_step = c("0", "1", "2", "", "", "1", "1", "2", "Unable to calculate"), 
+                           ignore_do = c("", "", "", "Yes", "Yes", "", "", "", ""))
+names(df_v_auto_ex) <- c("Victim profile", "Reference profile", "Mismatch", "Mutational steps", "Ignore due to allelic drop-out")
 
-- Maximum total mutational steps: The upper limit of total mutational steps (i.e., sum of mutational steps of all loci) between victim and reference profiles to support paternal lineage.
+kable(df_v_auto_ex, format = "latex", booktabs = T, label = NA, linesep = "", escape = FALSE) %>%
+  kable_styling(latex_options = "HOLD_position", font_size = 10)
+```
 
-If a locus has no alleles in at least one of the victim and the reference, the locus is ignored for the analysis. In addition, if one of the profiles of victim and the reference is partial in a duplicated marker (e.g., DYS385), and the profiles can be explained as paternal lineage (e.g., victim profile: 15, reference profile: 15/16), the locus is also ignored for the analysis.
+RelSearch ignores loci where the victim and reference profile match when considering the allelic drop-out. Suppose that the victim profile is 15, and the reference profile is 15, 17 in a duplicated marker (e.g., DYS385). If the allele 17 is assumed to be dropped out in the victim profile, the assumed victim profile is the same as the reference profile.
+
+If multiple mutational events are assumed in a duplicated marker, RelSearch does not calculate the mutational steps for the marker due to the difficulty of the estimation of the actual mutational process (i.e., "Unable to calculate" in the above table). Especially in DYF387S1, three alleles may be observed and the mutational process related to these alleles is too complex.
+
+After analyses of all victim-reference profiles, RelSearch investigates whether each victim-reference profile supports paternal lineage or not based on the following criteria.
+
+- Maximum number of mismatched loci: The upper limit of the number of mismatched loci between victim and reference profiles for which paternal lineage is not negated.
+
+- Maximum total mutational steps: The upper limit of total mutational steps between victim and reference profiles for which paternal lineage is not negated.
+
+The default criteria for the maximum number of mismatched loci is 4 and for the maximum total mutational steps is 5, which is determined based on a previous study [@Liu2016].
+
+\newpage
 
 ## mtDNA
 
-RelSearch analyzes whether the mtDNA profiles of each victim-reference pair support maternal lineage. There is one criterion to support maternal lineage as follow:
+RelSearch investigates the number of mismatched nucleotides between the victim and the reference sequences. There is one criterion to support maternal lineage as follow:
 
-- Maximum number of inconsistency: The upper limit of the number of inconcistency between victim and reference profiles to support maternal lineage.
+- Maximum number of inconsistency: The upper limit of inconcistency between victim and reference profiles for which maternal lineage is not negated.
 
 Information on the ranges of the mtDNA sequences in each profile is needed because RelSearch targets the ranges read in both victim and reference profiles. The mtDNA profiles are expressed as the differences to a reference sequence such as the revised Cambridge Reference Sequence [@Andrews1999] (e.g., 73G, 315.1C, and so on). RelSearch only recongizes differences in strings of each mtDNA profile; therefore, the rule of the notation for mtDNA profiles should be aligned in each profile by software users.
+
+The default maximum number of inconsistency is 1, which is determined according to the SWGDAM guideline for mtDNA analysis interpretation [@SWGDAM2019].
 
 \newpage
 

@@ -217,7 +217,7 @@ result_ui <- function(id){
                                            br(),
                                            dataTableOutput(ns("result_myu"))
                                   ),
-                                  tabPanel("Data management",
+                                  tabPanel("Data storage conditions",
                                            br(),
                                            h5(div("Minimum LR to be stored", style = "color:#555555;font-weight:bold;")),
                                            textOutput(ns("result_keep_min_lr")),

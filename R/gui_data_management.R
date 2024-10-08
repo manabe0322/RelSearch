@@ -4,10 +4,10 @@
 tab_data_manage_ui <- function(id){
   ns <- NS(id)
 
-  tabPanel("Conditions for data storage",
+  tabPanel("Data storage conditions",
            useShinyjs(),
            useShinyFeedback(),
-           titlePanel("Conditions for data storage"),
+           titlePanel("Data storage conditions"),
            br(),
            p(HTML("<b>Press the save button to reflect the changes.</b>")),
            br(),
