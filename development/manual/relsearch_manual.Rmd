@@ -499,7 +499,7 @@ If you want to return to default settings, press the **Reset** button. In the po
 
 ## Data storage conditions {#sec_setting_data_storage}
 
-When handling a large number of victim and reference profiles, it may be difficult to store all the results because RelSearch may run out of memory (see ??? for information on computational burden of RelSearch). You can set the data storage conditions. 
+When handling a large number of victim and reference profiles, it may be difficult to store all the results because RelSearch may run out of memory (see section [Computation time and limits](#sec_computation)). You can set the data storage conditions. 
 
 To set the conditions, select **Setting** $\blacktriangleright$ **Data storage conditions**. Then the setting window for data storage will open automatically. 
 
@@ -619,27 +619,52 @@ Example files for each database can be downloaded from the **Example files** tab
 
 \newpage
 
-# Computational burden
+# Computation time and limits {#sec_computation}
 
-When handling a large number of victim and reference profiles, the computational load of RelSearch will be high. The following table shows approximate computation time and memory limits as a guide.
+When handling a large number of victim and reference profiles, the computational load of RelSearch will be high. This section provides approximate computation times and limits as a guide.
+
+The following 6 databases have been analyzed to estimate computation time and limits.
 
 ```{r, echo = FALSE}
-df_comp <- data.frame(n_vic = c("1,000", "2,000", "3,000", "4,000", "5,000"), 
-                      n_ref = c("1,000", "2,000", "3,000", "4,000", "5,000"), 
-                      n_pair = c("1 million", "4 million", "9 million", "16 million", "25 million"), 
-                      marker = c("STR, Y-STR, mtDNA", "", "", "", ""),
-                      time = c("3 min", "15 min", "35 min", "", "130 min"))
-names(df_comp) <- c("Number of victims", "Number of references", "Number of victim-reference pairs", "Marker type", "Computational time")
+df_6db <- data.frame(id = c("1", "2", "3", "4", "5", "6"), 
+                     n_vic = c("1,000", "2,000", "3,000", "4,000", "5,000", "6,000"),
+                     n_ref = c("1,000", "2,000", "3,000", "4,000", "5,000", "6,000"), 
+                     n_compare = c("1 million", "4 million", "9 million", "16 million", "25 million", "36 million"), 
+                     component = c("BB", "BB, FS", "BB, FS, MD", "BB, FS, MD, SS", "BB, FS, MD, SS, UN", "BB, FS, MD, SS, UN, AN"))
+names(df_6db) <- c("ID", "No. of victims (V)", "No. of references (R)", "No. of V-R pairs", "Actual V-R relationship (n = 1,000 in each)")
 
-kable(df_comp, format = "latex", booktabs = T, label = NA, linesep = "", escape = FALSE) %>%
-  kable_styling(latex_options = "HOLD_position", font_size = 10)
+kable(df_6db, format = "latex", booktabs = T, label = NA, linesep = "", escape = FALSE) %>%
+  kable_styling(latex_options = "HOLD_position", font_size = 10) %>%
+  add_footnote(c("BB: brothers (marker type: STR, Y-STR, mtDNA)", 
+                 "FS: father-son (marker type: STR, Y-STR)", 
+                 "MD: mother-daughter (marker type: STR, mtDNA)", 
+                 "SS: sisters (marker type: STR, mtDNA)", 
+                 "UN: uncle-nephew (marker type: STR, Y-STR)", 
+                 "AN: aunt-niece (marker type: STR, mtDNA)"), 
+               notation = "none")
 ```
+
+The targeted autosomal STR loci are 21 loci typed by the GlobalFiler^TM^ PCR Amplification Kit (Thermo Fisher Scientific, Waltham, MA). The targeted Y-STR loci are 27 loci typed by Yfiler^TM^ Plus PCR Amplification Kit (Thermo Fisher Scientific). The targeted mtDNA regions were the hypervariable regions (HVR) I (16024-16365) and II (73-340).
 
 Computer specifications are Windows 10 64 bit, Intel Core i9-9900K CPU, 3.6 GHz, 32 GB RAM. Data storage conditions are as follows:
 
 - Minimum LR to be stored: 1
 
 - Maximum number of displayed data: 10,000
+
+The following table shows approximate computation times and warnings related to computation limits.
+
+```{r, echo = FALSE}
+df_comp <- data.frame(id = c("1", "2", "3", "4", "5", "6"), 
+                      time = c("4 min", "12 min", "26 min", "53 min", "94 min", "157 min"), 
+                      warning = c("", "", "", "", "It seems your data is too big.", "It seems your data is too big."))
+names(df_comp) <- c("ID", "Computational time", "Warning message in the R console")
+
+kable(df_comp, format = "latex", booktabs = T, label = NA, linesep = "", escape = FALSE) %>%
+  kable_styling(latex_options = "HOLD_position", font_size = 10)
+```
+
+All 6 databases could be analyzed, but a warning message related to computation limits was displayed in the R console when analyzing database IDs 5 and 6 (i.e., performing more than 25 million comparisons between victim and reference profiles). In addition, the number of victim-reference pairs that meet the criteria for kinship estimation has reached the upper limit of the data displayed (i.e., 10,000) when analyzing database IDs 5 and 6. These results suggest that the upper limit of computation is less than 25 million comparisons. Please note that the limit is based only on the computer specifications and databases used in this study. 
 
 \newpage
 
