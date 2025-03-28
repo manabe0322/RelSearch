@@ -19,8 +19,8 @@ create_dt_criteria <- function(path_pack, init = TRUE){
     dt_criteria[, (col_numeric) := lapply(.SD, as.numeric), .SDcols = col_numeric]
     options(warn = 0)
   }else{
-    dt_criteria <- data.table(Criteria = c("min_lr_auto", "max_mismatch_y", "max_mustep_y", "max_mismatch_mt"),
-                              Value = c(100, 4, 5, 1))
+    dt_criteria <- data.table(Criteria = c("min_lr_auto", "min_detect_y", "max_mismatch_y", "max_mustep_y", "min_share_len_mt", "max_mismatch_mt"),
+                              Value = c(100, 10, 4, 5, 300, 1))
     write.csv(dt_criteria, paste0(path_pack, "/extdata/parameters/criteria.csv"), row.names = FALSE)
   }
 
