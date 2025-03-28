@@ -1,6 +1,7 @@
 Criteria,Value
 min_lr_auto,100
-max_ignore_y,10
+max_lr_auto,0.01
+min_detect_y,10
 max_mismatch_y,4
 max_mustep_y,5
 min_share_len_mt,300

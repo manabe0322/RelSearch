@@ -14,7 +14,7 @@ result_ui <- function(id){
                        tabPanel("Summary",
                                 br(),
                                 fluidRow(
-                                  column(3,
+                                  column(2,
                                          wellPanel(
                                            h4("Display setting"),
                                            br(),
@@ -24,10 +24,13 @@ result_ui <- function(id){
                                            actionButton(ns("act_identified"), label = "Identified", class = "btn btn-success"),
                                            br(),
                                            br(),
-                                           actionButton(ns("act_multiple"), label = "Inconclusive", class = "btn btn-warning"),
+                                           actionButton(ns("act_multiple"), label = "Multiple candidates", class = "btn btn-info"),
                                            br(),
                                            br(),
-                                           actionButton(ns("act_warning"), label = "Excluded by Y-STR or mtDNA", class = "btn btn-danger"),
+                                           actionButton(ns("act_inconclusive"), label = "Inconclusive", class = "btn-warning"),
+                                           br(),
+                                           br(),
+                                           actionButton(ns("act_excluded"), label = "Excluded", class = "btn btn-danger"),
                                            br(),
                                            br(),
                                            uiOutput(ns("summary_min_lr")),
@@ -35,7 +38,7 @@ result_ui <- function(id){
                                          ),
                                          downloadButton(ns("download_main"), "Download", class = "btn btn-primary btn-lg")
                                   ),
-                                  column(9,
+                                  column(10,
                                          br(),
                                          dataTableOutput(ns("dt_display"))
                                   )
@@ -182,22 +185,31 @@ result_ui <- function(id){
                                              column(4,
                                                     h4("STR"),
                                                     br(),
-                                                    h5(div("Minimum LR", style = "color:#555555;font-weight:bold;")),
-                                                    textOutput(ns("result_min_lr_auto"))
+                                                    h5(div("Minimum LR to support assumed relatives", style = "color:#555555;font-weight:bold;")),
+                                                    textOutput(ns("result_min_lr_auto")),
+                                                    br(),
+                                                    h5(div("Maximum LR to exclude assumed relatives", style = "color:#555555;font-weight:bold;")),
+                                                    textOutput(ns("result_max_lr_auto"))
                                              ),
                                              column(4,
                                                     h4("Y-STR"),
                                                     br(),
-                                                    h5(div("Maximum number of mismatched loci", style = "color:#555555;font-weight:bold;")),
+                                                    h5(div("Lower limit of the number of loci with detected alleles to use Y-STR profiles", style = "color:#555555;font-weight:bold;")),
+                                                    textOutput(ns("result_min_detect_y")),
+                                                    br(),
+                                                    h5(div("Upper limit of the number of mismatched loci not to exclude paternal lineage", style = "color:#555555;font-weight:bold;")),
                                                     textOutput(ns("result_max_mismatch_y")),
                                                     br(),
-                                                    h5(div("Maximum total mutational steps", style = "color:#555555;font-weight:bold;")),
+                                                    h5(div("Upper limit of the total mutational steps not to exclude paternal lineage", style = "color:#555555;font-weight:bold;")),
                                                     textOutput(ns("result_max_mustep_y"))
                                              ),
                                              column(4,
                                                     h4("mtDNA"),
                                                     br(),
-                                                    h5(div("Maximum number of inconsistency", style = "color:#555555;font-weight:bold;")),
+                                                    h5(div("Lower limit of the minimum shared length (bp) to use mtDNA profiles", style = "color:#555555;font-weight:bold;")),
+                                                    textOutput(ns("result_min_share_len_mt")),
+                                                    br(),
+                                                    h5(div("Upper limit of the number of inconsistency not to exclude maternal lineage", style = "color:#555555;font-weight:bold;")),
                                                     textOutput(ns("result_max_mismatch_mt"))
                                              )
                                            )
@@ -326,8 +338,16 @@ result_server <- function(id, rv_file){
           }
         }, ignoreInit = TRUE)
 
-        observeEvent(input$act_warning, {
-          dt_display <- create_displayed_data(dt_combined, fltr_type = "warning", max_data_displayed = max_data_displayed)
+        observeEvent(input$act_inconclusive, {
+          dt_display <- create_displayed_data(dt_combined, fltr_type = "inconclusive", max_data_displayed = max_data_displayed)
+          rv_result$dt_display <- dt_display
+          if(nrow(dt_display) == max_data_displayed){
+            showModal(modalDialog(title = "Information", paste0("Top ", max_data_displayed, " data is displayed."), easyClose = TRUE, footer = NULL))
+          }
+        }, ignoreInit = TRUE)
+
+        observeEvent(input$act_excluded, {
+          dt_display <- create_displayed_data(dt_combined, fltr_type = "excluded", max_data_displayed = max_data_displayed)
           rv_result$dt_display <- dt_display
           if(nrow(dt_display) == max_data_displayed){
             showModal(modalDialog(title = "Information", paste0("Top ", max_data_displayed, " data is displayed."), easyClose = TRUE, footer = NULL))
@@ -366,16 +386,16 @@ result_server <- function(id, rv_file){
 
           datatable(
             dt_display,
-            colnames = c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Estimated sex (Victim)", "Estimated sex (Reference)", "Paternal lineage", "Maternal lineage", "ColorBack"),
+            colnames = c("Victim", "Reference", "Family", "Assumed relationship", "Estimated relationship", "LR", "Paternal lineage", "Maternal lineage", "ColorBack"),
             filter = "top",
             selection = list(mode = "single", target = "row"),
             options = list(iDisplayLength = 10, autoWidth = TRUE,
-                           columnDefs = list(list(targets = 4, searchable = FALSE), list(targets = 10, visible = FALSE))
+                           columnDefs = list(list(targets = 5, searchable = FALSE), list(targets = 8, visible = FALSE))
             ),
             rownames = FALSE
           ) %>%
             formatSignif(columns = c("LR_Total"), digits = 3) %>%
-            formatStyle(columns = "ColorBack", target = "row", backgroundColor = styleEqual(c(0, 1, 2), c("#ffe0ef", "#e0ffe0", "#ffffe0")))
+            formatStyle(columns = "ColorBack", target = "row", backgroundColor = styleEqual(c(0, 1, 2, 3), c("#ffe0ef", "#ffffe0", "#e0efff", "#e0ffe0")))
         })
 
         output$download_main <- downloadHandler(
@@ -383,7 +403,7 @@ result_server <- function(id, rv_file){
           content = function(file){
             dt_download <- copy(rv_result$dt_display)
             dt_download[, ColorBack:=NULL]
-            colnames(dt_download) <- c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Estimated sex (Victim)", "Estimated sex (Reference)", "Paternal lineage", "Maternal lineage")
+            colnames(dt_download) <- c("Victim", "Reference", "Family", "Assumed relationship", "Estimated relationship", "LR", "Paternal lineage", "Maternal lineage")
             write.csv(dt_download, file, row.names = FALSE)
           }
         )
@@ -590,16 +610,16 @@ result_server <- function(id, rv_file){
           if(!is.null(dt_all_cand)){
             datatable(
               dt_all_cand,
-              colnames = c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Estimated sex (Victim)", "Estimated sex (Reference)", "Paternal lineage", "Maternal lineage", "ColorBack"),
+              colnames = c("Victim", "Reference", "Family", "Assumed relationship", "Estimated relationship", "LR", "Paternal lineage", "Maternal lineage", "ColorBack"),
               filter = "top",
               selection = "none",
               options = list(iDisplayLength = 10, autoWidth = TRUE,
-                             columnDefs = list(list(targets = 4, searchable = FALSE), list(targets = 10, visible = FALSE))
+                             columnDefs = list(list(targets = 5, searchable = FALSE), list(targets = 8, visible = FALSE))
               ),
               rownames = FALSE
             ) %>%
               formatSignif(columns = c("LR_Total"), digits = 3) %>%
-              formatStyle(columns = "ColorBack", target = "row", backgroundColor = styleEqual(c(0, 1, 2), c("#ffe0ef", "#e0ffe0", "#ffffe0")))
+              formatStyle(columns = "ColorBack", target = "row", backgroundColor = styleEqual(c(0, 1, 2, 3), c("#ffe0ef", "#ffffe0", "#e0efff", "#e0ffe0")))
           }
         })
 
@@ -608,7 +628,7 @@ result_server <- function(id, rv_file){
           content = function(file){
             dt_download <- copy(rv_result$dt_all_cand)
             dt_download[, ColorBack:=NULL]
-            colnames(dt_download) <- c("Victim", "Reference", "Family", "Assumed relationship", "LR", "Estimated relationship", "Estimated sex (Victim)", "Estimated sex (Reference)", "Paternal lineage", "Maternal lineage")
+            colnames(dt_download) <- c("Victim", "Reference", "Family", "Assumed relationship", "Estimated relationship", "LR", "Paternal lineage", "Maternal lineage")
             write.csv(dt_download, file, row.names = FALSE)
           }
         )
@@ -645,11 +665,20 @@ result_server <- function(id, rv_file){
         output$result_min_lr_auto <- renderText({
           paste0(dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"])
         })
+        output$result_max_lr_auto <- renderText({
+          paste0(dt_criteria$Value[dt_criteria$Criteria == "max_lr_auto"])
+        })
+        output$result_min_detect_y <- renderText({
+          paste0(dt_criteria$Value[dt_criteria$Criteria == "min_detect_y"])
+        })
         output$result_max_mismatch_y <- renderText({
           paste0(dt_criteria$Value[dt_criteria$Criteria == "max_mismatch_y"])
         })
         output$result_max_mustep_y <- renderText({
           paste0(dt_criteria$Value[dt_criteria$Criteria == "max_mustep_y"])
+        })
+        output$result_min_share_len_mt <- renderText({
+          paste0(dt_criteria$Value[dt_criteria$Criteria == "min_share_len_mt"])
         })
         output$result_max_mismatch_mt <- renderText({
           paste0(dt_criteria$Value[dt_criteria$Criteria == "max_mismatch_mt"])

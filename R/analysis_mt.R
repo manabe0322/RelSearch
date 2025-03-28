@@ -66,15 +66,18 @@ analyze_mt <- function(dt_v_mt, dt_r_mt, dt_criteria, show_progress = TRUE){
   # Estimate maternal relatives #
   ###############################
 
+  min_share_len_mt <- dt_criteria$Value[dt_criteria$Criteria == "min_share_len_mt"]
   max_mismatch_mt <- dt_criteria$Value[dt_criteria$Criteria == "max_mismatch_mt"]
 
   n_data <- nrow(dt_result_mt)
-  maternal_all <- rep("Not support", n_data)
+  maternal_all <- rep("Not excluded", n_data)
   bool_meet_criteria_mt <- matrix(FALSE, n_data, 2)
-  bool_meet_criteria_mt[, 1] <- dt_result_mt[, "MismatchMt"] <= max_mismatch_mt
-  bool_meet_criteria_mt[, 2] <- TRUE # Old version: dt_result_mt[, "ShareLengthMt"] >= min_share_mt
-  pos_meet_criteria_mt <- which(apply(bool_meet_criteria_mt, 1, all))
-  maternal_all[pos_meet_criteria_mt] <- "Support"
+  bool_meet_criteria_mt[, 1] <- dt_result_mt[, "ShareLengthMt"] >= min_share_len_mt
+  bool_meet_criteria_mt[, 2] <- dt_result_mt[, "MismatchMt"] <= max_mismatch_mt
+  index_inconclusive_tmp<- which(!bool_meet_criteria_mt[, 1])
+  maternal_all[index_inconclusive_tmp] <- "Inconclusive"
+  index_excluded <- which(!bool_meet_criteria_mt[, 2])
+  maternal_all[index_excluded] <- "Excluded"
 
   options(warn = -1)
   dt_result_mt[, Maternal := maternal_all]

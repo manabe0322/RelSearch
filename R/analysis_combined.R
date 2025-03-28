@@ -1,30 +1,40 @@
 #' create_background_color
 #'
-#' @description The function to create the sign of the number of candidates
+#' @description The function to create the sign of the number of candidates (0: Excluded, 1: Inconclusive, 2: Multiple candidates, 3: Identified)
 #' @param dt_combined A data.table of the combined data
-#' @param index_warning Indices of not-supporting paternal or maternal lineage with LR >= min_lr_auto
-create_background_color <- function(dt_combined, index_warning){
-  background_color <- rep(-1, nrow(dt_combined))
+#' @param index_change_yellow Indices of inconclusive paternal or maternal lineages with supportive LR
+#' @param index_change_red Indices of excluded paternal or maternal lineages with supportive LR
+create_background_color <- function(dt_combined, index_change_yellow, index_change_red){
+  background_color <- rep(0, nrow(dt_combined))
 
-  pos_est_rel <- which(!is.na(dt_combined[, EstimatedRel]))
-  n_est_rel <- length(pos_est_rel)
+  # Initially, backgound colors are determined based on the LR
+  ## Extract data with supportive LR
+  index_identified <- which(!is.element(dt_combined[, EstimatedRel], c("Inconclusive", "Unrelated")))
+  background_color[index_identified] <- 3
 
-  if(n_est_rel > 0){
-    dt_extract <- dt_combined[pos_est_rel, ]
+  ## Extract data with inconclusive LR
+  index_inconclusive_lr <- which(dt_combined[, EstimatedRel] == "Inconclusive")
+  background_color[index_inconclusive_lr] <- 1
+
+  # Next, background colors are updated based on the results for Y-STR and mtDNA
+  background_color[index_change_yellow] <- 1
+  background_color[index_change_red] <- 0
+
+  # Finally, check multiple candidates
+  index_identified <- which(background_color == 3)
+  n_identified <- length(index_identified)
+  if(n_identified > 0){
+    dt_extract <- dt_combined[index_identified, ]
     vics <- dt_extract[, Victim]
     refs <- dt_extract[, Reference]
 
-    for(i in seq_len(n_est_rel)){
+    for(i in seq_len(n_identified)){
       nc <- length(union(which(vics == vics[i]), which(refs == refs[i])))
       if(nc >= 2){
-        background_color[pos_est_rel[i]] <- 2
-      }else{
-        background_color[pos_est_rel[i]] <- nc
+        background_color[index_identified[i]] <- 2
       }
     }
   }
-
-  background_color[index_warning] <- 0
 
   return(background_color)
 }
@@ -75,28 +85,6 @@ create_combined_data <- function(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_
   }
   options(warn = 0)
 
-  # Investigate indices of data that does not support lineage unexpectedly
-  index_unexpected_y <- index_unexpected_mt <- integer(0)
-  est_rel_all <- dt_combined[, EstimatedRel]
-  est_paternal_all <- dt_combined[, Paternal]
-  est_maternal_all <- dt_combined[, Maternal]
-  names_rel <- dt_rel[, Relationship]
-  info_paternal <- dt_rel[, Paternal]
-  info_maternal <- dt_rel[, Maternal]
-  for(i in 1:length(names_rel)){
-    index_target_rel <- which(est_rel_all == names_rel[i])
-    if(length(index_target_rel) > 0){
-      if(info_paternal[i] == "Yes"){
-        est_paternal_target_rel <- est_paternal_all[index_target_rel]
-        index_unexpected_y <- c(index_unexpected_y, index_target_rel[which(est_paternal_target_rel == "Not support")])
-      }
-      if(info_maternal[i] == "Yes"){
-        est_maternal_target_rel <- est_maternal_all[index_target_rel]
-        index_unexpected_mt <- c(index_unexpected_mt, index_target_rel[which(est_maternal_target_rel == "Not support")])
-      }
-    }
-  }
-
   # Investigate indices of sex mismatches
   rel_female_v <- dt_rel$Relationship[dt_rel$Sex_Victim == "F"]
   rel_female_r <- dt_rel$Relationship[dt_rel$Sex_Reference == "F"]
@@ -114,11 +102,39 @@ create_combined_data <- function(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_
   est_sex_v[index_male_v] <- "Male"
   est_sex_r[index_male_r] <- "Male"
 
+  # Investigate indices of data that does not support lineage unexpectedly
+  index_unexpectedly_excluded_y <- index_unexpectedly_excluded_mt <- integer(0)
+  index_unexpectedly_inconclusive_y <- index_unexpectedly_inconclusive_mt <- integer(0)
+  est_rel_all <- dt_combined[, EstimatedRel]
+  est_paternal_all <- dt_combined[, Paternal]
+  est_maternal_all <- dt_combined[, Maternal]
+  names_rel <- dt_rel[, Relationship]
+  info_paternal <- dt_rel[, Paternal]
+  info_maternal <- dt_rel[, Maternal]
+  for(i in 1:length(names_rel)){
+    index_target_rel <- which(est_rel_all == names_rel[i])
+    if(length(index_target_rel) > 0){
+      if(info_paternal[i] == "Yes"){
+        est_paternal_target_rel <- est_paternal_all[index_target_rel]
+        index_unexpectedly_excluded_y <- c(index_unexpectedly_excluded_y, index_target_rel[which(is.element(est_paternal_target_rel, c("Excluded", "Sex mismatch")))])
+        index_unexpectedly_inconclusive_y <- c(index_unexpectedly_inconclusive_y, index_target_rel[which(est_paternal_target_rel == "Inconclusive")])
+      }
+      if(info_maternal[i] == "Yes"){
+        est_maternal_target_rel <- est_maternal_all[index_target_rel]
+        index_unexpectedly_excluded_mt <- c(index_unexpectedly_excluded_mt, index_target_rel[which(est_maternal_target_rel == "Excluded")])
+        index_unexpectedly_inconclusive_mt <- c(index_unexpectedly_inconclusive_mt, index_target_rel[which(est_maternal_target_rel == "Inconclusive")])
+      }
+    }
+  }
+
   # Update estimated relationships
-  index_satisfy_lr <- which(!is.na(est_rel_all))
-  index_exclude_y_mt <- sort(unique(c(index_unexpected_y, index_unexpected_mt, index_sex_mismatch)))
-  index_warning <- intersect(index_satisfy_lr, index_exclude_y_mt)
-  est_rel_all[index_warning] <- NA
+  index_not_exclude_lr <- which(!is.element(est_rel_all, "Unrelated"))
+  index_exclude_y_mt <- sort(unique(c(index_unexpectedly_excluded_y, index_unexpectedly_excluded_mt)))
+  index_inconclusive_y_mt <- sort(unique(c(index_unexpectedly_inconclusive_y, index_unexpectedly_inconclusive_mt)))
+  index_change_red <- intersect(index_not_exclude_lr, index_exclude_y_mt)
+  index_change_yellow <- intersect(index_not_exclude_lr, index_inconclusive_y_mt)
+  est_rel_all[index_change_red] <- "Excluded by Y-STR or mtDNA"
+  est_rel_all[index_change_yellow] <- "Inconclusive result for Y-STR or mtDNA"
   dt_combined[, EstimatedRel := est_rel_all]
 
   # Change data type
@@ -127,12 +143,12 @@ create_combined_data <- function(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_
   sn_r <- sort(unique(dt_combined[, Reference]))
   dt_combined$Reference <- factor(dt_combined$Reference, levels = sn_r, labels = sn_r)
   dt_combined$AssumedRel <- factor(dt_combined$AssumedRel, levels = names_rel, labels = names_rel)
-  dt_combined$EstimatedRel <- factor(dt_combined$EstimatedRel, levels = names_rel, labels = names_rel)
-  dt_combined$Paternal <- factor(dt_combined$Paternal, levels = c("Support", "Not support", "Sex mismatch"), labels = c("Support", "Not support", "Sex mismatch"))
-  dt_combined$Maternal <- factor(dt_combined$Maternal, levels = c("Support", "Not support"), labels = c("Support", "Not support"))
+  dt_combined$EstimatedRel <- factor(dt_combined$EstimatedRel, levels = c(names_rel, "Inconclusive", "Unrelated", "Excluded by Y-STR or mtDNA", "Inconclusive result for Y-STR or mtDNA"), labels = c(names_rel, "Inconclusive", "Unrelated", "Excluded by Y-STR or mtDNA", "Inconclusive result for Y-STR or mtDNA"))
+  dt_combined$Paternal <- factor(dt_combined$Paternal, levels = c("Not excluded", "Inconclusive", "Excluded", "Sex mismatch"), labels = c("Not excluded", "Inconclusive", "Excluded", "Sex mismatch"))
+  dt_combined$Maternal <- factor(dt_combined$Maternal, levels = c("Not excluded", "Inconclusive", "Excluded"), labels = c("Not excluded", "Inconclusive", "Excluded"))
 
   # Create the sign of the number of candidates
-  background_color <- create_background_color(dt_combined, index_warning)
+  background_color <- create_background_color(dt_combined, index_change_yellow, index_change_red)
 
   # Additional columns
   options(warn = -1)
@@ -146,7 +162,7 @@ create_combined_data <- function(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_
     keep_min_lr <- dt_data_manage$Value[dt_data_manage$Parameter == "keep_min_lr"]
     dt_combined <- dt_combined[LR_Total >= keep_min_lr]
   }else{
-    dt_combined <- dt_combined[Paternal == "Support" | Maternal == "Support"]
+    dt_combined <- dt_combined[Paternal == "Not excluded" | Maternal == "Not excluded"]
   }
 
   return(dt_combined)
@@ -162,16 +178,18 @@ create_combined_data <- function(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_
 create_displayed_data <- function(dt_combined, fltr_type = "with_auto", min_lr = 100, max_data_displayed = 10000){
   setkey(dt_combined, Victim, Reference, AssumedRel)
 
-  dt_display <- dt_combined[, list(Victim, Reference, Family, AssumedRel, LR_Total, EstimatedRel, EstSexV, EstSexR, Paternal, Maternal, ColorBack)]
+  dt_display <- dt_combined[, list(Victim, Reference, Family, AssumedRel, EstimatedRel, LR_Total, Paternal, Maternal, ColorBack)]
   setorder(dt_display, - LR_Total, Paternal, Maternal, na.last = TRUE)
 
   if(fltr_type == "with_auto"){
     dt_display <- dt_display[LR_Total >= min_lr]
   }else if(fltr_type == "identified"){
-    dt_display <- dt_display[ColorBack == 1]
+    dt_display <- dt_display[ColorBack == 3]
   }else if(fltr_type == "multiple"){
     dt_display <- dt_display[ColorBack == 2]
-  }else if(fltr_type == "warning"){
+  }else if(fltr_type == "inconclusive"){
+    dt_display <- dt_display[ColorBack == 1]
+  }else if(fltr_type == "excluded"){
     dt_display <- dt_display[ColorBack == 0]
   }
 
