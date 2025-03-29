@@ -438,7 +438,7 @@ result_server <- function(id, rv_file){
         })
 
         output$download_auto <- downloadHandler(
-          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_", rv_result$sn_v_select, "-", rv_result$sn_r_select, "_RelSearch_Detail_STR.csv"),
+          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_RelSearch_Detail_STR.csv"),
           content = function(file){
             dt_detail_auto <- rv_result$dt_detail_auto
             colnames(dt_detail_auto) <- c("Victim", "Reference", "Estimated relationship", "Locus", "Victim profile", "Reference profile", "Likelihood (related)", "Likelihood (unrelated)", "LR")
@@ -447,7 +447,7 @@ result_server <- function(id, rv_file){
         )
 
         output$download_y <- downloadHandler(
-          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_", rv_result$sn_v_select, "-", rv_result$sn_r_select, "_RelSearch_Detail_Y-STR.csv"),
+          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_RelSearch_Detail_Y-STR.csv"),
           content = function(file){
             dt_detail_y <- rv_result$dt_detail_y
             colnames(dt_detail_y) <- c("Victim", "Reference", "Paternal lineage", "Locus", "Victim profile", "Reference profile", "Ignored locus", "Mismatched locus", "Mutational step")
@@ -456,7 +456,7 @@ result_server <- function(id, rv_file){
         )
 
         output$download_mt <- downloadHandler(
-          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_", rv_result$sn_v_select, "-", rv_result$sn_r_select, "_RelSearch_Detail_mtDNA.csv"),
+          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_RelSearch_Detail_mtDNA.csv"),
           content = function(file){
             dt_detail_mt <- rv_result$dt_detail_mt
             colnames(dt_detail_mt) <- c("Victim", "Reference", "Maternal lineage", "Shared range", "Shared length", "Victim profile", "Reference profile", "Out of shared range", "Mismatch")
