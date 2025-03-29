@@ -4,23 +4,24 @@
 #' @param dt_combined A data.table of the combined data
 #' @param index_change_yellow Indices of inconclusive paternal or maternal lineages with supportive LR
 #' @param index_change_red Indices of excluded paternal or maternal lineages with supportive LR
-create_background_color <- function(dt_combined, index_change_yellow, index_change_red){
+#' @param index_no_str_change_red Indices of excluded paternal or maternal lineages when no STR data is available
+create_background_color <- function(dt_combined, index_change_yellow, index_change_red, index_no_str_change_red){
   background_color <- rep(0, nrow(dt_combined))
 
   # Initially, backgound colors are determined based on the LR
   ## Extract data with supportive LR
-  index_identified <- which(!is.element(dt_combined[, EstimatedRel], c("Inconclusive", "Unrelated")))
+  index_identified <- which(!is.element(dt_combined[, EstimatedRel], c("Inconclusive", "Unrelated", "Excluded", "No STR data")))
   background_color[index_identified] <- 3
 
   ## Extract data with inconclusive LR
   index_inconclusive_lr <- which(dt_combined[, EstimatedRel] == "Inconclusive")
   background_color[index_inconclusive_lr] <- 1
 
-  # Next, background colors are updated based on the results for Y-STR and mtDNA
+  ## Next, background colors are updated based on the results for Y-STR and mtDNA
   background_color[index_change_yellow] <- 1
-  background_color[index_change_red] <- 0
+  background_color[index_change_red] <- 0 # Priotize Excluded to Inconclusive
 
-  # Finally, check multiple candidates
+  ## Finally, check multiple candidates
   index_identified <- which(background_color == 3)
   n_identified <- length(index_identified)
   if(n_identified > 0){
@@ -34,6 +35,13 @@ create_background_color <- function(dt_combined, index_change_yellow, index_chan
         background_color[index_identified[i]] <- 2
       }
     }
+  }
+
+  # No STR data
+  index_no_str <- which(is.element(dt_combined[, EstimatedRel], "No STR data"))
+  if(length(index_no_str) != 0){
+    background_color[index_no_str] <- 1
+    background_color[index_no_str_change_red] <- 0 # Priotize Excluded to Inconclusive
   }
 
   return(background_color)
@@ -123,6 +131,11 @@ create_combined_data <- function(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_
   }
   options(warn = 0)
 
+  # Update empty cells for estimated relationships
+  est_rel_all <- dt_combined[, EstimatedRel]
+  est_rel_all[is.na(est_rel_all)] <- "No STR data"
+  dt_combined[, EstimatedRel := est_rel_all]
+
   # Investigate sex mismatches
   rel_female_v <- dt_rel$Relationship[dt_rel$Sex_Victim == "F"]
   rel_female_r <- dt_rel$Relationship[dt_rel$Sex_Reference == "F"]
@@ -146,7 +159,7 @@ create_combined_data <- function(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_
   names_rel <- dt_rel[, Relationship]
   info_paternal <- dt_rel[, Paternal]
   info_maternal <- dt_rel[, Maternal]
-  index_not_exclude_lr <- which(!is.element(est_rel_all, "Unrelated"))
+  index_not_exclude_lr <- which(!is.element(est_rel_all, c("Unrelated", "No STR data")))
   index_unexpectedly_excluded_y <- index_unexpectedly_excluded_mt <- integer(0)
   index_unexpectedly_inconclusive_y <- index_unexpectedly_inconclusive_mt <- integer(0)
   for(i in 1:length(names_rel)){
@@ -170,14 +183,51 @@ create_combined_data <- function(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_
   # Update estimated relationships
   index_exclude_y_mt <- sort(unique(c(index_unexpectedly_excluded_y, index_unexpectedly_excluded_mt)))
   index_inconclusive_y_mt <- sort(unique(c(index_unexpectedly_inconclusive_y, index_unexpectedly_inconclusive_mt)))
-  index_change_yellow <- intersect(index_not_exclude_lr, index_inconclusive_y_mt)
-  index_change_red <- intersect(index_not_exclude_lr, index_exclude_y_mt)
+  index_change_yellow <- index_inconclusive_y_mt ##intersect(index_not_exclude_lr, index_inconclusive_y_mt)
+  index_change_red <- index_exclude_y_mt ##intersect(index_not_exclude_lr, index_exclude_y_mt)
   est_rel_all[index_change_yellow] <- "Inconclusive"
   est_rel_all[index_change_red] <- "Excluded" # Priotize Excluded to Inconclusive
   dt_combined[, EstimatedRel := est_rel_all]
 
+  # Investigate keep data when no STR data is available (background color: yellow)
+  est_rel_all <- dt_combined[, EstimatedRel]
+  index_no_str <- which(is.element(est_rel_all, "No STR data"))
+  index_no_str_keep_y_mt <- integer(0)
+
+  for(i in 1:length(names_rel)){
+    index_tmp <- which(assumed_rel_all == names_rel[i])
+    index_target_rel <- sort(intersect(index_no_str, index_tmp))
+    if(length(index_target_rel) > 0){
+      est_paternal_target_rel <- est_paternal_all[index_target_rel]
+      index_target_rel <- index_target_rel[which(!is.element(est_paternal_target_rel, c("Sex mismatch")))]
+      if(info_paternal[i] == "Yes"){
+        index_tmp_y <- index_target_rel[which(is.element(est_paternal_target_rel, c("Not excluded", "Inconclusive")))]
+      }else{
+        index_tmp_y <- integer(0)
+      }
+      if(info_maternal[i] == "Yes"){
+        est_maternal_target_rel <- est_maternal_all[index_target_rel]
+        index_tmp_mt <- index_target_rel[which(is.element(est_maternal_target_rel, c("Not excluded", "Inconclusive")))]
+      }else{
+        index_tmp_mt <- integer(0)
+      }
+      if(info_paternal[i] == "Yes" && info_maternal[i] == "Yes"){ # Brother-Brother
+        index_tmp_y_mt <- sort(intersect(index_tmp_y, index_tmp_mt))
+      }else{
+        index_tmp_y_mt <- sort(unique(c(index_tmp_y, index_tmp_mt)))
+      }
+      index_no_str_keep_y_mt <- c(index_no_str_keep_y_mt, index_tmp_y_mt)
+    }
+  }
+
+  # Update estimated relationships
+  index_no_str_keep_y_mt <- sort(unique(index_no_str_keep_y_mt))
+  index_no_str_change_red <- setdiff(index_no_str, index_no_str_keep_y_mt)
+  est_rel_all[index_no_str_change_red] <- "Excluded" # Priotize Excluded to Inconclusive
+  dt_combined[, EstimatedRel := est_rel_all]
+
   # Create the background colors for the displayed table
-  background_color <- create_background_color(dt_combined, index_change_yellow, index_change_red)
+  background_color <- create_background_color(dt_combined, index_change_yellow, index_change_red, index_no_str_change_red)
 
   # Create multiple candidate groups
   group_cand <- create_group_cand(dt_combined, background_color)
@@ -196,7 +246,7 @@ create_combined_data <- function(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_
   sn_r <- sort(unique(dt_combined[, Reference]))
   dt_combined$Reference <- factor(dt_combined$Reference, levels = sn_r, labels = sn_r)
   dt_combined$AssumedRel <- factor(dt_combined$AssumedRel, levels = names_rel, labels = names_rel)
-  dt_combined$EstimatedRel <- factor(dt_combined$EstimatedRel, levels = c(names_rel, "Inconclusive", "Unrelated", "Excluded"), labels = c(names_rel, "Inconclusive", "Unrelated", "Excluded"))
+  dt_combined$EstimatedRel <- factor(dt_combined$EstimatedRel, levels = c(names_rel, "Inconclusive", "Unrelated", "Excluded", "No STR data"), labels = c(names_rel, "Inconclusive", "Unrelated", "Excluded", "No STR data"))
   dt_combined$Paternal <- factor(dt_combined$Paternal, levels = c("Not excluded", "Inconclusive", "Excluded", "Sex mismatch"), labels = c("Not excluded", "Inconclusive", "Excluded", "Sex mismatch"))
   dt_combined$Maternal <- factor(dt_combined$Maternal, levels = c("Not excluded", "Inconclusive", "Excluded"), labels = c("Not excluded", "Inconclusive", "Excluded"))
   group_cand_labels <- as.character(sort(unique(group_cand[!is.na(group_cand)])))
@@ -207,7 +257,7 @@ create_combined_data <- function(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_
     keep_min_lr <- dt_data_manage$Value[dt_data_manage$Parameter == "keep_min_lr"]
     dt_combined <- dt_combined[LR_Total >= keep_min_lr]
   }else{
-    dt_combined <- dt_combined[Paternal == "Not excluded" | Maternal == "Not excluded"]
+    dt_combined <- dt_combined[index_no_str_keep_y_mt, ]
   }
 
   return(dt_combined)

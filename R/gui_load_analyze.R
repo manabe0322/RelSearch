@@ -364,9 +364,9 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
           if(nrow(dt_display) == max_data_displayed){
             showModal(modalDialog(title = "Information", paste0("Top ", max_data_displayed, " data is displayed."), easyClose = TRUE, footer = NULL))
           }else if(bool_check_auto){
-            showModal(modalDialog(title = "Information", "Data that satisfies the criterion of the minimum LR is displayed.", easyClose = TRUE, footer = NULL))
+            showModal(modalDialog(title = "Information", paste0("Data with LR greater than ", min_lr_auto, " is displayed."), easyClose = TRUE, footer = NULL))
           }else{
-            showModal(modalDialog(title = "Information", "Data that satisfies the criteria for Y-STR or mtDNA is displayed.", easyClose = TRUE, footer = NULL))
+            showModal(modalDialog(title = "Information", "Data that is inconclusive or not excluded from paternal or maternal lineages is displayed.", easyClose = TRUE, footer = NULL))
           }
         }
       })
