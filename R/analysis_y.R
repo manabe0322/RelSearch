@@ -141,14 +141,12 @@ analyze_y <- function(dt_v_y, dt_r_y, dt_criteria, dt_rel, show_progress = TRUE)
   n_data <- nrow(dt_result_y)
   paternal_all <- rep("Not excluded", n_data)
   bool_meet_criteria_y <- matrix(FALSE, n_data, 4)
-  bool_meet_criteria_y[, 1] <- dt_result_y[, "Ignore_Total"] <= n_l - min_detect_y
-  bool_meet_criteria_y[, 2] <- dt_result_y[, "Mismatch_Total"] <= max_mismatch_y
-  bool_meet_criteria_y[, 3] <- dt_result_y[, "MuStep_Total"] <= max_mustep_y
-  bool_meet_criteria_y[, 4] <- dt_result_y[, "MuStep_Total"] %% 1 == 0
-  index_inconclusive_tmp <- which(!bool_meet_criteria_y[, 1])
-  paternal_all[index_inconclusive_tmp] <- "Inconclusive"
-  index_excluded <- which(apply(!bool_meet_criteria_y[, 2:4], 1, any))
-  paternal_all[index_excluded] <- "Excluded"
+  bool_meet_criteria_y[, 1] <- dt_result_y[, Ignore_Total] <= n_l - min_detect_y
+  bool_meet_criteria_y[, 2] <- dt_result_y[, Mismatch_Total] <= max_mismatch_y
+  bool_meet_criteria_y[, 3] <- dt_result_y[, MuStep_Total] <= max_mustep_y
+  bool_meet_criteria_y[, 4] <- dt_result_y[, MuStep_Total] %% 1 == 0
+  paternal_all[!bool_meet_criteria_y[, 1]] <- "Inconclusive"
+  paternal_all[apply(!bool_meet_criteria_y[, 2:4], 1, any)] <- "Excluded"
 
   options(warn = -1)
   dt_result_y[, Paternal := paternal_all]

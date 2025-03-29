@@ -109,25 +109,6 @@ result_ui <- function(id){
                                   )
                                 )
                        ),
-                       tabPanel("All candidates",
-                                br(),
-                                fluidRow(
-                                  column(3,
-                                         wellPanel(
-                                           h4("Selected victim"),
-                                           textOutput(ns("sn_v_select_all_cand")),
-                                           br(),
-                                           h4("Selected reference"),
-                                           textOutput(ns("sn_r_select_all_cand"))
-                                         ),
-                                         disabled(downloadButton(ns("download_all_cand"), "Download", class = "btn btn-primary btn-lg"))
-                                  ),
-                                  column(9,
-                                         br(),
-                                         dataTableOutput(ns("dt_all_cand"))
-                                  )
-                                )
-                       ),
                        tabPanel("Analysis conditions",
                                 br(),
                                 tabsetPanel(
@@ -294,9 +275,6 @@ result_server <- function(id, rv_file){
         rv_result$mismatch_mt <- NULL
         rv_result$share_range_mt <- NULL
         rv_result$share_length_mt <- NULL
-        rv_result$dt_all_cand <- NULL
-        rv_result$sn_v_select_all_cand <- NULL
-        rv_result$sn_r_select_all_cand <- NULL
 
         ########################
         # Display summary data #
@@ -386,11 +364,11 @@ result_server <- function(id, rv_file){
 
           datatable(
             dt_display,
-            colnames = c("Victim", "Reference", "Family", "Assumed relationship", "Estimated relationship", "LR", "Paternal lineage", "Maternal lineage", "ColorBack"),
+            colnames = c("Victim", "Reference", "Family", "Assumed relationship", "Estimated relationship", "LR", "Paternal lineage", "Maternal lineage", "Group of candidates", "ColorBack"),
             filter = "top",
             selection = list(mode = "single", target = "row"),
             options = list(iDisplayLength = 10, autoWidth = TRUE,
-                           columnDefs = list(list(targets = 5, searchable = FALSE), list(targets = 8, visible = FALSE))
+                           columnDefs = list(list(targets = 5, searchable = FALSE), list(targets = 9, visible = FALSE))
             ),
             rownames = FALSE
           ) %>%
@@ -403,7 +381,7 @@ result_server <- function(id, rv_file){
           content = function(file){
             dt_download <- copy(rv_result$dt_display)
             dt_download[, ColorBack:=NULL]
-            colnames(dt_download) <- c("Victim", "Reference", "Family", "Assumed relationship", "Estimated relationship", "LR", "Paternal lineage", "Maternal lineage")
+            colnames(dt_download) <- c("Victim", "Reference", "Family", "Assumed relationship", "Estimated relationship", "LR", "Paternal lineage", "Maternal lineage", "Group of candidates")
             write.csv(dt_download, file, row.names = FALSE)
           }
         )
@@ -501,7 +479,6 @@ result_server <- function(id, rv_file){
             disable("download_auto")
             disable("download_y")
             disable("download_mt")
-            disable("download_all_cand")
             rv_result$dt_detail_auto <- NULL
             rv_result$dt_detail_y <- NULL
             rv_result$dt_detail_mt <- NULL
@@ -514,7 +491,6 @@ result_server <- function(id, rv_file){
             rv_result$mismatch_mt <- NULL
             rv_result$share_range_mt <- NULL
             rv_result$share_length_mt <- NULL
-            rv_result$dt_all_cand <- NULL
           }else{
             dt_display <- rv_result$dt_display
             sn_v_select <- dt_display[pos_select, Victim]
@@ -523,7 +499,7 @@ result_server <- function(id, rv_file){
             assumed_rel_select <- dt_display[pos_select, AssumedRel]
             estimated_rel_select <- dt_display[pos_select, EstimatedRel]
             if(is.na(estimated_rel_select)){
-              estimated_rel_select <- "Not identified"
+              estimated_rel_select <- "No data"
             }
             paternal_select <- dt_display[pos_select, Paternal]
             if(is.na(paternal_select)){
@@ -590,48 +566,8 @@ result_server <- function(id, rv_file){
             rv_result$estimated_rel_select <- estimated_rel_select
             rv_result$paternal_select <- paternal_select
             rv_result$maternal_select <- maternal_select
-
-            # Other candidates
-            enable("download_all_cand")
-            rv_result$dt_all_cand <- extract_all_cand(dt_display, sn_v_select, sn_r_select)
           }
         }, ignoreInit = TRUE)
-
-        ############################
-        # Display other candidates #
-        ############################
-
-        output$sn_v_select_all_cand <- renderText({paste0(rv_result$sn_v_select)})
-        output$sn_r_select_all_cand <- renderText({paste0(rv_result$sn_r_select)})
-
-        output$dt_all_cand <- renderDataTable(server = FALSE, {
-          dt_all_cand <- rv_result$dt_all_cand
-
-          if(!is.null(dt_all_cand)){
-            datatable(
-              dt_all_cand,
-              colnames = c("Victim", "Reference", "Family", "Assumed relationship", "Estimated relationship", "LR", "Paternal lineage", "Maternal lineage", "ColorBack"),
-              filter = "top",
-              selection = "none",
-              options = list(iDisplayLength = 10, autoWidth = TRUE,
-                             columnDefs = list(list(targets = 5, searchable = FALSE), list(targets = 8, visible = FALSE))
-              ),
-              rownames = FALSE
-            ) %>%
-              formatSignif(columns = c("LR_Total"), digits = 3) %>%
-              formatStyle(columns = "ColorBack", target = "row", backgroundColor = styleEqual(c(0, 1, 2, 3), c("#ffe0ef", "#ffffe0", "#e0efff", "#e0ffe0")))
-          }
-        })
-
-        output$download_all_cand <- downloadHandler(
-          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_all_candidates.csv"),
-          content = function(file){
-            dt_download <- copy(rv_result$dt_all_cand)
-            dt_download[, ColorBack:=NULL]
-            colnames(dt_download) <- c("Victim", "Reference", "Family", "Assumed relationship", "Estimated relationship", "LR", "Paternal lineage", "Maternal lineage")
-            write.csv(dt_download, file, row.names = FALSE)
-          }
-        )
 
         ###############################
         # Display analysis conditions #

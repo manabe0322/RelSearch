@@ -62,6 +62,10 @@ analyze_mt <- function(dt_v_mt, dt_r_mt, dt_criteria, show_progress = TRUE){
   names(dt_right) <- c("MismatchMt", "ShareRangeMt", "ShareLengthMt")
   dt_result_mt <- cbind(dt_left, dt_right)
 
+  names_dt_result_mt <- names(dt_result_mt)
+  col_integer <- c("MismatchMt", "ShareLengthMt")
+  dt_result_mt[, (col_integer) := lapply(.SD, as.integer), .SDcols = col_integer]
+
   ###############################
   # Estimate maternal relatives #
   ###############################
@@ -71,13 +75,8 @@ analyze_mt <- function(dt_v_mt, dt_r_mt, dt_criteria, show_progress = TRUE){
 
   n_data <- nrow(dt_result_mt)
   maternal_all <- rep("Not excluded", n_data)
-  bool_meet_criteria_mt <- matrix(FALSE, n_data, 2)
-  bool_meet_criteria_mt[, 1] <- dt_result_mt[, "ShareLengthMt"] >= min_share_len_mt
-  bool_meet_criteria_mt[, 2] <- dt_result_mt[, "MismatchMt"] <= max_mismatch_mt
-  index_inconclusive_tmp<- which(!bool_meet_criteria_mt[, 1])
-  maternal_all[index_inconclusive_tmp] <- "Inconclusive"
-  index_excluded <- which(!bool_meet_criteria_mt[, 2])
-  maternal_all[index_excluded] <- "Excluded"
+  maternal_all[dt_result_mt[, ShareLengthMt] < min_share_len_mt] <- "Inconclusive"
+  maternal_all[dt_result_mt[, MismatchMt] > max_mismatch_mt] <- "Excluded"
 
   options(warn = -1)
   dt_result_mt[, Maternal := maternal_all]

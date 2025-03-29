@@ -39,6 +39,44 @@ create_background_color <- function(dt_combined, index_change_yellow, index_chan
   return(background_color)
 }
 
+#' create_group_cand
+#'
+#' @description The function to create the groups of multiple candidates
+#' @param dt_combined A data.table of the combined data
+#' @param background_color The background colors for the displayed table
+create_group_cand <- function(dt_combined, background_color){
+  group_cand <- rep(NA, nrow(dt_combined))
+  index_multi_cand <- which(background_color == 2)
+  if(length(index_multi_cand) != 0){
+    dt_extract <- dt_combined[index_multi_cand, ]
+    vics <- dt_extract[, Victim]
+    refs <- dt_extract[, Reference]
+    current_group <- 1
+    for(i in 1:length(index_multi_cand)){
+      if(is.na(group_cand[index_multi_cand[i]])){
+        cand_v <- vics[i]
+        cand_r <- refs[i]
+        repeat{
+          index_v <- which(is.element(vics, cand_v))
+          index_r <- which(is.element(refs, cand_r))
+          index_vr <- sort(unique(c(index_v, index_r)))
+          cand_v_new <- unique(vics[index_vr])
+          cand_r_new <- unique(refs[index_vr])
+          if(length(cand_v_new) > length(cand_v) || length(cand_r_new) > length(cand_r)){
+            cand_v <- cand_v_new
+            cand_r <- cand_r_new
+          }else{
+            break
+          }
+        }
+        group_cand[index_multi_cand[index_vr]] <- current_group
+        current_group <- current_group + 1
+      }
+    }
+  }
+  return(group_cand)
+}
+
 #' create_combined_data
 #'
 #' @description The function to create combined data
@@ -70,7 +108,7 @@ create_combined_data <- function(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_
     }
   }
 
-  # Add lacking columns
+  # Add empty columns
   n_data <- nrow(dt_combined)
   options(warn = -1)
   if(is.null(dt_result_auto)){
@@ -85,38 +123,40 @@ create_combined_data <- function(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_
   }
   options(warn = 0)
 
-  # Investigate indices of sex mismatches
+  # Investigate sex mismatches
   rel_female_v <- dt_rel$Relationship[dt_rel$Sex_Victim == "F"]
   rel_female_r <- dt_rel$Relationship[dt_rel$Sex_Reference == "F"]
-
   index_male_v <- which(is.element(dt_combined$Victim, sn_v_y_male))
   index_male_r <- which(is.element(dt_combined$Reference, sn_r_y_male))
-
   index_sex_mismatch_v <- intersect(which(is.element(dt_combined$AssumedRel, rel_female_v)), index_male_v)
   index_sex_mismatch_r <- intersect(which(is.element(dt_combined$AssumedRel, rel_female_r)), index_male_r)
   index_sex_mismatch <- sort(union(index_sex_mismatch_v, index_sex_mismatch_r))
-
   dt_combined$Paternal[index_sex_mismatch] <- "Sex mismatch"
 
+  # Create objects for the estimated sex
   est_sex_v <- est_sex_r <- rep(NA, n_data)
   est_sex_v[index_male_v] <- "Male"
   est_sex_r[index_male_r] <- "Male"
 
   # Investigate indices of data that does not support lineage unexpectedly
-  index_unexpectedly_excluded_y <- index_unexpectedly_excluded_mt <- integer(0)
-  index_unexpectedly_inconclusive_y <- index_unexpectedly_inconclusive_mt <- integer(0)
+  assumed_rel_all <- dt_combined[, AssumedRel]
   est_rel_all <- dt_combined[, EstimatedRel]
   est_paternal_all <- dt_combined[, Paternal]
   est_maternal_all <- dt_combined[, Maternal]
   names_rel <- dt_rel[, Relationship]
   info_paternal <- dt_rel[, Paternal]
   info_maternal <- dt_rel[, Maternal]
+  index_not_exclude_lr <- which(!is.element(est_rel_all, "Unrelated"))
+  index_unexpectedly_excluded_y <- index_unexpectedly_excluded_mt <- integer(0)
+  index_unexpectedly_inconclusive_y <- index_unexpectedly_inconclusive_mt <- integer(0)
   for(i in 1:length(names_rel)){
-    index_target_rel <- which(est_rel_all == names_rel[i])
+    index_tmp <- which(assumed_rel_all == names_rel[i])
+    index_target_rel <- sort(intersect(index_not_exclude_lr, index_tmp))
     if(length(index_target_rel) > 0){
+      est_paternal_target_rel <- est_paternal_all[index_target_rel]
+      index_unexpectedly_excluded_y <- c(index_unexpectedly_excluded_y, index_target_rel[which(is.element(est_paternal_target_rel, "Sex mismatch"))])
       if(info_paternal[i] == "Yes"){
-        est_paternal_target_rel <- est_paternal_all[index_target_rel]
-        index_unexpectedly_excluded_y <- c(index_unexpectedly_excluded_y, index_target_rel[which(is.element(est_paternal_target_rel, c("Excluded", "Sex mismatch")))])
+        index_unexpectedly_excluded_y <- c(index_unexpectedly_excluded_y, index_target_rel[which(is.element(est_paternal_target_rel, "Excluded"))])
         index_unexpectedly_inconclusive_y <- c(index_unexpectedly_inconclusive_y, index_target_rel[which(est_paternal_target_rel == "Inconclusive")])
       }
       if(info_maternal[i] == "Yes"){
@@ -128,14 +168,27 @@ create_combined_data <- function(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_
   }
 
   # Update estimated relationships
-  index_not_exclude_lr <- which(!is.element(est_rel_all, "Unrelated"))
   index_exclude_y_mt <- sort(unique(c(index_unexpectedly_excluded_y, index_unexpectedly_excluded_mt)))
   index_inconclusive_y_mt <- sort(unique(c(index_unexpectedly_inconclusive_y, index_unexpectedly_inconclusive_mt)))
-  index_change_red <- intersect(index_not_exclude_lr, index_exclude_y_mt)
   index_change_yellow <- intersect(index_not_exclude_lr, index_inconclusive_y_mt)
-  est_rel_all[index_change_red] <- "Excluded by Y-STR or mtDNA"
-  est_rel_all[index_change_yellow] <- "Inconclusive result for Y-STR or mtDNA"
+  index_change_red <- intersect(index_not_exclude_lr, index_exclude_y_mt)
+  est_rel_all[index_change_yellow] <- "Inconclusive"
+  est_rel_all[index_change_red] <- "Excluded" # Priotize Excluded to Inconclusive
   dt_combined[, EstimatedRel := est_rel_all]
+
+  # Create the background colors for the displayed table
+  background_color <- create_background_color(dt_combined, index_change_yellow, index_change_red)
+
+  # Create multiple candidate groups
+  group_cand <- create_group_cand(dt_combined, background_color)
+
+  # Additional columns
+  options(warn = -1)
+  dt_combined[, EstSexV := est_sex_v]
+  dt_combined[, EstSexR := est_sex_r]
+  dt_combined[, MultiCandGroup := group_cand]
+  dt_combined[, ColorBack := background_color]
+  options(warn = 0)
 
   # Change data type
   sn_v <- sort(unique(dt_combined[, Victim]))
@@ -143,19 +196,11 @@ create_combined_data <- function(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_
   sn_r <- sort(unique(dt_combined[, Reference]))
   dt_combined$Reference <- factor(dt_combined$Reference, levels = sn_r, labels = sn_r)
   dt_combined$AssumedRel <- factor(dt_combined$AssumedRel, levels = names_rel, labels = names_rel)
-  dt_combined$EstimatedRel <- factor(dt_combined$EstimatedRel, levels = c(names_rel, "Inconclusive", "Unrelated", "Excluded by Y-STR or mtDNA", "Inconclusive result for Y-STR or mtDNA"), labels = c(names_rel, "Inconclusive", "Unrelated", "Excluded by Y-STR or mtDNA", "Inconclusive result for Y-STR or mtDNA"))
+  dt_combined$EstimatedRel <- factor(dt_combined$EstimatedRel, levels = c(names_rel, "Inconclusive", "Unrelated", "Excluded"), labels = c(names_rel, "Inconclusive", "Unrelated", "Excluded"))
   dt_combined$Paternal <- factor(dt_combined$Paternal, levels = c("Not excluded", "Inconclusive", "Excluded", "Sex mismatch"), labels = c("Not excluded", "Inconclusive", "Excluded", "Sex mismatch"))
   dt_combined$Maternal <- factor(dt_combined$Maternal, levels = c("Not excluded", "Inconclusive", "Excluded"), labels = c("Not excluded", "Inconclusive", "Excluded"))
-
-  # Create the sign of the number of candidates
-  background_color <- create_background_color(dt_combined, index_change_yellow, index_change_red)
-
-  # Additional columns
-  options(warn = -1)
-  dt_combined[, EstSexV := est_sex_v]
-  dt_combined[, EstSexR := est_sex_r]
-  dt_combined[, ColorBack := background_color]
-  options(warn = 0)
+  group_cand_labels <- as.character(sort(unique(group_cand[!is.na(group_cand)])))
+  dt_combined$MultiCandGroup <- factor(dt_combined$MultiCandGroup, levels = group_cand_labels, labels = group_cand_labels)
 
   # Keep only important data
   if(!is.null(dt_result_auto)){
@@ -178,7 +223,7 @@ create_combined_data <- function(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_
 create_displayed_data <- function(dt_combined, fltr_type = "with_auto", min_lr = 100, max_data_displayed = 10000){
   setkey(dt_combined, Victim, Reference, AssumedRel)
 
-  dt_display <- dt_combined[, list(Victim, Reference, Family, AssumedRel, EstimatedRel, LR_Total, Paternal, Maternal, ColorBack)]
+  dt_display <- dt_combined[, list(Victim, Reference, Family, AssumedRel, EstimatedRel, LR_Total, Paternal, Maternal, MultiCandGroup, ColorBack)]
   setorder(dt_display, - LR_Total, Paternal, Maternal, na.last = TRUE)
 
   if(fltr_type == "with_auto"){
