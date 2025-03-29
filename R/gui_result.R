@@ -36,7 +36,7 @@ result_ui <- function(id){
                                            uiOutput(ns("summary_min_lr")),
                                            actionButton(ns("act_fltr_lr"), label = "Apply")
                                          ),
-                                         downloadButton(ns("download_main"), "Download", class = "btn btn-primary btn-lg")
+                                         downloadButton(ns("download_summary"), "Download", class = "btn btn-primary btn-lg")
                                   ),
                                   column(10,
                                          br(),
@@ -79,11 +79,13 @@ result_ui <- function(id){
                                          tabsetPanel(
                                            tabPanel("STR",
                                                     br(),
-                                                    dataTableOutput(ns("dt_detail_auto"))
+                                                    dataTableOutput(ns("dt_detail_auto")),
+                                                    br()
                                            ),
                                            tabPanel("Y-STR",
                                                     br(),
-                                                    dataTableOutput(ns("dt_detail_y"))
+                                                    dataTableOutput(ns("dt_detail_y")),
+                                                    br()
                                            ),
                                            tabPanel("mtDNA",
                                                     br(),
@@ -103,7 +105,8 @@ result_ui <- function(id){
                                                     ),
                                                     br(),
                                                     br(),
-                                                    dataTableOutput(ns("dt_detail_mt"))
+                                                    dataTableOutput(ns("dt_detail_mt")),
+                                                    br()
                                            )
                                          )
                                   )
@@ -376,8 +379,8 @@ result_server <- function(id, rv_file){
             formatStyle(columns = "ColorBack", target = "row", backgroundColor = styleEqual(c(0, 1, 2, 3), c("#ffe0ef", "#ffffe0", "#e0efff", "#e0ffe0")))
         })
 
-        output$download_main <- downloadHandler(
-          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_relsearch_result.csv"),
+        output$download_summary <- downloadHandler(
+          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_RelSearch_summary_data.csv"),
           content = function(file){
             dt_download <- copy(rv_result$dt_display)
             dt_download[, ColorBack:=NULL]
@@ -435,7 +438,7 @@ result_server <- function(id, rv_file){
         })
 
         output$download_auto <- downloadHandler(
-          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_relsearch_detail_STR.csv"),
+          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_", rv_result$sn_v_select, "-", rv_result$sn_r_select, "_RelSearch_Detail_STR.csv"),
           content = function(file){
             dt_detail_auto <- rv_result$dt_detail_auto
             colnames(dt_detail_auto) <- c("Victim", "Reference", "Estimated relationship", "Locus", "Victim profile", "Reference profile", "Likelihood (related)", "Likelihood (unrelated)", "LR")
@@ -444,7 +447,7 @@ result_server <- function(id, rv_file){
         )
 
         output$download_y <- downloadHandler(
-          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_relsearch_detail_Y-STR.csv"),
+          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_", rv_result$sn_v_select, "-", rv_result$sn_r_select, "_RelSearch_Detail_Y-STR.csv"),
           content = function(file){
             dt_detail_y <- rv_result$dt_detail_y
             colnames(dt_detail_y) <- c("Victim", "Reference", "Paternal lineage", "Locus", "Victim profile", "Reference profile", "Ignored locus", "Mismatched locus", "Mutational step")
@@ -453,7 +456,7 @@ result_server <- function(id, rv_file){
         )
 
         output$download_mt <- downloadHandler(
-          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_relsearch_detail_mtDNA.csv"),
+          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_", rv_result$sn_v_select, "-", rv_result$sn_r_select, "_RelSearch_Detail_mtDNA.csv"),
           content = function(file){
             dt_detail_mt <- rv_result$dt_detail_mt
             colnames(dt_detail_mt) <- c("Victim", "Reference", "Maternal lineage", "Shared range", "Shared length", "Victim profile", "Reference profile", "Out of shared range", "Mismatch")
@@ -592,7 +595,7 @@ result_server <- function(id, rv_file){
         })
 
         output$download_af_use <- downloadHandler(
-          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_relsearch_af_use.csv"),
+          filename = paste0(gsub(" ", "_", format(as.POSIXct(Sys.time()), "%Y-%m-%d %H%M%S")), "_RelSearch_Allele_Probability.csv"),
           content = function(file){
             write.csv(dt_af_use, file, row.names = FALSE)
           }
