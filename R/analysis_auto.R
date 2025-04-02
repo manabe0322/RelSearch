@@ -329,13 +329,10 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
   ##########################
 
   min_lr_auto <- dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"]
-  max_lr_auto <- dt_criteria$Value[dt_criteria$Criteria == "max_lr_auto"]
 
-  est_rel_all <- rep("Inconclusive", nrow(dt_result_auto))
+  est_rel_all <- rep(NA, nrow(dt_result_auto))
   index_support_auto <- which(dt_result_auto[, "LR_Total"] >= min_lr_auto)
   est_rel_all[index_support_auto] <- dt_result_auto[index_support_auto, AssumedRel]
-  index_excluded_auto <- which(dt_result_auto[, "LR_Total"] <= max_lr_auto)
-  est_rel_all[index_excluded_auto] <- "Unrelated"
 
   options(warn = -1)
   dt_result_auto[, EstimatedRel := est_rel_all]

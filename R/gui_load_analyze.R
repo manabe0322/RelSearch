@@ -297,7 +297,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
 
           waiter_ui$update(html = tagList(spin_3k(),
                                           h3("Preparing analysis results...")))
-          dt_combined <- create_combined_data(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_y_male, dt_result_mt, dt_rel, dt_data_manage)
+          dt_combined <- create_combined_data(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_y_male, dt_result_mt, dt_criteria, dt_rel, dt_data_manage)
 
           #############################
           # Create the displayed data #
@@ -366,7 +366,7 @@ load_server <- function(id, session_top, rv_criteria, rv_rel, rv_myu, rv_data_ma
           }else if(bool_check_auto){
             showModal(modalDialog(title = "Information", paste0("Data with LR greater than ", min_lr_auto, " is displayed."), easyClose = TRUE, footer = NULL))
           }else{
-            showModal(modalDialog(title = "Information", "Data that is inconclusive or not excluded from paternal or maternal lineages is displayed.", easyClose = TRUE, footer = NULL))
+            showModal(modalDialog(title = "Information", "Data that is not excluded from paternal or maternal lineages is displayed.", easyClose = TRUE, footer = NULL))
           }
         }
       })
