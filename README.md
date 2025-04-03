@@ -1,3 +1,5 @@
+# RelSearch
+
 ## Initial setup
 
 1. Ensure that R (>= 4.4.0) is installed. It is available from the [R Development Core Team website](http://www.R-project.org).
