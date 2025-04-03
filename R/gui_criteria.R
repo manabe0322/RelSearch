@@ -7,25 +7,25 @@ tab_criteria_ui <- function(id){
   tabPanel("Criteria",
            useShinyjs(),
            useShinyFeedback(),
-           titlePanel("Criteria"),
-           br(),
-           p(HTML("<b>Press the save button to reflect the changes.</b>")),
-           br(),
            fluidRow(
              column(4,
-                    h4("STR"),
+                    h2("LR Criteria"),
                     uiOutput(ns("output_min_lr_auto")),
                     uiOutput(ns("output_max_lr_auto"))
              ),
              column(4,
-                    h4("Y-STR"),
+                    h2("Y-STR Usage Criteria"),
                     uiOutput(ns("output_min_detect_y")),
+                    br(),
+                    h2("Paternal Lineage Criteria"),
                     uiOutput(ns("output_max_mismatch_y")),
                     uiOutput(ns("output_max_mustep_y"))
              ),
              column(4,
-                    h4("mtDNA"),
+                    h2("mtDNA Usage Criteria"),
                     uiOutput(ns("output_min_share_len_mt")),
+                    br(),
+                    h2("Maternal Lineage Criteria"),
                     uiOutput(ns("output_max_mismatch_mt"))
              )
            ),
@@ -33,7 +33,7 @@ tab_criteria_ui <- function(id){
            uiOutput(ns("act_criteria_save")),
            br(),
            br(),
-           actionButton(ns("act_criteria_reset"), label = "Reset")
+           actionButton(ns("act_criteria_reset"), label = "Reset", class = "btn btn-primary btn-lg")
   )
 }
 
@@ -71,13 +71,13 @@ tab_criteria_server <- function(id, path_pack){
       # Output UI #
       #############
 
-      output$output_min_lr_auto <- renderUI({numericInput(session$ns("input_min_lr_auto"), label = "Minimum LR to support assumed relatives", value = rv_criteria$min_lr_auto)})
-      output$output_max_lr_auto <- renderUI({numericInput(session$ns("input_max_lr_auto"), label = "Maximum LR to exclude assumed relatives", value = rv_criteria$max_lr_auto)})
-      output$output_min_detect_y <- renderUI({numericInput(session$ns("input_min_detect_y"), label = "Lower limit of the number of loci with detected alleles to use Y-STR profiles", value = rv_criteria$min_detect_y)})
-      output$output_max_mismatch_y <- renderUI({numericInput(session$ns("input_max_mismatch_y"), label = "Upper limit of the number of mismatched loci not to exclude paternal lineage", value = rv_criteria$max_mismatch_y)})
-      output$output_max_mustep_y <- renderUI({numericInput(session$ns("input_max_mustep_y"), label = "Upper limit of the total mutational steps not to exclude paternal lineage", value = rv_criteria$max_mustep_y)})
-      output$output_min_share_len_mt <- renderUI({numericInput(session$ns("input_min_share_len_mt"), label = "Lower limit of the minimum shared length (bp) to use mtDNA profiles", value = rv_criteria$min_share_len_mt)})
-      output$output_max_mismatch_mt <- renderUI({numericInput(session$ns("input_max_mismatch_mt"), label = "Upper limit of the number of inconsistency not to exclude maternal lineage", value = rv_criteria$max_mismatch_mt)})
+      output$output_min_lr_auto <- renderUI({numericInput(session$ns("input_min_lr_auto"), label = "Minimum LR to support the assumed relationship", value = rv_criteria$min_lr_auto)})
+      output$output_max_lr_auto <- renderUI({numericInput(session$ns("input_max_lr_auto"), label = "Maximum LR to exclude the assumed relationship", value = rv_criteria$max_lr_auto)})
+      output$output_min_detect_y <- renderUI({numericInput(session$ns("input_min_detect_y"), label = "Minimum number of loci with genotypes", value = rv_criteria$min_detect_y)})
+      output$output_max_mismatch_y <- renderUI({numericInput(session$ns("input_max_mismatch_y"), label = "Maximum number of mismatched loci", value = rv_criteria$max_mismatch_y)})
+      output$output_max_mustep_y <- renderUI({numericInput(session$ns("input_max_mustep_y"), label = "Upper limit of the total mutational steps", value = rv_criteria$max_mustep_y)})
+      output$output_min_share_len_mt <- renderUI({numericInput(session$ns("input_min_share_len_mt"), label = "Minimum read length (bp)", value = rv_criteria$min_share_len_mt)})
+      output$output_max_mismatch_mt <- renderUI({numericInput(session$ns("input_max_mismatch_mt"), label = "Maximum number of inconsistency", value = rv_criteria$max_mismatch_mt)})
 
       #####################################
       # Define the input rule of criteria #
@@ -97,7 +97,7 @@ tab_criteria_server <- function(id, path_pack){
       observeEvent(input$input_max_lr_auto, {
         max_lr_auto <- input$input_max_lr_auto
         if(!is.numeric(max_lr_auto) || max_lr_auto > 1){
-          showFeedbackDanger(inputId = "input_max_lr_auto", text = "The number smaller than 1 is required!")
+          showFeedbackDanger(inputId = "input_max_lr_auto", text = "The number less than 1 is required!")
           rv_criteria$bool_setting_max_lr_auto <- FALSE
         }else{
           hideFeedback("input_max_lr_auto")
@@ -171,22 +171,23 @@ tab_criteria_server <- function(id, path_pack){
                rv_criteria$bool_setting_max_mustep_y,
                rv_criteria$bool_setting_min_share_len_mt,
                rv_criteria$bool_setting_max_mismatch_mt)){
-          actionButton(session$ns("act_criteria_save"), label = "Save")
+          actionButton(session$ns("act_criteria_save"), label = "Save", class = "btn btn-primary btn-lg")
         }else{
-          disabled(actionButton(session$ns("act_criteria_save"), label = "Save"))
+          disabled(actionButton(session$ns("act_criteria_save"), label = "Save", class = "btn btn-primary btn-lg"))
         }
       })
 
       observeEvent(input$act_criteria_save, ignoreInit = TRUE, {
         rv_criteria$min_lr_auto <- input$input_min_lr_auto
+        rv_criteria$max_lr_auto <- input$input_max_lr_auto
         rv_criteria$min_detect_y <- input$input_min_detect_y
         rv_criteria$max_mismatch_y <- input$input_max_mismatch_y
         rv_criteria$max_mustep_y <- input$input_max_mustep_y
         rv_criteria$min_share_len_mt <- input$input_min_share_len_mt
         rv_criteria$max_mismatch_mt <- input$input_max_mismatch_mt
 
-        new_dt_criteria <- data.table(Criteria = c("min_lr_auto", "min_detect_y", "max_mismatch_y", "max_mustep_y", "min_share_len_mt", "max_mismatch_mt"),
-                                      Value = c(rv_criteria$min_lr_auto, rv_criteria$max_mismatch_y, rv_criteria$max_mustep_y, rv_criteria$max_mismatch_mt))
+        new_dt_criteria <- data.table(Criteria = c("min_lr_auto", "max_lr_auto", "min_detect_y", "max_mismatch_y", "max_mustep_y", "min_share_len_mt", "max_mismatch_mt"),
+                                      Value = c(rv_criteria$min_lr_auto, rv_criteria$max_lr_auto, rv_criteria$min_detect_y, rv_criteria$max_mismatch_y, rv_criteria$max_mustep_y, rv_criteria$min_share_len_mt, rv_criteria$max_mismatch_mt))
 
         write.csv(new_dt_criteria, paste0(path_pack, "/extdata/parameters/criteria.csv"), row.names = FALSE)
 
@@ -201,6 +202,7 @@ tab_criteria_server <- function(id, path_pack){
         new_dt_criteria <- create_dt_criteria(path_pack, FALSE)
 
         rv_criteria$min_lr_auto <- new_dt_criteria$Value[new_dt_criteria$Criteria == "min_lr_auto"]
+        rv_criteria$max_lr_auto <- new_dt_criteria$Value[new_dt_criteria$Criteria == "max_lr_auto"]
         rv_criteria$min_detect_y <- new_dt_criteria$Value[new_dt_criteria$Criteria == "min_detect_y"]
         rv_criteria$max_mismatch_y <- new_dt_criteria$Value[new_dt_criteria$Criteria == "max_mismatch_y"]
         rv_criteria$max_mustep_y <- new_dt_criteria$Value[new_dt_criteria$Criteria == "max_mustep_y"]
@@ -208,6 +210,7 @@ tab_criteria_server <- function(id, path_pack){
         rv_criteria$max_mismatch_mt <- new_dt_criteria$Value[new_dt_criteria$Criteria == "max_mismatch_mt"]
 
         updateNumericInput(session, inputId = "input_min_lr_auto", value = rv_criteria$min_lr_auto)
+        updateNumericInput(session, inputId = "input_max_lr_auto", value = rv_criteria$max_lr_auto)
         updateNumericInput(session, inputId = "input_min_detect_y", value = rv_criteria$min_detect_y)
         updateNumericInput(session, inputId = "input_max_mismatch_y", value = rv_criteria$max_mismatch_y)
         updateNumericInput(session, inputId = "input_max_mustep_y", value = rv_criteria$max_mustep_y)

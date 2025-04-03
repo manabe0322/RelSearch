@@ -9,16 +9,14 @@ tab_data_manage_ui <- function(id){
            useShinyFeedback(),
            titlePanel("Data storage conditions"),
            br(),
-           p(HTML("<b>Press the save button to reflect the changes.</b>")),
-           br(),
            uiOutput(ns("output_keep_min_lr")),
            br(),
            uiOutput(ns("output_max_data_displayed")),
            br(),
-           actionButton(ns("act_data_manage_save"), label = "Save"),
+           actionButton(ns("act_data_manage_save"), label = "Save", class = "btn btn-primary btn-lg"),
            br(),
            br(),
-           actionButton(ns("act_data_manage_reset"), label = "Reset")
+           actionButton(ns("act_data_manage_reset"), label = "Reset", class = "btn btn-primary btn-lg")
   )
 }
 
