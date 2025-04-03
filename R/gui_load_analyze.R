@@ -10,19 +10,19 @@ load_ui <- function(id){
            fluidRow(
              column(4,
                     h2("STR"),
-                    fileInput(ns("file_v_auto"), label = h4("Victim database"), accept = ".csv"),
-                    fileInput(ns("file_r_auto"), label = h4("Reference database"), accept = ".csv"),
-                    fileInput(ns("file_af"), label = h4("Allele frequencies"), accept = ".csv"),
+                    fileInput(ns("file_v_auto"), label = h4("Victim database"), accept = ".csv", buttonLabel = "Load"),
+                    fileInput(ns("file_r_auto"), label = h4("Reference database"), accept = ".csv", buttonLabel = "Load"),
+                    fileInput(ns("file_af"), label = h4("Allele frequencies"), accept = ".csv", buttonLabel = "Load"),
              ),
              column(4,
                     h2("Y-STR"),
-                    fileInput(ns("file_v_y"), label = h4("Victim database"), accept = ".csv"),
-                    fileInput(ns("file_r_y"), label = h4("Reference database"), accept = ".csv")
+                    fileInput(ns("file_v_y"), label = h4("Victim database"), accept = ".csv", buttonLabel = "Load"),
+                    fileInput(ns("file_r_y"), label = h4("Reference database"), accept = ".csv", buttonLabel = "Load")
              ),
              column(4,
                     h2("mtDNA"),
-                    fileInput(ns("file_v_mt"), label = h4("Victim database"), accept = ".csv"),
-                    fileInput(ns("file_r_mt"), label = h4("Reference database"), accept = ".csv")
+                    fileInput(ns("file_v_mt"), label = h4("Victim database"), accept = ".csv", buttonLabel = "Load"),
+                    fileInput(ns("file_r_mt"), label = h4("Reference database"), accept = ".csv", buttonLabel = "Load")
              )
            ),
            br(),
