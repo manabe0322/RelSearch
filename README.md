@@ -9,7 +9,7 @@
 3. Execute the following command in R to install required packages.
 
 ``` r
-install.packages('https://github.com/manabe0322/RelSearch/releases/download/ v0.21.0/RelSearch_0.21.0.zip', repos = NULL, type = 'win.binary')
+install.packages('https://github.com/manabe0322/RelSearch/releases/download/v0.21.0/RelSearch_0.21.0.zip', repos = NULL, type = 'win.binary')
 install.packages(c("shiny", "data.table", "dplyr", "DT", "magrittr", "pedtools", "Rcpp", "ribd", "shinyFeedback", "shinyjs", "shinythemes", "waiter"))
 ```
 
