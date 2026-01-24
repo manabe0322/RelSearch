@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/reference/test_package.html#special-files
 
 library(testthat)
-library(shinytest)
+library(RelSearch)
 
-test_check("shinytest")
+test_check("RelSearch")

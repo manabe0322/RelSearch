@@ -4,14 +4,14 @@
 \alias{create_background_color}
 \title{create_background_color}
 \usage{
-create_background_color(dt_combined, index_change_yellow, index_change_red)
+create_background_color(dt_combined, dt_criteria, dt_rel)
 }
 \arguments{
 \item{dt_combined}{A data.table of the combined data}
 
-\item{index_change_yellow}{Indices of inconclusive paternal or maternal lineages with supportive LR}
+\item{dt_criteria}{A data.table of criteria}
 
-\item{index_change_red}{Indices of excluded paternal or maternal lineages with supportive LR}
+\item{dt_rel}{A data.table of information on relationships}
 }
 \description{
 The function to create the sign of the number of candidates (0: Excluded, 1: Inconclusive, 2: Multiple candidates, 3: Identified)

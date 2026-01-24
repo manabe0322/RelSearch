@@ -9,9 +9,19 @@ test_that("calc_kin_like_drop vgt pattern 1", {
   k1 <- 0.5 / 2
   k0 <- 0.25
   pibd <- c(k2, 2 * k1, k0)
-  myu <- 0.002
-  cons_mu <- FALSE
-  par_vic <- FALSE
+  myu_pat_m2 <- 0.0005
+  myu_pat_m1 <- 0.002
+  myu_pat_0 <- 0.995
+  myu_pat_p1 <- 0.002
+  myu_pat_p2 <- 0.0005
+  myu_mat_m2 <- 0.0005
+  myu_mat_m1 <- 0.002
+  myu_mat_0 <- 0.995
+  myu_mat_p1 <- 0.002
+  myu_mat_p2 <- 0.0005
+  bool_pc <- FALSE
+  bool_parent_victim <- FALSE
+  bool_parent_male <- FALSE
 
   # True answer
 
@@ -31,7 +41,10 @@ test_that("calc_kin_like_drop vgt pattern 1", {
   like_h2 <- pvgt_h2_1 * prgt + pvgt_h2_2 * prgt
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd,
+                                    myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
+                                    myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
+                                    bool_pc, bool_parent_victim, bool_parent_male)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -49,9 +62,19 @@ test_that("calc_kin_like_drop vgt pattern 2", {
   k1 <- 0.5 / 2
   k0 <- 0.25
   pibd <- c(k2, 2 * k1, k0)
-  myu <- 0.002
-  cons_mu <- FALSE
-  par_vic <- FALSE
+  myu_pat_m2 <- 0.0005
+  myu_pat_m1 <- 0.002
+  myu_pat_0 <- 0.995
+  myu_pat_p1 <- 0.002
+  myu_pat_p2 <- 0.0005
+  myu_mat_m2 <- 0.0005
+  myu_mat_m1 <- 0.002
+  myu_mat_0 <- 0.995
+  myu_mat_p1 <- 0.002
+  myu_mat_p2 <- 0.0005
+  bool_pc <- FALSE
+  bool_parent_victim <- FALSE
+  bool_parent_male <- FALSE
 
   # True answer
 
@@ -75,7 +98,10 @@ test_that("calc_kin_like_drop vgt pattern 2", {
   like_h2 <- pvgt_h2_1 * prgt + (pvgt_h2_2 + pvgt_h2_3) * prgt
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd,
+                                    myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
+                                    myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
+                                    bool_pc, bool_parent_victim, bool_parent_male)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -93,9 +119,19 @@ test_that("calc_kin_like_drop vgt pattern 3", {
   k1 <- 0.5 / 2
   k0 <- 0.25
   pibd <- c(k2, 2 * k1, k0)
-  myu <- 0.002
-  cons_mu <- FALSE
-  par_vic <- FALSE
+  myu_pat_m2 <- 0.0005
+  myu_pat_m1 <- 0.002
+  myu_pat_0 <- 0.995
+  myu_pat_p1 <- 0.002
+  myu_pat_p2 <- 0.0005
+  myu_mat_m2 <- 0.0005
+  myu_mat_m1 <- 0.002
+  myu_mat_0 <- 0.995
+  myu_mat_p1 <- 0.002
+  myu_mat_p2 <- 0.0005
+  bool_pc <- FALSE
+  bool_parent_victim <- FALSE
+  bool_parent_male <- FALSE
 
   # True answer
 
@@ -119,7 +155,10 @@ test_that("calc_kin_like_drop vgt pattern 3", {
   like_h2 <- pvgt_h2_1 * prgt + (pvgt_h2_2 + pvgt_h2_3) * prgt
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd,
+                                    myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
+                                    myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
+                                    bool_pc, bool_parent_victim, bool_parent_male)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -137,9 +176,19 @@ test_that("calc_kin_like_drop vgt pattern 4", {
   k1 <- 0.5 / 2
   k0 <- 0.25
   pibd <- c(k2, 2 * k1, k0)
-  myu <- 0.002
-  cons_mu <- FALSE
-  par_vic <- FALSE
+  myu_pat_m2 <- 0.0005
+  myu_pat_m1 <- 0.002
+  myu_pat_0 <- 0.995
+  myu_pat_p1 <- 0.002
+  myu_pat_p2 <- 0.0005
+  myu_mat_m2 <- 0.0005
+  myu_mat_m1 <- 0.002
+  myu_mat_0 <- 0.995
+  myu_mat_p1 <- 0.002
+  myu_mat_p2 <- 0.0005
+  bool_pc <- FALSE
+  bool_parent_victim <- FALSE
+  bool_parent_male <- FALSE
 
   # True answer
 
@@ -163,7 +212,10 @@ test_that("calc_kin_like_drop vgt pattern 4", {
   like_h2 <- pvgt_h2_1 * prgt + (pvgt_h2_2 + pvgt_h2_3) * prgt
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd,
+                                    myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
+                                    myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
+                                    bool_pc, bool_parent_victim, bool_parent_male)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -181,9 +233,19 @@ test_that("calc_kin_like_drop vgt pattern 5", {
   k1 <- 0.5 / 2
   k0 <- 0.25
   pibd <- c(k2, 2 * k1, k0)
-  myu <- 0.002
-  cons_mu <- FALSE
-  par_vic <- FALSE
+  myu_pat_m2 <- 0.0005
+  myu_pat_m1 <- 0.002
+  myu_pat_0 <- 0.995
+  myu_pat_p1 <- 0.002
+  myu_pat_p2 <- 0.0005
+  myu_mat_m2 <- 0.0005
+  myu_mat_m1 <- 0.002
+  myu_mat_0 <- 0.995
+  myu_mat_p1 <- 0.002
+  myu_mat_p2 <- 0.0005
+  bool_pc <- FALSE
+  bool_parent_victim <- FALSE
+  bool_parent_male <- FALSE
 
   # True answer
 
@@ -211,7 +273,10 @@ test_that("calc_kin_like_drop vgt pattern 5", {
   like_h2 <- pvgt_h2_1 * prgt + (pvgt_h2_2 + pvgt_h2_3 + pvgt_h2_4) * prgt
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd,
+                                    myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
+                                    myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
+                                    bool_pc, bool_parent_victim, bool_parent_male)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -229,9 +294,19 @@ test_that("calc_kin_like_drop rgt pattern 1", {
   k1 <- 0.5 / 2
   k0 <- 0.25
   pibd <- c(k2, 2 * k1, k0)
-  myu <- 0.002
-  cons_mu <- FALSE
-  par_vic <- FALSE
+  myu_pat_m2 <- 0.0005
+  myu_pat_m1 <- 0.002
+  myu_pat_0 <- 0.995
+  myu_pat_p1 <- 0.002
+  myu_pat_p2 <- 0.0005
+  myu_mat_m2 <- 0.0005
+  myu_mat_m1 <- 0.002
+  myu_mat_0 <- 0.995
+  myu_mat_p1 <- 0.002
+  myu_mat_p2 <- 0.0005
+  bool_pc <- FALSE
+  bool_parent_victim <- FALSE
+  bool_parent_male <- FALSE
 
   # True answer
 
@@ -250,7 +325,10 @@ test_that("calc_kin_like_drop rgt pattern 1", {
   like_h2 <- pvgt_h2_1 * prgt_1 + pvgt_h2_2 * prgt_2
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd,
+                                    myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
+                                    myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
+                                    bool_pc, bool_parent_victim, bool_parent_male)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -268,9 +346,19 @@ test_that("calc_kin_like_drop rgt pattern 2", {
   k1 <- 0.5 / 2
   k0 <- 0.25
   pibd <- c(k2, 2 * k1, k0)
-  myu <- 0.002
-  cons_mu <- FALSE
-  par_vic <- FALSE
+  myu_pat_m2 <- 0.0005
+  myu_pat_m1 <- 0.002
+  myu_pat_0 <- 0.995
+  myu_pat_p1 <- 0.002
+  myu_pat_p2 <- 0.0005
+  myu_mat_m2 <- 0.0005
+  myu_mat_m1 <- 0.002
+  myu_mat_0 <- 0.995
+  myu_mat_p1 <- 0.002
+  myu_mat_p2 <- 0.0005
+  bool_pc <- FALSE
+  bool_parent_victim <- FALSE
+  bool_parent_male <- FALSE
 
   # True answer
 
@@ -294,7 +382,10 @@ test_that("calc_kin_like_drop rgt pattern 2", {
   like_h2 <- pvgt_h2_1 * prgt_1 + pvgt_h2_2 * prgt_2 + pvgt_h2_3 * prgt_3
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd,
+                                    myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
+                                    myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
+                                    bool_pc, bool_parent_victim, bool_parent_male)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -312,9 +403,19 @@ test_that("calc_kin_like_drop rgt pattern 3", {
   k1 <- 0.5 / 2
   k0 <- 0.25
   pibd <- c(k2, 2 * k1, k0)
-  myu <- 0.002
-  cons_mu <- FALSE
-  par_vic <- FALSE
+  myu_pat_m2 <- 0.0005
+  myu_pat_m1 <- 0.002
+  myu_pat_0 <- 0.995
+  myu_pat_p1 <- 0.002
+  myu_pat_p2 <- 0.0005
+  myu_mat_m2 <- 0.0005
+  myu_mat_m1 <- 0.002
+  myu_mat_0 <- 0.995
+  myu_mat_p1 <- 0.002
+  myu_mat_p2 <- 0.0005
+  bool_pc <- FALSE
+  bool_parent_victim <- FALSE
+  bool_parent_male <- FALSE
 
   # True answer
 
@@ -338,7 +439,10 @@ test_that("calc_kin_like_drop rgt pattern 3", {
   like_h2 <- pvgt_h2_1 * prgt_1 + pvgt_h2_2 * prgt_2 + pvgt_h2_3 * prgt_3
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd,
+                                    myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
+                                    myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
+                                    bool_pc, bool_parent_victim, bool_parent_male)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -356,9 +460,19 @@ test_that("calc_kin_like_drop rgt pattern 4", {
   k1 <- 0.5 / 2
   k0 <- 0.25
   pibd <- c(k2, 2 * k1, k0)
-  myu <- 0.002
-  cons_mu <- FALSE
-  par_vic <- FALSE
+  myu_pat_m2 <- 0.0005
+  myu_pat_m1 <- 0.002
+  myu_pat_0 <- 0.995
+  myu_pat_p1 <- 0.002
+  myu_pat_p2 <- 0.0005
+  myu_mat_m2 <- 0.0005
+  myu_mat_m1 <- 0.002
+  myu_mat_0 <- 0.995
+  myu_mat_p1 <- 0.002
+  myu_mat_p2 <- 0.0005
+  bool_pc <- FALSE
+  bool_parent_victim <- FALSE
+  bool_parent_male <- FALSE
 
   # True answer
 
@@ -382,7 +496,10 @@ test_that("calc_kin_like_drop rgt pattern 4", {
   like_h2 <- pvgt_h2_1 * prgt_1 + pvgt_h2_2 * prgt_2 + pvgt_h2_3 * prgt_3
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd,
+                                    myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
+                                    myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
+                                    bool_pc, bool_parent_victim, bool_parent_male)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -400,9 +517,19 @@ test_that("calc_kin_like_drop rgt pattern 5", {
   k1 <- 0.5 / 2
   k0 <- 0.25
   pibd <- c(k2, 2 * k1, k0)
-  myu <- 0.002
-  cons_mu <- FALSE
-  par_vic <- FALSE
+  myu_pat_m2 <- 0.0005
+  myu_pat_m1 <- 0.002
+  myu_pat_0 <- 0.995
+  myu_pat_p1 <- 0.002
+  myu_pat_p2 <- 0.0005
+  myu_mat_m2 <- 0.0005
+  myu_mat_m1 <- 0.002
+  myu_mat_0 <- 0.995
+  myu_mat_p1 <- 0.002
+  myu_mat_p2 <- 0.0005
+  bool_pc <- FALSE
+  bool_parent_victim <- FALSE
+  bool_parent_male <- FALSE
 
   # True answer
 
@@ -431,7 +558,10 @@ test_that("calc_kin_like_drop rgt pattern 5", {
   like_h2 <- pvgt_h2_1 * prgt_1 + pvgt_h2_2 * prgt_2 + pvgt_h2_3 * prgt_3 + pvgt_h2_4 * prgt_4
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd,
+                                    myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
+                                    myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
+                                    bool_pc, bool_parent_victim, bool_parent_male)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -449,9 +579,19 @@ test_that("calc_kin_like_drop designated two alleles pattern 1", {
   k1 <- 0.5 / 2
   k0 <- 0.25
   pibd <- c(k2, 2 * k1, k0)
-  myu <- 0.002
-  cons_mu <- FALSE
-  par_vic <- FALSE
+  myu_pat_m2 <- 0.0005
+  myu_pat_m1 <- 0.002
+  myu_pat_0 <- 0.995
+  myu_pat_p1 <- 0.002
+  myu_pat_p2 <- 0.0005
+  myu_mat_m2 <- 0.0005
+  myu_mat_m1 <- 0.002
+  myu_mat_0 <- 0.995
+  myu_mat_p1 <- 0.002
+  myu_mat_p2 <- 0.0005
+  bool_pc <- FALSE
+  bool_parent_victim <- FALSE
+  bool_parent_male <- FALSE
 
   # True answer
 
@@ -467,7 +607,10 @@ test_that("calc_kin_like_drop designated two alleles pattern 1", {
   like_h2 <- pvgt_h2_1 * prgt
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd,
+                                    myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
+                                    myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
+                                    bool_pc, bool_parent_victim, bool_parent_male)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -485,9 +628,19 @@ test_that("calc_kin_like_drop designated two alleles pattern 2", {
   k1 <- 0.5 / 2
   k0 <- 0.25
   pibd <- c(k2, 2 * k1, k0)
-  myu <- 0.002
-  cons_mu <- FALSE
-  par_vic <- FALSE
+  myu_pat_m2 <- 0.0005
+  myu_pat_m1 <- 0.002
+  myu_pat_0 <- 0.995
+  myu_pat_p1 <- 0.002
+  myu_pat_p2 <- 0.0005
+  myu_mat_m2 <- 0.0005
+  myu_mat_m1 <- 0.002
+  myu_mat_0 <- 0.995
+  myu_mat_p1 <- 0.002
+  myu_mat_p2 <- 0.0005
+  bool_pc <- FALSE
+  bool_parent_victim <- FALSE
+  bool_parent_male <- FALSE
 
   # True answer
 
@@ -503,7 +656,10 @@ test_that("calc_kin_like_drop designated two alleles pattern 2", {
   like_h2 <- pvgt_h2_1 * prgt
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd,
+                                    myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
+                                    myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
+                                    bool_pc, bool_parent_victim, bool_parent_male)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -521,9 +677,19 @@ test_that("calc_kin_like_drop designated two alleles pattern 3", {
   k1 <- 0.5 / 2
   k0 <- 0.25
   pibd <- c(k2, 2 * k1, k0)
-  myu <- 0.002
-  cons_mu <- FALSE
-  par_vic <- FALSE
+  myu_pat_m2 <- 0.0005
+  myu_pat_m1 <- 0.002
+  myu_pat_0 <- 0.995
+  myu_pat_p1 <- 0.002
+  myu_pat_p2 <- 0.0005
+  myu_mat_m2 <- 0.0005
+  myu_mat_m1 <- 0.002
+  myu_mat_0 <- 0.995
+  myu_mat_p1 <- 0.002
+  myu_mat_p2 <- 0.0005
+  bool_pc <- FALSE
+  bool_parent_victim <- FALSE
+  bool_parent_male <- FALSE
 
   # True answer
 
@@ -539,7 +705,10 @@ test_that("calc_kin_like_drop designated two alleles pattern 3", {
   like_h2 <- pvgt_h2_1 * prgt
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd,
+                                    myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
+                                    myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
+                                    bool_pc, bool_parent_victim, bool_parent_male)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -557,13 +726,26 @@ test_that("calc_kin_like_drop Pr(D) = 0 pattern 1", {
   k1 <- 0.5 / 2
   k0 <- 0.25
   pibd <- c(k2, 2 * k1, k0)
-  myu <- 0.002
-  cons_mu <- FALSE
-  par_vic <- FALSE
+  myu_pat_m2 <- 0.0005
+  myu_pat_m1 <- 0.002
+  myu_pat_0 <- 0.995
+  myu_pat_p1 <- 0.002
+  myu_pat_p2 <- 0.0005
+  myu_mat_m2 <- 0.0005
+  myu_mat_m1 <- 0.002
+  myu_mat_0 <- 0.995
+  myu_mat_p1 <- 0.002
+  myu_mat_p2 <- 0.0005
+  bool_pc <- FALSE
+  bool_parent_victim <- FALSE
+  bool_parent_male <- FALSE
 
   # Run
-  likelihoods_1 <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
-  likelihoods_2 <- calc_kin_like(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
+  likelihoods_1 <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd,
+                                      myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
+                                      myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
+                                      bool_pc, bool_parent_victim, bool_parent_male)
+  likelihoods_2 <- calc_kin_like(vgt, rgt, c(0.15, 0.15, 0.25, 0.25), pibd)
 
   # Test
   expect_equal(as.numeric(likelihoods_1[1]), as.numeric(likelihoods_1[1]))
@@ -581,13 +763,26 @@ test_that("calc_kin_like_drop Pr(D) = 0 pattern 2", {
   k1 <- 0.5 / 2
   k0 <- 0.25
   pibd <- c(k2, 2 * k1, k0)
-  myu <- 0.002
-  cons_mu <- FALSE
-  par_vic <- FALSE
+  myu_pat_m2 <- 0.0005
+  myu_pat_m1 <- 0.002
+  myu_pat_0 <- 0.995
+  myu_pat_p1 <- 0.002
+  myu_pat_p2 <- 0.0005
+  myu_mat_m2 <- 0.0005
+  myu_mat_m1 <- 0.002
+  myu_mat_0 <- 0.995
+  myu_mat_p1 <- 0.002
+  myu_mat_p2 <- 0.0005
+  bool_pc <- FALSE
+  bool_parent_victim <- FALSE
+  bool_parent_male <- FALSE
 
   # Run
-  likelihoods_1 <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
-  likelihoods_2 <- calc_kin_like(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
+  likelihoods_1 <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd,
+                                      myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
+                                      myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
+                                      bool_pc, bool_parent_victim, bool_parent_male)
+  likelihoods_2 <- calc_kin_like(vgt, rgt, c(0.15, 0.15, 0.15, 0.25), pibd)
 
   # Test
   expect_equal(as.numeric(likelihoods_1[1]), as.numeric(likelihoods_1[1]))
@@ -605,13 +800,26 @@ test_that("calc_kin_like_drop Pr(D) = 0 pattern 3", {
   k1 <- 0.5 / 2
   k0 <- 0.25
   pibd <- c(k2, 2 * k1, k0)
-  myu <- 0.002
-  cons_mu <- FALSE
-  par_vic <- FALSE
+  myu_pat_m2 <- 0.0005
+  myu_pat_m1 <- 0.002
+  myu_pat_0 <- 0.995
+  myu_pat_p1 <- 0.002
+  myu_pat_p2 <- 0.0005
+  myu_mat_m2 <- 0.0005
+  myu_mat_m1 <- 0.002
+  myu_mat_0 <- 0.995
+  myu_mat_p1 <- 0.002
+  myu_mat_p2 <- 0.0005
+  bool_pc <- FALSE
+  bool_parent_victim <- FALSE
+  bool_parent_male <- FALSE
 
   # Run
-  likelihoods_1 <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
-  likelihoods_2 <- calc_kin_like(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
+  likelihoods_1 <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd,
+                                      myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
+                                      myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
+                                      bool_pc, bool_parent_victim, bool_parent_male)
+  likelihoods_2 <- calc_kin_like(vgt, rgt, c(0.15, 0.25, 0.15, 0.25), pibd)
 
   # Test
   expect_equal(as.numeric(likelihoods_1[1]), as.numeric(likelihoods_1[1]))
@@ -629,9 +837,19 @@ test_that("calc_kin_like_drop mutation pattern 1", {
   k1 <- 0.5
   k0 <- 0
   pibd <- c(k2, 2 * k1, k0)
-  myu <- 0.002
-  cons_mu <- TRUE
-  par_vic <- TRUE
+  myu_pat_m2 <- 0.0005
+  myu_pat_m1 <- 0.002
+  myu_pat_0 <- 0.995
+  myu_pat_p1 <- 0.002
+  myu_pat_p2 <- 0.0005
+  myu_mat_m2 <- 0.0005
+  myu_mat_m1 <- 0.002
+  myu_mat_0 <- 0.995
+  myu_mat_p1 <- 0.002
+  myu_mat_p2 <- 0.0005
+  bool_pc <- TRUE
+  bool_parent_victim <- TRUE
+  bool_parent_male <- TRUE
 
   # True answer
 
@@ -648,9 +866,9 @@ test_that("calc_kin_like_drop mutation pattern 1", {
   pvgt_h2_3 <- 2 * 0.15 * 0.6
 
   ## rgt : 12, 12
-  prgt_h1_1 <- myu * 0.25
-  prgt_h1_2 <- k1 * 0.25 + k0 * 0.25^2
-  prgt_h1_3 <- myu * 0.25
+  prgt_h1_1 <- myu_pat_p1 * 0.25
+  prgt_h1_2 <- 0.5 * myu_pat_p1 * 0.25 + 0.5 * myu_pat_0 * 0.25
+  prgt_h1_3 <- 0.5 * myu_pat_p1 * 0.25
   prgt_h2 <- 0.25^2
 
   ## Likelihood
@@ -658,7 +876,10 @@ test_that("calc_kin_like_drop mutation pattern 1", {
   like_h2 <- (pvgt_h2_1 + pvgt_h2_2 + pvgt_h2_3) * prgt_h2
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd,
+                                    myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
+                                    myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
+                                    bool_pc, bool_parent_victim, bool_parent_male)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
@@ -676,22 +897,32 @@ test_that("calc_kin_like_drop mutation pattern 2", {
   k1 <- 0.5
   k0 <- 0
   pibd <- c(k2, 2 * k1, k0)
-  myu <- 0.002
-  cons_mu <- TRUE
-  par_vic <- FALSE
+  myu_pat_m2 <- 0.0005
+  myu_pat_m1 <- 0.002
+  myu_pat_0 <- 0.995
+  myu_pat_p1 <- 0.002
+  myu_pat_p2 <- 0.0005
+  myu_mat_m2 <- 0.0005
+  myu_mat_m1 <- 0.002
+  myu_mat_0 <- 0.995
+  myu_mat_p1 <- 0.002
+  myu_mat_p2 <- 0.0005
+  bool_pc <- TRUE
+  bool_parent_victim <- FALSE
+  bool_parent_male <- TRUE
 
   # True answer
 
   ## vgt : 11, 11
-  pvgt_h1_1 <- myu * 0.15
+  pvgt_h1_1 <- myu_pat_m1 * 0.15
   pvgt_h2_1 <- 0.15^2
 
   ## vgt : 11, 12
-  pvgt_h1_2 <- 2 * k1 * 0.15 + k0 * 2 * 0.15 * 0.25
+  pvgt_h1_2 <- myu_pat_m1 * 0.25 + myu_pat_0 * 0.15
   pvgt_h2_2 <- 2 * 0.15 * 0.25
 
   ## vgt : 11, 99
-  pvgt_h1_3 <- myu * (0.15 + 0.6)
+  pvgt_h1_3 <- myu_pat_m1 * 0.6
   pvgt_h2_3 <- 2 * 0.15 * 0.6
 
   ## rgt : 12, 12
@@ -702,7 +933,10 @@ test_that("calc_kin_like_drop mutation pattern 2", {
   like_h2 <- pvgt_h2_1 * prgt + (pvgt_h2_2 + pvgt_h2_3) * prgt
 
   # Run
-  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd, myu, cons_mu, par_vic)
+  likelihoods <- calc_kin_like_drop(vgt, rgt, af, af_al, pibd,
+                                    myu_pat_m2, myu_pat_m1, myu_pat_0, myu_pat_p1, myu_pat_p2,
+                                    myu_mat_m2, myu_mat_m1, myu_mat_0, myu_mat_p1, myu_mat_p2,
+                                    bool_pc, bool_parent_victim, bool_parent_male)
 
   # Test
   expect_equal(as.numeric(likelihoods[1]), like_h1)
