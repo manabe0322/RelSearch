@@ -1,4 +1,5 @@
 Criteria,Value
+min_detect_auto,0
 min_lr_auto,100
 max_lr_auto,0.01
 min_detect_y,10
