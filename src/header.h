@@ -1,12 +1,12 @@
 #include <Rcpp.h>
-#include <stdio.h>
-#include <set>
+#include <algorithm>
 #include <iostream>
+#include <numeric>
+#include <regex>
+#include <set>
+#include <stdio.h>
 #include <string>
 #include <vector>
-#include <numeric>
-#include <algorithm>
-#include <regex>
 using namespace Rcpp;
 
 std::vector<std::string> split(std::string str, const char* del);

@@ -254,7 +254,7 @@ create_combined_data <- function(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_
 create_displayed_data <- function(dt_combined, fltr_type = "with_auto", min_lr = 100, max_data_displayed = 10000){
   setkey(dt_combined, Victim, Reference, AssumedRel)
 
-  dt_display <- dt_combined[, list(Victim, Reference, Family, AssumedRel, EstimatedRel, LR_Total, Paternal, Maternal, MultiCandGroup, ColorBack)]
+  dt_display <- dt_combined[, list(Victim, Reference, Family, AssumedRel, EstimatedRel, UseMkAuto, LR_Total, Paternal, Maternal, MultiCandGroup, ColorBack)]
   setorder(dt_display, - LR_Total, Paternal, Maternal, na.last = TRUE)
 
   if(fltr_type == "with_auto"){

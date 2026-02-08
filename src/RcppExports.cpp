@@ -181,9 +181,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// count_both_not_na_auto
+int count_both_not_na_auto(std::vector<double> prof_victim, std::vector<double> prof_ref);
+RcppExport SEXP _RelSearch_count_both_not_na_auto(SEXP prof_victimSEXP, SEXP prof_refSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<double> >::type prof_victim(prof_victimSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type prof_ref(prof_refSEXP);
+    rcpp_result_gen = Rcpp::wrap(count_both_not_na_auto(prof_victim, prof_ref));
+    return rcpp_result_gen;
+END_RCPP
+}
 // calc_kin_lr_all
-std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::vector<double>> gt_v_auto, std::vector<std::vector<double>> gt_r_auto, std::vector<std::string> assumed_rel_all, std::vector<std::vector<double>> af_list, std::vector<std::vector<double>> af_al_list, std::vector<std::string> names_rel, std::vector<std::vector<double>> pibds_rel, std::vector<double> myus_paternal_m2, std::vector<double> myus_paternal_m1, std::vector<double> myus_paternal_0, std::vector<double> myus_paternal_p1, std::vector<double> myus_paternal_p2, std::vector<double> myus_maternal_m2, std::vector<double> myus_maternal_m1, std::vector<double> myus_maternal_0, std::vector<double> myus_maternal_p1, std::vector<double> myus_maternal_p2, std::vector<bool> bool_pc_all, std::vector<bool> bool_parent_victim_all, std::vector<bool> bool_parent_male_all);
-RcppExport SEXP _RelSearch_calc_kin_lr_all(SEXP gt_v_autoSEXP, SEXP gt_r_autoSEXP, SEXP assumed_rel_allSEXP, SEXP af_listSEXP, SEXP af_al_listSEXP, SEXP names_relSEXP, SEXP pibds_relSEXP, SEXP myus_paternal_m2SEXP, SEXP myus_paternal_m1SEXP, SEXP myus_paternal_0SEXP, SEXP myus_paternal_p1SEXP, SEXP myus_paternal_p2SEXP, SEXP myus_maternal_m2SEXP, SEXP myus_maternal_m1SEXP, SEXP myus_maternal_0SEXP, SEXP myus_maternal_p1SEXP, SEXP myus_maternal_p2SEXP, SEXP bool_pc_allSEXP, SEXP bool_parent_victim_allSEXP, SEXP bool_parent_male_allSEXP) {
+Rcpp::List calc_kin_lr_all(std::vector<std::vector<double>> gt_v_auto, std::vector<std::vector<double>> gt_r_auto, std::vector<std::string> assumed_rel_all, std::vector<std::vector<double>> af_list, std::vector<std::vector<double>> af_al_list, std::vector<std::string> names_rel, std::vector<std::vector<double>> pibds_rel, std::vector<double> myus_paternal_m2, std::vector<double> myus_paternal_m1, std::vector<double> myus_paternal_0, std::vector<double> myus_paternal_p1, std::vector<double> myus_paternal_p2, std::vector<double> myus_maternal_m2, std::vector<double> myus_maternal_m1, std::vector<double> myus_maternal_0, std::vector<double> myus_maternal_p1, std::vector<double> myus_maternal_p2, std::vector<bool> bool_pc_all, std::vector<bool> bool_parent_victim_all, std::vector<bool> bool_parent_male_all, int min_detect_auto);
+RcppExport SEXP _RelSearch_calc_kin_lr_all(SEXP gt_v_autoSEXP, SEXP gt_r_autoSEXP, SEXP assumed_rel_allSEXP, SEXP af_listSEXP, SEXP af_al_listSEXP, SEXP names_relSEXP, SEXP pibds_relSEXP, SEXP myus_paternal_m2SEXP, SEXP myus_paternal_m1SEXP, SEXP myus_paternal_0SEXP, SEXP myus_paternal_p1SEXP, SEXP myus_paternal_p2SEXP, SEXP myus_maternal_m2SEXP, SEXP myus_maternal_m1SEXP, SEXP myus_maternal_0SEXP, SEXP myus_maternal_p1SEXP, SEXP myus_maternal_p2SEXP, SEXP bool_pc_allSEXP, SEXP bool_parent_victim_allSEXP, SEXP bool_parent_male_allSEXP, SEXP min_detect_autoSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -207,7 +219,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::vector<bool> >::type bool_pc_all(bool_pc_allSEXP);
     Rcpp::traits::input_parameter< std::vector<bool> >::type bool_parent_victim_all(bool_parent_victim_allSEXP);
     Rcpp::traits::input_parameter< std::vector<bool> >::type bool_parent_male_all(bool_parent_male_allSEXP);
-    rcpp_result_gen = Rcpp::wrap(calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel, myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2, myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2, bool_pc_all, bool_parent_victim_all, bool_parent_male_all));
+    Rcpp::traits::input_parameter< int >::type min_detect_auto(min_detect_autoSEXP);
+    rcpp_result_gen = Rcpp::wrap(calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel, myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2, myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2, bool_pc_all, bool_parent_victim_all, bool_parent_male_all, min_detect_auto));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -473,7 +486,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RelSearch_set_myu_per_inheritance", (DL_FUNC) &_RelSearch_set_myu_per_inheritance, 13},
     {"_RelSearch_calc_kin_like_drop", (DL_FUNC) &_RelSearch_calc_kin_like_drop, 18},
     {"_RelSearch_calc_kin_lr", (DL_FUNC) &_RelSearch_calc_kin_lr, 18},
-    {"_RelSearch_calc_kin_lr_all", (DL_FUNC) &_RelSearch_calc_kin_lr_all, 20},
+    {"_RelSearch_count_both_not_na_auto", (DL_FUNC) &_RelSearch_count_both_not_na_auto, 2},
+    {"_RelSearch_calc_kin_lr_all", (DL_FUNC) &_RelSearch_calc_kin_lr_all, 21},
     {"_RelSearch_split", (DL_FUNC) &_RelSearch_split, 2},
     {"_RelSearch_str_to_int", (DL_FUNC) &_RelSearch_str_to_int, 1},
     {"_RelSearch_int_to_str", (DL_FUNC) &_RelSearch_int_to_str, 1},

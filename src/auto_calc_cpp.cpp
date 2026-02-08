@@ -496,33 +496,70 @@ std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim,
   return(ans);
 }
 
+/*#########################################################
+# The function to count the number of used autosomal loci #
+#########################################################*/
+
+// [[Rcpp::export]]
+int count_both_not_na_auto(std::vector<double> prof_victim,
+                           std::vector<double> prof_ref){
+
+  if(prof_victim.size() != prof_ref.size()){
+    throw std::invalid_argument("prof_victim and prof_ref must have the same length");
+  }
+
+  int count = 0;
+  int n_mk = prof_victim.size() / 2;
+
+  for(int i = 0; i < n_mk; ++i) {
+
+    std::vector<double> v_al(2);
+    v_al[0] = prof_victim[2 * i];
+    v_al[1] = prof_victim[2 * i + 1];
+    auto v_al_end = std::remove(v_al.begin(), v_al.end(), -99);
+    v_al.erase(v_al_end, v_al.cend());
+
+    std::vector<double> r_al(2);
+    r_al[0] = prof_ref[2 * i];
+    r_al[1] = prof_ref[2 * i + 1];
+    auto r_al_end = std::remove(r_al.begin(), r_al.end(), -99);
+    r_al.erase(r_al_end, r_al.cend());
+
+    if(v_al.size() != 0 && r_al.size() != 0){
+      ++count;
+    }
+  }
+
+  return count;
+}
 
 /*###############################################
 # The function to calculate the LR of all pairs #
 ###############################################*/
 
 // [[Rcpp::export]]
-std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::vector<double>> gt_v_auto,
-                                                              std::vector<std::vector<double>> gt_r_auto,
-                                                              std::vector<std::string> assumed_rel_all,
-                                                              std::vector<std::vector<double>> af_list,
-                                                              std::vector<std::vector<double>> af_al_list,
-                                                              std::vector<std::string> names_rel,
-                                                              std::vector<std::vector<double>> pibds_rel,
-                                                              std::vector<double> myus_paternal_m2,
-                                                              std::vector<double> myus_paternal_m1,
-                                                              std::vector<double> myus_paternal_0,
-                                                              std::vector<double> myus_paternal_p1,
-                                                              std::vector<double> myus_paternal_p2,
-                                                              std::vector<double> myus_maternal_m2,
-                                                              std::vector<double> myus_maternal_m1,
-                                                              std::vector<double> myus_maternal_0,
-                                                              std::vector<double> myus_maternal_p1,
-                                                              std::vector<double> myus_maternal_p2,
-                                                              std::vector<bool> bool_pc_all,
-                                                              std::vector<bool> bool_parent_victim_all,
-                                                              std::vector<bool> bool_parent_male_all
-                                                              ){
+Rcpp::List calc_kin_lr_all(std::vector<std::vector<double>> gt_v_auto,
+                           std::vector<std::vector<double>> gt_r_auto,
+                           std::vector<std::string> assumed_rel_all,
+                           std::vector<std::vector<double>> af_list,
+                           std::vector<std::vector<double>> af_al_list,
+                           std::vector<std::string> names_rel,
+                           std::vector<std::vector<double>> pibds_rel,
+                           std::vector<double> myus_paternal_m2,
+                           std::vector<double> myus_paternal_m1,
+                           std::vector<double> myus_paternal_0,
+                           std::vector<double> myus_paternal_p1,
+                           std::vector<double> myus_paternal_p2,
+                           std::vector<double> myus_maternal_m2,
+                           std::vector<double> myus_maternal_m1,
+                           std::vector<double> myus_maternal_0,
+                           std::vector<double> myus_maternal_p1,
+                           std::vector<double> myus_maternal_p2,
+                           std::vector<bool> bool_pc_all,
+                           std::vector<bool> bool_parent_victim_all,
+                           std::vector<bool> bool_parent_male_all,
+                           int min_detect_auto){
+
   /* Call the R function "message" */
   Function message("message");
 
@@ -531,7 +568,8 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
   int n_l = gt_r_auto.at(0).size();
   int n_vr = n_v * n_r;
 
-  std::vector<std::vector<std::vector<double>>> result_auto(n_vr, std::vector<std::vector<double>>(3, std::vector<double>(n_l + 1)));
+  std::vector<std::vector<std::vector<double>>> result_auto(n_vr, std::vector<std::vector<double>>(3, std::vector<double>(n_l + 1, 1.0)));
+  std::vector<int> count_use_mk_all(n_vr, 0);
 
   double counter_base = n_vr * 0.01;
   double counter = counter_base;
@@ -551,16 +589,23 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
     for(int j = 0; j < n_v; ++j){
       std::vector<double> prof_victim = gt_v_auto.at(j);
 
-      std::vector<std::vector<double>> ans = calc_kin_lr(prof_victim, prof_ref, af_list, af_al_list, pibd,
-                                                         myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2,
-                                                         myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2,
-                                                         bool_pc, bool_parent_victim, bool_parent_male);
+      int count_use_mk = count_both_not_na_auto(prof_victim, prof_ref);
 
       int pos = n_v * i + j;
 
-      result_auto.at(pos).at(0) = ans.at(0);
-      result_auto.at(pos).at(1) = ans.at(1);
-      result_auto.at(pos).at(2) = ans.at(2);
+      if(count_use_mk >= min_detect_auto){
+        std::vector<std::vector<double>> ans = calc_kin_lr(prof_victim, prof_ref, af_list, af_al_list, pibd,
+                                                           myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2,
+                                                           myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2,
+                                                           bool_pc, bool_parent_victim, bool_parent_male);
+
+        result_auto.at(pos).at(0) = ans.at(0);
+        result_auto.at(pos).at(1) = ans.at(1);
+        result_auto.at(pos).at(2) = ans.at(2);
+
+      }
+
+      count_use_mk_all[pos] = count_use_mk;
 
       /* Display a message to the console to update the progress bar */
       if(pos >= counter){
@@ -572,5 +617,6 @@ std::vector<std::vector<std::vector<double>>> calc_kin_lr_all(std::vector<std::v
     }
   }
 
-  return(result_auto);
+  List result = List::create(result_auto, count_use_mk_all);
+  return(result);
 }

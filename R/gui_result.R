@@ -371,11 +371,11 @@ result_server <- function(id, rv_file){
 
           datatable(
             dt_display,
-            colnames = c("Victim", "Reference", "Family", "Assumed relationship", "Estimated relationship", "LR", "Paternal lineage", "Maternal lineage", "Group of candidates", "ColorBack"),
+            colnames = c("Victim", "Reference", "Family", "Assumed relationship", "Estimated relationship", "No. of STR loci used", "LR", "Paternal lineage", "Maternal lineage", "Group of candidates", "ColorBack"),
             filter = "top",
             selection = list(mode = "single", target = "row"),
             options = list(iDisplayLength = 10, autoWidth = TRUE,
-                           columnDefs = list(list(targets = 5, searchable = FALSE), list(targets = 9, visible = FALSE))
+                           columnDefs = list(list(targets = 6, searchable = FALSE), list(targets = 10, visible = FALSE))
             ),
             rownames = FALSE
           ) %>%
@@ -388,7 +388,7 @@ result_server <- function(id, rv_file){
           content = function(file){
             dt_download <- copy(rv_result$dt_display)
             dt_download[, ColorBack:=NULL]
-            colnames(dt_download) <- c("Victim", "Reference", "Family", "Assumed relationship", "Estimated relationship", "LR", "Paternal lineage", "Maternal lineage", "Group of candidates")
+            colnames(dt_download) <- c("Victim", "Reference", "Family", "Assumed relationship", "No. of STR loci used", "Estimated relationship", "LR", "Paternal lineage", "Maternal lineage", "Group of candidates")
             write.csv(dt_download, file, row.names = FALSE)
           }
         )

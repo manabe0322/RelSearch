@@ -41,8 +41,12 @@ calc_kin_lr <- function(prof_victim, prof_ref, af_list, af_al_list, pibd, myus_p
     .Call(`_RelSearch_calc_kin_lr`, prof_victim, prof_ref, af_list, af_al_list, pibd, myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2, myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2, bool_pc, bool_parent_victim, bool_parent_male)
 }
 
-calc_kin_lr_all <- function(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel, myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2, myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2, bool_pc_all, bool_parent_victim_all, bool_parent_male_all) {
-    .Call(`_RelSearch_calc_kin_lr_all`, gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel, myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2, myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2, bool_pc_all, bool_parent_victim_all, bool_parent_male_all)
+count_both_not_na_auto <- function(prof_victim, prof_ref) {
+    .Call(`_RelSearch_count_both_not_na_auto`, prof_victim, prof_ref)
+}
+
+calc_kin_lr_all <- function(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel, myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2, myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2, bool_pc_all, bool_parent_victim_all, bool_parent_male_all, min_detect_auto) {
+    .Call(`_RelSearch_calc_kin_lr_all`, gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel, myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2, myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2, bool_pc_all, bool_parent_victim_all, bool_parent_male_all, min_detect_auto)
 }
 
 split <- function(str, del) {

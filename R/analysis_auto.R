@@ -283,6 +283,8 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
   bool_parent_victim_all <- tmp$bool_parent_victim_all
   bool_parent_male_all <- tmp$bool_parent_male_all
 
+  min_detect_auto <- dt_criteria$Value[dt_criteria$Criteria == "min_detect_auto"]
+
   ###############################
   # Calculate likelihood ratios #
   ###############################
@@ -290,10 +292,11 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
   if(show_progress){
     withProgress(
       withCallingHandlers(
-        result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel,
-                                       myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2,
-                                       myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2,
-                                       bool_pc_all, bool_parent_victim_all, bool_parent_male_all),
+        tmp <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel,
+                               myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2,
+                               myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2,
+                               bool_pc_all, bool_parent_victim_all, bool_parent_male_all,
+                               min_detect_auto),
         message = function(m) if(grepl("STR_Victim-Reference_ : ", m$message)){
           val <- as.numeric(gsub("STR_Victim-Reference_ : ", "", m$message))
           setProgress(value = val, message = paste0(round(100 * val / n_pair, 0), "% done"))
@@ -304,11 +307,15 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
       value = 0
     )
   }else{
-    result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel,
-                                   myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2,
-                                   myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2,
-                                   bool_pc_all, bool_parent_victim_all, bool_parent_male_all)
+    tmp <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel,
+                           myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2,
+                           myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2,
+                           bool_pc_all, bool_parent_victim_all, bool_parent_male_all,
+                           min_detect_auto)
   }
+
+  result_auto <- tmp[[1]]
+  count_use_mk_all <- tmp[[2]]
 
   ##########################################################
   # Create the data.table for the results of autosomal STR #
@@ -318,8 +325,8 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
   result_sn_r_auto <- as.vector(sapply(sn_r_auto, rep, length(sn_v_auto)))
   result_family <- as.vector(sapply(family_all, rep, length(sn_v_auto)))
   result_assumed_rel <- as.vector(sapply(assumed_rel_all, rep, length(sn_v_auto)))
+  dt_left <- data.table(Victim = result_sn_v_auto, Reference = result_sn_r_auto, Family = result_family, AssumedRel = result_assumed_rel, UseMkAuto = count_use_mk_all)
 
-  dt_left <- data.table(Victim = result_sn_v_auto, Reference = result_sn_r_auto, Family = result_family, AssumedRel = result_assumed_rel)
   result_auto <- unlist(result_auto)
   result_auto <- matrix(result_auto, nrow = length(sn_v_auto) * length(sn_r_auto), ncol = 3 * (n_mk + 1), byrow = TRUE)
   dt_right <- as.data.frame(result_auto)
