@@ -304,7 +304,10 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
       value = 0
     )
   }else{
-    result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel, myus, cons_mutations, parent_victim)
+    result_auto <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel,
+                                   myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2,
+                                   myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2,
+                                   bool_pc_all, bool_parent_victim_all, bool_parent_male_all)
   }
 
   ##########################################################
