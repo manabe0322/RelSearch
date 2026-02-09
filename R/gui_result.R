@@ -167,10 +167,12 @@ result_ui <- function(id){
                                            br(),
                                            fluidRow(
                                              column(4,
-                                                    h4("LR Criteria"),
+                                                    h4("STR Usage Criteria"),
                                                     br(),
                                                     h5(div("Minimum number of loci with genotypes", style = "color:#555555;font-weight:bold;")),
                                                     textOutput(ns("result_min_detect_auto")),
+                                                    br(),
+                                                    h4("LR Criteria"),
                                                     br(),
                                                     h5(div("Minimum LR to support the assumed relationship", style = "color:#555555;font-weight:bold;")),
                                                     textOutput(ns("result_min_lr_auto")),
