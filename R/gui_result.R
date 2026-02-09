@@ -169,6 +169,9 @@ result_ui <- function(id){
                                              column(4,
                                                     h4("LR Criteria"),
                                                     br(),
+                                                    h5(div("Minimum number of loci with genotypes", style = "color:#555555;font-weight:bold;")),
+                                                    textOutput(ns("result_min_detect_auto")),
+                                                    br(),
                                                     h5(div("Minimum LR to support the assumed relationship", style = "color:#555555;font-weight:bold;")),
                                                     textOutput(ns("result_min_lr_auto")),
                                                     br(),
@@ -388,7 +391,7 @@ result_server <- function(id, rv_file){
           content = function(file){
             dt_download <- copy(rv_result$dt_display)
             dt_download[, ColorBack:=NULL]
-            colnames(dt_download) <- c("Victim", "Reference", "Family", "Assumed relationship", "No. of STR loci used", "Estimated relationship", "LR", "Paternal lineage", "Maternal lineage", "Group of candidates")
+            colnames(dt_download) <- c("Victim", "Reference", "Family", "Assumed relationship", "Estimated relationship", "No. of STR loci used", "LR", "Paternal lineage", "Maternal lineage", "Group of candidates")
             write.csv(dt_download, file, row.names = FALSE)
           }
         )
@@ -605,6 +608,9 @@ result_server <- function(id, rv_file){
           }
         )
 
+        output$result_min_detect_auto <- renderText({
+          paste0(dt_criteria$Value[dt_criteria$Criteria == "min_detect_auto"])
+        })
         output$result_min_lr_auto <- renderText({
           paste0(dt_criteria$Value[dt_criteria$Criteria == "min_lr_auto"])
         })

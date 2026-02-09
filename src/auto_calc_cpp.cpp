@@ -436,12 +436,12 @@ std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim,
                                              bool bool_parent_victim,
                                              bool bool_parent_male
                                              ){
-  int n_l = prof_victim.size() / 2;
-  std::vector<std::vector<double>> ans(3, std::vector<double>(n_l + 1));
+  int n_mk = prof_victim.size() / 2;
+  std::vector<std::vector<double>> ans(3, std::vector<double>(n_mk + 1));
   double cl_h1 = 1;
   double cl_h2 = 1;
 
-  for(int i = 0; i < n_l; ++i){
+  for(int i = 0; i < n_mk; ++i){
     std::vector<double> v_al(2);
     v_al[0] = prof_victim[2 * i];
     v_al[1] = prof_victim[2 * i + 1];
@@ -490,9 +490,9 @@ std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim,
     }
   }
 
-  ans.at(0).at(n_l) = cl_h1;
-  ans.at(1).at(n_l) = cl_h2;
-  ans.at(2).at(n_l) = cl_h1 / cl_h2;
+  ans.at(0).at(n_mk) = cl_h1;
+  ans.at(1).at(n_mk) = cl_h2;
+  ans.at(2).at(n_mk) = cl_h1 / cl_h2;
   return(ans);
 }
 
@@ -565,10 +565,10 @@ Rcpp::List calc_kin_lr_all(std::vector<std::vector<double>> gt_v_auto,
 
   int n_v = gt_v_auto.size();
   int n_r = gt_r_auto.size();
-  int n_l = gt_r_auto.at(0).size();
+  int n_mk = gt_r_auto.at(0).size() / 2;
   int n_vr = n_v * n_r;
 
-  std::vector<std::vector<std::vector<double>>> result_auto(n_vr, std::vector<std::vector<double>>(3, std::vector<double>(n_l + 1, 1.0)));
+  std::vector<std::vector<std::vector<double>>> result_auto(n_vr, std::vector<std::vector<double>>(3, std::vector<double>(n_mk + 1, 1.0)));
   std::vector<int> count_use_mk_all(n_vr, 0);
 
   double counter_base = n_vr * 0.01;
@@ -599,10 +599,11 @@ Rcpp::List calc_kin_lr_all(std::vector<std::vector<double>> gt_v_auto,
                                                            myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2,
                                                            bool_pc, bool_parent_victim, bool_parent_male);
 
-        result_auto.at(pos).at(0) = ans.at(0);
-        result_auto.at(pos).at(1) = ans.at(1);
-        result_auto.at(pos).at(2) = ans.at(2);
-
+        for(int k = 0; k < n_mk + 1; ++k){
+          result_auto[pos][0][k] = ans[0][k];
+          result_auto[pos][1][k] = ans[1][k];
+          result_auto[pos][2][k] = ans[2][k];
+        }
       }
 
       count_use_mk_all[pos] = count_use_mk;

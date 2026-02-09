@@ -196,7 +196,7 @@ tab_criteria_server <- function(id, path_pack){
       })
 
       observeEvent(input$act_criteria_save, ignoreInit = TRUE, {
-        rv_criteria$min_detect_auto <- input$min_detect_auto
+        rv_criteria$min_detect_auto <- input$input_min_detect_auto
         rv_criteria$min_lr_auto <- input$input_min_lr_auto
         rv_criteria$max_lr_auto <- input$input_max_lr_auto
         rv_criteria$min_detect_y <- input$input_min_detect_y
