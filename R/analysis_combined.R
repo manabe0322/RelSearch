@@ -164,6 +164,7 @@ create_combined_data <- function(dt_result_auto, dt_result_y, sn_v_y_male, sn_r_
   n_data <- nrow(dt_combined)
   options(warn = -1)
   if(is.null(dt_result_auto)){
+    dt_combined[, UseMkAuto := rep(NA, n_data)]
     dt_combined[, LR_Total := rep(NA, n_data)]
     dt_combined[, EstimatedRel := rep(NA, n_data)]
   }
