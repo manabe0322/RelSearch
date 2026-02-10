@@ -283,8 +283,6 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
   bool_parent_victim_all <- tmp$bool_parent_victim_all
   bool_parent_male_all <- tmp$bool_parent_male_all
 
-  min_detect_auto <- dt_criteria$Value[dt_criteria$Criteria == "min_detect_auto"]
-
   ###############################
   # Calculate likelihood ratios #
   ###############################
@@ -295,8 +293,7 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
         tmp <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel,
                                myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2,
                                myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2,
-                               bool_pc_all, bool_parent_victim_all, bool_parent_male_all,
-                               min_detect_auto),
+                               bool_pc_all, bool_parent_victim_all, bool_parent_male_all),
         message = function(m) if(grepl("STR_Victim-Reference_ : ", m$message)){
           val <- as.numeric(gsub("STR_Victim-Reference_ : ", "", m$message))
           setProgress(value = val, message = paste0(round(100 * val / n_pair, 0), "% done"))
@@ -310,8 +307,7 @@ analyze_auto <- function(dt_v_auto, dt_r_auto, dt_af,
     tmp <- calc_kin_lr_all(gt_v_auto, gt_r_auto, assumed_rel_all, af_list, af_al_list, names_rel, pibds_rel,
                            myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2,
                            myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2,
-                           bool_pc_all, bool_parent_victim_all, bool_parent_male_all,
-                           min_detect_auto)
+                           bool_pc_all, bool_parent_victim_all, bool_parent_male_all)
   }
 
   result_auto <- tmp[[1]]

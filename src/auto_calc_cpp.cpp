@@ -496,9 +496,9 @@ std::vector<std::vector<double>> calc_kin_lr(std::vector<double> prof_victim,
   return(ans);
 }
 
-/*#########################################################
-# The function to count the number of used autosomal loci #
-#########################################################*/
+/*#############################################################
+# The function to count the number of the used autosomal loci #
+#############################################################*/
 
 // [[Rcpp::export]]
 int count_both_not_na_auto(std::vector<double> prof_victim,
@@ -557,8 +557,7 @@ Rcpp::List calc_kin_lr_all(std::vector<std::vector<double>> gt_v_auto,
                            std::vector<double> myus_maternal_p2,
                            std::vector<bool> bool_pc_all,
                            std::vector<bool> bool_parent_victim_all,
-                           std::vector<bool> bool_parent_male_all,
-                           int min_detect_auto){
+                           std::vector<bool> bool_parent_male_all){
 
   /* Call the R function "message" */
   Function message("message");
@@ -589,24 +588,21 @@ Rcpp::List calc_kin_lr_all(std::vector<std::vector<double>> gt_v_auto,
     for(int j = 0; j < n_v; ++j){
       std::vector<double> prof_victim = gt_v_auto.at(j);
 
-      int count_use_mk = count_both_not_na_auto(prof_victim, prof_ref);
+      std::vector<std::vector<double>> ans = calc_kin_lr(prof_victim, prof_ref, af_list, af_al_list, pibd,
+                                                         myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2,
+                                                         myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2,
+                                                         bool_pc, bool_parent_victim, bool_parent_male);
 
       int pos = n_v * i + j;
 
-      if(count_use_mk >= min_detect_auto){
-        std::vector<std::vector<double>> ans = calc_kin_lr(prof_victim, prof_ref, af_list, af_al_list, pibd,
-                                                           myus_paternal_m2, myus_paternal_m1, myus_paternal_0, myus_paternal_p1, myus_paternal_p2,
-                                                           myus_maternal_m2, myus_maternal_m1, myus_maternal_0, myus_maternal_p1, myus_maternal_p2,
-                                                           bool_pc, bool_parent_victim, bool_parent_male);
-
-        for(int k = 0; k < n_mk + 1; ++k){
-          result_auto[pos][0][k] = ans[0][k];
-          result_auto[pos][1][k] = ans[1][k];
-          result_auto[pos][2][k] = ans[2][k];
-        }
+      for(int k = 0; k < n_mk + 1; ++k){
+        result_auto[pos][0][k] = ans[0][k];
+        result_auto[pos][1][k] = ans[1][k];
+        result_auto[pos][2][k] = ans[2][k];
       }
 
-      count_use_mk_all[pos] = count_use_mk;
+      /* count the number of the used autosomal loci */
+      count_use_mk_all[pos] = count_both_not_na_auto(prof_victim, prof_ref);
 
       /* Display a message to the console to update the progress bar */
       if(pos >= counter){

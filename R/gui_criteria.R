@@ -9,9 +9,6 @@ tab_criteria_ui <- function(id){
            useShinyFeedback(),
            fluidRow(
              column(4,
-                    h2("STR Usage Criteria"),
-                    uiOutput(ns("output_min_detect_auto")),
-                    br(),
                     h2("LR Criteria"),
                     uiOutput(ns("output_min_lr_auto")),
                     uiOutput(ns("output_max_lr_auto"))
@@ -55,7 +52,6 @@ tab_criteria_server <- function(id, path_pack){
 
       init_dt_criteria <- create_dt_criteria(path_pack)
       rv_criteria <- reactiveValues()
-      rv_criteria$min_detect_auto <- init_dt_criteria$Value[init_dt_criteria$Criteria == "min_detect_auto"]
       rv_criteria$min_lr_auto <- init_dt_criteria$Value[init_dt_criteria$Criteria == "min_lr_auto"]
       rv_criteria$max_lr_auto <- init_dt_criteria$Value[init_dt_criteria$Criteria == "max_lr_auto"]
       rv_criteria$min_detect_y <- init_dt_criteria$Value[init_dt_criteria$Criteria == "min_detect_y"]
@@ -63,7 +59,6 @@ tab_criteria_server <- function(id, path_pack){
       rv_criteria$max_mustep_y <- init_dt_criteria$Value[init_dt_criteria$Criteria == "max_mustep_y"]
       rv_criteria$min_share_len_mt <- init_dt_criteria$Value[init_dt_criteria$Criteria == "min_share_len_mt"]
       rv_criteria$max_mismatch_mt <- init_dt_criteria$Value[init_dt_criteria$Criteria == "max_mismatch_mt"]
-      rv_criteria$bool_setting_min_detect_auto <- FALSE
       rv_criteria$bool_setting_min_lr_auto <- FALSE
       rv_criteria$bool_setting_max_lr_auto <- FALSE
       rv_criteria$bool_setting_min_detect_y <- FALSE
@@ -76,7 +71,6 @@ tab_criteria_server <- function(id, path_pack){
       # Output UI #
       #############
 
-      output$output_min_detect_auto <- renderUI({numericInput(session$ns("input_min_detect_auto"), label = "Minimum number of loci with genotypes", value = rv_criteria$min_detect_auto)})
       output$output_min_lr_auto <- renderUI({numericInput(session$ns("input_min_lr_auto"), label = "Minimum LR to support the assumed relationship", value = rv_criteria$min_lr_auto)})
       output$output_max_lr_auto <- renderUI({numericInput(session$ns("input_max_lr_auto"), label = "Maximum LR to exclude the assumed relationship", value = rv_criteria$max_lr_auto)})
       output$output_min_detect_y <- renderUI({numericInput(session$ns("input_min_detect_y"), label = "Minimum number of loci with genotypes", value = rv_criteria$min_detect_y)})
@@ -88,17 +82,6 @@ tab_criteria_server <- function(id, path_pack){
       #####################################
       # Define the input rule of criteria #
       #####################################
-
-      observeEvent(input$input_min_detect_auto, {
-        min_detect_auto <- input$input_min_detect_auto
-        if(!is.integer(min_detect_auto) || min_detect_auto < 0){
-          showFeedbackDanger(inputId = "input_min_detect_auto", text = "An integer greater than or equal to zero is required!")
-          rv_criteria$bool_setting_min_detect_auto <- FALSE
-        }else{
-          hideFeedback("input_min_detect_auto")
-          rv_criteria$bool_setting_min_detect_auto <- TRUE
-        }
-      })
 
       observeEvent(input$input_min_lr_auto, {
         min_lr_auto <- input$input_min_lr_auto
@@ -182,8 +165,7 @@ tab_criteria_server <- function(id, path_pack){
       #################
 
       output$act_criteria_save <- renderUI({
-        if(all(rv_criteria$bool_setting_min_detect_auto,
-               rv_criteria$bool_setting_min_lr_auto,
+        if(all(rv_criteria$bool_setting_min_lr_auto,
                rv_criteria$bool_setting_min_detect_y,
                rv_criteria$bool_setting_max_mismatch_y,
                rv_criteria$bool_setting_max_mustep_y,
@@ -196,7 +178,6 @@ tab_criteria_server <- function(id, path_pack){
       })
 
       observeEvent(input$act_criteria_save, ignoreInit = TRUE, {
-        rv_criteria$min_detect_auto <- input$input_min_detect_auto
         rv_criteria$min_lr_auto <- input$input_min_lr_auto
         rv_criteria$max_lr_auto <- input$input_max_lr_auto
         rv_criteria$min_detect_y <- input$input_min_detect_y
@@ -205,8 +186,8 @@ tab_criteria_server <- function(id, path_pack){
         rv_criteria$min_share_len_mt <- input$input_min_share_len_mt
         rv_criteria$max_mismatch_mt <- input$input_max_mismatch_mt
 
-        new_dt_criteria <- data.table(Criteria = c("min_detect_auto", "min_lr_auto", "max_lr_auto", "min_detect_y", "max_mismatch_y", "max_mustep_y", "min_share_len_mt", "max_mismatch_mt"),
-                                      Value = c(rv_criteria$min_detect_auto, rv_criteria$min_lr_auto, rv_criteria$max_lr_auto, rv_criteria$min_detect_y, rv_criteria$max_mismatch_y, rv_criteria$max_mustep_y, rv_criteria$min_share_len_mt, rv_criteria$max_mismatch_mt))
+        new_dt_criteria <- data.table(Criteria = c("min_lr_auto", "max_lr_auto", "min_detect_y", "max_mismatch_y", "max_mustep_y", "min_share_len_mt", "max_mismatch_mt"),
+                                      Value = c(rv_criteria$min_lr_auto, rv_criteria$max_lr_auto, rv_criteria$min_detect_y, rv_criteria$max_mismatch_y, rv_criteria$max_mustep_y, rv_criteria$min_share_len_mt, rv_criteria$max_mismatch_mt))
 
         write.csv(new_dt_criteria, paste0(path_pack, "/extdata/parameters/criteria.csv"), row.names = FALSE)
 
@@ -220,7 +201,6 @@ tab_criteria_server <- function(id, path_pack){
       observeEvent(input$act_criteria_reset, ignoreInit = TRUE, {
         new_dt_criteria <- create_dt_criteria(path_pack, FALSE)
 
-        rv_criteria$min_detect_auto <- new_dt_criteria$Value[new_dt_criteria$Criteria == "min_detect_auto"]
         rv_criteria$min_lr_auto <- new_dt_criteria$Value[new_dt_criteria$Criteria == "min_lr_auto"]
         rv_criteria$max_lr_auto <- new_dt_criteria$Value[new_dt_criteria$Criteria == "max_lr_auto"]
         rv_criteria$min_detect_y <- new_dt_criteria$Value[new_dt_criteria$Criteria == "min_detect_y"]
@@ -229,7 +209,6 @@ tab_criteria_server <- function(id, path_pack){
         rv_criteria$min_share_len_mt <- new_dt_criteria$Value[new_dt_criteria$Criteria == "min_share_len_mt"]
         rv_criteria$max_mismatch_mt <- new_dt_criteria$Value[new_dt_criteria$Criteria == "max_mismatch_mt"]
 
-        updateNumericInput(session, inputId = "input_min_detect_auto", value = rv_criteria$min_detect_auto)
         updateNumericInput(session, inputId = "input_min_lr_auto", value = rv_criteria$min_lr_auto)
         updateNumericInput(session, inputId = "input_max_lr_auto", value = rv_criteria$max_lr_auto)
         updateNumericInput(session, inputId = "input_min_detect_y", value = rv_criteria$min_detect_y)
